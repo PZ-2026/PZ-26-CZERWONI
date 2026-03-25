@@ -15,33 +15,33 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun PrimaryButton(
-    text      : String,
-    onClick   : () -> Unit,
-    modifier  : Modifier = Modifier,
-    enabled   : Boolean  = true,
-    isLoading : Boolean  = false,
+    text: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    isLoading: Boolean = false,
 ) {
     Button(
-        onClick  = onClick,
-        enabled  = enabled && !isLoading,
+        onClick = onClick,
+        enabled = enabled && !isLoading,
         modifier = modifier
             .fillMaxWidth()
             .height(56.dp),
-        shape  = RoundedCornerShape(18.dp),
+        shape = RoundedCornerShape(18.dp),
         colors = ButtonDefaults.buttonColors(
-            containerColor         = MaterialTheme.colorScheme.primary,
+            containerColor = MaterialTheme.colorScheme.primary,
             disabledContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
         ),
     ) {
         if (isLoading) {
             CircularProgressIndicator(
-                modifier    = Modifier.size(22.dp),
-                color       = MaterialTheme.colorScheme.onPrimary,
+                modifier = Modifier.size(22.dp),
+                color = MaterialTheme.colorScheme.onPrimary,
                 strokeWidth = 2.5.dp,
             )
         } else {
             Text(
-                text  = text,
+                text = text,
                 style = MaterialTheme.typography.labelLarge,
             )
         }

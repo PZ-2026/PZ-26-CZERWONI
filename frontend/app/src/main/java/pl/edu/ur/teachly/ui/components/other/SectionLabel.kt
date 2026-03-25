@@ -8,9 +8,9 @@ import androidx.compose.ui.Modifier
 @Composable
 fun SectionLabel(text: String, modifier: Modifier = Modifier) {
     Text(
-        text     = text.uppercase(),
-        style    = MaterialTheme.typography.labelSmall,
-        color    = MaterialTheme.colorScheme.onSurfaceVariant,
+        text = text.uppercase(),
+        style = MaterialTheme.typography.labelSmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
         modifier = modifier,
     )
 }

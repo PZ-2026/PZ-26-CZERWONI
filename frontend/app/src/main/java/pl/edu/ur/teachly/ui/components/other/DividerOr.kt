@@ -17,13 +17,15 @@ import pl.edu.ur.teachly.R
 @Composable
 fun DividerOr() {
     Row(
-        modifier              = Modifier.fillMaxWidth().padding(vertical = 20.dp),
-        verticalAlignment     = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 20.dp),
+        verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         HorizontalDivider(modifier = Modifier.weight(1f), color = MaterialTheme.colorScheme.outline)
         Text(
-            text  = stringResource(R.string.divider_or),
+            text = stringResource(R.string.divider_or),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )

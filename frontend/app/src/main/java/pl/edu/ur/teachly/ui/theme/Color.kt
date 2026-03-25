@@ -14,20 +14,20 @@ val DeepGreen700 = Color(0xFF2E7D32)
 val DeepGreen600 = Color(0xFF388E3C)   // PRIMARY
 val DeepGreen500 = Color(0xFF4CAF50)
 val DeepGreen200 = Color(0xFFA5D6A7)
-val DeepGreen50  = Color(0xFFE8F5E9)
+val DeepGreen50 = Color(0xFFE8F5E9)
 
 // Mint Green (secondary)
 val Mint700 = Color(0xFF66BB6A)
 val Mint600 = Color(0xFF81C784)
 val Mint500 = Color(0xFFA5D6A7)
 val Mint200 = Color(0xFFC8E6C9)
-val Mint50  = Color(0xFFE8F5E9)
+val Mint50 = Color(0xFFE8F5E9)
 
 // Light Green Accent (highlight / CTA)
 val LightGreen600 = Color(0xFFB2FF59)
 val LightGreen500 = Color(0xFFCCFF90)
 val LightGreen200 = Color(0xFFE6FFCC)
-val LightGreen50  = Color(0xFFF2FFE6)
+val LightGreen50 = Color(0xFFF2FFE6)
 
 // Neutral
 val Neutral900 = Color(0xFF0D1F10)
@@ -36,7 +36,7 @@ val Neutral500 = Color(0xFF64746B)
 val Neutral300 = Color(0xFFB0BFB2)
 val Neutral200 = Color(0xFFD9E2D9)
 val Neutral100 = Color(0xFFF1F8F1)
-val Neutral50  = Color(0xFFF8FBF8)
+val Neutral50 = Color(0xFFF8FBF8)
 
 // Functional
 val ErrorRed = Color(0xFFEF4444)

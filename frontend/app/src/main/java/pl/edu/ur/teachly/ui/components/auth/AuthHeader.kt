@@ -1,13 +1,24 @@
 package pl.edu.ur.teachly.ui.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -18,10 +29,10 @@ import pl.edu.ur.teachly.R
 
 @Composable
 fun AuthHeader(
-    title    : String,
-    subtitle : String,
-    onBack   : () -> Unit,
-    extra    : (@Composable ColumnScope.() -> Unit)? = null,
+    title: String,
+    subtitle: String,
+    onBack: () -> Unit,
+    extra: (@Composable ColumnScope.() -> Unit)? = null,
 ) {
     val gradient = Brush.linearGradient(
         colors = listOf(
@@ -29,7 +40,7 @@ fun AuthHeader(
             MaterialTheme.colorScheme.primary,
         ),
         start = Offset.Zero,
-        end   = Offset(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY),
+        end = Offset(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY),
     )
 
     Box(
@@ -53,7 +64,7 @@ fun AuthHeader(
 
         Column {
             IconButton(
-                onClick  = onBack,
+                onClick = onBack,
                 modifier = Modifier
                     .size(36.dp)
                     .background(
@@ -62,22 +73,22 @@ fun AuthHeader(
                     )
             ) {
                 Icon(
-                    imageVector        = Icons.Default.ArrowBack,
+                    imageVector = Icons.Default.ArrowBack,
                     contentDescription = stringResource(R.string.cd_back),
-                    tint               = MaterialTheme.colorScheme.onPrimary,
+                    tint = MaterialTheme.colorScheme.onPrimary,
                 )
             }
 
             Spacer(Modifier.height(20.dp))
 
             Text(
-                text  = title,
+                text = title,
                 style = MaterialTheme.typography.headlineLarge,
                 color = MaterialTheme.colorScheme.onPrimary,
             )
             Spacer(Modifier.height(6.dp))
             Text(
-                text  = subtitle,
+                text = subtitle,
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.6f),
             )

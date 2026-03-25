@@ -78,19 +78,19 @@
     <!-- Errors -->
     <string name="error_empty_fields">Wypełnij wszystkie pola</string>
     <string name="error_invalid_email">Podaj poprawny adres e-mail</string>
-    
+
     <!-- TutorCard -->
     <string name="tutor_price_format">%1$d zł</string>
     <string name="tutor_per_hour">/godz</string>
     <string name="tutor_rating_format">★ %1$.1f</string>
     <string name="tutor_reviews_format">(%1$d opinii)</string>
     <string name="tutor_nearest">Najbliższe:</string>
-    
+
     <!-- HomeScreen -->
     <string name="home_tutors_count_format">%1$d korepetytorów</string>
     <string name="home_tutor_single">1 korepetytor</string>
     <string name="error_invalid_credentials">Nieprawidłowe dane</string>
-    
+
     <!-- Navigation -->
     <string name="nav_home">Główna</string>
     <string name="nav_schedule">Terminarz</string>

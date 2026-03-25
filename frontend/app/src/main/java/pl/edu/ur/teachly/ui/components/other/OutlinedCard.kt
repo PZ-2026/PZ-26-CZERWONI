@@ -12,15 +12,15 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun OutlinedCard(
-    modifier  : Modifier = Modifier,
-    shape     : androidx.compose.ui.graphics.Shape = RoundedCornerShape(20.dp),
-    content   : @Composable ColumnScope.() -> Unit,
+    modifier: Modifier = Modifier,
+    shape: androidx.compose.ui.graphics.Shape = RoundedCornerShape(20.dp),
+    content: @Composable ColumnScope.() -> Unit,
 ) {
     Surface(
         modifier = modifier,
-        shape    = shape,
-        color    = MaterialTheme.colorScheme.surface,
-        border   = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
-        content  = { Column(content = content) },
+        shape = shape,
+        color = MaterialTheme.colorScheme.surface,
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+        content = { Column(content = content) },
     )
 }

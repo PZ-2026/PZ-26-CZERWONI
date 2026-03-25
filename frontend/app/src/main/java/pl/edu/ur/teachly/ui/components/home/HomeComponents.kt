@@ -2,11 +2,22 @@ package pl.edu.ur.teachly.ui.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.*
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,21 +39,21 @@ fun SubjectChips(activeSubject: String, onSelect: (String) -> Unit) {
                 val isActive = activeSubject == subject
                 FilterChip(
                     selected = isActive,
-                    onClick  = { onSelect(subject) },
-                    label    = { Text(subject, style = MaterialTheme.typography.labelMedium) },
-                    colors   = FilterChipDefaults.filterChipColors(
+                    onClick = { onSelect(subject) },
+                    label = { Text(subject, style = MaterialTheme.typography.labelMedium) },
+                    colors = FilterChipDefaults.filterChipColors(
                         selectedContainerColor = MaterialTheme.colorScheme.primary,
-                        selectedLabelColor     = MaterialTheme.colorScheme.onPrimary,
-                        containerColor         = MaterialTheme.colorScheme.surfaceVariant,
-                        labelColor             = MaterialTheme.colorScheme.onSurfaceVariant,
+                        selectedLabelColor = MaterialTheme.colorScheme.onPrimary,
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                        labelColor = MaterialTheme.colorScheme.onSurfaceVariant,
                     ),
                     border = FilterChipDefaults.filterChipBorder(
-                        enabled             = true,
-                        selected            = isActive,
+                        enabled = true,
+                        selected = isActive,
                         selectedBorderColor = MaterialTheme.colorScheme.primary,
-                        borderColor         = MaterialTheme.colorScheme.outline,
+                        borderColor = MaterialTheme.colorScheme.outline,
                         selectedBorderWidth = 1.5.dp,
-                        borderWidth         = 1.5.dp,
+                        borderWidth = 1.5.dp,
                     ),
                 )
             }
@@ -53,7 +64,9 @@ fun SubjectChips(activeSubject: String, onSelect: (String) -> Unit) {
 @Composable
 fun StatsRow() {
     Row(
-        modifier              = Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 14.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 24.dp, vertical = 14.dp),
         horizontalArrangement = Arrangement.spacedBy(10.dp),
     ) {
         listOf(
@@ -63,14 +76,14 @@ fun StatsRow() {
         ).forEach { label ->
             Surface(
                 modifier = Modifier.weight(1f),
-                shape    = RoundedCornerShape(12.dp),
-                color    = MaterialTheme.colorScheme.surface,
-                border   = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+                shape = RoundedCornerShape(12.dp),
+                color = MaterialTheme.colorScheme.surface,
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
             ) {
                 Text(
-                    text     = label,
-                    style    = MaterialTheme.typography.labelSmall,
-                    color    = MaterialTheme.colorScheme.onSurfaceVariant,
+                    text = label,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(horizontal = 8.dp, vertical = 10.dp),
                 )
             }
@@ -88,9 +101,12 @@ fun TutorList(tutors: List<Tutor>, onTutorClick: (Tutor) -> Unit) {
             .padding(bottom = 32.dp),
     ) {
         Text(
-            text     = if (tutors.size == 1) stringResource(R.string.home_tutor_single) else stringResource(R.string.home_tutors_count_format, tutors.size),
-            style    = MaterialTheme.typography.labelMedium,
-            color    = MaterialTheme.colorScheme.onSurfaceVariant,
+            text = if (tutors.size == 1) stringResource(R.string.home_tutor_single) else stringResource(
+                R.string.home_tutors_count_format,
+                tutors.size
+            ),
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(bottom = 12.dp),
         )
 
@@ -98,7 +114,10 @@ fun TutorList(tutors: List<Tutor>, onTutorClick: (Tutor) -> Unit) {
             EmptyState()
         } else {
             tutors.forEachIndexed { index, tutor ->
-                TutorCard(tutor = tutor, colors = avatarColors(index), onClick = { onTutorClick(tutor) })
+                TutorCard(
+                    tutor = tutor,
+                    colors = avatarColors(index),
+                    onClick = { onTutorClick(tutor) })
                 Spacer(Modifier.height(12.dp))
             }
         }
@@ -108,13 +127,23 @@ fun TutorList(tutors: List<Tutor>, onTutorClick: (Tutor) -> Unit) {
 @Composable
 fun EmptyState() {
     Column(
-        modifier            = Modifier.fillMaxWidth().padding(vertical = 48.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 48.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text("🔍", style = MaterialTheme.typography.displaySmall)
         Spacer(Modifier.height(12.dp))
-        Text(stringResource(R.string.home_no_results),         style = MaterialTheme.typography.titleSmall,  color = MaterialTheme.colorScheme.onSurface)
+        Text(
+            stringResource(R.string.home_no_results),
+            style = MaterialTheme.typography.titleSmall,
+            color = MaterialTheme.colorScheme.onSurface
+        )
         Spacer(Modifier.height(4.dp))
-        Text(stringResource(R.string.home_no_results_hint), style = MaterialTheme.typography.bodySmall,   color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text(
+            stringResource(R.string.home_no_results_hint),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
     }
 }

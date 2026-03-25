@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -28,16 +27,16 @@ fun ErrorBanner(message: String) {
             .background(MaterialTheme.colorScheme.errorContainer, RoundedCornerShape(12.dp))
             .padding(horizontal = 16.dp, vertical = 12.dp),
         horizontalArrangement = Arrangement.spacedBy(10.dp),
-        verticalAlignment     = Alignment.CenterVertically,
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(
-            imageVector        = Icons.Default.Warning,
+            imageVector = Icons.Default.Warning,
             contentDescription = null,
-            tint               = MaterialTheme.colorScheme.error,
-            modifier           = Modifier.size(16.dp),
+            tint = MaterialTheme.colorScheme.error,
+            modifier = Modifier.size(16.dp),
         )
         Text(
-            text  = message,
+            text = message,
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.error,
         )

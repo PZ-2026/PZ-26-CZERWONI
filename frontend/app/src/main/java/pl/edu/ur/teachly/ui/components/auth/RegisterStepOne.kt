@@ -1,19 +1,34 @@
 package pl.edu.ur.teachly.ui.components
 
-import androidx.compose.animation.*
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material3.*
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -26,9 +41,9 @@ import pl.edu.ur.teachly.ui.auth.UserRole
 
 @Composable
 fun StepOneContent(
-    selectedRole   : UserRole?,
-    onRoleSelected : (UserRole) -> Unit,
-    onNext         : () -> Unit,
+    selectedRole: UserRole?,
+    onRoleSelected: (UserRole) -> Unit,
+    onNext: () -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -40,9 +55,9 @@ fun StepOneContent(
     ) {
         UserRole.entries.forEach { role ->
             RoleCard(
-                role       = role,
+                role = role,
                 isSelected = selectedRole == role,
-                onClick    = { onRoleSelected(role) },
+                onClick = { onRoleSelected(role) },
             )
             Spacer(Modifier.height(12.dp))
         }
@@ -50,7 +65,7 @@ fun StepOneContent(
         Spacer(Modifier.height(16.dp))
 
         PrimaryButton(
-            text    = stringResource(R.string.btn_next),
+            text = stringResource(R.string.btn_next),
             onClick = onNext,
             enabled = selectedRole != null,
         )
@@ -59,14 +74,18 @@ fun StepOneContent(
 
 @Composable
 fun RoleCard(
-    role       : UserRole,
-    isSelected : Boolean,
-    onClick    : () -> Unit,
+    role: UserRole,
+    isSelected: Boolean,
+    onClick: () -> Unit,
 ) {
-    val borderColor = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline
-    val bgColor     = if (isSelected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface
-    val iconBg      = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant
-    val titleColor  = if (isSelected) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurface
+    val borderColor =
+        if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline
+    val bgColor =
+        if (isSelected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface
+    val iconBg =
+        if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant
+    val titleColor =
+        if (isSelected) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurface
 
     Row(
         modifier = Modifier
@@ -76,40 +95,50 @@ fun RoleCard(
             .background(bgColor)
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
-                indication        = null,
-                onClick           = onClick,
+                indication = null,
+                onClick = onClick,
             )
             .padding(horizontal = 16.dp, vertical = 18.dp),
-        verticalAlignment     = Alignment.CenterVertically,
+        verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         Box(
-            modifier = Modifier.size(40.dp).clip(RoundedCornerShape(14.dp)).background(iconBg),
+            modifier = Modifier
+                .size(40.dp)
+                .clip(RoundedCornerShape(14.dp))
+                .background(iconBg),
             contentAlignment = Alignment.Center,
         ) {
             Text(role.emoji, style = MaterialTheme.typography.headlineSmall)
         }
 
         Column {
-            Text(role.title,       style = MaterialTheme.typography.titleMedium, color = titleColor)
+            Text(role.title, style = MaterialTheme.typography.titleMedium, color = titleColor)
             Spacer(Modifier.height(2.dp))
-            Text(role.description, style = MaterialTheme.typography.bodySmall,   color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(
+                role.description,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
         }
 
         AnimatedVisibility(
             visible = isSelected,
-            enter   = scaleIn(tween(200)) + fadeIn(),
-            exit    = scaleOut(tween(150)) + fadeOut(),
+            enter = scaleIn(tween(200)) + fadeIn(),
+            exit = scaleOut(tween(150)) + fadeOut(),
         ) {
             Box(
-                modifier = Modifier.size(24.dp).clip(CircleShape).background(MaterialTheme.colorScheme.primary),
+                modifier = Modifier
+                    .size(24.dp)
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.primary),
                 contentAlignment = Alignment.Center,
             ) {
                 Icon(
                     Icons.Default.Check,
                     contentDescription = null,
-                    tint               = MaterialTheme.colorScheme.onPrimary,
-                    modifier           = Modifier.size(14.dp),
+                    tint = MaterialTheme.colorScheme.onPrimary,
+                    modifier = Modifier.size(14.dp),
                 )
             }
         }
