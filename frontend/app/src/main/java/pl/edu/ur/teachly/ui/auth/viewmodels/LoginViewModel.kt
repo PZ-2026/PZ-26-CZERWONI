@@ -18,6 +18,12 @@ data class LoginUiState(
 )
 
 class LoginViewModel : ViewModel() {
+    private val users = mapOf(
+        "test@test.com" to "1234",
+        "jan@example.com" to "jan",
+        "user@user.com" to "user"
+    )
+
     private val _uiState = MutableStateFlow(LoginUiState())
     val uiState: StateFlow<LoginUiState> = _uiState.asStateFlow()
 
@@ -41,7 +47,14 @@ class LoginViewModel : ViewModel() {
             else -> viewModelScope.launch {
                 _uiState.value = s.copy(isLoading = true, errorMessage = null)
                 delay(1200) // TODO: implement AuthRepository.login()
-                _uiState.value = _uiState.value.copy(isLoading = false, isSuccess = true)
+                _uiState.value = if (users[s.email] == s.password) {
+                    _uiState.value.copy(isLoading = false, isSuccess = true)
+                } else {
+                    _uiState.value.copy(
+                        isLoading = false,
+                        errorMessage = R.string.error_invalid_credentials
+                    )
+                }
             }
         }
     }
