@@ -6,20 +6,29 @@ import kotlinx.serialization.Serializable
 sealed interface AppRoute {
 
     // Auth
-    @Serializable data object Splash   : AppRoute
-    @Serializable data object Login    : AppRoute
-    @Serializable data object Register : AppRoute
+    @Serializable
+    data object Splash : AppRoute
+
+    @Serializable
+    data object Login : AppRoute
+
+    @Serializable
+    data object Register : AppRoute
 
     // Home flow
-    @Serializable data object Home : AppRoute
+    @Serializable
+    data object Home : AppRoute
 
-    @Serializable data class TutorDetail(val tutorId: String) : AppRoute
+    @Serializable
+    data class TutorDetail(val tutorId: Int) : AppRoute
 
-    @Serializable data class Booking(val tutorId: String) : AppRoute
+    @Serializable
+    data class Booking(val tutorId: String) : AppRoute
 
-    @Serializable data class BookingConfirm(
-        val tutorId     : String,
-        val bookingId   : String,
-        val scheduledAt : String,
+    @Serializable
+    data class BookingConfirm(
+        val tutorId: String,
+        val bookingId: String,
+        val scheduledAt: String,
     ) : AppRoute
 }

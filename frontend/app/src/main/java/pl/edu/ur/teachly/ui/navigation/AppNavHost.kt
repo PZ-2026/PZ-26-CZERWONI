@@ -8,7 +8,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import pl.edu.ur.teachly.ui.auth.LoginScreen
 import pl.edu.ur.teachly.ui.auth.RegisterScreen
-import pl.edu.ur.teachly.ui.auth.SplashScreen
+import pl.edu.ur.teachly.ui.auth.views.SplashScreen
 import pl.edu.ur.teachly.ui.home.BookingConfirmScreen
 import pl.edu.ur.teachly.ui.home.BookingScreen
 import pl.edu.ur.teachly.ui.home.HomeScreen
@@ -16,34 +16,34 @@ import pl.edu.ur.teachly.ui.home.TutorDetailScreen
 
 @Composable
 fun AppNavHost(
-    navController    : NavHostController,
-    modifier         : Modifier = Modifier,
-    startDestination : AppRoute   = AppRoute.Splash,
+    navController: NavHostController,
+    modifier: Modifier = Modifier,
+    startDestination: AppRoute = AppRoute.Splash,
 ) {
     NavHost(
-        navController    = navController,
+        navController = navController,
         startDestination = startDestination,
-        modifier         = modifier,
+        modifier = modifier,
     ) {
 
         // Auth
         composable<AppRoute.Splash> {
             SplashScreen(
-                onLoginClick    = { navController.navigate(AppRoute.Login) },
+                onLoginClick = { navController.navigate(AppRoute.Login) },
                 onRegisterClick = { navController.navigate(AppRoute.Register) },
             )
         }
 
         composable<AppRoute.Login> {
             LoginScreen(
-                onBack    = { navController.popBackStack() },
+                onBack = { navController.popBackStack() },
                 onSuccess = { navController.navigateToHome() },
             )
         }
 
         composable<AppRoute.Register> {
             RegisterScreen(
-                onBack    = { navController.popBackStack() },
+                onBack = { navController.popBackStack() },
                 onSuccess = { navController.navigateToHome() },
             )
         }
@@ -52,7 +52,7 @@ fun AppNavHost(
         composable<AppRoute.Home> {
             HomeScreen(
                 onTutorClick = { tutor ->
-                    navController.navigate(AppRoute.TutorDetail(tutor.id.toString()))
+                    navController.navigate(AppRoute.TutorDetail(tutor.id))
                 },
                 onLogout = { navController.navigateToSplash() },
             )
@@ -61,22 +61,22 @@ fun AppNavHost(
         composable<AppRoute.TutorDetail> { backStackEntry ->
             val args = backStackEntry.toRoute<AppRoute.TutorDetail>()
             TutorDetailScreen(
-                tutorId     = args.tutorId,
-                onBack      = { navController.popBackStack() },
-                onBookClick = { navController.navigate(AppRoute.Booking(args.tutorId)) },
+                tutorId = args.tutorId.toString(),
+                onBack = { navController.popBackStack() },
+                onBookClick = { navController.navigate(AppRoute.Booking(args.tutorId.toString())) },
             )
         }
 
         composable<AppRoute.Booking> { backStackEntry ->
             val args = backStackEntry.toRoute<AppRoute.Booking>()
             BookingScreen(
-                tutorId   = args.tutorId,
-                onBack    = { navController.popBackStack() },
+                tutorId = args.tutorId,
+                onBack = { navController.popBackStack() },
                 onConfirm = { bookingId, scheduledAt ->
                     navController.navigate(
                         AppRoute.BookingConfirm(
-                            tutorId     = args.tutorId,
-                            bookingId   = bookingId,
+                            tutorId = args.tutorId,
+                            bookingId = bookingId,
                             scheduledAt = scheduledAt,
                         )
                     )
@@ -87,9 +87,9 @@ fun AppNavHost(
         composable<AppRoute.BookingConfirm> { backStackEntry ->
             val args = backStackEntry.toRoute<AppRoute.BookingConfirm>()
             BookingConfirmScreen(
-                bookingId   = args.bookingId,
+                bookingId = args.bookingId,
                 scheduledAt = args.scheduledAt,
-                onGoHome    = { navController.navigateToHome() },
+                onGoHome = { navController.navigateToHome() },
             )
         }
     }

@@ -3,7 +3,14 @@ package pl.edu.ur.teachly.ui.components
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -17,13 +24,13 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun ColumnScope.StepProgressBar(step: Int) {
     val progress by animateFloatAsState(
-        targetValue   = if (step == 1) 0.5f else 1f,
+        targetValue = if (step == 1) 0.5f else 1f,
         animationSpec = tween(400),
-        label         = "progress",
+        label = "progress",
     )
     Spacer(Modifier.height(16.dp))
     Row(
-        verticalAlignment     = Alignment.CenterVertically,
+        verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Box(
@@ -42,7 +49,7 @@ fun ColumnScope.StepProgressBar(step: Int) {
             )
         }
         Text(
-            text  = "$step/2",
+            text = "$step/2",
             style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.6f),
         )

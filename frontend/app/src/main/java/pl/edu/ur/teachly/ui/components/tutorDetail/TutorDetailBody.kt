@@ -1,6 +1,9 @@
 package pl.edu.ur.teachly.ui.components
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
@@ -10,7 +13,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import pl.edu.ur.teachly.R
-import pl.edu.ur.teachly.ui.home.Tutor
 
 @Composable
 fun TutorDetailBody(tutor: Tutor) {
@@ -23,7 +25,11 @@ fun TutorDetailBody(tutor: Tutor) {
         Spacer(Modifier.height(24.dp))
 
         DetailSection(title = stringResource(R.string.section_about)) {
-            Text(text = tutor.bio, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(
+                text = tutor.bio,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
         }
 
         DetailSection(title = stringResource(R.string.section_stats)) {

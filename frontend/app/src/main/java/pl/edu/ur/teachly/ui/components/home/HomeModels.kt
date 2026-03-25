@@ -10,29 +10,29 @@ val SUBJECTS = listOf(
 )
 
 data class Tutor(
-    val id           : Int,
-    val name         : String,
-    val initials     : String,
-    val subject      : String,
-    val rating       : Double,
-    val reviewCount  : Int,
-    val pricePerHour : Int,
-    val tags         : List<String>,
-    val isOnline     : Boolean,
-    val nearestSlots : List<String>,
-    val bio          : String       = "Doświadczony korepetytor z pasją do nauczania. Pomagam uczniom przygotować się do matury i egzaminów wstępnych. Stosuję indywidualne podejście dostosowane do tempa i stylu nauki każdego ucznia.",
-    val lessonCount  : Int          = 0,
-    val yearsExp     : Int          = 0,
-    val responseTime : String       = "<1h",
+    val id: Int,
+    val name: String,
+    val initials: String,
+    val subject: String,
+    val rating: Double,
+    val reviewCount: Int,
+    val pricePerHour: Int,
+    val tags: List<String>,
+    val isOnline: Boolean,
+    val nearestSlots: List<String>,
+    val bio: String = "Doświadczony korepetytor z pasją do nauczania. Pomagam uczniom przygotować się do matury i egzaminów wstępnych. Stosuję indywidualne podejście dostosowane do tempa i stylu nauki każdego ucznia.",
+    val lessonCount: Int = 0,
+    val yearsExp: Int = 0,
+    val responseTime: String = "<1h",
 )
 
 data class CalendarDay(val shortName: String, val dayNumber: String)
 
 data class BookingResult(
-    val tutor           : Tutor,
-    val day             : CalendarDay,
-    val timeSlot        : String,
-    val durationMinutes : Int,
+    val tutor: Tutor,
+    val day: CalendarDay,
+    val timeSlot: String,
+    val durationMinutes: Int,
 ) {
     val totalPrice: Int get() = (tutor.pricePerHour * durationMinutes / 60.0).roundToInt()
 }
@@ -49,20 +49,97 @@ val AVATAR_COLORS: List<Pair<Color, Color>> = listOf(
 fun avatarColors(index: Int) = AVATAR_COLORS[index % AVATAR_COLORS.size]
 
 // Mock data
-
 val MOCK_TUTORS = listOf(
-    Tutor(1, "Anna Kowalska",         "AK", "Matematyka",  4.9, 128, 120, listOf("Matura", "Podstawy"),   true,  listOf("Dziś", "Jutro", "Śr"),  lessonCount = 342, yearsExp = 5),
-    Tutor(2, "Piotr Nowak",           "PN", "Fizyka",      4.8,  94, 110, listOf("Olimpiada", "Matura"),  false, listOf("Jutro", "Czw", "Pt"),    lessonCount = 201, yearsExp = 4),
-    Tutor(3, "Maria Wiśniewska",      "MW", "Angielski",   5.0, 211, 100, listOf("FCE", "Konwersacje"),   true,  listOf("Dziś", "Śr", "Czw"),     lessonCount = 520, yearsExp = 8),
-    Tutor(4, "Tomasz Zieliński",      "TZ", "Chemia",      4.7,  67, 130, listOf("Matura", "Studia"),     true,  listOf("Wt", "Pt", "Sob"),       lessonCount = 178, yearsExp = 3),
-    Tutor(5, "Katarzyna Lewandowska", "KL", "Historia",    4.9, 145,  95, listOf("Matura", "IB"),         false, listOf("Dziś", "Wt", "Czw"),     lessonCount = 290, yearsExp = 6),
-    Tutor(6, "Michał Dąbrowski",      "MD", "Informatyka", 4.8,  83, 140, listOf("Python", "Algorytmy"),  true,  listOf("Śr", "Czw", "Sob"),      lessonCount = 155, yearsExp = 4),
+    Tutor(
+        1,
+        "Anna Kowalska",
+        "AK",
+        "Matematyka",
+        4.9,
+        128,
+        120,
+        listOf("Matura", "Podstawy"),
+        true,
+        listOf("Dziś", "Jutro", "Śr"),
+        lessonCount = 342,
+        yearsExp = 5
+    ),
+    Tutor(
+        2,
+        "Piotr Nowak",
+        "PN",
+        "Fizyka",
+        4.8,
+        94,
+        110,
+        listOf("Olimpiada", "Matura"),
+        false,
+        listOf("Jutro", "Czw", "Pt"),
+        lessonCount = 201,
+        yearsExp = 4
+    ),
+    Tutor(
+        3,
+        "Maria Wiśniewska",
+        "MW",
+        "Angielski",
+        5.0,
+        211,
+        100,
+        listOf("Matura", "Konwersacje"),
+        true,
+        listOf("Dziś", "Śr", "Czw"),
+        lessonCount = 520,
+        yearsExp = 8
+    ),
+    Tutor(
+        4,
+        "Tomasz Zieliński",
+        "TZ",
+        "Chemia",
+        4.7,
+        67,
+        130,
+        listOf("Matura", "Studia"),
+        true,
+        listOf("Wt", "Pt", "Sob"),
+        lessonCount = 178,
+        yearsExp = 3
+    ),
+    Tutor(
+        5,
+        "Katarzyna Lewandowska",
+        "KL",
+        "Historia",
+        4.9,
+        145,
+        95,
+        listOf("Matura", "Studia"),
+        false,
+        listOf("Dziś", "Wt", "Czw"),
+        lessonCount = 290,
+        yearsExp = 6
+    ),
+    Tutor(
+        6,
+        "Michał Dąbrowski",
+        "MD",
+        "Informatyka",
+        4.8,
+        83,
+        140,
+        listOf("Python", "Algorytmy"),
+        true,
+        listOf("Śr", "Czw", "Sob"),
+        lessonCount = 155,
+        yearsExp = 4
+    ),
 )
 
 val CALENDAR_DAYS = listOf(
-    CalendarDay("Pon", "16"), CalendarDay("Wt",  "17"), CalendarDay("Śr",  "18"),
-    CalendarDay("Czw", "19"), CalendarDay("Pt",  "20"), CalendarDay("Sob", "21"),
-    CalendarDay("Nd",  "22"),
+    CalendarDay("Pon", "16"), CalendarDay("Wt", "17"), CalendarDay("Śr", "18"),
+    CalendarDay("Czw", "19"), CalendarDay("Pt", "20"), CalendarDay("Sob", "21"),
+    CalendarDay("Nd", "22"),
 )
 
 val ALL_TIME_SLOTS = listOf(

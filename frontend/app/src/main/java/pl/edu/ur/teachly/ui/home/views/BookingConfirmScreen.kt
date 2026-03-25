@@ -1,10 +1,20 @@
 package pl.edu.ur.teachly.ui.home
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.*
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -13,22 +23,25 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import pl.edu.ur.teachly.R
+import pl.edu.ur.teachly.ui.components.BookingResult
+import pl.edu.ur.teachly.ui.components.CALENDAR_DAYS
+import pl.edu.ur.teachly.ui.components.MOCK_TUTORS
 import pl.edu.ur.teachly.ui.components.OutlinedCard
 import pl.edu.ur.teachly.ui.components.PrimaryButton
 import pl.edu.ur.teachly.ui.theme.DeepGreen700
 
 @Composable
 fun BookingConfirmScreen(
-    bookingId   : String,
-    scheduledAt : String,
-    onGoHome    : () -> Unit,
+    bookingId: String,
+    scheduledAt: String,
+    onGoHome: () -> Unit,
 ) {
     // TODO: pobierz szczegóły rezerwacji z ViewModelu po bookingId
     //       Na razie używamy mock result dla podglądu
     val result = BookingResult(
-        tutor           = MOCK_TUTORS[0],
-        day             = CALENDAR_DAYS[1],
-        timeSlot        = "11:00",
+        tutor = MOCK_TUTORS[0],
+        day = CALENDAR_DAYS[1],
+        timeSlot = "11:00",
         durationMinutes = 60,
     )
 
@@ -47,7 +60,7 @@ fun BookingConfirmScreen(
         BookingSummaryCard(result = result)
         Spacer(Modifier.height(32.dp))
         PrimaryButton(
-            text    = stringResource(R.string.confirm_go_home),
+            text = stringResource(R.string.confirm_go_home),
             onClick = onGoHome,
         )
     }
@@ -73,15 +86,15 @@ private fun SuccessIcon() {
 @Composable
 private fun ConfirmHeadline(tutorName: String) {
     Text(
-        text  = stringResource(R.string.confirm_title),
+        text = stringResource(R.string.confirm_title),
         style = MaterialTheme.typography.headlineMedium,
         color = MaterialTheme.colorScheme.onBackground,
     )
     Spacer(Modifier.height(8.dp))
     Text(
-        text      = stringResource(R.string.confirm_subtitle, tutorName),
-        style     = MaterialTheme.typography.bodyMedium,
-        color     = MaterialTheme.colorScheme.onSurfaceVariant,
+        text = stringResource(R.string.confirm_subtitle, tutorName),
+        style = MaterialTheme.typography.bodyMedium,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
         textAlign = TextAlign.Center,
     )
 }
@@ -91,28 +104,42 @@ private fun ConfirmHeadline(tutorName: String) {
 @Composable
 private fun BookingSummaryCard(result: BookingResult) {
     val rows = listOf(
-        Triple("📅", stringResource(R.string.summary_date),     "${result.day.shortName} ${result.day.dayNumber} marca 2026"),
-        Triple("🕐", stringResource(R.string.summary_time),     result.timeSlot),
-        Triple("⏱",  stringResource(R.string.summary_duration), "${result.durationMinutes} min"),
-        Triple("👩‍🏫", stringResource(R.string.summary_tutor),    result.tutor.name),
-        Triple("💰", stringResource(R.string.summary_price),    "${result.totalPrice} zł"),
+        Triple(
+            "📅",
+            stringResource(R.string.summary_date),
+            "${result.day.shortName} ${result.day.dayNumber} marca 2026"
+        ),
+        Triple("🕐", stringResource(R.string.summary_time), result.timeSlot),
+        Triple("⏱", stringResource(R.string.summary_duration), "${result.durationMinutes} min"),
+        Triple("👩‍🏫", stringResource(R.string.summary_tutor), result.tutor.name),
+        Triple("💰", stringResource(R.string.summary_price), "${result.totalPrice} zł"),
     )
 
     OutlinedCard(modifier = Modifier.fillMaxWidth()) {
         rows.forEachIndexed { index, (icon, label, value) ->
             Row(
-                modifier              = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 10.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp, vertical = 10.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment     = Alignment.CenterVertically,
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalAlignment     = Alignment.CenterVertically,
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Text(icon,  style = MaterialTheme.typography.bodySmall)
-                    Text(label, style = MaterialTheme.typography.bodySmall,   color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(icon, style = MaterialTheme.typography.bodySmall)
+                    Text(
+                        label,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 }
-                Text(value, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurface)
+                Text(
+                    value,
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
             }
             if (index < rows.lastIndex) {
                 HorizontalDivider(color = MaterialTheme.colorScheme.outline)

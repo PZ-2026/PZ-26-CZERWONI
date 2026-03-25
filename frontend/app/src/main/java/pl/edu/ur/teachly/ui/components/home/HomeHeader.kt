@@ -1,14 +1,28 @@
 package pl.edu.ur.teachly.ui.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.*
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,10 +36,10 @@ import pl.edu.ur.teachly.R
 
 @Composable
 fun HomeHeader(
-    query         : String,
-    onQueryChange : (String) -> Unit,
-    onClear       : () -> Unit,
-    onSearch      : () -> Unit,
+    query: String,
+    onQueryChange: (String) -> Unit,
+    onClear: () -> Unit,
+    onSearch: () -> Unit,
 ) {
     Surface(color = MaterialTheme.colorScheme.surface, shadowElevation = 2.dp) {
         Column(
@@ -34,19 +48,19 @@ fun HomeHeader(
                 .padding(top = 52.dp, bottom = 16.dp)
         ) {
             Row(
-                modifier              = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment     = Alignment.Top,
+                verticalAlignment = Alignment.Top,
             ) {
                 Column {
                     Spacer(Modifier.height(4.dp))
                     Text(
-                        text  = stringResource(R.string.home_find),
+                        text = stringResource(R.string.home_find),
                         style = MaterialTheme.typography.headlineMedium,
                         color = MaterialTheme.colorScheme.onBackground,
                     )
                     Text(
-                        text  = stringResource(R.string.home_tutor),
+                        text = stringResource(R.string.home_tutor),
                         style = MaterialTheme.typography.headlineMedium,
                         color = MaterialTheme.colorScheme.primary,
                     )
@@ -59,10 +73,10 @@ fun HomeHeader(
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
-                        painter            = painterResource(R.drawable.ic_logo),
+                        painter = painterResource(R.drawable.ic_logo),
                         contentDescription = null,
-                        tint               = Color.Unspecified,
-                        modifier           = Modifier.size(44.dp)
+                        tint = Color.Unspecified,
+                        modifier = Modifier.size(44.dp)
                     )
                 }
             }
@@ -70,27 +84,41 @@ fun HomeHeader(
             Spacer(Modifier.height(20.dp))
 
             OutlinedTextField(
-                value         = query,
+                value = query,
                 onValueChange = onQueryChange,
-                modifier      = Modifier.fillMaxWidth(),
-                placeholder   = {
+                modifier = Modifier.fillMaxWidth(),
+                placeholder = {
                     Text(
-                        text  = stringResource(R.string.home_search_placeholder),
+                        text = stringResource(R.string.home_search_placeholder),
                         style = MaterialTheme.typography.bodyMedium,
                     )
                 },
-                leadingIcon  = { Icon(Icons.Default.Search, contentDescription = null, modifier = Modifier.size(20.dp)) },
+                leadingIcon = {
+                    Icon(
+                        Icons.Default.Search,
+                        contentDescription = null,
+                        modifier = Modifier.size(20.dp)
+                    )
+                },
                 trailingIcon = if (query.isNotEmpty()) {
-                    { IconButton(onClick = onClear) { Icon(Icons.Default.Close, contentDescription = stringResource(R.string.cd_clear), modifier = Modifier.size(18.dp)) } }
+                    {
+                        IconButton(onClick = onClear) {
+                            Icon(
+                                Icons.Default.Close,
+                                contentDescription = stringResource(R.string.cd_clear),
+                                modifier = Modifier.size(18.dp)
+                            )
+                        }
+                    }
                 } else null,
-                singleLine      = true,
+                singleLine = true,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
                 keyboardActions = KeyboardActions(onSearch = { onSearch() }),
-                shape           = RoundedCornerShape(16.dp),
-                colors          = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor      = MaterialTheme.colorScheme.primary,
-                    unfocusedBorderColor    = MaterialTheme.colorScheme.outline,
-                    focusedContainerColor   = MaterialTheme.colorScheme.surface,
+                shape = RoundedCornerShape(16.dp),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                    unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                    focusedContainerColor = MaterialTheme.colorScheme.surface,
                     unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
                 ),
             )

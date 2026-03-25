@@ -6,10 +6,10 @@ import androidx.compose.runtime.Composable
 
 @Composable
 fun authTextFieldColors() = OutlinedTextFieldDefaults.colors(
-    focusedBorderColor      = MaterialTheme.colorScheme.primary,
-    unfocusedBorderColor    = MaterialTheme.colorScheme.outline,
-    focusedContainerColor   = MaterialTheme.colorScheme.surface,
+    focusedBorderColor = MaterialTheme.colorScheme.primary,
+    unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+    focusedContainerColor = MaterialTheme.colorScheme.surface,
     unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
-    errorBorderColor        = MaterialTheme.colorScheme.error,
-    cursorColor             = MaterialTheme.colorScheme.primary,
+    errorBorderColor = MaterialTheme.colorScheme.error,
+    cursorColor = MaterialTheme.colorScheme.primary,
 )
