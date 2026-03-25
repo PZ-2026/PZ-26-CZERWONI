@@ -1,3 +1,98 @@
 <resources>
     <string name="app_name">Teachly</string>
+
+    <!-- Content descriptions -->
+    <string name="cd_back">Wróć</string>
+    <string name="cd_clear">Wyczyść</string>
+    <string name="cd_show_password">Pokaż hasło</string>
+    <string name="cd_hide_password">Ukryj hasło</string>
+    <string name="splash_logo_description">Logo Teachly</string>
+
+    <!-- Shared -->
+    <string name="divider_or">lub</string>
+    <string name="btn_next">Dalej</string>
+    <string name="field_email">Email</string>
+    <string name="field_password">Hasło</string>
+    <string name="field_password_hint">Min. 8 znaków</string>
+    <string name="field_first_name">Imię</string>
+    <string name="field_last_name">Nazwisko</string>
+
+    <!-- Splash -->
+    <string name="splash_headline">Nauka\nna Twoich\nzasadach.</string>
+    <string name="splash_subtitle">Znajdź korepetytora dopasowanego\ndo Twoich celów i harmonogramu\nlub sam nim zostań.</string>
+    <string name="splash_register">Zacznij za darmo</string>
+    <string name="splash_login">Mam już konto</string>
+
+    <!-- Login -->
+    <string name="login_title">Witaj ponownie</string>
+    <string name="login_subtitle">Zaloguj się na swoje konto</string>
+    <string name="login_cta">Zaloguj się</string>
+    <string name="login_forgot_password">Zapomniałem hasła</string>
+    <string name="login_google">Kontynuuj z Google</string>
+
+    <!-- Register -->
+    <string name="register_step1_title">Kim jesteś?</string>
+    <string name="register_step1_subtitle">Dostosujemy aplikację do Twoich potrzeb</string>
+    <string name="register_step2_title">Dane konta</string>
+    <string name="register_step2_subtitle">Wypełnij dane, aby się zarejestrować</string>
+    <string name="register_cta">Utwórz konto</string>
+    <string name="register_terms">Rejestrując się, akceptujesz Regulamin i Politykę prywatności.</string>
+
+    <!-- Home -->
+    <string name="home_find">Znajdź</string>
+    <string name="home_tutor">korepetytora</string>
+    <string name="home_search_placeholder">Szukaj korepetytora lub przedmiotu…</string>
+    <string name="home_no_results">Brak wyników</string>
+    <string name="home_no_results_hint">Spróbuj innej frazy lub przedmiotu</string>
+    <string name="stat_tutors">48 korepetytorów</string>
+    <string name="stat_rating">Śr. ocena 4.9</string>
+    <string name="stat_response">Odpowiedź &lt;2h</string>
+
+    <!-- Tutor detail -->
+    <string name="section_about">O mnie</string>
+    <string name="section_stats">Statystyki</string>
+    <string name="section_reviews">Opinie</string>
+    <string name="detail_book_cta">Zarezerwuj lekcję</string>
+
+    <!-- Booking -->
+    <string name="booking_title">Wybierz termin</string>
+    <string name="booking_section_day">Dzień</string>
+    <string name="booking_section_duration">Czas trwania</string>
+    <string name="booking_section_time">Godzina</string>
+    <string name="booking_cta_confirm">Potwierdź rezerwację</string>
+    <string name="booking_cta_pick">Wybierz godzinę</string>
+    <string name="legend_selected">Wybrany</string>
+    <string name="legend_booked">Zajęty</string>
+    <string name="legend_free">Wolny</string>
+
+    <!-- Booking confirm -->
+    <string name="confirm_title">Zarezerwowano!</string>
+    <string name="confirm_subtitle">Lekcja z %1$s została pomyślnie zarezerwowana</string>
+    <string name="confirm_go_home">Wróć do strony głównej</string>
+    <string name="summary_date">Data</string>
+    <string name="summary_time">Godzina</string>
+    <string name="summary_duration">Czas trwania</string>
+    <string name="summary_tutor">Korepetytor</string>
+    <string name="summary_price">Cena</string>
+
+    <!-- Errors -->
+    <string name="error_empty_fields">Wypełnij wszystkie pola</string>
+    <string name="error_invalid_email">Podaj poprawny adres e-mail</string>
+    
+    <!-- TutorCard -->
+    <string name="tutor_price_format">%1$d zł</string>
+    <string name="tutor_per_hour">/godz</string>
+    <string name="tutor_rating_format">★ %1$.1f</string>
+    <string name="tutor_reviews_format">(%1$d opinii)</string>
+    <string name="tutor_nearest">Najbliższe:</string>
+    
+    <!-- HomeScreen -->
+    <string name="home_tutors_count_format">%1$d korepetytorów</string>
+    <string name="home_tutor_single">1 korepetytor</string>
+    <string name="error_invalid_credentials">Nieprawidłowe dane</string>
+    
+    <!-- Navigation -->
+    <string name="nav_home">Główna</string>
+    <string name="nav_schedule">Terminarz</string>
+    <string name="nav_profile">Profil</string>
 </resources>
