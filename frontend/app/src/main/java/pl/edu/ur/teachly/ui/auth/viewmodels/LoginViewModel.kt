@@ -1,5 +1,6 @@
-package pl.edu.ur.teachly.ui.auth
+package pl.edu.ur.teachly.ui.auth.viewmodels
 
+import android.util.Patterns
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.delay
@@ -41,7 +42,7 @@ class LoginViewModel : ViewModel() {
             s.email.isBlank() || s.password.isBlank() ->
                 _uiState.value = s.copy(errorMessage = R.string.error_empty_fields)
 
-            !android.util.Patterns.EMAIL_ADDRESS.matcher(s.email).matches() ->
+            !Patterns.EMAIL_ADDRESS.matcher(s.email).matches() ->
                 _uiState.value = s.copy(errorMessage = R.string.error_invalid_email)
 
             else -> viewModelScope.launch {

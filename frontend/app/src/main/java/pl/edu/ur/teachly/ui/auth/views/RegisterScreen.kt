@@ -1,4 +1,4 @@
-package pl.edu.ur.teachly.ui.auth
+package pl.edu.ur.teachly.ui.auth.views
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
@@ -16,10 +16,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import pl.edu.ur.teachly.R
-import pl.edu.ur.teachly.ui.components.AuthHeader
-import pl.edu.ur.teachly.ui.components.StepOneContent
-import pl.edu.ur.teachly.ui.components.StepProgressBar
-import pl.edu.ur.teachly.ui.components.StepTwoContent
+import pl.edu.ur.teachly.ui.auth.viewmodels.RegisterViewModel
+import pl.edu.ur.teachly.ui.components.auth.AuthHeader
+import pl.edu.ur.teachly.ui.components.auth.StepProgressBar
+import pl.edu.ur.teachly.ui.components.auth.StepTwoContent
+import pl.edu.ur.teachly.ui.components.auth.StepOneContent
 
 @Composable
 fun RegisterScreen(

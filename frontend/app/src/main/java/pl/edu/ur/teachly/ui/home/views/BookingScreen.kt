@@ -1,4 +1,4 @@
-package pl.edu.ur.teachly.ui.home
+package pl.edu.ur.teachly.ui.home.views
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -17,13 +17,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import pl.edu.ur.teachly.ui.components.BookingHeader
-import pl.edu.ur.teachly.ui.components.BookingSummaryBar
+import pl.edu.ur.teachly.ui.components.booking.BookingHeader
+import pl.edu.ur.teachly.ui.components.booking.BookingSummaryBar
 import pl.edu.ur.teachly.ui.components.CALENDAR_DAYS
-import pl.edu.ur.teachly.ui.components.DayPicker
-import pl.edu.ur.teachly.ui.components.DurationPicker
+import pl.edu.ur.teachly.ui.components.booking.DayPicker
+import pl.edu.ur.teachly.ui.components.booking.DurationPicker
 import pl.edu.ur.teachly.ui.components.MOCK_TUTORS
-import pl.edu.ur.teachly.ui.components.TimeSlotGrid
+import pl.edu.ur.teachly.ui.components.booking.TimeSlotGrid
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime

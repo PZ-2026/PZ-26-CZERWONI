@@ -1,4 +1,4 @@
-package pl.edu.ur.teachly.ui.auth
+package pl.edu.ur.teachly.ui.auth.views
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
@@ -6,6 +6,7 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -42,12 +43,14 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import pl.edu.ur.teachly.R
-import pl.edu.ur.teachly.ui.components.AuthHeader
-import pl.edu.ur.teachly.ui.components.AuthTextField
-import pl.edu.ur.teachly.ui.components.DividerOr
-import pl.edu.ur.teachly.ui.components.ErrorBanner
-import pl.edu.ur.teachly.ui.components.PasswordTextField
-import pl.edu.ur.teachly.ui.components.PrimaryButton
+import pl.edu.ur.teachly.ui.auth.viewmodels.LoginViewModel
+import pl.edu.ur.teachly.ui.components.auth.AuthHeader
+import pl.edu.ur.teachly.ui.components.auth.AuthTextField
+import pl.edu.ur.teachly.ui.components.other.DividerOr
+import pl.edu.ur.teachly.ui.components.other.ErrorBanner
+import pl.edu.ur.teachly.ui.components.other.PasswordTextField
+import pl.edu.ur.teachly.ui.components.other.PrimaryButton
+import pl.edu.ur.teachly.ui.theme.GoogleBlue
 
 @Composable
 fun LoginScreen(
@@ -143,7 +146,7 @@ private fun GoogleButton() {
             .fillMaxWidth()
             .height(54.dp),
         shape = RoundedCornerShape(18.dp),
-        border = androidx.compose.foundation.BorderStroke(
+        border = BorderStroke(
             1.5.dp, MaterialTheme.colorScheme.outline,
         ),
         colors = ButtonDefaults.outlinedButtonColors(
@@ -158,7 +161,7 @@ private fun GoogleButton() {
             Text(
                 "G",
                 style = MaterialTheme.typography.titleMedium,
-                color = pl.edu.ur.teachly.ui.theme.GoogleBlue
+                color = GoogleBlue
             )
             Text(
                 text = stringResource(R.string.login_google),

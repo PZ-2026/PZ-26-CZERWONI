@@ -1,4 +1,4 @@
-package pl.edu.ur.teachly.ui.home
+package pl.edu.ur.teachly.ui.home.views
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -11,11 +11,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.lifecycle.viewmodel.compose.viewModel
-import pl.edu.ur.teachly.ui.components.HomeHeader
-import pl.edu.ur.teachly.ui.components.StatsRow
-import pl.edu.ur.teachly.ui.components.SubjectChips
+import pl.edu.ur.teachly.ui.components.home.HomeHeader
+import pl.edu.ur.teachly.ui.components.home.StatsRow
+import pl.edu.ur.teachly.ui.components.home.SubjectChips
 import pl.edu.ur.teachly.ui.components.Tutor
-import pl.edu.ur.teachly.ui.components.TutorList
+import pl.edu.ur.teachly.ui.components.home.TutorList
+import pl.edu.ur.teachly.ui.home.viewmodels.HomeViewModel
 
 @Composable
 fun HomeScreen(
@@ -26,9 +27,11 @@ fun HomeScreen(
     val uiState by viewModel.uiState.collectAsState()
     val focusManager = LocalFocusManager.current
 
-    Column(modifier = Modifier
-        .fillMaxSize()
-        .background(MaterialTheme.colorScheme.background)) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+    ) {
         HomeHeader(
             query = uiState.query,
             onQueryChange = viewModel::onQueryChange,

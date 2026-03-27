@@ -1,4 +1,4 @@
-package pl.edu.ur.teachly.ui.components
+package pl.edu.ur.teachly.ui.components.auth
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box

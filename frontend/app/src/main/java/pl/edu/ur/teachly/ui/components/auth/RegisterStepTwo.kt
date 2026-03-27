@@ -1,4 +1,4 @@
-package pl.edu.ur.teachly.ui.components
+package pl.edu.ur.teachly.ui.components.auth
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
@@ -32,8 +32,11 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import pl.edu.ur.teachly.R
-import pl.edu.ur.teachly.ui.auth.RegisterUiState
-import pl.edu.ur.teachly.ui.auth.RegisterViewModel
+import pl.edu.ur.teachly.ui.auth.viewmodels.RegisterUiState
+import pl.edu.ur.teachly.ui.auth.viewmodels.RegisterViewModel
+import pl.edu.ur.teachly.ui.components.other.ErrorBanner
+import pl.edu.ur.teachly.ui.components.other.PasswordTextField
+import pl.edu.ur.teachly.ui.components.other.PrimaryButton
 
 @Composable
 fun StepTwoContent(
