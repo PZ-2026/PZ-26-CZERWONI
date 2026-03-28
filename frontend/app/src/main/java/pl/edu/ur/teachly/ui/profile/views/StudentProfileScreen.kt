@@ -1,4 +1,4 @@
-package pl.edu.ur.teachly.ui.profile
+package pl.edu.ur.teachly.ui.profile.views
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -10,6 +10,8 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -17,22 +19,21 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import pl.edu.ur.teachly.R
 import pl.edu.ur.teachly.ui.components.PrimaryButton
+import pl.edu.ur.teachly.ui.profile.viewmodels.ProfileViewModel
+import pl.edu.ur.teachly.ui.profile.viewmodels.StudentProfile
 import pl.edu.ur.teachly.ui.theme.AvatarColors
-
-data class StudentProfile(
-    val name: String,
-    val initials: String,
-)
 
 @Composable
 fun StudentProfileScreen(
     onBack: () -> Unit,
     onSettingsClick: () -> Unit,
-    onLogout: () -> Unit
+    onLogout: () -> Unit,
+    viewModel: ProfileViewModel = viewModel()
 ) {
-    val student = StudentProfile(name = "Jan Kowalski", initials = "JK")
+    val profile by viewModel.profile.collectAsState()
     val avatarColorPair = AvatarColors[0]
 
     Column(
@@ -41,7 +42,7 @@ fun StudentProfileScreen(
             .background(MaterialTheme.colorScheme.background)
     ) {
         StudentProfileHeader(
-            student = student,
+            profile = profile,
             avatarBg = avatarColorPair.first,
             avatarFg = avatarColorPair.second,
             onBack = onBack,
@@ -56,9 +57,9 @@ fun StudentProfileScreen(
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
             Spacer(modifier = Modifier.height(8.dp))
-            LevelSection()
-            SubjectsSection()
-            ActivitySection()
+            LevelSection(level = profile.level)
+            SubjectsSection(subjects = profile.subjects)
+            ActivitySection(lessonsCount = profile.lessonsCount, goalsCount = profile.goalsCount)
 
             PrimaryButton(
                 text = stringResource(R.string.profile_logout),
@@ -71,7 +72,7 @@ fun StudentProfileScreen(
 
 @Composable
 fun StudentProfileHeader(
-    student: StudentProfile,
+    profile: StudentProfile,
     avatarBg: Color,
     avatarFg: Color,
     onBack: () -> Unit,
@@ -137,7 +138,7 @@ fun StudentProfileHeader(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = student.initials,
+                        text = profile.initials,
                         style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
                         color = avatarFg
                     )
@@ -145,7 +146,7 @@ fun StudentProfileHeader(
 
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        student.name,
+                        profile.fullName,
                         style = MaterialTheme.typography.titleLarge,
                         color = MaterialTheme.colorScheme.onBackground
                     )
@@ -162,7 +163,7 @@ fun StudentProfileHeader(
 }
 
 @Composable
-fun LevelSection() {
+fun LevelSection(level: String) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Text(
             text = stringResource(R.string.profile_level_title),
@@ -177,7 +178,7 @@ fun LevelSection() {
             shadowElevation = 2.dp
         ) {
             Text(
-                text = "Szkoła średnia - Klasa maturalna",
+                text = level,
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier.padding(16.dp)
@@ -186,9 +187,8 @@ fun LevelSection() {
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun SubjectsSection() {
+fun SubjectsSection(subjects: List<String>) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Text(
             text = stringResource(R.string.profile_subjects_title),
@@ -200,7 +200,6 @@ fun SubjectsSection() {
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            val subjects = listOf("Matematyka", "Język angielski", "Fizyka")
             subjects.forEach { subject ->
                 Surface(
                     shape = RoundedCornerShape(16.dp),
@@ -210,7 +209,7 @@ fun SubjectsSection() {
                         text = subject,
                         style = MaterialTheme.typography.bodyMedium,
                         fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer,
+                        color = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                     )
                 }
@@ -220,7 +219,7 @@ fun SubjectsSection() {
 }
 
 @Composable
-fun ActivitySection() {
+fun ActivitySection(lessonsCount: Int, goalsCount: Int) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Text(
             text = stringResource(R.string.profile_stats_title),
@@ -243,7 +242,7 @@ fun ActivitySection() {
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = "12",
+                        text = "$lessonsCount",
                         style = MaterialTheme.typography.headlineMedium,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.primary
@@ -266,7 +265,7 @@ fun ActivitySection() {
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = "4",
+                        text = "$goalsCount",
                         style = MaterialTheme.typography.headlineMedium,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.primary

@@ -1,4 +1,4 @@
-package pl.edu.ur.teachly.ui.profile
+package pl.edu.ur.teachly.ui.profile.views
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -9,26 +9,32 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import pl.edu.ur.teachly.R
 import pl.edu.ur.teachly.ui.components.PrimaryButton
+import pl.edu.ur.teachly.ui.profile.viewmodels.ProfileViewModel
 import pl.edu.ur.teachly.ui.theme.AvatarColors
 
 @Composable
 fun ProfileEditScreen(
     onBack: () -> Unit,
-    onSave: () -> Unit
+    onSave: () -> Unit,
+    viewModel: ProfileViewModel = viewModel()
 ) {
-    var firstName by remember { mutableStateOf("Jan") }
-    var lastName by remember { mutableStateOf("Kowalski") }
-    var email by remember { mutableStateOf("jan@example.com") }
-    var level by remember { mutableStateOf("Szkoła średnia - Klasa maturalna") }
-    var subjects by remember { mutableStateOf("Matematyka, Język angielski") }
+    val editState by viewModel.editState.collectAsState()
+
+    LaunchedEffect(Unit) {
+        viewModel.startEditing()
+    }
 
     Column(
         modifier = Modifier
@@ -49,7 +55,7 @@ fun ProfileEditScreen(
             ) {
                 IconButton(onClick = onBack) {
                     Icon(
-                        Icons.Default.ArrowBack, 
+                        Icons.Default.ArrowBack,
                         contentDescription = stringResource(R.string.cd_back),
                         tint = MaterialTheme.colorScheme.onSurface
                     )
@@ -85,8 +91,9 @@ fun ProfileEditScreen(
                         .background(avatarColorPair.first, RoundedCornerShape(24.dp)),
                     contentAlignment = Alignment.Center
                 ) {
+                    val initials = "${editState.firstName.firstOrNull() ?: ""}${editState.lastName.firstOrNull() ?: ""}"
                     Text(
-                        text = "JK",
+                        text = initials,
                         style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
                         color = avatarColorPair.second
                     )
@@ -111,32 +118,32 @@ fun ProfileEditScreen(
 
             ProfileTextField(
                 label = stringResource(R.string.field_first_name),
-                value = firstName,
-                onValueChange = { firstName = it }
+                value = editState.firstName,
+                onValueChange = viewModel::onFirstNameChange
             )
 
             ProfileTextField(
                 label = stringResource(R.string.field_last_name),
-                value = lastName,
-                onValueChange = { lastName = it }
+                value = editState.lastName,
+                onValueChange = viewModel::onLastNameChange
             )
 
             ProfileTextField(
                 label = stringResource(R.string.profile_edit_email),
-                value = email,
-                onValueChange = { email = it }
+                value = editState.email,
+                onValueChange = viewModel::onEmailChange
             )
 
             ProfileTextField(
                 label = stringResource(R.string.profile_level_title),
-                value = level,
-                onValueChange = { level = it }
+                value = editState.level,
+                onValueChange = viewModel::onLevelChange
             )
 
             ProfileTextField(
                 label = stringResource(R.string.profile_subjects_title),
-                value = subjects,
-                onValueChange = { subjects = it },
+                value = editState.subjectsText,
+                onValueChange = viewModel::onSubjectsChange,
                 singleLine = false
             )
 
@@ -145,6 +152,7 @@ fun ProfileEditScreen(
             PrimaryButton(
                 text = stringResource(R.string.profile_edit_save),
                 onClick = {
+                    viewModel.saveProfile()
                     onSave()
                 },
                 modifier = Modifier.padding(bottom = 32.dp, top = 24.dp)

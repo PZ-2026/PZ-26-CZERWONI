@@ -2,6 +2,7 @@ package pl.edu.ur.teachly.ui.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -13,8 +14,9 @@ import pl.edu.ur.teachly.ui.home.BookingConfirmScreen
 import pl.edu.ur.teachly.ui.home.BookingScreen
 import pl.edu.ur.teachly.ui.home.HomeScreen
 import pl.edu.ur.teachly.ui.home.TutorDetailScreen
-import pl.edu.ur.teachly.ui.profile.ProfileEditScreen
-import pl.edu.ur.teachly.ui.profile.StudentProfileScreen
+import pl.edu.ur.teachly.ui.profile.viewmodels.ProfileViewModel
+import pl.edu.ur.teachly.ui.profile.views.ProfileEditScreen
+import pl.edu.ur.teachly.ui.profile.views.StudentProfileScreen
 
 @Composable
 fun AppNavHost(
@@ -22,6 +24,8 @@ fun AppNavHost(
     modifier: Modifier = Modifier,
     startDestination: AppRoute = AppRoute.Splash,
 ) {
+    val profileViewModel: ProfileViewModel = viewModel()
+
     NavHost(
         navController = navController,
         startDestination = startDestination,
@@ -99,14 +103,16 @@ fun AppNavHost(
             StudentProfileScreen(
                 onBack = { navController.popBackStack() },
                 onSettingsClick = { navController.navigate(AppRoute.ProfileEdit) },
-                onLogout = { navController.navigateToSplash() }
+                onLogout = { navController.navigateToSplash() },
+                viewModel = profileViewModel
             )
         }
 
         composable<AppRoute.ProfileEdit> {
             ProfileEditScreen(
                 onBack = { navController.popBackStack() },
-                onSave = { navController.popBackStack() }
+                onSave = { navController.popBackStack() },
+                viewModel = profileViewModel
             )
         }
     }
