@@ -1,4 +1,4 @@
-package pl.edu.ur.teachly.ui.components
+package pl.edu.ur.teachly.ui.components.home
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.horizontalScroll
@@ -24,6 +24,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import pl.edu.ur.teachly.R
+import pl.edu.ur.teachly.ui.components.SUBJECTS
+import pl.edu.ur.teachly.ui.components.Tutor
+import pl.edu.ur.teachly.ui.components.tutorDetail.TutorCard
+import pl.edu.ur.teachly.ui.components.avatarColors
 
 @Composable
 fun SubjectChips(activeSubject: String, onSelect: (String) -> Unit) {

@@ -32,6 +32,11 @@ sealed interface AppRoute {
         val scheduledAt: String,
     ) : AppRoute
 
+    // Schedule
+    @Serializable
+    data object Schedule : AppRoute
+  
+    // Profile
     @Serializable
     data object Profile : AppRoute
 

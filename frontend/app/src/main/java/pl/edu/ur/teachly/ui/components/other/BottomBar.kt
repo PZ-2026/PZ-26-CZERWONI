@@ -1,4 +1,4 @@
-package pl.edu.ur.teachly.ui.components
+package pl.edu.ur.teachly.ui.components.other
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
@@ -33,9 +33,8 @@ fun BottomBar(
         return
     }
 
-    val isHome =
-        routeStr.contains("Home") || routeStr.contains("TutorDetail") || routeStr.contains("Booking")
-    val isSchedule = false
+    val isHome = routeStr.contains("Home") || routeStr.contains("TutorDetail") || routeStr.contains("Booking")
+    val isSchedule = routeStr.contains("Schedule")
     val isProfile = routeStr.contains("Profile")
 
     NavigationBar(
@@ -68,7 +67,12 @@ fun BottomBar(
         )
         NavigationBarItem(
             selected = isSchedule,
-            onClick = { },
+            onClick = {
+                navController.navigate(AppRoute.Schedule) {
+                    popUpTo(AppRoute.Home) { inclusive = false }
+                    launchSingleTop = true
+                }
+            },
             icon = {
                 Icon(
                     Icons.Default.DateRange,

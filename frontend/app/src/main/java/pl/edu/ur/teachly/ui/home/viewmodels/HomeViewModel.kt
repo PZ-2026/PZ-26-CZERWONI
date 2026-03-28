@@ -1,4 +1,4 @@
-package pl.edu.ur.teachly.ui.home
+package pl.edu.ur.teachly.ui.home.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

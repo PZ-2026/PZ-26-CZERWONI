@@ -7,8 +7,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
-import pl.edu.ur.teachly.ui.auth.LoginScreen
-import pl.edu.ur.teachly.ui.auth.RegisterScreen
+import pl.edu.ur.teachly.ui.auth.views.LoginScreen
+import pl.edu.ur.teachly.ui.auth.views.RegisterScreen
 import pl.edu.ur.teachly.ui.auth.views.SplashScreen
 import pl.edu.ur.teachly.ui.home.BookingConfirmScreen
 import pl.edu.ur.teachly.ui.home.BookingScreen
@@ -17,6 +17,11 @@ import pl.edu.ur.teachly.ui.home.TutorDetailScreen
 import pl.edu.ur.teachly.ui.profile.viewmodels.ProfileViewModel
 import pl.edu.ur.teachly.ui.profile.views.ProfileEditScreen
 import pl.edu.ur.teachly.ui.profile.views.StudentProfileScreen
+import pl.edu.ur.teachly.ui.home.views.BookingConfirmScreen
+import pl.edu.ur.teachly.ui.home.views.BookingScreen
+import pl.edu.ur.teachly.ui.home.views.HomeScreen
+import pl.edu.ur.teachly.ui.home.views.TutorDetailScreen
+import pl.edu.ur.teachly.ui.schedule.views.ScheduleScreen
 
 @Composable
 fun AppNavHost(
@@ -99,6 +104,14 @@ fun AppNavHost(
             )
         }
 
+        // Schedule
+        composable<AppRoute.Schedule> {
+            ScheduleScreen(
+                onBack = { navController.popBackStack() }
+            )
+        }
+        
+        // Profile
         composable<AppRoute.Profile> {
             StudentProfileScreen(
                 onBack = { navController.popBackStack() },
