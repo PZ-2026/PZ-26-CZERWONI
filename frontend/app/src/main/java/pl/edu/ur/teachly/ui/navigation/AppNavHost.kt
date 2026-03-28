@@ -13,6 +13,8 @@ import pl.edu.ur.teachly.ui.home.BookingConfirmScreen
 import pl.edu.ur.teachly.ui.home.BookingScreen
 import pl.edu.ur.teachly.ui.home.HomeScreen
 import pl.edu.ur.teachly.ui.home.TutorDetailScreen
+import pl.edu.ur.teachly.ui.profile.ProfileEditScreen
+import pl.edu.ur.teachly.ui.profile.StudentProfileScreen
 
 @Composable
 fun AppNavHost(
@@ -90,6 +92,21 @@ fun AppNavHost(
                 bookingId = args.bookingId,
                 scheduledAt = args.scheduledAt,
                 onGoHome = { navController.navigateToHome() },
+            )
+        }
+
+        composable<AppRoute.Profile> {
+            StudentProfileScreen(
+                onBack = { navController.popBackStack() },
+                onSettingsClick = { navController.navigate(AppRoute.ProfileEdit) },
+                onLogout = { navController.navigateToSplash() }
+            )
+        }
+
+        composable<AppRoute.ProfileEdit> {
+            ProfileEditScreen(
+                onBack = { navController.popBackStack() },
+                onSave = { navController.popBackStack() }
             )
         }
     }

@@ -95,4 +95,17 @@
     <string name="nav_home">Główna</string>
     <string name="nav_schedule">Terminarz</string>
     <string name="nav_profile">Profil</string>
+
+    <!-- Profile -->
+    <string name="profile_student_role">Uczeń</string>
+    <string name="profile_level_title">Mój poziom edukacji</string>
+    <string name="profile_subjects_title">Ostatnio się uczę</string>
+    <string name="profile_stats_title">Moja aktywność</string>
+    <string name="profile_edit_cta">Edytuj profil</string>
+    <string name="profile_logout">Wyloguj się</string>
+
+    <!-- Profile Edit -->
+    <string name="profile_edit_title">Edycja profilu</string>
+    <string name="profile_edit_save">Zapisz zmiany</string>
+    <string name="profile_edit_email">Adres e-mail</string>
 </resources>

@@ -36,7 +36,7 @@ fun BottomBar(
     val isHome =
         routeStr.contains("Home") || routeStr.contains("TutorDetail") || routeStr.contains("Booking")
     val isSchedule = false
-    val isProfile = false
+    val isProfile = routeStr.contains("Profile")
 
     NavigationBar(
         modifier = modifier,
@@ -86,7 +86,12 @@ fun BottomBar(
         )
         NavigationBarItem(
             selected = isProfile,
-            onClick = { },
+            onClick = { 
+                navController.navigate(AppRoute.Profile) {
+                    popUpTo(AppRoute.Home) { inclusive = false }
+                    launchSingleTop = true
+                }
+            },
             icon = {
                 Icon(
                     Icons.Default.Person,
