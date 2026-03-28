@@ -1,4 +1,4 @@
-package pl.edu.ur.teachly.ui.components
+package pl.edu.ur.teachly.ui.components.booking
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -27,6 +27,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import pl.edu.ur.teachly.R
+import pl.edu.ur.teachly.ui.components.ALL_TIME_SLOTS
+import pl.edu.ur.teachly.ui.components.BOOKED_SLOTS
+import pl.edu.ur.teachly.ui.components.CALENDAR_DAYS
+import pl.edu.ur.teachly.ui.components.DURATION_OPTIONS
+import pl.edu.ur.teachly.ui.components.other.SectionLabel
 
 @Composable
 fun DayPicker(selectedIndex: Int, onSelect: (Int) -> Unit) {
@@ -109,10 +114,12 @@ fun SlotLegendItem(color: Color, label: String) {
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(5.dp)
     ) {
-        Box(modifier = Modifier
-            .size(10.dp)
-            .clip(RoundedCornerShape(3.dp))
-            .background(color))
+        Box(
+            modifier = Modifier
+                .size(10.dp)
+                .clip(RoundedCornerShape(3.dp))
+                .background(color)
+        )
         Text(
             label,
             style = MaterialTheme.typography.labelSmall,

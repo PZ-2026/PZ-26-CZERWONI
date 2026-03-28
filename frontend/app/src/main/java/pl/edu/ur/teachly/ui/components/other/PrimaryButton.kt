@@ -1,4 +1,4 @@
-package pl.edu.ur.teachly.ui.components
+package pl.edu.ur.teachly.ui.components.other
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height

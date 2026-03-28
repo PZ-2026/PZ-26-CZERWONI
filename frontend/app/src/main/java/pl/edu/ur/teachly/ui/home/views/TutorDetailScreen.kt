@@ -1,4 +1,4 @@
-package pl.edu.ur.teachly.ui.home
+package pl.edu.ur.teachly.ui.home.views
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -14,9 +14,9 @@ import androidx.compose.ui.unit.dp
 import pl.edu.ur.teachly.R
 import pl.edu.ur.teachly.ui.components.AVATAR_COLORS
 import pl.edu.ur.teachly.ui.components.MOCK_TUTORS
-import pl.edu.ur.teachly.ui.components.PrimaryButton
-import pl.edu.ur.teachly.ui.components.TutorDetailBody
-import pl.edu.ur.teachly.ui.components.TutorDetailHeader
+import pl.edu.ur.teachly.ui.components.other.PrimaryButton
+import pl.edu.ur.teachly.ui.components.tutorDetail.TutorDetailBody
+import pl.edu.ur.teachly.ui.components.tutorDetail.TutorDetailHeader
 import pl.edu.ur.teachly.ui.theme.AvatarColors
 
 @Composable

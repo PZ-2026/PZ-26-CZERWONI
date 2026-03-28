@@ -1,4 +1,4 @@
-package pl.edu.ur.teachly.ui.components
+package pl.edu.ur.teachly.ui.components.other
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row

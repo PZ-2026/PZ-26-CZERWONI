@@ -1,4 +1,4 @@
-package pl.edu.ur.teachly.ui.components
+package pl.edu.ur.teachly.ui.components.auth
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
@@ -37,7 +37,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import pl.edu.ur.teachly.R
-import pl.edu.ur.teachly.ui.auth.UserRole
+import pl.edu.ur.teachly.ui.auth.viewmodels.UserRole
+import pl.edu.ur.teachly.ui.components.other.PrimaryButton
 
 @Composable
 fun StepOneContent(

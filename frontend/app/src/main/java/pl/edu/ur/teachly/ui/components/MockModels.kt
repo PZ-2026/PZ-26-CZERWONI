@@ -1,6 +1,7 @@
 package pl.edu.ur.teachly.ui.components
 
 import androidx.compose.ui.graphics.Color
+import java.time.LocalDate
 import kotlin.math.roundToInt
 
 // Models
@@ -36,6 +37,16 @@ data class BookingResult(
 ) {
     val totalPrice: Int get() = (tutor.pricePerHour * durationMinutes / 60.0).roundToInt()
 }
+
+data class ScheduledClass(
+    val id: String,
+    val subject: String,
+    val tutor: Tutor,
+    val day: LocalDate,
+    val time: String,
+    val durationMinutes: Int,
+    val status: String
+)
 
 val AVATAR_COLORS: List<Pair<Color, Color>> = listOf(
     Color(0xFFDBEAFE) to Color(0xFF1D4ED8),
@@ -150,3 +161,71 @@ val ALL_TIME_SLOTS = listOf(
 val BOOKED_SLOTS = setOf("10:00", "13:00", "16:00")
 
 val DURATION_OPTIONS = listOf(45, 60, 90)
+
+val MOCK_SCHEDULE = mapOf(
+    0 to listOf(
+        ScheduledClass(
+            "1",
+            "Matematyka",
+            MOCK_TUTORS[0],
+            LocalDate.of(2026, 3, 30),
+            "10:00",
+            60,
+            "Zaplanowane"
+        ),
+        ScheduledClass(
+            "2",
+            "Fizyka",
+            MOCK_TUTORS[1],
+            LocalDate.of(2026, 4, 3),
+            "13:00",
+            45,
+            "Oczekujące"
+        )
+    ),
+    1 to listOf(
+        ScheduledClass(
+            "3",
+            "Angielski",
+            MOCK_TUTORS[2],
+            LocalDate.of(2026, 3, 31),
+            "15:00",
+            60,
+            "Zaplanowane"
+        )
+    ),
+    2 to emptyList(),
+    3 to listOf(
+        ScheduledClass(
+            "4",
+            "Chemia",
+            MOCK_TUTORS[3],
+            LocalDate.of(2026, 3, 27),
+            "17:00",
+            90,
+            "Zaplanowane"
+        )
+    ),
+    4 to listOf(
+        ScheduledClass(
+            "5",
+            "Angielski",
+            MOCK_TUTORS[2],
+            LocalDate.of(2026, 3, 22),
+            "15:00",
+            60,
+            "Zakończone"
+        )
+    ),
+    5 to listOf(
+        ScheduledClass(
+            "6",
+            "Chemia",
+            MOCK_TUTORS[3],
+            LocalDate.of(2026, 3, 24),
+            "17:00",
+            90,
+            "Zakończone"
+        )
+    ),
+)

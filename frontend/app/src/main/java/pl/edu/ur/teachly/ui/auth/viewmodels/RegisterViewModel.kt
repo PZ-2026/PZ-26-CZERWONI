@@ -1,5 +1,6 @@
-package pl.edu.ur.teachly.ui.auth
+package pl.edu.ur.teachly.ui.auth.viewmodels
 
+import android.util.Patterns
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.delay
@@ -67,7 +68,7 @@ class RegisterViewModel : ViewModel() {
             s.first_name.isBlank() -> _uiState.value = s.copy(errorMessage = "Podaj imię")
             s.last_name.isBlank() -> _uiState.value = s.copy(errorMessage = "Podaj nazwisko")
             s.email.isBlank() -> _uiState.value = s.copy(errorMessage = "Podaj adres e-mail")
-            !android.util.Patterns.EMAIL_ADDRESS.matcher(s.email).matches()
+            !Patterns.EMAIL_ADDRESS.matcher(s.email).matches()
                 -> _uiState.value = s.copy(errorMessage = "Podaj poprawny adres e-mail")
 
             s.password.length < 8 -> _uiState.value =
