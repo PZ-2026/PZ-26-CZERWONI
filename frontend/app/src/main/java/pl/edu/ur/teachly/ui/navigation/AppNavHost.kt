@@ -2,6 +2,7 @@ package pl.edu.ur.teachly.ui.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -9,6 +10,13 @@ import androidx.navigation.toRoute
 import pl.edu.ur.teachly.ui.auth.views.LoginScreen
 import pl.edu.ur.teachly.ui.auth.views.RegisterScreen
 import pl.edu.ur.teachly.ui.auth.views.SplashScreen
+import pl.edu.ur.teachly.ui.home.BookingConfirmScreen
+import pl.edu.ur.teachly.ui.home.BookingScreen
+import pl.edu.ur.teachly.ui.home.HomeScreen
+import pl.edu.ur.teachly.ui.home.TutorDetailScreen
+import pl.edu.ur.teachly.ui.profile.viewmodels.ProfileViewModel
+import pl.edu.ur.teachly.ui.profile.views.ProfileEditScreen
+import pl.edu.ur.teachly.ui.profile.views.StudentProfileScreen
 import pl.edu.ur.teachly.ui.home.views.BookingConfirmScreen
 import pl.edu.ur.teachly.ui.home.views.BookingScreen
 import pl.edu.ur.teachly.ui.home.views.HomeScreen
@@ -21,6 +29,8 @@ fun AppNavHost(
     modifier: Modifier = Modifier,
     startDestination: AppRoute = AppRoute.Splash,
 ) {
+    val profileViewModel: ProfileViewModel = viewModel()
+
     NavHost(
         navController = navController,
         startDestination = startDestination,
@@ -93,10 +103,29 @@ fun AppNavHost(
                 onGoHome = { navController.navigateToHome() },
             )
         }
+
         // Schedule
         composable<AppRoute.Schedule> {
             ScheduleScreen(
                 onBack = { navController.popBackStack() }
+            )
+        }
+        
+        // Profile
+        composable<AppRoute.Profile> {
+            StudentProfileScreen(
+                onBack = { navController.popBackStack() },
+                onSettingsClick = { navController.navigate(AppRoute.ProfileEdit) },
+                onLogout = { navController.navigateToSplash() },
+                viewModel = profileViewModel
+            )
+        }
+
+        composable<AppRoute.ProfileEdit> {
+            ProfileEditScreen(
+                onBack = { navController.popBackStack() },
+                onSave = { navController.popBackStack() },
+                viewModel = profileViewModel
             )
         }
     }

@@ -35,4 +35,11 @@ sealed interface AppRoute {
     // Schedule
     @Serializable
     data object Schedule : AppRoute
+  
+    // Profile
+    @Serializable
+    data object Profile : AppRoute
+
+    @Serializable
+    data object ProfileEdit : AppRoute
 }
