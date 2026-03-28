@@ -13,7 +13,10 @@ val DeepGreen800 = Color(0xFF1E3A1E)
 val DeepGreen700 = Color(0xFF2E7D32)
 val DeepGreen600 = Color(0xFF388E3C)   // PRIMARY
 val DeepGreen500 = Color(0xFF4CAF50)
+val DeepGreen400 = Color(0xFF66BB6A)
+val DeepGreen300 = Color(0xFF81C784)
 val DeepGreen200 = Color(0xFFA5D6A7)
+val DeepGreen100 = Color(0xFFC8E6C9)
 val DeepGreen50 = Color(0xFFE8F5E9)
 
 // Mint Green (secondary)
@@ -59,7 +62,7 @@ val LightColorScheme = lightColorScheme(
 
     primary = DeepGreen600,
     onPrimary = Color.White,
-    primaryContainer = DeepGreen50,
+    primaryContainer = DeepGreen200,
     onPrimaryContainer = DeepGreen900,
 
     secondary = Mint600,
@@ -68,7 +71,7 @@ val LightColorScheme = lightColorScheme(
     onSecondaryContainer = Mint700,
 
     tertiary = LightGreen500,
-    onTertiary = Color.White,
+    onTertiary = Color.Black,
     tertiaryContainer = LightGreen50,
     onTertiaryContainer = LightGreen600,
 
@@ -91,7 +94,7 @@ val LightColorScheme = lightColorScheme(
 
     inverseSurface = Neutral900,
     inverseOnSurface = Neutral50,
-    inversePrimary = DeepGreen200
+    inversePrimary = DeepGreen100
 )
 
 
