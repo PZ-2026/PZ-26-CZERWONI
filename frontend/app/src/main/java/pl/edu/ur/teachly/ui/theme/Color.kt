@@ -47,13 +47,15 @@ val ErrorContainerRed = Color(0xFF5B1C1C)
 val SuccessGreen = Color(0xFF22C55E)
 val GoogleBlue = Color(0xFF4285F4)
 
-val AvatarColors: List<Pair<Color, Color>> = listOf(
-    Color(0xFFDBEAFE) to Color(0xFF1D4ED8),
-    Color(0xFFDCFCE7) to Color(0xFF15803D),
-    Color(0xFFFCE7F3) to Color(0xFF9D174D),
-    Color(0xFFFEF3C7) to Color(0xFF92400E),
-    Color(0xFFF3E8FF) to Color(0xFF6B21A8),
-    Color(0xFFFFEDD5) to Color(0xFF9A3412),
+data class AvatarColor(val background: Color, val foreground: Color)
+
+val AvatarColors = listOf(
+    AvatarColor(Color(0xFFDBEAFE), Color(0xFF1D4ED8)),
+    AvatarColor(Color(0xFFDCFCE7), Color(0xFF15803D)),
+    AvatarColor(Color(0xFFFCE7F3), Color(0xFF9D174D)),
+    AvatarColor(Color(0xFFFEF3C7), Color(0xFF92400E)),
+    AvatarColor(Color(0xFFF3E8FF), Color(0xFF6B21A8)),
+    AvatarColor(Color(0xFFFFEDD5), Color(0xFF9A3412)),
 )
 
 

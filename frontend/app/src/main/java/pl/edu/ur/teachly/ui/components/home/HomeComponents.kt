@@ -10,9 +10,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.MaterialTheme
@@ -21,13 +22,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import pl.edu.ur.teachly.R
 import pl.edu.ur.teachly.ui.components.SUBJECTS
 import pl.edu.ur.teachly.ui.components.Tutor
-import pl.edu.ur.teachly.ui.components.tutorDetail.TutorCard
 import pl.edu.ur.teachly.ui.components.avatarColors
+import pl.edu.ur.teachly.ui.components.tutor.TutorCard
 
 @Composable
 fun SubjectChips(activeSubject: String, onSelect: (String) -> Unit) {
@@ -67,6 +70,8 @@ fun SubjectChips(activeSubject: String, onSelect: (String) -> Unit) {
 
 @Composable
 fun StatsRow() {
+    val tutorCount = 48
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -74,9 +79,9 @@ fun StatsRow() {
         horizontalArrangement = Arrangement.spacedBy(10.dp),
     ) {
         listOf(
-            stringResource(R.string.stat_tutors),
-            stringResource(R.string.stat_rating),
-            stringResource(R.string.stat_response),
+            pluralStringResource(R.plurals.home_tutors_count, tutorCount, tutorCount),
+            stringResource(R.string.stat_rating, 4.9),
+            stringResource(R.string.stat_response, "<2h"),
         ).forEach { label ->
             Surface(
                 modifier = Modifier.weight(1f),
@@ -89,6 +94,7 @@ fun StatsRow() {
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(horizontal = 8.dp, vertical = 10.dp),
+                    textAlign = TextAlign.Center
                 )
             }
         }
@@ -97,32 +103,35 @@ fun StatsRow() {
 
 @Composable
 fun TutorList(tutors: List<Tutor>, onTutorClick: (Tutor) -> Unit) {
-    Column(
+    val tutorCount = 6
+
+    LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .verticalScroll(rememberScrollState())
             .padding(horizontal = 24.dp)
             .padding(bottom = 32.dp),
     ) {
-        Text(
-            text = if (tutors.size == 1) stringResource(R.string.home_tutor_single) else stringResource(
-                R.string.home_tutors_count_format,
-                tutors.size
-            ),
-            style = MaterialTheme.typography.labelMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(bottom = 12.dp),
-        )
-
         if (tutors.isEmpty()) {
-            EmptyState()
+            item { EmptyState() }
         } else {
-            tutors.forEachIndexed { index, tutor ->
+            item {
+                Text(
+                    text = pluralStringResource(
+                        R.plurals.home_tutors_count,
+                        tutorCount,
+                        tutorCount
+                    ),
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(bottom = 12.dp),
+                )
+            }
+            itemsIndexed(tutors) { index, tutor ->
                 TutorCard(
                     tutor = tutor,
                     colors = avatarColors(index),
                     onClick = { onTutorClick(tutor) })
-                Spacer(Modifier.height(12.dp))
+                if (index < tutors.lastIndex) Spacer(Modifier.height(12.dp))
             }
         }
     }
@@ -136,8 +145,6 @@ fun EmptyState() {
             .padding(vertical = 48.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Text("🔍", style = MaterialTheme.typography.displaySmall)
-        Spacer(Modifier.height(12.dp))
         Text(
             stringResource(R.string.home_no_results),
             style = MaterialTheme.typography.titleSmall,

@@ -85,8 +85,7 @@ fun RoleCard(
         if (isSelected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface
     val iconBg =
         if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant
-    val titleColor =
-        if (isSelected) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurface
+    val titleColor = MaterialTheme.colorScheme.onSurface
 
     Row(
         modifier = Modifier

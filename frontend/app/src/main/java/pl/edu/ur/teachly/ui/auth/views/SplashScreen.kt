@@ -6,6 +6,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -45,6 +46,7 @@ import pl.edu.ur.teachly.R
 fun SplashScreen(
     onLoginClick: () -> Unit,
     onRegisterClick: () -> Unit,
+    onLogoClick: () -> Unit,
 ) {
     var visible by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) { visible = true }
@@ -75,7 +77,7 @@ fun SplashScreen(
             AnimatedVisibility(
                 visible = visible,
                 enter = fadeIn(tween(400)) + slideInVertically(tween(400)) { -20 }
-            ) { LogoRow() }
+            ) { LogoRow(onLogoClick) }
 
             AnimatedVisibility(
                 visible = visible,
@@ -130,7 +132,9 @@ private fun DecorativeCircles() {
 
 // Logo
 @Composable
-private fun LogoRow() {
+private fun LogoRow(
+    onLogoClick: () -> Unit
+) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(10.dp)
@@ -139,7 +143,8 @@ private fun LogoRow() {
             modifier = Modifier
                 .size(44.dp)
                 .clip(RoundedCornerShape(14.dp))
-                .background(MaterialTheme.colorScheme.primary),
+                .background(MaterialTheme.colorScheme.primary)
+                .clickable(onClick = onLogoClick),
             contentAlignment = Alignment.Center
         ) {
             Icon(

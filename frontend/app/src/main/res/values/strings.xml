@@ -7,6 +7,7 @@
     <string name="cd_show_password">Pokaż hasło</string>
     <string name="cd_hide_password">Ukryj hasło</string>
     <string name="splash_logo_description">Logo Teachly</string>
+    <string name="cd_edit_profile">Edytuj profil</string>
 
     <!-- Shared -->
     <string name="divider_or">lub</string>
@@ -24,11 +25,10 @@
     <string name="splash_login">Mam już konto</string>
 
     <!-- Login -->
-    <string name="login_title">Witaj ponownie</string>
+    <string name="login_title">Witaj ponownie!</string>
     <string name="login_subtitle">Zaloguj się na swoje konto</string>
     <string name="login_cta">Zaloguj się</string>
     <string name="login_forgot_password">Zapomniałem hasła</string>
-    <string name="login_google">Kontynuuj z Google</string>
 
     <!-- Register -->
     <string name="register_step1_title">Kim jesteś?</string>
@@ -44,15 +44,33 @@
     <string name="home_search_placeholder">Szukaj korepetytora lub przedmiotu…</string>
     <string name="home_no_results">Brak wyników</string>
     <string name="home_no_results_hint">Spróbuj innej frazy lub przedmiotu</string>
-    <string name="stat_tutors">48 korepetytorów</string>
-    <string name="stat_rating">Śr. ocena 4.9</string>
-    <string name="stat_response">Odpowiedź &lt;2h</string>
+    <plurals name="home_tutors_count">
+        <item quantity="one">1 korepetytor</item>
+        <item quantity="other">%d korepetytorów</item>
+    </plurals>
+    <string name="stat_rating">Śr. ocena: ★ %1$.1f</string>
+    <string name="stat_response">Śr. Odpowiedź: %1$s</string>
+    <string name="error_invalid_credentials">Nieprawidłowe dane</string>
 
     <!-- Tutor detail -->
-    <string name="section_about">O mnie</string>
-    <string name="section_stats">Statystyki</string>
-    <string name="section_reviews">Opinie</string>
-    <string name="detail_book_cta">Zarezerwuj lekcję</string>
+    <string name="tutor_section_bio">O mnie</string>
+    <string name="tutor_section_stats">Statystyki</string>
+    <string name="tutor_section_reviews">Opinie</string>
+    <string name="tutor_section_price">Cena</string>
+    <string name="tutordetail_book_cta">Zarezerwuj lekcję</string>
+    <string name="tutor_bio_empty">Brak opisu</string>
+    <string name="tutor_reviews">Ocena</string>
+    <string name="tutor_earnings">Łączne zarobki</string>
+    <string name="tutor_reviews_count">Opinie</string>
+    <string name="tutor_lessons_count">Lekcje</string>
+    <string name="tutor_profile_subjects_title">Nauczam</string>
+
+    <!-- TutorCard -->
+    <string name="tutor_price_format">%1$d zł</string>
+    <string name="tutor_per_hour">/godz</string>
+    <string name="tutor_rating_format">★ %1$.1f</string>
+    <string name="tutor_reviews_format">(%1$d opinii)</string>
+    <string name="tutor_nearest">Najbliższe:</string>
 
     <!-- Booking -->
     <string name="booking_title">Wybierz termin</string>
@@ -79,18 +97,6 @@
     <string name="error_empty_fields">Wypełnij wszystkie pola</string>
     <string name="error_invalid_email">Podaj poprawny adres e-mail</string>
 
-    <!-- TutorCard -->
-    <string name="tutor_price_format">%1$d zł</string>
-    <string name="tutor_per_hour">/godz</string>
-    <string name="tutor_rating_format">★ %1$.1f</string>
-    <string name="tutor_reviews_format">(%1$d opinii)</string>
-    <string name="tutor_nearest">Najbliższe:</string>
-
-    <!-- HomeScreen -->
-    <string name="home_tutors_count_format">%1$d korepetytorów</string>
-    <string name="home_tutor_single">1 korepetytor</string>
-    <string name="error_invalid_credentials">Nieprawidłowe dane</string>
-
     <!-- Navigation -->
     <string name="nav_home">Główna</string>
     <string name="nav_schedule">Terminarz</string>
@@ -98,6 +104,7 @@
 
     <!-- Profile -->
     <string name="profile_student_role">Uczeń</string>
+    <string name="profile_tutor_role">Korepetytor</string>
     <string name="profile_level_title">Mój poziom edukacji</string>
     <string name="profile_subjects_title">Ostatnio się uczę</string>
     <string name="profile_stats_title">Moja aktywność</string>

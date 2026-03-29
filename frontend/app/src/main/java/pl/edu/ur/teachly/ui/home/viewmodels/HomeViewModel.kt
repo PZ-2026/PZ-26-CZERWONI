@@ -24,9 +24,9 @@ class HomeViewModel : ViewModel() {
         _query, _activeSubject
     ) { query, subject ->
         val filtered = MOCK_TUTORS.filter { tutor ->
-            (subject == "Wszystkie" || tutor.subject == subject) &&
+            (subject == "Wszystkie" || tutor.subjects.contains(subject)) &&
                     (query.isBlank() || tutor.name.contains(query, ignoreCase = true) ||
-                            tutor.subject.contains(query, ignoreCase = true))
+                            tutor.subjects.contains(query))
         }
         HomeUiState(query = query, activeSubject = subject, tutors = filtered)
     }.stateIn(

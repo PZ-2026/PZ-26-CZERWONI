@@ -4,6 +4,9 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 sealed interface AppRoute {
+    // Debug
+    @Serializable
+    data object Debug : AppRoute
 
     // Auth
     @Serializable
@@ -35,11 +38,15 @@ sealed interface AppRoute {
     // Schedule
     @Serializable
     data object Schedule : AppRoute
-  
+
     // Profile
     @Serializable
     data object Profile : AppRoute
 
     @Serializable
     data object ProfileEdit : AppRoute
+
+    @Serializable
+    data class TutorProfile(val tutorId: Int) : AppRoute
+
 }

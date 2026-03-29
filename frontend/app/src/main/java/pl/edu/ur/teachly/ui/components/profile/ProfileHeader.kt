@@ -1,4 +1,4 @@
-package pl.edu.ur.teachly.ui.components.tutorDetail
+package pl.edu.ur.teachly.ui.components.profile
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -21,18 +22,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import pl.edu.ur.teachly.R
-import pl.edu.ur.teachly.ui.components.Tutor
+import pl.edu.ur.teachly.ui.components.other.InitialsAvatar
+import pl.edu.ur.teachly.ui.profile.viewmodels.StudentProfile
+import pl.edu.ur.teachly.ui.theme.AvatarColor
 
 @Composable
-fun TutorDetailHeader(
-    tutor: Tutor,
-    avatarBg: Color,
-    avatarFg: Color,
+fun ProfileHeader(
+    profile: StudentProfile,            // student profile on default
+    avatarColor: AvatarColor,
+    student: Boolean = true,
     onBack: () -> Unit,
+    onEditClick: (() -> Unit)? = null,  // null = guest view
 ) {
     Box(
         modifier = Modifier
@@ -49,17 +52,41 @@ fun TutorDetailHeader(
             .padding(top = 52.dp, bottom = 24.dp)
     ) {
         Column {
-            IconButton(
-                onClick = onBack,
-                modifier = Modifier
-                    .size(36.dp)
-                    .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(12.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(
-                    Icons.Default.ArrowBack,
-                    contentDescription = stringResource(R.string.cd_back),
-                    modifier = Modifier.size(18.dp)
-                )
+                IconButton(
+                    onClick = onBack,
+                    modifier = Modifier
+                        .size(36.dp)
+                        .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(12.dp))
+                ) {
+                    Icon(
+                        Icons.Default.ArrowBack,
+                        contentDescription = stringResource(R.string.cd_back),
+                        modifier = Modifier.size(18.dp)
+                    )
+                }
+
+                if (onEditClick != null) {
+                    IconButton(
+                        onClick = onEditClick,
+                        modifier = Modifier
+                            .size(36.dp)
+                            .background(
+                                MaterialTheme.colorScheme.surface,
+                                RoundedCornerShape(12.dp)
+                            )
+                    ) {
+                        Icon(
+                            Icons.Default.Edit,
+                            contentDescription = stringResource(R.string.cd_edit_profile),
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
+                }
             }
 
             Spacer(Modifier.height(20.dp))
@@ -68,34 +95,29 @@ fun TutorDetailHeader(
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                TutorAvatar(
-                    initials = tutor.initials,
-                    bg = avatarBg,
-                    fg = avatarFg,
-                    size = 72,
+                InitialsAvatar(
+                    initials = profile.initials,
+                    avatarColor = avatarColor,
                 )
 
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        tutor.name,
+                        profile.fullName,
                         style = MaterialTheme.typography.titleLarge,
                         color = MaterialTheme.colorScheme.onBackground
                     )
                     Text(
-                        tutor.subject,
+                        stringResource(
+                            if (student)
+                                R.string.profile_student_role
+                            else
+                                R.string.profile_tutor_role
+                        ),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.padding(top = 2.dp)
                     )
-                    Spacer(Modifier.height(6.dp))
-                    RatingRow(
-                        rating = tutor.rating,
-                        reviewCount = tutor.reviewCount,
-                        isOnline = false
-                    )
                 }
-
-                PriceLabel(price = tutor.pricePerHour, large = true)
             }
         }
     }
