@@ -1,4 +1,4 @@
-package pl.edu.ur.teachly.ui.components.tutorDetail
+package pl.edu.ur.teachly.ui.components.tutor
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
@@ -15,21 +15,38 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import pl.edu.ur.teachly.R
+import pl.edu.ur.teachly.ui.components.Review
 import pl.edu.ur.teachly.ui.components.Tutor
 import pl.edu.ur.teachly.ui.components.other.SectionLabel
 
-data class Review(
-    val authorName: String,
-    val text: String,
-    val rating: Int,
-)
-
-val MOCK_REVIEWS = listOf(
-    Review("Karolina M.", "Świetne wytłumaczenie całkowania, w końcu rozumiem!", 5),
-    Review("Bartek W.", "Polecam! Dostałem 5 na maturze dzięki tym lekcjom.", 5),
-    Review("Zuzia K.", "Bardzo cierpliwa i pomocna. Widać że lubi uczyć.", 5),
-)
+@Composable
+fun TutorBioSection(tutor: Tutor) {
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Text(
+            text = stringResource(R.string.tutor_section_bio),
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onBackground
+        )
+        Surface(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(16.dp),
+            color = MaterialTheme.colorScheme.surface,
+            shadowElevation = 2.dp
+        ) {
+            Text(
+                text = tutor.bio,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.padding(16.dp)
+            )
+        }
+    }
+}
 
 @Composable
 fun DetailSection(title: String, content: @Composable () -> Unit) {
@@ -117,3 +134,4 @@ fun ReviewList(reviews: List<Review>) {
         }
     }
 }
+

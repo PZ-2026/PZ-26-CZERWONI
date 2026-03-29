@@ -33,7 +33,7 @@ fun BottomBar(
         return
     }
 
-    val isHome = routeStr.contains("Home") || routeStr.contains("TutorDetail") || routeStr.contains("Booking")
+    val isHome = routeStr.contains("Home")
     val isSchedule = routeStr.contains("Schedule")
     val isProfile = routeStr.contains("Profile")
 
@@ -58,7 +58,7 @@ fun BottomBar(
             },
             label = { Text(stringResource(R.string.nav_home)) },
             colors = NavigationBarItemDefaults.colors(
-                selectedIconColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                selectedIconColor = MaterialTheme.colorScheme.surface,
                 selectedTextColor = MaterialTheme.colorScheme.onSurface,
                 indicatorColor = MaterialTheme.colorScheme.primaryContainer,
                 unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -81,7 +81,7 @@ fun BottomBar(
             },
             label = { Text(stringResource(R.string.nav_schedule)) },
             colors = NavigationBarItemDefaults.colors(
-                selectedIconColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                selectedIconColor = MaterialTheme.colorScheme.surface,
                 selectedTextColor = MaterialTheme.colorScheme.onSurface,
                 indicatorColor = MaterialTheme.colorScheme.primaryContainer,
                 unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -104,7 +104,7 @@ fun BottomBar(
             },
             label = { Text(stringResource(R.string.nav_profile)) },
             colors = NavigationBarItemDefaults.colors(
-                selectedIconColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                selectedIconColor = MaterialTheme.colorScheme.surface,
                 selectedTextColor = MaterialTheme.colorScheme.onSurface,
                 indicatorColor = MaterialTheme.colorScheme.primaryContainer,
                 unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,

@@ -14,7 +14,7 @@ data class Tutor(
     val id: Int,
     val name: String,
     val initials: String,
-    val subject: String,
+    val subjects: List<String>,
     val rating: Double,
     val reviewCount: Int,
     val pricePerHour: Int,
@@ -48,6 +48,12 @@ data class ScheduledClass(
     val status: String
 )
 
+data class Review(
+    val authorName: String,
+    val text: String,
+    val rating: Int,
+)
+
 val AVATAR_COLORS: List<Pair<Color, Color>> = listOf(
     Color(0xFFDBEAFE) to Color(0xFF1D4ED8),
     Color(0xFFDCFCE7) to Color(0xFF15803D),
@@ -65,7 +71,7 @@ val MOCK_TUTORS = listOf(
         1,
         "Anna Kowalska",
         "AK",
-        "Matematyka",
+        listOf("Matematyka", "Fizyka", "Informatyka"),
         4.9,
         128,
         120,
@@ -79,7 +85,7 @@ val MOCK_TUTORS = listOf(
         2,
         "Piotr Nowak",
         "PN",
-        "Fizyka",
+        listOf("Fizyka"),
         4.8,
         94,
         110,
@@ -93,7 +99,7 @@ val MOCK_TUTORS = listOf(
         3,
         "Maria Wiśniewska",
         "MW",
-        "Angielski",
+        listOf("Angielski"),
         5.0,
         211,
         100,
@@ -107,7 +113,7 @@ val MOCK_TUTORS = listOf(
         4,
         "Tomasz Zieliński",
         "TZ",
-        "Chemia",
+        listOf("Chemia"),
         4.7,
         67,
         130,
@@ -121,7 +127,7 @@ val MOCK_TUTORS = listOf(
         5,
         "Katarzyna Lewandowska",
         "KL",
-        "Historia",
+        listOf("Historia"),
         4.9,
         145,
         95,
@@ -135,7 +141,7 @@ val MOCK_TUTORS = listOf(
         6,
         "Michał Dąbrowski",
         "MD",
-        "Informatyka",
+        listOf("Informatyka"),
         4.8,
         83,
         140,
@@ -145,6 +151,12 @@ val MOCK_TUTORS = listOf(
         lessonCount = 155,
         yearsExp = 4
     ),
+)
+
+val MOCK_REVIEWS = listOf(
+    Review("Karolina M.", "Świetne wytłumaczenie całkowania, w końcu rozumiem!", 5),
+    Review("Bartek W.", "Polecam! Dostałem 5 na maturze dzięki tym lekcjom.", 5),
+    Review("Zuzia K.", "Bardzo cierpliwa i pomocna. Widać że lubi uczyć.", 5),
 )
 
 val CALENDAR_DAYS = listOf(

@@ -8,7 +8,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -16,14 +16,17 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import pl.edu.ur.teachly.ui.components.booking.BookingHeader
-import pl.edu.ur.teachly.ui.components.booking.BookingSummaryBar
+import pl.edu.ur.teachly.R
 import pl.edu.ur.teachly.ui.components.CALENDAR_DAYS
+import pl.edu.ur.teachly.ui.components.MOCK_TUTORS
+import pl.edu.ur.teachly.ui.components.booking.BookingSummaryBar
 import pl.edu.ur.teachly.ui.components.booking.DayPicker
 import pl.edu.ur.teachly.ui.components.booking.DurationPicker
-import pl.edu.ur.teachly.ui.components.MOCK_TUTORS
 import pl.edu.ur.teachly.ui.components.booking.TimeSlotGrid
+import pl.edu.ur.teachly.ui.components.other.AppHeader
+import pl.edu.ur.teachly.ui.components.other.HeaderBackground
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -45,9 +48,16 @@ fun BookingScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+            .background(colorScheme.background)
     ) {
-        BookingHeader(tutor = tutor, onBack = onBack)
+        AppHeader(
+            title = stringResource(R.string.booking_title),
+            subtitle = "${tutor.name} | ${tutor.subjects}",
+            background = HeaderBackground.Vertical(
+                listOf(colorScheme.primary.copy(0.05f), colorScheme.primary.copy(0.8f))
+            ),
+            onBack = onBack,
+        )
 
         Column(
             modifier = Modifier

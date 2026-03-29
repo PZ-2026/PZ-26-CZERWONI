@@ -59,7 +59,7 @@ fun BookingHeader(tutor: Tutor, onBack: () -> Unit) {
                 color = MaterialTheme.colorScheme.onBackground
             )
             Text(
-                "${tutor.name} · ${tutor.subject}",
+                "${tutor.name} · ${tutor.subjects}",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(top = 4.dp)

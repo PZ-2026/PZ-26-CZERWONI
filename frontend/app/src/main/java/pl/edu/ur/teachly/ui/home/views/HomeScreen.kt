@@ -21,7 +21,6 @@ import pl.edu.ur.teachly.ui.home.viewmodels.HomeViewModel
 @Composable
 fun HomeScreen(
     onTutorClick: (Tutor) -> Unit = {},
-    onLogout: () -> Unit = {},
     viewModel: HomeViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()

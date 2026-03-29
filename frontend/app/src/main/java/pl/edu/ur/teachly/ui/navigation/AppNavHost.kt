@@ -10,18 +10,16 @@ import androidx.navigation.toRoute
 import pl.edu.ur.teachly.ui.auth.views.LoginScreen
 import pl.edu.ur.teachly.ui.auth.views.RegisterScreen
 import pl.edu.ur.teachly.ui.auth.views.SplashScreen
-import pl.edu.ur.teachly.ui.home.BookingConfirmScreen
-import pl.edu.ur.teachly.ui.home.BookingScreen
-import pl.edu.ur.teachly.ui.home.HomeScreen
-import pl.edu.ur.teachly.ui.home.TutorDetailScreen
-import pl.edu.ur.teachly.ui.profile.viewmodels.ProfileViewModel
-import pl.edu.ur.teachly.ui.profile.views.ProfileEditScreen
-import pl.edu.ur.teachly.ui.profile.views.StudentProfileScreen
+import pl.edu.ur.teachly.ui.debug.DebugScreen
 import pl.edu.ur.teachly.ui.home.views.BookingConfirmScreen
 import pl.edu.ur.teachly.ui.home.views.BookingScreen
 import pl.edu.ur.teachly.ui.home.views.HomeScreen
-import pl.edu.ur.teachly.ui.home.views.TutorDetailScreen
+import pl.edu.ur.teachly.ui.profile.viewmodels.ProfileViewModel
+import pl.edu.ur.teachly.ui.profile.views.ProfileEditScreen
+import pl.edu.ur.teachly.ui.profile.views.StudentProfileScreen
+import pl.edu.ur.teachly.ui.profile.views.TutorProfileScreen
 import pl.edu.ur.teachly.ui.schedule.views.ScheduleScreen
+import pl.edu.ur.teachly.ui.tutor.views.TutorDetailScreen
 
 @Composable
 fun AppNavHost(
@@ -37,11 +35,17 @@ fun AppNavHost(
         modifier = modifier,
     ) {
 
+        // Debug
+        composable<AppRoute.Debug> {
+            DebugScreen(navController = navController)
+        }
+
         // Auth
         composable<AppRoute.Splash> {
             SplashScreen(
                 onLoginClick = { navController.navigate(AppRoute.Login) },
                 onRegisterClick = { navController.navigate(AppRoute.Register) },
+                onLogoClick = { navController.navigate(AppRoute.Debug) }
             )
         }
 
@@ -65,7 +69,6 @@ fun AppNavHost(
                 onTutorClick = { tutor ->
                     navController.navigate(AppRoute.TutorDetail(tutor.id))
                 },
-                onLogout = { navController.navigateToSplash() },
             )
         }
 
@@ -110,12 +113,12 @@ fun AppNavHost(
                 onBack = { navController.popBackStack() }
             )
         }
-        
+
         // Profile
         composable<AppRoute.Profile> {
             StudentProfileScreen(
                 onBack = { navController.popBackStack() },
-                onSettingsClick = { navController.navigate(AppRoute.ProfileEdit) },
+                onEditClick = { navController.navigate(AppRoute.ProfileEdit) },
                 onLogout = { navController.navigateToSplash() },
                 viewModel = profileViewModel
             )
@@ -126,6 +129,17 @@ fun AppNavHost(
                 onBack = { navController.popBackStack() },
                 onSave = { navController.popBackStack() },
                 viewModel = profileViewModel
+            )
+        }
+
+        // Profil korepetytora
+        composable<AppRoute.TutorProfile> { backStackEntry ->
+            val args = backStackEntry.toRoute<AppRoute.TutorProfile>()
+            TutorProfileScreen(
+                tutorId = args.tutorId.toString(),
+                onBack = { navController.popBackStack() },
+                onEditClick = { /* TODO: navigate to TutorProfileEdit */ },
+                onLogout = { navController.navigateToSplash() },
             )
         }
     }

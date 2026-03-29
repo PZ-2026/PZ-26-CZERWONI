@@ -1,14 +1,27 @@
 package pl.edu.ur.teachly.ui.profile.views
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material3.*
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -20,7 +33,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import pl.edu.ur.teachly.R
-import pl.edu.ur.teachly.ui.components.PrimaryButton
+import pl.edu.ur.teachly.ui.components.other.InitialsAvatar
+import pl.edu.ur.teachly.ui.components.other.PrimaryButton
 import pl.edu.ur.teachly.ui.profile.viewmodels.ProfileViewModel
 import pl.edu.ur.teachly.ui.theme.AvatarColors
 
@@ -79,40 +93,12 @@ fun ProfileEditScreen(
         ) {
             Spacer(modifier = Modifier.height(24.dp))
 
-            val avatarColorPair = AvatarColors[0]
-            Box(
-                modifier = Modifier
-                    .size(80.dp)
-                    .align(Alignment.CenterHorizontally)
-            ) {
-                Box(
-                    modifier = Modifier
-                        .size(80.dp)
-                        .background(avatarColorPair.first, RoundedCornerShape(24.dp)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    val initials = "${editState.firstName.firstOrNull() ?: ""}${editState.lastName.firstOrNull() ?: ""}"
-                    Text(
-                        text = initials,
-                        style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
-                        color = avatarColorPair.second
-                    )
-                }
-                Box(
-                    modifier = Modifier
-                        .size(28.dp)
-                        .background(MaterialTheme.colorScheme.primary, RoundedCornerShape(10.dp))
-                        .align(Alignment.BottomEnd),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        Icons.Default.Edit,
-                        contentDescription = "Zmień zdjęcie",
-                        tint = MaterialTheme.colorScheme.onPrimary,
-                        modifier = Modifier.size(16.dp)
-                    )
-                }
-            }
+            val initials =
+                "${editState.firstName.firstOrNull() ?: ""}${editState.lastName.firstOrNull() ?: ""}"
+            InitialsAvatar(
+                initials = initials,
+                avatarColor = AvatarColors[0],
+            )
 
             Spacer(modifier = Modifier.height(16.dp))
 

@@ -6,27 +6,21 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -44,13 +38,12 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import pl.edu.ur.teachly.R
 import pl.edu.ur.teachly.ui.auth.viewmodels.LoginViewModel
-import pl.edu.ur.teachly.ui.components.auth.AuthHeader
 import pl.edu.ur.teachly.ui.components.auth.AuthTextField
-import pl.edu.ur.teachly.ui.components.other.DividerOr
+import pl.edu.ur.teachly.ui.components.other.AppHeader
 import pl.edu.ur.teachly.ui.components.other.ErrorBanner
+import pl.edu.ur.teachly.ui.components.other.HeaderBackground
 import pl.edu.ur.teachly.ui.components.other.PasswordTextField
 import pl.edu.ur.teachly.ui.components.other.PrimaryButton
-import pl.edu.ur.teachly.ui.theme.GoogleBlue
 
 @Composable
 fun LoginScreen(
@@ -66,9 +59,18 @@ fun LoginScreen(
     }
 
     Column(modifier = Modifier.fillMaxSize()) {
-        AuthHeader(
+        AppHeader(
             title = stringResource(R.string.login_title),
             subtitle = stringResource(R.string.login_subtitle),
+            background = HeaderBackground.Diagonal(
+                colors = listOf(
+                    MaterialTheme.colorScheme.onPrimaryContainer,
+                    MaterialTheme.colorScheme.primary,
+                )
+            ),
+            topPadding = 20.dp,
+            bottomPadding = 8.dp,
+            decorativeCircle = true,
             onBack = onBack,
         )
 
@@ -123,49 +125,12 @@ fun LoginScreen(
                 }
             }
 
-            Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(24.dp))
 
             PrimaryButton(
                 text = stringResource(R.string.login_cta),
                 onClick = { focusManager.clearFocus(); viewModel.login() },
                 isLoading = uiState.isLoading,
-            )
-
-            DividerOr()
-
-            GoogleButton()
-        }
-    }
-}
-
-@Composable
-private fun GoogleButton() {
-    OutlinedButton(
-        onClick = { /* TODO: Google Sign-In */ },
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(54.dp),
-        shape = RoundedCornerShape(18.dp),
-        border = BorderStroke(
-            1.5.dp, MaterialTheme.colorScheme.outline,
-        ),
-        colors = ButtonDefaults.outlinedButtonColors(
-            containerColor = MaterialTheme.colorScheme.surface,
-            contentColor = MaterialTheme.colorScheme.onSurface,
-        ),
-    ) {
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(10.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Text(
-                "G",
-                style = MaterialTheme.typography.titleMedium,
-                color = GoogleBlue
-            )
-            Text(
-                text = stringResource(R.string.login_google),
-                style = MaterialTheme.typography.labelMedium,
             )
         }
     }

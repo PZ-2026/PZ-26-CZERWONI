@@ -96,6 +96,8 @@ fun StepTwoContent(
             ErrorBanner(message = uiState.errorMessage.orEmpty())
         }
 
+        Spacer(Modifier.height(20.dp))
+
         Box(
             modifier = Modifier
                 .fillMaxWidth()
