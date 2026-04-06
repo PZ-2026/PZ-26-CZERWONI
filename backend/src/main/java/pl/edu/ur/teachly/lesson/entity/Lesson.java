@@ -1,13 +1,16 @@
-package pl.edu.ur.teachly.models;
+package pl.edu.ur.teachly.lesson.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import pl.edu.ur.teachly.models.enums.LessonFormat;
-import pl.edu.ur.teachly.models.enums.LessonStatus;
-import pl.edu.ur.teachly.models.enums.PaymentStatus;
+import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import pl.edu.ur.teachly.common.enums.LessonFormat;
+import pl.edu.ur.teachly.common.enums.LessonStatus;
+import pl.edu.ur.teachly.common.enums.PaymentStatus;
+import pl.edu.ur.teachly.subject.entity.Subject;
+import pl.edu.ur.teachly.tutor.entity.Tutor;
+import pl.edu.ur.teachly.user.entity.User;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -16,8 +19,10 @@ import java.time.LocalTime;
 
 @Entity
 @Table(name = "lessons")
+@EntityListeners(AuditingEntityListener.class)
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Lesson {
@@ -52,6 +57,7 @@ public class Lesson {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "lesson_status", nullable = false)
+    @Builder.Default
     private LessonStatus lessonStatus = LessonStatus.PENDING;
 
     @Column(name = "tutor_notes", columnDefinition = "TEXT")
@@ -65,11 +71,14 @@ public class Lesson {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "payment_status", nullable = false)
+    @Builder.Default
     private PaymentStatus paymentStatus = PaymentStatus.PENDING;
 
-    @Column(name = "created_at", insertable = false, updatable = false)
+    @CreatedDate
+    @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
-    @Column(name = "updated_at", insertable = false, updatable = false)
+    @LastModifiedDate
+    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 }

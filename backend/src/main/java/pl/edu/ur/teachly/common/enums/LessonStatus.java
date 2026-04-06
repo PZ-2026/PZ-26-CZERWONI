@@ -1,8 +1,8 @@
-package pl.edu.ur.teachly.models.enums;
+package pl.edu.ur.teachly.common.enums;
 
 public enum LessonStatus {
     PENDING,
     CONFIRMED,
     COMPLETED,
-    CANCELLED,
+    CANCELLED
 }

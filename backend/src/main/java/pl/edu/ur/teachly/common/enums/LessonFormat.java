@@ -1,4 +1,4 @@
-package pl.edu.ur.teachly.models.enums;
+package pl.edu.ur.teachly.common.enums;
 
 public enum LessonFormat {
     ONLINE,

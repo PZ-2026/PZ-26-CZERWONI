@@ -1,21 +1,19 @@
-package pl.edu.ur.teachly.models;
+package pl.edu.ur.teachly.tutor.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 
 @Entity
-@Table(name = "tutor_availability_override")
+@Table(name = "tutor_availability_recurring")
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class TutorAvailabilityOverride {
+public class TutorAvailabilityRecurring {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -24,12 +22,15 @@ public class TutorAvailabilityOverride {
     @JoinColumn(name = "tutor_id", nullable = false)
     private Tutor tutor;
 
-    @Column(name = "override_date", nullable = false)
-    private LocalDate overrideDate;
+    @Column(name = "day_of_week", nullable = false)
+    private int dayOfWeek;
 
-    @Column(name = "time_from")
+    @Column(name = "time_from", nullable = false)
     private LocalTime timeFrom;
 
-    @Column(name = "time_to")
+    @Column(name = "time_to", nullable = false)
     private LocalTime timeTo;
+
+    @Column(name = "date_to")
+    private LocalDate dateTo;
 }

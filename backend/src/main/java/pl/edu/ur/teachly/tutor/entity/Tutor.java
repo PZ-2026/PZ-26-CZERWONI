@@ -1,23 +1,26 @@
-package pl.edu.ur.teachly.models;
+package pl.edu.ur.teachly.tutor.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import pl.edu.ur.teachly.user.entity.User;
 
 import java.math.BigDecimal;
 
 @Entity
-@Table(name = "subjects")
+@Table(name = "tutors")
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Tutor {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Integer userId;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @MapsId
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @Column(columnDefinition = "TEXT")
     private String bio;
@@ -26,8 +29,10 @@ public class Tutor {
     private BigDecimal hourlyRate;
 
     @Column(name = "offers_online", nullable = false)
+    @Builder.Default
     private Boolean offersOnline = false;
 
     @Column(name = "offers_in_person", nullable = false)
+    @Builder.Default
     private Boolean offersInPerson = false;
 }
