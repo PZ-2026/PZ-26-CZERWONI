@@ -38,6 +38,16 @@ public class GlobalExceptionHandler {
         return problemDetail;
     }
 
+    @ExceptionHandler(org.springframework.security.core.AuthenticationException.class)
+    public ProblemDetail handleAuthenticationException(org.springframework.security.core.AuthenticationException ex) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, "Nieprawidłowy token JWT lub brak poświadczeń");
+    }
+
+    @ExceptionHandler(org.springframework.security.access.AccessDeniedException.class)
+    public ProblemDetail handleAccessDeniedException(org.springframework.security.access.AccessDeniedException ex) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN, "Brak wystarczających uprawnień do tego zasobu");
+    }
+
     @ExceptionHandler(Exception.class)
     public ProblemDetail handleGlobalException(Exception ex) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, "Wystąpił nieoczekiwany błąd serwera");
