@@ -80,7 +80,7 @@ public class TimetableService {
                     .toList();
 
             for (Lesson lesson : dayLessons) {
-                freeBlocks = subtractLesson(freeBlocks, lesson.getTime_from(), lesson.getTime_to());
+                freeBlocks = subtractLesson(freeBlocks, lesson.getTimeFrom(), lesson.getTimeTo());
             }
 
             freeBlocks = freeBlocks.stream()
