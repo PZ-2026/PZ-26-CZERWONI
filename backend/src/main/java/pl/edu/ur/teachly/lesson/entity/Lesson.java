@@ -46,10 +46,10 @@ public class Lesson {
     private LocalDate lessonDate;
 
     @Column(name = "time_from", nullable = false)
-    private LocalTime time_from;
+    private LocalTime timeFrom;
 
     @Column(name = "time_to", nullable = false)
-    private LocalTime time_to;
+    private LocalTime timeTo;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
