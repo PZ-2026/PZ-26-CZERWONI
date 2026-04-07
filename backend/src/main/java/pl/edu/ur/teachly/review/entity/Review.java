@@ -29,7 +29,7 @@ public class Review {
     private Tutor tutor;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "student_id", nullable = false)
+    @JoinColumn(name = "user_id", nullable = false)
     private User student;
 
     @Column(nullable = false, precision = 2, scale = 1)

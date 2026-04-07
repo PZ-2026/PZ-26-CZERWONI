@@ -23,7 +23,7 @@ public class TutorAvailabilityRecurring {
     private Tutor tutor;
 
     @Column(name = "day_of_week", nullable = false)
-    private int dayOfWeek;
+    private short dayOfWeek;
 
     @Column(name = "time_from", nullable = false)
     private LocalTime timeFrom;

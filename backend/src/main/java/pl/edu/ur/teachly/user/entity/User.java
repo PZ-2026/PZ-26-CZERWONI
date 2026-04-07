@@ -46,7 +46,7 @@ public class User implements UserDetails {
     private String avatarUrl;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(name = "user_role", nullable = false)
     private UserRole role;
 
     @Column(name = "is_active", nullable = false)
