@@ -2,14 +2,18 @@ package pl.edu.ur.teachly.tutor.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import pl.edu.ur.teachly.tutor.dto.request.TutorAvailabilityOverrideRequest;
 import pl.edu.ur.teachly.tutor.dto.request.TutorAvailabilityRecurringRequest;
+import pl.edu.ur.teachly.tutor.dto.response.TimetableDayResponse;
 import pl.edu.ur.teachly.tutor.dto.response.TutorAvailabilityOverrideResponse;
 import pl.edu.ur.teachly.tutor.dto.response.TutorAvailabilityRecurringResponse;
+import pl.edu.ur.teachly.tutor.service.TimetableService;
 import pl.edu.ur.teachly.tutor.service.TutorAvailabilityService;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -17,6 +21,15 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TutorAvailabilityController {
     private final TutorAvailabilityService availabilityService;
+    private final TimetableService timetableService;
+
+    @GetMapping("/timetable")
+    public List<TimetableDayResponse> getTimetable(
+            @PathVariable Integer tutorId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
+        return timetableService.getTimetable(tutorId, from, to);
+    }
 
     @GetMapping("/recurring")
     public List<TutorAvailabilityRecurringResponse> getRecurringByTutor(@PathVariable Integer tutorId) {

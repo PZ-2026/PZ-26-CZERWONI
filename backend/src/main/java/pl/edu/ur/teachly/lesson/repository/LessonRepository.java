@@ -16,4 +16,6 @@ public interface LessonRepository extends JpaRepository<Lesson, Integer> {
     List<Lesson> findByTutor_UserIdAndLessonDate(Integer tutorId, LocalDate lessonDate);
 
     boolean existsByStudent_IdAndTutor_UserIdAndLessonStatus(Integer studentId, Integer tutorId, pl.edu.ur.teachly.common.enums.LessonStatus status);
+
+    List<Lesson> findByTutor_UserIdAndLessonDateBetween(Integer tutorId, LocalDate startDate, LocalDate endDate);
 }
