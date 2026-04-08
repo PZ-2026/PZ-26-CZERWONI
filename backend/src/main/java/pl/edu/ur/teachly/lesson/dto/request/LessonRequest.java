@@ -4,6 +4,7 @@ import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
 import pl.edu.ur.teachly.common.enums.LessonFormat;
+import pl.edu.ur.teachly.common.enums.LessonStatus;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -27,6 +28,9 @@ public record LessonRequest(
 
         @NotNull(message = "Format lekcji jest wymagany")
         LessonFormat format,
+
+        @NotNull(message = "Status lekcji jest wymagany")
+        LessonStatus lessonStatus,
 
         String studentNotes,
 
