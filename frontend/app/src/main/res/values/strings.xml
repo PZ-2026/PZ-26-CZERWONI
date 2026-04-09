@@ -49,8 +49,7 @@
         <item quantity="other">%d korepetytorów</item>
     </plurals>
     <string name="stat_rating">Śr. ocena: ★ %1$.1f</string>
-    <string name="stat_response">Śr. Odpowiedź: %1$s</string>
-    <string name="error_invalid_credentials">Nieprawidłowe dane</string>
+    <string name="stat_response">Odpowiedź: %1$s</string>
 
     <!-- Tutor detail -->
     <string name="tutor_section_bio">O mnie</string>
@@ -96,6 +95,8 @@
     <!-- Errors -->
     <string name="error_empty_fields">Wypełnij wszystkie pola</string>
     <string name="error_invalid_email">Podaj poprawny adres e-mail</string>
+    <string name="error_failed_to_register">Błąd przy rejestracji</string>
+    <string name="error_invalid_credentials">Nieprawidłowe dane</string>
 
     <!-- Navigation -->
     <string name="nav_home">Główna</string>

@@ -54,20 +54,22 @@ fun StepTwoContent(
             .padding(top = 28.dp, bottom = 48.dp),
     ) {
         AuthTextField(
-            value = uiState.first_name,
+            value = uiState.firstName,
             onValueChange = viewModel::onFirstNameChange,
             label = stringResource(R.string.field_first_name),
             placeholder = "Jan",
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
             keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) }),
+            capitalize = true,
         )
         AuthTextField(
-            value = uiState.last_name,
+            value = uiState.lastName,
             onValueChange = viewModel::onLastNameChange,
             label = stringResource(R.string.field_last_name),
             placeholder = "Kowalski",
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
             keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) }),
+            capitalize = true,
         )
         AuthTextField(
             value = uiState.email,
