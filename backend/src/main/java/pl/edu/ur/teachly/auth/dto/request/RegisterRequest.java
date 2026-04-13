@@ -2,9 +2,14 @@ package pl.edu.ur.teachly.auth.dto.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import pl.edu.ur.teachly.common.enums.UserRole;
 
 public record RegisterRequest(
+        @NotNull(message = "Rola nie może być pusta")
+        UserRole userRole,
+
         @NotBlank(message = "Imię nie może być puste")
         @Size(max = 50)
         String firstName,
@@ -19,7 +24,7 @@ public record RegisterRequest(
         String email,
 
         @NotBlank(message = "Numer telefonu nie może być pusty")
-        @Size(min = 10, max = 10, message = "Numer telefonu musi mieć 10 cyfr")
+        @Size(min = 9, max = 9, message = "Numer telefonu musi mieć 9 cyfr")
         String phoneNumber,
 
         @NotBlank(message = "Hasło nie może być puste")

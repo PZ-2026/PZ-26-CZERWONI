@@ -119,10 +119,10 @@ public class LessonService {
         LessonStatus newStatus = request.lessonStatus();
         LessonStatus currentStatus = lesson.getLessonStatus();
 
-        if (currentUser.getRole() != UserRole.ADMIN) {
+        if (currentUser.getUserRole() != UserRole.ADMIN) {
             LocalDateTime lessonStart = LocalDateTime.of(request.lessonDate(), request.timeFrom());
 
-            if (!isValidTransition(currentStatus, newStatus, currentUser.getRole(), lessonStart)) {
+            if (!isValidTransition(currentStatus, newStatus, currentUser.getUserRole(), lessonStart)) {
                 throw new IllegalStateException("Nie można zmienić statusu lekcji z " + currentStatus + " na " + newStatus);
             }
         }

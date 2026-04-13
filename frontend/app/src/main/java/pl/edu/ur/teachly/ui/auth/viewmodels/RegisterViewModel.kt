@@ -1,13 +1,15 @@
 package pl.edu.ur.teachly.ui.auth.viewmodels
 
+import android.app.Application
 import android.util.Patterns
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import pl.edu.ur.teachly.data.local.TokenManager
+import pl.edu.ur.teachly.data.repository.AuthRepository
 
 enum class UserRole(
     val emoji: String,
@@ -20,17 +22,21 @@ enum class UserRole(
 
 data class RegisterUiState(
     val step: Int = 1,
-    val selectedRole: UserRole? = null,
-    val first_name: String = "",
-    val last_name: String = "",
+    val selectedRole: UserRole? = UserRole.STUDENT,
+    val firstName: String = "",
+    val lastName: String = "",
     val email: String = "",
+    val phoneNumber: String = "123456789", // TODO: Delete mock data after adding text field
     val password: String = "",
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
     val isSuccess: Boolean = false,
 )
 
-class RegisterViewModel : ViewModel() {
+class RegisterViewModel(application: Application) : AndroidViewModel(application) {
+    private val tokenManager = TokenManager(application)
+    private val repository = AuthRepository(tokenManager)
+
     private val _uiState = MutableStateFlow(RegisterUiState())
     val uiState: StateFlow<RegisterUiState> = _uiState.asStateFlow()
 
@@ -47,11 +53,11 @@ class RegisterViewModel : ViewModel() {
     }
 
     fun onFirstNameChange(v: String) {
-        _uiState.value = _uiState.value.copy(first_name = v, errorMessage = null)
+        _uiState.value = _uiState.value.copy(firstName = v, errorMessage = null)
     }
 
     fun onLastNameChange(v: String) {
-        _uiState.value = _uiState.value.copy(last_name = v, errorMessage = null)
+        _uiState.value = _uiState.value.copy(lastName = v, errorMessage = null)
     }
 
     fun onEmailChange(v: String) {
@@ -63,21 +69,47 @@ class RegisterViewModel : ViewModel() {
     }
 
     fun register() {
-        val s = _uiState.value
+        val state = _uiState.value
         when {
-            s.first_name.isBlank() -> _uiState.value = s.copy(errorMessage = "Podaj imię")
-            s.last_name.isBlank() -> _uiState.value = s.copy(errorMessage = "Podaj nazwisko")
-            s.email.isBlank() -> _uiState.value = s.copy(errorMessage = "Podaj adres e-mail")
-            !Patterns.EMAIL_ADDRESS.matcher(s.email).matches()
-                -> _uiState.value = s.copy(errorMessage = "Podaj poprawny adres e-mail")
+            state.firstName.isBlank() -> _uiState.value = state.copy(errorMessage = "Podaj imię")
+            state.lastName.isBlank() -> _uiState.value =
+                state.copy(errorMessage = "Podaj nazwisko")
 
-            s.password.length < 8 -> _uiState.value =
-                s.copy(errorMessage = "Hasło musi mieć min. 8 znaków")
+            state.email.isBlank() -> _uiState.value =
+                state.copy(errorMessage = "Podaj adres e-mail")
+
+            !Patterns.EMAIL_ADDRESS.matcher(state.email).matches()
+                -> _uiState.value = state.copy(errorMessage = "Podaj poprawny adres e-mail")
+
+            state.password.length < 8 -> _uiState.value =
+                state.copy(errorMessage = "Hasło musi mieć min. 8 znaków")
 
             else -> viewModelScope.launch {
-                _uiState.value = s.copy(isLoading = true, errorMessage = null)
-                delay(1200) // TODO: implement AuthRepository.register()
-                _uiState.value = _uiState.value.copy(isLoading = false, isSuccess = true)
+                _uiState.value = state.copy(isLoading = true, errorMessage = null)
+
+
+                // TODO: Add phoneNumber text field to RegisterScreen
+                val selectedRole = state.selectedRole ?: UserRole.STUDENT
+                val result = repository.register(
+                    selectedRole,
+                    state.firstName,
+                    state.lastName,
+                    state.email,
+                    state.phoneNumber,
+                    state.password
+                )
+
+                _uiState.value = result.fold(
+                    onSuccess = {
+                        state.copy(isLoading = false, isSuccess = true)
+                    },
+                    onFailure = {
+                        state.copy(
+                            isLoading = false,
+                            errorMessage = "Błąd przy rejestracji"
+                        )
+                    }
+                )
             }
         }
     }

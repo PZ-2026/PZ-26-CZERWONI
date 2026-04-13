@@ -29,6 +29,7 @@ fun AuthTextField(
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
     isError: Boolean = false,
+    capitalize: Boolean = false,
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(
@@ -39,7 +40,14 @@ fun AuthTextField(
         )
         OutlinedTextField(
             value = value,
-            onValueChange = onValueChange,
+            onValueChange = { newValue ->
+                val updatedValue = if (capitalize && newValue.isNotEmpty()) {
+                    newValue.replaceFirstChar { it.uppercase() }
+                } else {
+                    newValue
+                }
+                onValueChange(updatedValue)
+            },
             modifier = Modifier.fillMaxWidth(),
             placeholder = {
                 Text(
