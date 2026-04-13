@@ -35,7 +35,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import org.koin.androidx.compose.koinViewModel
 import pl.edu.ur.teachly.R
 import pl.edu.ur.teachly.ui.auth.viewmodels.LoginViewModel
 import pl.edu.ur.teachly.ui.components.auth.AuthTextField
@@ -49,7 +49,7 @@ import pl.edu.ur.teachly.ui.components.other.PrimaryButton
 fun LoginScreen(
     onBack: () -> Unit,
     onSuccess: () -> Unit,
-    viewModel: LoginViewModel = viewModel(),
+    viewModel: LoginViewModel = koinViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val focusManager = LocalFocusManager.current
@@ -108,11 +108,13 @@ fun LoginScreen(
             )
 
             AnimatedVisibility(
-                visible = uiState.errorMessage != null,
+                visible = uiState.errorMessage != null || uiState.errorText != null,
                 enter = fadeIn(tween(200)) + expandVertically(),
                 exit = fadeOut(tween(150)) + shrinkVertically(),
             ) {
-                ErrorBanner(message = uiState.errorMessage?.let { stringResource(it) }.orEmpty())
+                val msg =
+                    uiState.errorText ?: uiState.errorMessage?.let { stringResource(it) }.orEmpty()
+                ErrorBanner(message = msg)
             }
 
             Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {

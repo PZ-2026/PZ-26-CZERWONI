@@ -82,6 +82,17 @@ fun StepTwoContent(
             ),
             keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) }),
         )
+        AuthTextField(
+            value = uiState.phoneNumber,
+            onValueChange = viewModel::onPhoneChange,
+            label = stringResource(R.string.field_phone),
+            placeholder = "123456789",
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Phone,
+                imeAction = ImeAction.Next
+            ),
+            keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) }),
+        )
         PasswordTextField(
             value = uiState.password,
             onValueChange = viewModel::onPasswordChange,

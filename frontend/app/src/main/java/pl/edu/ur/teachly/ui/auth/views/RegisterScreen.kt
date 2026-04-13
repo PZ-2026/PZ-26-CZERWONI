@@ -16,7 +16,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import org.koin.androidx.compose.koinViewModel
 import pl.edu.ur.teachly.R
 import pl.edu.ur.teachly.ui.auth.viewmodels.RegisterViewModel
 import pl.edu.ur.teachly.ui.components.auth.StepOneContent
@@ -28,7 +28,7 @@ import pl.edu.ur.teachly.ui.components.other.HeaderBackground
 fun RegisterScreen(
     onBack: () -> Unit,
     onSuccess: () -> Unit,
-    viewModel: RegisterViewModel = viewModel(),
+    viewModel: RegisterViewModel = koinViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
 

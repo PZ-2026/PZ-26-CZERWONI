@@ -13,6 +13,7 @@
     <string name="divider_or">lub</string>
     <string name="btn_next">Dalej</string>
     <string name="field_email">Email</string>
+    <string name="field_phone">Numer telefonu</string>
     <string name="field_password">Hasło</string>
     <string name="field_password_hint">Min. 8 znaków</string>
     <string name="field_first_name">Imię</string>
