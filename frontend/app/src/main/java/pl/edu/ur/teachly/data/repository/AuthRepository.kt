@@ -5,8 +5,8 @@ import pl.edu.ur.teachly.data.local.TokenManager
 import pl.edu.ur.teachly.data.model.AuthResponse
 import pl.edu.ur.teachly.data.model.LoginRequest
 import pl.edu.ur.teachly.data.model.RegisterRequest
+import pl.edu.ur.teachly.data.model.UserRole
 import pl.edu.ur.teachly.data.remote.AuthApiService
-import pl.edu.ur.teachly.ui.auth.viewmodels.UserRole
 import retrofit2.Response
 
 class AuthRepository(
