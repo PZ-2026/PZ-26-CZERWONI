@@ -8,6 +8,7 @@ import pl.edu.ur.teachly.common.enums.UserRole;
 import pl.edu.ur.teachly.common.exception.ResourceNotFoundException;
 import pl.edu.ur.teachly.common.exception.SlotNotAvailableException;
 import pl.edu.ur.teachly.lesson.dto.request.LessonRequest;
+import pl.edu.ur.teachly.lesson.dto.request.LessonStatusRequest;
 import pl.edu.ur.teachly.lesson.dto.response.LessonResponse;
 import pl.edu.ur.teachly.lesson.entity.Lesson;
 import pl.edu.ur.teachly.lesson.mapper.LessonMapper;
@@ -112,7 +113,7 @@ public class LessonService {
     }
 
     @Transactional
-    public LessonResponse changeLessonStatus(Integer lessonId, LessonRequest request, User currentUser) {
+    public LessonResponse changeLessonStatus(Integer lessonId, LessonStatusRequest request, User currentUser) {
         Lesson lesson = lessonRepository.findById(lessonId)
                 .orElseThrow(() -> new ResourceNotFoundException("Nie znaleziono lekcji o podanym id"));
 
@@ -120,7 +121,7 @@ public class LessonService {
         LessonStatus currentStatus = lesson.getLessonStatus();
 
         if (currentUser.getUserRole() != UserRole.ADMIN) {
-            LocalDateTime lessonStart = LocalDateTime.of(request.lessonDate(), request.timeFrom());
+            LocalDateTime lessonStart = LocalDateTime.of(lesson.getLessonDate(), lesson.getTimeFrom());
 
             if (!isValidTransition(currentStatus, newStatus, currentUser.getUserRole(), lessonStart)) {
                 throw new IllegalStateException("Nie można zmienić statusu lekcji z " + currentStatus + " na " + newStatus);
@@ -128,6 +129,9 @@ public class LessonService {
         }
 
         lesson.setLessonStatus(newStatus);
+        if (request.tutorNotes() != null) {
+            lesson.setTutorNotes(request.tutorNotes());
+        }
         return lessonMapper.toResponse(lessonRepository.save(lesson));
     }
 

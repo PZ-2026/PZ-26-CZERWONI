@@ -9,7 +9,11 @@ import pl.edu.ur.teachly.review.entity.Review;
 @Mapper(componentModel = "spring")
 public interface ReviewMapper {
     @Mapping(source = "tutor.userId", target = "tutorId")
+    @Mapping(source = "tutor.user.firstName", target = "tutorFirstName")
+    @Mapping(source = "tutor.user.lastName", target = "tutorLastName")
     @Mapping(source = "student.id", target = "studentId")
+    @Mapping(source = "student.firstName", target = "studentFirstName")
+    @Mapping(source = "student.lastName", target = "studentLastName")
     ReviewResponse toResponse(Review review);
 
     @Mapping(target = "id", ignore = true)
@@ -19,3 +23,4 @@ public interface ReviewMapper {
     @Mapping(target = "updatedAt", ignore = true)
     Review toEntity(ReviewRequest request);
 }
+
