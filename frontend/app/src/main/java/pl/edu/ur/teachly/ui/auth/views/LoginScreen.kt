@@ -20,7 +20,8 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -35,7 +36,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import org.koin.androidx.compose.koinViewModel
 import pl.edu.ur.teachly.R
 import pl.edu.ur.teachly.ui.auth.viewmodels.LoginViewModel
 import pl.edu.ur.teachly.ui.components.auth.AuthTextField
@@ -49,7 +50,7 @@ import pl.edu.ur.teachly.ui.components.other.PrimaryButton
 fun LoginScreen(
     onBack: () -> Unit,
     onSuccess: () -> Unit,
-    viewModel: LoginViewModel = viewModel(),
+    viewModel: LoginViewModel = koinViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val focusManager = LocalFocusManager.current
@@ -64,8 +65,8 @@ fun LoginScreen(
             subtitle = stringResource(R.string.login_subtitle),
             background = HeaderBackground.Diagonal(
                 colors = listOf(
-                    MaterialTheme.colorScheme.onPrimaryContainer,
-                    MaterialTheme.colorScheme.primary,
+                    colorScheme.onPrimaryContainer,
+                    colorScheme.primary,
                 )
             ),
             topPadding = 20.dp,
@@ -77,7 +78,7 @@ fun LoginScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
+                .background(colorScheme.background)
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 24.dp)
                 .padding(top = 32.dp, bottom = 48.dp)
@@ -108,19 +109,21 @@ fun LoginScreen(
             )
 
             AnimatedVisibility(
-                visible = uiState.errorMessage != null,
+                visible = uiState.errorMessage != null || uiState.errorText != null,
                 enter = fadeIn(tween(200)) + expandVertically(),
                 exit = fadeOut(tween(150)) + shrinkVertically(),
             ) {
-                ErrorBanner(message = uiState.errorMessage?.let { stringResource(it) }.orEmpty())
+                val msg =
+                    uiState.errorText ?: uiState.errorMessage?.let { stringResource(it) }.orEmpty()
+                ErrorBanner(message = msg)
             }
 
             Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
                 TextButton(onClick = { /* TODO: reset hasła */ }) {
                     Text(
                         text = stringResource(R.string.login_forgot_password),
-                        style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.primary,
+                        style = typography.labelMedium,
+                        color = colorScheme.primary,
                     )
                 }
             }

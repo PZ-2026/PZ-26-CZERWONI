@@ -30,11 +30,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import pl.edu.ur.teachly.R
 import pl.edu.ur.teachly.ui.components.Tutor
+import pl.edu.ur.teachly.ui.theme.AvatarColor
 
 @Composable
 fun TutorCard(
     tutor: Tutor,
-    colors: Pair<Color, Color>,
+    colors: AvatarColor,
     onClick: () -> Unit,
 ) {
     val (avatarBg, avatarFg) = colors

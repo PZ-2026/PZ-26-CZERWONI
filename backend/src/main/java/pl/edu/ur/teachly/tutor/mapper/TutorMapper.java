@@ -9,6 +9,11 @@ import pl.edu.ur.teachly.tutor.entity.Tutor;
 
 @Mapper(componentModel = "spring")
 public interface TutorMapper {
+    @Mapping(source = "userId", target = "id")
+    @Mapping(source = "user.firstName", target = "firstName")
+    @Mapping(source = "user.lastName", target = "lastName")
+    @Mapping(source = "user.email", target = "email")
+    @Mapping(source = "user.avatarUrl", target = "avatarUrl")
     TutorResponse toResponse(Tutor tutor);
 
     @Mapping(target = "userId", ignore = true)

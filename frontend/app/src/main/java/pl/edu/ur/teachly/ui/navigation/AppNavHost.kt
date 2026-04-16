@@ -1,20 +1,26 @@
 package pl.edu.ur.teachly.ui.navigation
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
+import org.koin.compose.koinInject
+import pl.edu.ur.teachly.data.local.TokenManager
 import pl.edu.ur.teachly.ui.auth.views.LoginScreen
 import pl.edu.ur.teachly.ui.auth.views.RegisterScreen
 import pl.edu.ur.teachly.ui.auth.views.SplashScreen
-import pl.edu.ur.teachly.ui.debug.DebugScreen
 import pl.edu.ur.teachly.ui.home.views.BookingConfirmScreen
 import pl.edu.ur.teachly.ui.home.views.BookingScreen
 import pl.edu.ur.teachly.ui.home.views.HomeScreen
-import pl.edu.ur.teachly.ui.profile.viewmodels.ProfileViewModel
+import pl.edu.ur.teachly.ui.home.views.SearchScreen
 import pl.edu.ur.teachly.ui.profile.views.ProfileEditScreen
 import pl.edu.ur.teachly.ui.profile.views.StudentProfileScreen
 import pl.edu.ur.teachly.ui.profile.views.TutorProfileScreen
@@ -27,25 +33,17 @@ fun AppNavHost(
     modifier: Modifier = Modifier,
     startDestination: AppRoute = AppRoute.Splash,
 ) {
-    val profileViewModel: ProfileViewModel = viewModel()
-
     NavHost(
         navController = navController,
         startDestination = startDestination,
         modifier = modifier,
     ) {
 
-        // Debug
-        composable<AppRoute.Debug> {
-            DebugScreen(navController = navController)
-        }
-
         // Auth
         composable<AppRoute.Splash> {
             SplashScreen(
                 onLoginClick = { navController.navigate(AppRoute.Login) },
                 onRegisterClick = { navController.navigate(AppRoute.Register) },
-                onLogoClick = { navController.navigate(AppRoute.Debug) }
             )
         }
 
@@ -63,9 +61,16 @@ fun AppNavHost(
             )
         }
 
-        // Home flow
+        // Home
         composable<AppRoute.Home> {
             HomeScreen(
+                onSearchClick = { navController.navigate(AppRoute.Search) },
+            )
+        }
+
+        // Search / Tutor list
+        composable<AppRoute.Search> {
+            SearchScreen(
                 onTutorClick = { tutor ->
                     navController.navigate(AppRoute.TutorDetail(tutor.id))
                 },
@@ -86,12 +91,15 @@ fun AppNavHost(
             BookingScreen(
                 tutorId = args.tutorId,
                 onBack = { navController.popBackStack() },
-                onConfirm = { bookingId, scheduledAt ->
+                onConfirm = { tutorName, subjectName, lessonDate, timeFrom, timeTo, amount ->
                     navController.navigate(
                         AppRoute.BookingConfirm(
-                            tutorId = args.tutorId,
-                            bookingId = bookingId,
-                            scheduledAt = scheduledAt,
+                            tutorName = tutorName,
+                            subjectName = subjectName,
+                            lessonDate = lessonDate,
+                            timeFrom = timeFrom,
+                            timeTo = timeTo,
+                            amount = amount,
                         )
                     )
                 },
@@ -101,8 +109,12 @@ fun AppNavHost(
         composable<AppRoute.BookingConfirm> { backStackEntry ->
             val args = backStackEntry.toRoute<AppRoute.BookingConfirm>()
             BookingConfirmScreen(
-                bookingId = args.bookingId,
-                scheduledAt = args.scheduledAt,
+                tutorName = args.tutorName,
+                subjectName = args.subjectName,
+                lessonDate = args.lessonDate,
+                timeFrom = args.timeFrom,
+                timeTo = args.timeTo,
+                amount = args.amount,
                 onGoHome = { navController.navigateToHome() },
             )
         }
@@ -116,30 +128,49 @@ fun AppNavHost(
 
         // Profile
         composable<AppRoute.Profile> {
-            StudentProfileScreen(
-                onBack = { navController.popBackStack() },
-                onEditClick = { navController.navigate(AppRoute.ProfileEdit) },
-                onLogout = { navController.navigateToSplash() },
-                viewModel = profileViewModel
-            )
+            val tokenManager = koinInject<TokenManager>()
+            val role by tokenManager.roleFlow.collectAsState(initial = null)
+            val userId by tokenManager.userIdFlow.collectAsState(initial = null)
+
+            when (role) {
+                null -> Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center,
+                ) { CircularProgressIndicator() }
+
+                "TUTOR" -> TutorProfileScreen(
+                    tutorId = userId?.toString() ?: "",
+                    isMyProfile = true,
+                    onBack = { navController.popBackStack() },
+                    onEditClick = { navController.navigate(AppRoute.ProfileEdit) },
+                    onLogout = { navController.navigateToSplash() },
+                )
+
+                else -> StudentProfileScreen(
+                    isStudent = true,
+                    onBack = { navController.popBackStack() },
+                    onEditClick = { navController.navigate(AppRoute.ProfileEdit) },
+                    onLogout = { navController.navigateToSplash() },
+                )
+            }
         }
 
         composable<AppRoute.ProfileEdit> {
             ProfileEditScreen(
                 onBack = { navController.popBackStack() },
                 onSave = { navController.popBackStack() },
-                viewModel = profileViewModel
             )
         }
 
-        // Profil korepetytora
+        // Tutor profile (viewed from search/schedule)
         composable<AppRoute.TutorProfile> { backStackEntry ->
             val args = backStackEntry.toRoute<AppRoute.TutorProfile>()
             TutorProfileScreen(
                 tutorId = args.tutorId.toString(),
+                isMyProfile = false,
                 onBack = { navController.popBackStack() },
-                onEditClick = { /* TODO: navigate to TutorProfileEdit */ },
-                onLogout = { navController.navigateToSplash() },
+                onEditClick = {},
+                onLogout = {},
             )
         }
     }

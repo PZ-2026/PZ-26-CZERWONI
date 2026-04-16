@@ -1,46 +1,44 @@
 package pl.edu.ur.teachly.ui.auth.viewmodels
 
-import android.app.Application
 import android.util.Patterns
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import pl.edu.ur.teachly.data.local.TokenManager
+import pl.edu.ur.teachly.data.model.UserRole
 import pl.edu.ur.teachly.data.repository.AuthRepository
 
-enum class UserRole(
+enum class UserRoleOption(
     val emoji: String,
     val title: String,
     val description: String,
+    val dataRole: pl.edu.ur.teachly.data.model.UserRole
 ) {
-    STUDENT("🎓", "Jestem uczniem", "Szukam korepetytora i chcę umawiać lekcje"),
-    TUTOR("📖", "Jestem korepetytorem", "Oferuję lekcje i zarządzam harmonogramem"),
+    STUDENT("🎓", "Jestem uczniem", "Szukam korepetytora i chcę umawiać lekcje", UserRole.STUDENT),
+    TUTOR("📖", "Jestem korepetytorem", "Oferuję lekcje i zarządzam harmonogramem", UserRole.TUTOR),
 }
 
 data class RegisterUiState(
     val step: Int = 1,
-    val selectedRole: UserRole? = UserRole.STUDENT,
+    val selectedRole: UserRoleOption? = UserRoleOption.STUDENT,
     val firstName: String = "",
     val lastName: String = "",
     val email: String = "",
-    val phoneNumber: String = "123456789", // TODO: Delete mock data after adding text field
+    val phoneNumber: String = "",
     val password: String = "",
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
     val isSuccess: Boolean = false,
 )
 
-class RegisterViewModel(application: Application) : AndroidViewModel(application) {
-    private val tokenManager = TokenManager(application)
-    private val repository = AuthRepository(tokenManager)
+class RegisterViewModel(private val repository: AuthRepository) : ViewModel() {
 
     private val _uiState = MutableStateFlow(RegisterUiState())
     val uiState: StateFlow<RegisterUiState> = _uiState.asStateFlow()
 
-    fun onRoleSelected(role: UserRole) {
+    fun onRoleSelected(role: UserRoleOption) {
         _uiState.value = _uiState.value.copy(selectedRole = role)
     }
 
@@ -64,6 +62,10 @@ class RegisterViewModel(application: Application) : AndroidViewModel(application
         _uiState.value = _uiState.value.copy(email = v, errorMessage = null)
     }
 
+    fun onPhoneChange(v: String) {
+        _uiState.value = _uiState.value.copy(phoneNumber = v, errorMessage = null)
+    }
+
     fun onPasswordChange(v: String) {
         _uiState.value = _uiState.value.copy(password = v, errorMessage = null)
     }
@@ -81,17 +83,21 @@ class RegisterViewModel(application: Application) : AndroidViewModel(application
             !Patterns.EMAIL_ADDRESS.matcher(state.email).matches()
                 -> _uiState.value = state.copy(errorMessage = "Podaj poprawny adres e-mail")
 
+            state.phoneNumber.isBlank() -> _uiState.value =
+                state.copy(errorMessage = "Podaj numer telefonu")
+
+            !Patterns.PHONE.matcher(state.phoneNumber).matches()
+                -> _uiState.value = state.copy(errorMessage = "Podaj poprawny numer telefonu")
+
             state.password.length < 8 -> _uiState.value =
                 state.copy(errorMessage = "Hasło musi mieć min. 8 znaków")
 
             else -> viewModelScope.launch {
                 _uiState.value = state.copy(isLoading = true, errorMessage = null)
 
-
-                // TODO: Add phoneNumber text field to RegisterScreen
-                val selectedRole = state.selectedRole ?: UserRole.STUDENT
+                val selectedRole = state.selectedRole ?: UserRoleOption.STUDENT
                 val result = repository.register(
-                    selectedRole,
+                    selectedRole.dataRole,
                     state.firstName,
                     state.lastName,
                     state.email,
@@ -103,10 +109,10 @@ class RegisterViewModel(application: Application) : AndroidViewModel(application
                     onSuccess = {
                         state.copy(isLoading = false, isSuccess = true)
                     },
-                    onFailure = {
+                    onFailure = { exception ->
                         state.copy(
                             isLoading = false,
-                            errorMessage = "Błąd przy rejestracji"
+                            errorMessage = exception.message ?: "Błąd przy rejestracji"
                         )
                     }
                 )

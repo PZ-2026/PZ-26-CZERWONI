@@ -16,7 +16,8 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -43,8 +44,8 @@ fun ProfileHeader(
             .background(
                 Brush.verticalGradient(
                     colors = listOf(
-                        MaterialTheme.colorScheme.primary.copy(alpha = 0.05f),
-                        MaterialTheme.colorScheme.primary.copy(alpha = 0.8f),
+                        colorScheme.primary.copy(alpha = 0.05f),
+                        colorScheme.primary.copy(alpha = 0.8f),
                     )
                 )
             )
@@ -61,7 +62,7 @@ fun ProfileHeader(
                     onClick = onBack,
                     modifier = Modifier
                         .size(36.dp)
-                        .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(12.dp))
+                        .background(colorScheme.surface, RoundedCornerShape(12.dp))
                 ) {
                     Icon(
                         Icons.Default.ArrowBack,
@@ -76,7 +77,7 @@ fun ProfileHeader(
                         modifier = Modifier
                             .size(36.dp)
                             .background(
-                                MaterialTheme.colorScheme.surface,
+                                colorScheme.surface,
                                 RoundedCornerShape(12.dp)
                             )
                     ) {
@@ -103,8 +104,8 @@ fun ProfileHeader(
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
                         profile.fullName,
-                        style = MaterialTheme.typography.titleLarge,
-                        color = MaterialTheme.colorScheme.onBackground
+                        style = typography.titleLarge,
+                        color = colorScheme.onBackground
                     )
                     Text(
                         stringResource(
@@ -113,8 +114,8 @@ fun ProfileHeader(
                             else
                                 R.string.profile_tutor_role
                         ),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        style = typography.bodySmall,
+                        color = colorScheme.onSurfaceVariant,
                         modifier = Modifier.padding(top = 2.dp)
                     )
                 }

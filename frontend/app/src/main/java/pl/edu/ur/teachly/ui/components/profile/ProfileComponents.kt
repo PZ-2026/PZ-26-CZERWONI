@@ -5,7 +5,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -23,9 +24,9 @@ fun SubjectsSection(subjects: List<String>, student: Boolean = true) {
                 stringResource(R.string.profile_subjects_title)
             else
                 stringResource(R.string.tutor_profile_subjects_title),
-            style = MaterialTheme.typography.titleMedium,
+            style = typography.titleMedium,
             fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onBackground
+            color = colorScheme.onBackground
         )
         FlowRow(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -34,13 +35,13 @@ fun SubjectsSection(subjects: List<String>, student: Boolean = true) {
             subjects.forEach { subject ->
                 Surface(
                     shape = RoundedCornerShape(16.dp),
-                    color = MaterialTheme.colorScheme.primaryContainer,
+                    color = colorScheme.primaryContainer,
                 ) {
                     Text(
                         text = subject,
-                        style = MaterialTheme.typography.bodyMedium,
+                        style = typography.bodyMedium,
                         fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.primary,
+                        color = colorScheme.primary,
                         modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                     )
                 }

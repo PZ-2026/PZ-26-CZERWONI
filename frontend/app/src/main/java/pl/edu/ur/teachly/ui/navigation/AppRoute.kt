@@ -4,10 +4,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 sealed interface AppRoute {
-    // Debug
-    @Serializable
-    data object Debug : AppRoute
-
     // Auth
     @Serializable
     data object Splash : AppRoute
@@ -23,6 +19,9 @@ sealed interface AppRoute {
     data object Home : AppRoute
 
     @Serializable
+    data object Search : AppRoute
+
+    @Serializable
     data class TutorDetail(val tutorId: Int) : AppRoute
 
     @Serializable
@@ -30,9 +29,12 @@ sealed interface AppRoute {
 
     @Serializable
     data class BookingConfirm(
-        val tutorId: String,
-        val bookingId: String,
-        val scheduledAt: String,
+        val tutorName: String,
+        val subjectName: String,
+        val lessonDate: String,
+        val timeFrom: String,
+        val timeTo: String,
+        val amount: String,
     ) : AppRoute
 
     // Schedule
@@ -48,5 +50,4 @@ sealed interface AppRoute {
 
     @Serializable
     data class TutorProfile(val tutorId: Int) : AppRoute
-
 }

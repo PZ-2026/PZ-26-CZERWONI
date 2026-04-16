@@ -13,11 +13,14 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,80 +31,109 @@ import androidx.compose.ui.unit.dp
 import pl.edu.ur.teachly.ui.components.ScheduledClass
 
 @Composable
-fun ScheduleItemCard(item: ScheduledClass) {
+fun ScheduleItemCard(item: ScheduledClass, isStudent: Boolean = true) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
-        ),
+        colors = CardDefaults.cardColors(containerColor = colorScheme.surface),
         shape = RoundedCornerShape(20.dp),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        border = BorderStroke(1.dp, colorScheme.outline),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
+
+            // Subject and status badge
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
                     text = item.subject,
-                    style = MaterialTheme.typography.titleMedium,
+                    style = typography.titleMedium,
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface
+                    color = colorScheme.onSurface,
                 )
-                Surface(
-                    shape = MaterialTheme.shapes.small,
-                    color = when (item.status) {
-                        "Zaplanowane" -> MaterialTheme.colorScheme.primaryContainer
-                        "Oczekujące" -> MaterialTheme.colorScheme.inversePrimary
-                        else -> MaterialTheme.colorScheme.surface
-                    }
-                ) {
-                    Text(
-                        text = item.status,
-                        style = MaterialTheme.typography.labelSmall,
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                        color = MaterialTheme.colorScheme.onSurface
+                StatusBadge(status = item.status)
+            }
+
+            Spacer(Modifier.height(8.dp))
+
+            // Person row — tutor for student, student for tutor
+            val personLabel = if (isStudent) "Korepetytor" else "Uczeń"
+            val personName = if (isStudent) item.tutorName else item.studentName
+            if (personName.isNotBlank()) {
+                InfoRow(
+                    icon = {
+                        Icon(
+                            Icons.Default.Person,
+                            null,
+                            modifier = Modifier.size(16.dp),
+                            tint = colorScheme.primary
+                        )
+                    },
+                    text = "$personLabel: $personName",
+                )
+                Spacer(Modifier.height(6.dp))
+            }
+
+            // Date
+            InfoRow(
+                icon = {
+                    Icon(
+                        Icons.Default.CalendarMonth,
+                        null,
+                        modifier = Modifier.size(16.dp),
+                        tint = colorScheme.primary
                     )
-                }
-            }
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = "Korepetytor: ${item.tutor.name}",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                },
+                text = item.day.toString(),
             )
-            Spacer(modifier = Modifier.height(8.dp))
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    imageVector = Icons.Default.CalendarMonth,
-                    contentDescription = "Dzień",
-                    modifier = Modifier.size(16.dp),
-                    tint = MaterialTheme.colorScheme.primary
-                )
-                Spacer(modifier = Modifier.width(4.dp))
-                Text(
-                    text = "${item.day}",
-                    style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-            }
-            Spacer(modifier = Modifier.height(8.dp))
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    imageVector = Icons.Default.Schedule,
-                    contentDescription = "Czas",
-                    modifier = Modifier.size(16.dp),
-                    tint = MaterialTheme.colorScheme.primary
-                )
-                Spacer(modifier = Modifier.width(4.dp))
-                Text(
-                    text = "${item.time} (${item.durationMinutes} min)",
-                    style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-            }
+
+            Spacer(Modifier.height(6.dp))
+
+            // Time and duration
+            InfoRow(
+                icon = {
+                    Icon(
+                        Icons.Default.Schedule,
+                        null,
+                        modifier = Modifier.size(16.dp),
+                        tint = colorScheme.primary
+                    )
+                },
+                text = "${item.time} (${item.durationMinutes} min)",
+            )
         }
+    }
+}
+
+@Composable
+private fun StatusBadge(status: String) {
+    val containerColor = when (status) {
+        "Zaplanowane" -> colorScheme.primaryContainer
+        "Oczekujące" -> colorScheme.inversePrimary
+        "Zakończone" -> colorScheme.surfaceVariant
+        else -> colorScheme.surface
+    }
+    Surface(shape = MaterialTheme.shapes.small, color = containerColor) {
+        Text(
+            text = status,
+            style = typography.labelSmall,
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+            color = colorScheme.onSurface,
+        )
+    }
+}
+
+@Composable
+private fun InfoRow(icon: @Composable () -> Unit, text: String) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        icon()
+        Spacer(Modifier.width(6.dp))
+        Text(
+            text = text,
+            style = typography.bodyMedium,
+            color = colorScheme.onSurfaceVariant,
+        )
     }
 }

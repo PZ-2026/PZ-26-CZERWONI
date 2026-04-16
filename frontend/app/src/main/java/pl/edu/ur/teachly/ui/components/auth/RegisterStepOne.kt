@@ -27,7 +27,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -37,24 +38,24 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import pl.edu.ur.teachly.R
-import pl.edu.ur.teachly.ui.auth.viewmodels.UserRole
+import pl.edu.ur.teachly.ui.auth.viewmodels.UserRoleOption
 import pl.edu.ur.teachly.ui.components.other.PrimaryButton
 
 @Composable
 fun StepOneContent(
-    selectedRole: UserRole?,
-    onRoleSelected: (UserRole) -> Unit,
+    selectedRole: UserRoleOption?,
+    onRoleSelected: (UserRoleOption) -> Unit,
     onNext: () -> Unit,
 ) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+            .background(colorScheme.background)
             .verticalScroll(rememberScrollState())
             .padding(horizontal = 24.dp)
             .padding(top = 28.dp, bottom = 40.dp),
     ) {
-        UserRole.entries.forEach { role ->
+        UserRoleOption.entries.forEach { role ->
             RoleCard(
                 role = role,
                 isSelected = selectedRole == role,
@@ -75,17 +76,17 @@ fun StepOneContent(
 
 @Composable
 fun RoleCard(
-    role: UserRole,
+    role: UserRoleOption,
     isSelected: Boolean,
     onClick: () -> Unit,
 ) {
     val borderColor =
-        if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline
+        if (isSelected) colorScheme.primary else colorScheme.outline
     val bgColor =
-        if (isSelected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface
+        if (isSelected) colorScheme.primaryContainer else colorScheme.surface
     val iconBg =
-        if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant
-    val titleColor = MaterialTheme.colorScheme.onSurface
+        if (isSelected) colorScheme.primary else colorScheme.surfaceVariant
+    val titleColor = colorScheme.onSurface
 
     Row(
         modifier = Modifier
@@ -109,16 +110,16 @@ fun RoleCard(
                 .background(iconBg),
             contentAlignment = Alignment.Center,
         ) {
-            Text(role.emoji, style = MaterialTheme.typography.headlineSmall)
+            Text(role.emoji, style = typography.headlineSmall)
         }
 
         Column {
-            Text(role.title, style = MaterialTheme.typography.titleMedium, color = titleColor)
+            Text(role.title, style = typography.titleMedium, color = titleColor)
             Spacer(Modifier.height(2.dp))
             Text(
                 role.description,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                style = typography.bodySmall,
+                color = colorScheme.onSurfaceVariant
             )
         }
 
@@ -131,13 +132,13 @@ fun RoleCard(
                 modifier = Modifier
                     .size(24.dp)
                     .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.primary),
+                    .background(colorScheme.primary),
                 contentAlignment = Alignment.Center,
             ) {
                 Icon(
                     Icons.Default.Check,
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onPrimary,
+                    tint = colorScheme.onPrimary,
                     modifier = Modifier.size(14.dp),
                 )
             }

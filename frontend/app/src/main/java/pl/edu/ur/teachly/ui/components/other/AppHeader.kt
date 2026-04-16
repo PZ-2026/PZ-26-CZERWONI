@@ -16,7 +16,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -61,14 +62,14 @@ fun AppHeader(
     }
 
     val isLight = background is HeaderBackground.Vertical
-    val backBg = if (isLight) MaterialTheme.colorScheme.surface
-    else MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.12f)
-    val backTint = if (isLight) MaterialTheme.colorScheme.onSurface
-    else MaterialTheme.colorScheme.onPrimary
-    val titleColor = if (isLight) MaterialTheme.colorScheme.onBackground
-    else MaterialTheme.colorScheme.onPrimary
-    val subtitleColor = if (isLight) MaterialTheme.colorScheme.onSurfaceVariant
-    else MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.6f)
+    val backBg = if (isLight) colorScheme.surface
+    else colorScheme.onPrimary.copy(alpha = 0.12f)
+    val backTint = if (isLight) colorScheme.onSurface
+    else colorScheme.onPrimary
+    val titleColor = if (isLight) colorScheme.onBackground
+    else colorScheme.onPrimary
+    val subtitleColor = if (isLight) colorScheme.onSurfaceVariant
+    else colorScheme.onPrimary.copy(alpha = 0.6f)
 
     Box(
         modifier = Modifier
@@ -84,7 +85,7 @@ fun AppHeader(
                     .offset(x = 60.dp, y = (-40).dp)
                     .align(Alignment.TopEnd)
                     .background(
-                        MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.05f),
+                        colorScheme.onPrimary.copy(alpha = 0.05f),
                         CircleShape,
                     )
             )
@@ -110,7 +111,7 @@ fun AppHeader(
 
             Text(
                 text = title,
-                style = MaterialTheme.typography.headlineLarge,
+                style = typography.headlineLarge,
                 color = titleColor,
             )
 
@@ -118,7 +119,7 @@ fun AppHeader(
                 Spacer(Modifier.height(8.dp))
                 Text(
                     text = subtitle,
-                    style = MaterialTheme.typography.bodyMedium,
+                    style = typography.bodyMedium,
                     color = subtitleColor,
                 )
             }

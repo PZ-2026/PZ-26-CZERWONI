@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import pl.edu.ur.teachly.lesson.dto.request.LessonRequest;
+import pl.edu.ur.teachly.lesson.dto.request.LessonStatusRequest;
 import pl.edu.ur.teachly.lesson.dto.response.LessonResponse;
 import pl.edu.ur.teachly.lesson.service.LessonService;
 import pl.edu.ur.teachly.user.entity.User;
@@ -34,7 +35,7 @@ public class LessonController {
     }
 
     @PatchMapping("/{lessonId}/status")
-    public LessonResponse changeLessonStatus(@PathVariable Integer lessonId, @Valid @RequestBody LessonRequest request, User currentUser) {
+    public LessonResponse changeLessonStatus(@PathVariable Integer lessonId, @Valid @RequestBody LessonStatusRequest request, User currentUser) {
         return lessonService.changeLessonStatus(lessonId, request, currentUser);
     }
 }

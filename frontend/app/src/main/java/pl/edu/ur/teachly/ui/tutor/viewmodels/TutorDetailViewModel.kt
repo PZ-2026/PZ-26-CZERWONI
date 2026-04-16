@@ -1,19 +1,71 @@
 package pl.edu.ur.teachly.ui.tutor.viewmodels
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import pl.edu.ur.teachly.ui.components.MOCK_TUTORS
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import pl.edu.ur.teachly.data.repository.ReviewRepository
+import pl.edu.ur.teachly.data.repository.TutorRepository
+import pl.edu.ur.teachly.ui.components.Review
 import pl.edu.ur.teachly.ui.components.Tutor
+import pl.edu.ur.teachly.ui.components.toUiReview
+import pl.edu.ur.teachly.ui.components.toUiTutor
 
-class TutorDetailViewModel : ViewModel() {
+data class TutorDetailUiState(
+    val tutor: Tutor? = null,
+    val reviews: List<Review> = emptyList(),
+    val isLoading: Boolean = true,
+    val error: String? = null,
+)
 
-    private val _tutor = MutableStateFlow<Tutor?>(null)
-    val tutor: StateFlow<Tutor?> = _tutor.asStateFlow()
+class TutorDetailViewModel(
+    private val tutorRepository: TutorRepository,
+    private val reviewRepository: ReviewRepository,
+) : ViewModel() {
+
+    private val _state = MutableStateFlow(TutorDetailUiState())
+    val state: StateFlow<TutorDetailUiState> = _state.asStateFlow()
 
     fun loadTutor(tutorId: String) {
-        _tutor.value = MOCK_TUTORS.first { it.id.toString() == tutorId }
-        // docelowo: viewModelScope.launch { _tutor.value = repository.getTutor(tutorId) }
+        val id = tutorId.toIntOrNull() ?: return
+        viewModelScope.launch {
+            _state.update { it.copy(isLoading = true, error = null) }
+
+            // Load tutor basic info
+            val tutorResponse = tutorRepository.getTutorById(id).getOrElse { e ->
+                _state.update { it.copy(isLoading = false, error = e.message) }
+                return@launch
+            }
+
+            // Load subjects for this tutor
+            val subjects = tutorRepository.getTutorSubjects(id)
+                .getOrDefault(emptyList())
+                .map { it.subjectName }
+
+            try {
+                _state.update { it.copy(tutor = tutorResponse.toUiTutor(subjects)) }
+            } catch (e: Exception) {
+                _state.update { it.copy(isLoading = false, error = e.message) }
+                return@launch
+            }
+
+            // Load reviews
+            reviewRepository.getTutorReviews(id).fold(
+                onSuccess = { reviews ->
+                    try {
+                        _state.update { it.copy(reviews = reviews.map { r -> r.toUiReview() }) }
+                    } catch (_: Exception) {
+                    }
+                },
+                onFailure = { },
+            )
+
+            _state.update { it.copy(isLoading = false) }
+        }
     }
 }
+
+

@@ -2,6 +2,7 @@ package pl.edu.ur.teachly.lesson.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import pl.edu.ur.teachly.common.enums.LessonStatus;
 import pl.edu.ur.teachly.lesson.entity.Lesson;
@@ -18,7 +19,7 @@ public interface LessonRepository extends JpaRepository<Lesson, Integer> {
 
     List<Lesson> findByTutor_UserIdAndLessonDate(Integer tutorId, LocalDate lessonDate);
 
-    boolean existsByStudent_IdAndTutor_UserIdAndLessonStatus(Integer studentId, Integer tutorId, pl.edu.ur.teachly.common.enums.LessonStatus status);
+    boolean existsByStudent_IdAndTutor_UserIdAndLessonStatus(Integer studentId, Integer tutorId, LessonStatus status);
 
     List<Lesson> findByTutor_UserIdAndLessonDateBetween(Integer tutorId, LocalDate startDate, LocalDate endDate);
 
@@ -32,10 +33,10 @@ public interface LessonRepository extends JpaRepository<Lesson, Integer> {
                   AND l.timeTo > :timeFrom
             """)
     boolean existsConflictingLesson(
-            Integer tutorId,
-            LocalDate date,
-            LocalTime timeFrom,
-            LocalTime timeTo,
-            LessonStatus lessonStatus
+            @Param("tutorId") Integer tutorId,
+            @Param("date") LocalDate date,
+            @Param("timeFrom") LocalTime timeFrom,
+            @Param("timeTo") LocalTime timeTo,
+            @Param("lessonStatus") LessonStatus lessonStatus
     );
 }

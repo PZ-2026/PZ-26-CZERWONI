@@ -1,7 +1,5 @@
 package pl.edu.ur.teachly.data.model
 
-import pl.edu.ur.teachly.ui.auth.viewmodels.UserRole
-
 data class LoginRequest(
     val email: String,
     val password: String

@@ -18,7 +18,8 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
@@ -41,7 +42,7 @@ fun HomeHeader(
     onClear: () -> Unit,
     onSearch: () -> Unit,
 ) {
-    Surface(color = MaterialTheme.colorScheme.surface, shadowElevation = 2.dp) {
+    Surface(color = colorScheme.surface, shadowElevation = 2.dp) {
         Column(
             modifier = Modifier
                 .padding(horizontal = 24.dp)
@@ -56,20 +57,20 @@ fun HomeHeader(
                     Spacer(Modifier.height(4.dp))
                     Text(
                         text = stringResource(R.string.home_find),
-                        style = MaterialTheme.typography.headlineMedium,
-                        color = MaterialTheme.colorScheme.onBackground,
+                        style = typography.headlineMedium,
+                        color = colorScheme.onBackground,
                     )
                     Text(
                         text = stringResource(R.string.home_tutor),
-                        style = MaterialTheme.typography.headlineMedium,
-                        color = MaterialTheme.colorScheme.primary,
+                        style = typography.headlineMedium,
+                        color = colorScheme.primary,
                     )
                 }
                 Box(
                     modifier = Modifier
                         .size(44.dp)
                         .clip(RoundedCornerShape(14.dp))
-                        .background(MaterialTheme.colorScheme.primary),
+                        .background(colorScheme.primary),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
@@ -90,7 +91,7 @@ fun HomeHeader(
                 placeholder = {
                     Text(
                         text = stringResource(R.string.home_search_placeholder),
-                        style = MaterialTheme.typography.bodyMedium,
+                        style = typography.bodyMedium,
                     )
                 },
                 leadingIcon = {
@@ -116,10 +117,10 @@ fun HomeHeader(
                 keyboardActions = KeyboardActions(onSearch = { onSearch() }),
                 shape = RoundedCornerShape(16.dp),
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = MaterialTheme.colorScheme.primary,
-                    unfocusedBorderColor = MaterialTheme.colorScheme.outline,
-                    focusedContainerColor = MaterialTheme.colorScheme.surface,
-                    unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                    focusedBorderColor = colorScheme.primary,
+                    unfocusedBorderColor = colorScheme.outline,
+                    focusedContainerColor = colorScheme.surface,
+                    unfocusedContainerColor = colorScheme.surfaceVariant,
                 ),
             )
         }
