@@ -2,6 +2,7 @@ package pl.edu.ur.teachly.data.repository;
 
 import pl.edu.ur.teachly.data.model.TimetableDayResponse
 import pl.edu.ur.teachly.data.model.TutorResponse
+import pl.edu.ur.teachly.data.model.TutorSubjectResponse
 import pl.edu.ur.teachly.data.remote.TutorApiService
 
 class TutorRepository(private val api: TutorApiService) {
@@ -26,7 +27,21 @@ class TutorRepository(private val api: TutorApiService) {
         }
     }
 
-    suspend fun getTimetable(tutorId: Int, from: String, to: String): Result<List<TimetableDayResponse>> {
+    suspend fun getTutorSubjects(id: Int): Result<List<TutorSubjectResponse>> {
+        return try {
+            val response = api.getTutorSubjects(id)
+            if (response.isSuccessful) Result.success(response.body()!!)
+            else Result.failure(Exception("Błąd pobierania przedmiotów: ${response.code()}"))
+        } catch (e: Exception) {
+            Result.failure(Exception("Brak połączenia z serwerem: ${e.message}"))
+        }
+    }
+
+    suspend fun getTimetable(
+        tutorId: Int,
+        from: String,
+        to: String
+    ): Result<List<TimetableDayResponse>> {
         return try {
             val response = api.getTimetable(tutorId, from, to)
             if (response.isSuccessful) Result.success(response.body()!!)

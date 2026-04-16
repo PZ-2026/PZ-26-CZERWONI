@@ -77,9 +77,22 @@ class BookingViewModel(
             val to = days.last().second.toString()
             tutorRepository.getTimetable(tutorId, from, to).fold(
                 onSuccess = { timetable ->
-                    val byDate = timetable.associate { day ->
-                        day.date to (day.availableSlots?.map { it.timeFrom.take(5) } ?: emptyList())
-                    }
+                    val byDate = timetable
+                        .groupBy { it.date }
+                        .mapValues { entry ->
+                            entry.value.flatMap { day ->
+                                day.availableSlots.flatMap { slot ->
+                                    val start = LocalTime.parse(slot.timeFrom)
+                                    val end = LocalTime.parse(slot.timeTo)
+
+                                    generateSequence(start) { current ->
+                                        val next = current.plusMinutes(30)
+                                        if (next < end) next else null
+                                    }.map { it.toString().take(5) }
+                                        .toList()
+                                }
+                            }
+                        }
                     _state.update { it.copy(timetableByDate = byDate, isLoading = false) }
                 },
                 onFailure = { _state.update { it.copy(isLoading = false) } },
@@ -117,7 +130,7 @@ class BookingViewModel(
         val tutor = st.tutor ?: return
         val slot = st.selectedSlot ?: return
         val dayDate = st.calendarDays.getOrNull(st.selectedDayIndex)?.second ?: return
-        val subject = st.subjects.getOrNull(st.selectedSubjectIndex)
+        val subject = st.subjects.getOrNull(st.selectedSubjectIndex) ?: return
 
         // Validate consecutive slots
         val available = st.timetableByDate[dayDate.toString()] ?: emptyList()

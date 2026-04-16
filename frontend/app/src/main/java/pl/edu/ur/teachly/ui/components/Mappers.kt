@@ -1,6 +1,5 @@
 package pl.edu.ur.teachly.ui.components
 
-import pl.edu.ur.teachly.data.model.LessonFormat
 import pl.edu.ur.teachly.data.model.LessonResponse
 import pl.edu.ur.teachly.data.model.LessonStatus
 import pl.edu.ur.teachly.data.model.ReviewResponse
@@ -9,11 +8,11 @@ import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalTime
 
-fun TutorResponse.toUiTutor(): Tutor = Tutor(
+fun TutorResponse.toUiTutor(subjects: List<String> = emptyList()): Tutor = Tutor(
     id = id,
     name = "$firstName $lastName".trim(),
     initials = "${firstName.firstOrNull() ?: ""}${lastName.firstOrNull() ?: ""}",
-    subjects = emptyList(),
+    subjects = subjects,
     rating = 0.0,
     reviewCount = 0,
     pricePerHour = hourlyRate.toInt(),
@@ -29,18 +28,8 @@ fun TutorResponse.toUiTutor(): Tutor = Tutor(
 fun LessonResponse.toScheduledClass(): ScheduledClass = ScheduledClass(
     id = id.toString(),
     subject = subjectName,
-    tutor = Tutor(
-        id = tutorId,
-        name = "$tutorFirstName $tutorLastName".trim(),
-        initials = "${tutorFirstName.firstOrNull() ?: ""}${tutorLastName.firstOrNull() ?: ""}",
-        subjects = emptyList(),
-        rating = 0.0,
-        reviewCount = 0,
-        pricePerHour = amount.toInt(),
-        tags = emptyList(),
-        isOnline = format == LessonFormat.ONLINE,
-        nearestSlots = emptyList(),
-    ),
+    tutorName = "$tutorFirstName $tutorLastName".trim(),
+    studentName = "$studentFirstName $studentLastName".trim(),
     day = LocalDate.parse(lessonDate),
     time = timeFrom.take(5),
     durationMinutes = if (timeFrom.isNotEmpty() && timeTo.isNotEmpty()) {

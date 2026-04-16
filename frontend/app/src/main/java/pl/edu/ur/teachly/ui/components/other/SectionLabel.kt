@@ -1,6 +1,7 @@
 package pl.edu.ur.teachly.ui.components.other
 
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -9,8 +10,8 @@ import androidx.compose.ui.Modifier
 fun SectionLabel(text: String, modifier: Modifier = Modifier) {
     Text(
         text = text.uppercase(),
-        style = MaterialTheme.typography.labelSmall,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        style = typography.labelSmall,
+        color = colorScheme.onSurfaceVariant,
         modifier = modifier,
     )
 }

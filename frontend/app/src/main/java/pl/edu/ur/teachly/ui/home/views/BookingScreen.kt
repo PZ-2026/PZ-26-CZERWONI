@@ -1,6 +1,7 @@
 package pl.edu.ur.teachly.ui.home.views
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -8,42 +9,40 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.MaterialTheme.typography
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import org.koin.androidx.compose.koinViewModel
 import pl.edu.ur.teachly.R
-import pl.edu.ur.teachly.ui.components.CALENDAR_DAYS
-import pl.edu.ur.teachly.ui.components.MOCK_TUTORS
 import pl.edu.ur.teachly.ui.components.booking.BookingSummaryBar
 import pl.edu.ur.teachly.ui.components.booking.DayPicker
 import pl.edu.ur.teachly.ui.components.booking.DurationPicker
+import pl.edu.ur.teachly.ui.components.booking.SubjectPicker
 import pl.edu.ur.teachly.ui.components.booking.TimeSlotGrid
 import pl.edu.ur.teachly.ui.components.other.AppHeader
 import pl.edu.ur.teachly.ui.components.other.HeaderBackground
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.LocalTime
-import java.time.format.DateTimeFormatter
+import pl.edu.ur.teachly.ui.home.viewmodels.BookingViewModel
 
 @Composable
 fun BookingScreen(
     tutorId: String,
     onBack: () -> Unit,
-    onConfirm: (String, String) -> Unit,
+    onConfirm: (tutorName: String, subjectName: String, lessonDate: String, timeFrom: String, timeTo: String, amount: String) -> Unit,
+    viewModel: BookingViewModel = koinViewModel(),
 ) {
-    // TODO: download tutor from ViewModel by tutorId
-    val tutor = MOCK_TUTORS.first { it.id.toString() == tutorId }
+    val tutorIdInt = tutorId.toIntOrNull() ?: 0
+    LaunchedEffect(tutorIdInt) { viewModel.load(tutorIdInt) }
 
-    var selectedDayIndex by remember { mutableIntStateOf(0) }
-    var selectedSlot by remember { mutableStateOf<String?>(null) }
-    var selectedDuration by remember { mutableIntStateOf(60) }
+    val state by viewModel.state.collectAsState()
 
     Column(
         modifier = Modifier
@@ -52,45 +51,89 @@ fun BookingScreen(
     ) {
         AppHeader(
             title = stringResource(R.string.booking_title),
-            subtitle = "${tutor.name} | ${tutor.subjects}",
+            subtitle = state.tutor?.let { "${it.firstName} ${it.lastName}" } ?: "...",
             background = HeaderBackground.Vertical(
                 listOf(colorScheme.primary.copy(0.05f), colorScheme.primary.copy(0.8f))
             ),
             onBack = onBack,
         )
 
-        Column(
-            modifier = Modifier
-                .weight(1f)
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = 24.dp, vertical = 20.dp)
-        ) {
-            DayPicker(
-                selectedIndex = selectedDayIndex,
-                onSelect = { index -> selectedDayIndex = index; selectedSlot = null },
-            )
-            Spacer(Modifier.height(24.dp))
-            DurationPicker(selected = selectedDuration, onSelect = { selectedDuration = it })
-            Spacer(Modifier.height(24.dp))
-            TimeSlotGrid(selectedSlot = selectedSlot, onSelect = { selectedSlot = it })
-            Spacer(Modifier.height(80.dp))
-        }
+        when {
+            state.isLoading -> Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center,
+            ) { CircularProgressIndicator() }
 
-        BookingSummaryBar(
-            tutor = tutor,
-            selectedDayIndex = selectedDayIndex,
-            selectedSlot = selectedSlot,
-            selectedDuration = selectedDuration,
-            onConfirm = {
-                val slot = selectedSlot ?: return@BookingSummaryBar
-                val day = CALENDAR_DAYS[selectedDayIndex]
-                val date = LocalDate.of(2026, 3, day.dayNumber.toInt())
-                val time = LocalTime.parse(slot)
-                val dateTime = LocalDateTime.of(date, time)
-                val formatted = dateTime.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
-                // TODO: get real bookingId from API
-                onConfirm("mock-booking-id", formatted)
-            },
-        )
+            state.error != null -> Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center,
+            ) {
+                Text(
+                    text = state.error!!,
+                    style = typography.bodyMedium,
+                    color = colorScheme.error,
+                    modifier = Modifier.padding(24.dp),
+                )
+            }
+
+            else -> {
+                val availableSlots = viewModel.availableSlotsForSelectedDay
+
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .verticalScroll(rememberScrollState())
+                        .padding(horizontal = 24.dp, vertical = 20.dp)
+                ) {
+                    DayPicker(
+                        days = state.calendarDays.map { it.first },
+                        selectedIndex = state.selectedDayIndex,
+                        onSelect = { index -> viewModel.onDaySelect(index) },
+                    )
+                    Spacer(Modifier.height(24.dp))
+                    DurationPicker(
+                        selected = state.selectedDuration,
+                        onSelect = viewModel::onDurationSelect,
+                    )
+                    Spacer(Modifier.height(24.dp))
+                    if (state.subjects.isNotEmpty()) {
+                        SubjectPicker(
+                            subjects = state.subjects.map { it.subjectName },
+                            selectedIndex = state.selectedSubjectIndex,
+                            onSelect = viewModel::onSubjectSelect,
+                        )
+                        Spacer(Modifier.height(24.dp))
+                    }
+                    TimeSlotGrid(
+                        availableSlots = availableSlots,
+                        selectedSlot = state.selectedSlot,
+                        onSelect = viewModel::onSlotSelect,
+                    )
+                    if (state.submitError != null) {
+                        Spacer(Modifier.height(8.dp))
+                        Text(
+                            text = state.submitError!!,
+                            style = typography.bodySmall,
+                            color = colorScheme.error,
+                        )
+                    }
+                    Spacer(Modifier.height(80.dp))
+                }
+
+                BookingSummaryBar(
+                    tutorName = state.tutor?.let { "${it.firstName} ${it.lastName}" } ?: "",
+                    pricePerHour = state.tutor?.hourlyRate?.toInt() ?: 0,
+                    selectedDay = state.calendarDays.getOrNull(state.selectedDayIndex)?.first,
+                    selectedSlot = state.selectedSlot,
+                    selectedDuration = state.selectedDuration,
+                    isSubmitting = state.isSubmitting,
+                    onConfirm = {
+                        viewModel.confirmBooking { tutorName, subjectName, lessonDate, timeFrom, timeTo, amount ->
+                            onConfirm(tutorName, subjectName, lessonDate, timeFrom, timeTo, amount)
+                        }
+                    },
+                )
+            }
+        }
     }
 }

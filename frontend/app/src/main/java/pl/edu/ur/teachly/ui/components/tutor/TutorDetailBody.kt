@@ -8,12 +8,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import pl.edu.ur.teachly.R
-import pl.edu.ur.teachly.ui.components.MOCK_REVIEWS
+import pl.edu.ur.teachly.ui.components.Review
 import pl.edu.ur.teachly.ui.components.Tutor
 import pl.edu.ur.teachly.ui.components.profile.SubjectsSection
 
 @Composable
-fun TutorDetailBody(tutor: Tutor) {
+fun TutorDetailBody(tutor: Tutor, reviews: List<Review> = emptyList()) {
     Column(
         modifier = Modifier.padding(horizontal = 12.dp, vertical = 20.dp),
         verticalArrangement = Arrangement.spacedBy(24.dp)
@@ -22,16 +22,20 @@ fun TutorDetailBody(tutor: Tutor) {
             TutorBioSection(tutor = tutor)
         }
 
-        DetailSection(title = stringResource(R.string.tutor_profile_subjects_title)) {
-            SubjectsSection(subjects = tutor.subjects, student = false)
+        if (tutor.subjects.isNotEmpty()) {
+            DetailSection(title = stringResource(R.string.tutor_profile_subjects_title)) {
+                SubjectsSection(subjects = tutor.subjects, student = false)
+            }
         }
 
         DetailSection(title = stringResource(R.string.tutor_section_stats)) {
             StatsGrid(tutor = tutor)
         }
 
-        DetailSection(title = stringResource(R.string.tutor_section_reviews)) {
-            ReviewList(reviews = MOCK_REVIEWS)
+        if (reviews.isNotEmpty()) {
+            DetailSection(title = stringResource(R.string.tutor_section_reviews)) {
+                ReviewList(reviews = reviews)
+            }
         }
     }
 }

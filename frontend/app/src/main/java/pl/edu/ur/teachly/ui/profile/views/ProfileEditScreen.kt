@@ -31,7 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import org.koin.androidx.compose.koinViewModel
 import pl.edu.ur.teachly.R
 import pl.edu.ur.teachly.ui.components.other.InitialsAvatar
 import pl.edu.ur.teachly.ui.components.other.PrimaryButton
@@ -42,12 +42,14 @@ import pl.edu.ur.teachly.ui.theme.AvatarColors
 fun ProfileEditScreen(
     onBack: () -> Unit,
     onSave: () -> Unit,
-    viewModel: ProfileViewModel = viewModel()
+    viewModel: ProfileViewModel = koinViewModel(),
 ) {
     val editState by viewModel.editState.collectAsState()
 
-    LaunchedEffect(Unit) {
-        viewModel.startEditing()
+    LaunchedEffect(Unit) { viewModel.startEditing() }
+
+    LaunchedEffect(editState.isSaved) {
+        if (editState.isSaved) onSave()
     }
 
     Column(
@@ -58,20 +60,20 @@ fun ProfileEditScreen(
         Surface(
             color = MaterialTheme.colorScheme.surface,
             shadowElevation = 2.dp,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         ) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 20.dp)
                     .padding(top = 32.dp),
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 IconButton(onClick = onBack) {
                     Icon(
                         Icons.Default.ArrowBack,
                         contentDescription = stringResource(R.string.cd_back),
-                        tint = MaterialTheme.colorScheme.onSurface
+                        tint = MaterialTheme.colorScheme.onSurface,
                     )
                 }
                 Spacer(modifier = Modifier.width(8.dp))
@@ -79,7 +81,7 @@ fun ProfileEditScreen(
                     text = stringResource(R.string.profile_edit_title),
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface
+                    color = MaterialTheme.colorScheme.onSurface,
                 )
             }
         }
@@ -89,59 +91,42 @@ fun ProfileEditScreen(
                 .fillMaxSize()
                 .padding(horizontal = 24.dp)
                 .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             Spacer(modifier = Modifier.height(24.dp))
 
             val initials =
                 "${editState.firstName.firstOrNull() ?: ""}${editState.lastName.firstOrNull() ?: ""}"
-            InitialsAvatar(
-                initials = initials,
-                avatarColor = AvatarColors[0],
-            )
+            InitialsAvatar(initials = initials, avatarColor = AvatarColors[0])
 
             Spacer(modifier = Modifier.height(16.dp))
 
             ProfileTextField(
                 label = stringResource(R.string.field_first_name),
                 value = editState.firstName,
-                onValueChange = viewModel::onFirstNameChange
+                onValueChange = viewModel::onFirstNameChange,
             )
-
             ProfileTextField(
                 label = stringResource(R.string.field_last_name),
                 value = editState.lastName,
-                onValueChange = viewModel::onLastNameChange
+                onValueChange = viewModel::onLastNameChange,
             )
 
-            ProfileTextField(
-                label = stringResource(R.string.profile_edit_email),
-                value = editState.email,
-                onValueChange = viewModel::onEmailChange
-            )
-
-            ProfileTextField(
-                label = stringResource(R.string.profile_level_title),
-                value = editState.level,
-                onValueChange = viewModel::onLevelChange
-            )
-
-            ProfileTextField(
-                label = stringResource(R.string.profile_subjects_title),
-                value = editState.subjectsText,
-                onValueChange = viewModel::onSubjectsChange,
-                singleLine = false
-            )
+            if (editState.error != null) {
+                Text(
+                    text = editState.error!!,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.error,
+                )
+            }
 
             Spacer(modifier = Modifier.weight(1f))
 
             PrimaryButton(
                 text = stringResource(R.string.profile_edit_save),
-                onClick = {
-                    viewModel.saveProfile()
-                    onSave()
-                },
-                modifier = Modifier.padding(bottom = 32.dp, top = 24.dp)
+                onClick = { viewModel.saveProfile() },
+                isLoading = editState.isLoading,
+                modifier = Modifier.padding(bottom = 32.dp, top = 24.dp),
             )
         }
     }
@@ -152,13 +137,13 @@ fun ProfileTextField(
     label: String,
     value: String,
     onValueChange: (String) -> Unit,
-    singleLine: Boolean = true
+    singleLine: Boolean = true,
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
         Text(
             text = label,
             style = MaterialTheme.typography.labelMedium,
-            color = MaterialTheme.colorScheme.onBackground
+            color = MaterialTheme.colorScheme.onBackground,
         )
         OutlinedTextField(
             value = value,
@@ -171,7 +156,7 @@ fun ProfileTextField(
                 unfocusedBorderColor = MaterialTheme.colorScheme.outline,
                 focusedContainerColor = MaterialTheme.colorScheme.surface,
                 unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
-            )
+            ),
         )
     }
 }

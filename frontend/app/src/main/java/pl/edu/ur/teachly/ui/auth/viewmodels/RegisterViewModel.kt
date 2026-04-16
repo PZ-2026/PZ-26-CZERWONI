@@ -7,20 +7,22 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import pl.edu.ur.teachly.data.model.UserRole
 import pl.edu.ur.teachly.data.repository.AuthRepository
 
-enum class UserRole(
+enum class UserRoleOption(
     val emoji: String,
     val title: String,
     val description: String,
+    val dataRole: pl.edu.ur.teachly.data.model.UserRole
 ) {
-    STUDENT("🎓", "Jestem uczniem", "Szukam korepetytora i chcę umawiać lekcje"),
-    TUTOR("📖", "Jestem korepetytorem", "Oferuję lekcje i zarządzam harmonogramem"),
+    STUDENT("🎓", "Jestem uczniem", "Szukam korepetytora i chcę umawiać lekcje", UserRole.STUDENT),
+    TUTOR("📖", "Jestem korepetytorem", "Oferuję lekcje i zarządzam harmonogramem", UserRole.TUTOR),
 }
 
 data class RegisterUiState(
     val step: Int = 1,
-    val selectedRole: UserRole? = UserRole.STUDENT,
+    val selectedRole: UserRoleOption? = UserRoleOption.STUDENT,
     val firstName: String = "",
     val lastName: String = "",
     val email: String = "",
@@ -36,7 +38,7 @@ class RegisterViewModel(private val repository: AuthRepository) : ViewModel() {
     private val _uiState = MutableStateFlow(RegisterUiState())
     val uiState: StateFlow<RegisterUiState> = _uiState.asStateFlow()
 
-    fun onRoleSelected(role: UserRole) {
+    fun onRoleSelected(role: UserRoleOption) {
         _uiState.value = _uiState.value.copy(selectedRole = role)
     }
 
@@ -93,11 +95,9 @@ class RegisterViewModel(private val repository: AuthRepository) : ViewModel() {
             else -> viewModelScope.launch {
                 _uiState.value = state.copy(isLoading = true, errorMessage = null)
 
-
-                // TODO: Add phoneNumber text field to RegisterScreen
-                val selectedRole = state.selectedRole ?: UserRole.STUDENT
+                val selectedRole = state.selectedRole ?: UserRoleOption.STUDENT
                 val result = repository.register(
-                    selectedRole,
+                    selectedRole.dataRole,
                     state.firstName,
                     state.lastName,
                     state.email,

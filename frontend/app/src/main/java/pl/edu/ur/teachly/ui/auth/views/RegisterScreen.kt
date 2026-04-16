@@ -8,7 +8,7 @@ import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -44,8 +44,8 @@ fun RegisterScreen(
             else stringResource(R.string.register_step2_subtitle),
             background = HeaderBackground.Diagonal(
                 colors = listOf(
-                    MaterialTheme.colorScheme.onPrimaryContainer,
-                    MaterialTheme.colorScheme.primary,
+                    colorScheme.onPrimaryContainer,
+                    colorScheme.primary,
                 )
             ),
             topPadding = 20.dp,

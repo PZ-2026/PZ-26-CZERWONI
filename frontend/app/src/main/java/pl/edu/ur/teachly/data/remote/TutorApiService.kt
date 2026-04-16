@@ -6,6 +6,7 @@ import pl.edu.ur.teachly.data.model.TutorAvailabilityOverrideResponse
 import pl.edu.ur.teachly.data.model.TutorAvailabilityRecurringRequest
 import pl.edu.ur.teachly.data.model.TutorAvailabilityRecurringResponse
 import pl.edu.ur.teachly.data.model.TutorResponse
+import pl.edu.ur.teachly.data.model.TutorSubjectResponse
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -23,6 +24,11 @@ interface TutorApiService {
     suspend fun getTutorById(
         @Path("id") id: Int
     ): Response<TutorResponse>
+
+    @GET("api/tutors/{tutorId}/subjects")
+    suspend fun getTutorSubjects(
+        @Path("tutorId") tutorId: Int
+    ): Response<List<TutorSubjectResponse>>
 
     @GET("api/tutors/{tutorId}/availability/timetable")
     suspend fun getTimetable(

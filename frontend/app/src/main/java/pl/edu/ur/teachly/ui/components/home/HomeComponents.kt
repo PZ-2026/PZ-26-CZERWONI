@@ -16,7 +16,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,14 +28,17 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import pl.edu.ur.teachly.R
-import pl.edu.ur.teachly.ui.components.SUBJECTS
 import pl.edu.ur.teachly.ui.components.Tutor
-import pl.edu.ur.teachly.ui.components.avatarColors
 import pl.edu.ur.teachly.ui.components.tutor.TutorCard
+import pl.edu.ur.teachly.ui.theme.AvatarColors
 
 @Composable
-fun SubjectChips(activeSubject: String, onSelect: (String) -> Unit) {
-    Surface(color = MaterialTheme.colorScheme.surface) {
+fun SubjectChips(
+    subjects: List<String>,
+    activeSubject: String,
+    onSelect: (String) -> Unit,
+) {
+    Surface(color = colorScheme.surface) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -42,23 +46,23 @@ fun SubjectChips(activeSubject: String, onSelect: (String) -> Unit) {
                 .padding(horizontal = 24.dp, vertical = 12.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            SUBJECTS.forEach { subject ->
+            subjects.forEach { subject ->
                 val isActive = activeSubject == subject
                 FilterChip(
                     selected = isActive,
                     onClick = { onSelect(subject) },
-                    label = { Text(subject, style = MaterialTheme.typography.labelMedium) },
+                    label = { Text(subject, style = typography.labelMedium) },
                     colors = FilterChipDefaults.filterChipColors(
-                        selectedContainerColor = MaterialTheme.colorScheme.primary,
-                        selectedLabelColor = MaterialTheme.colorScheme.onPrimary,
-                        containerColor = MaterialTheme.colorScheme.surfaceVariant,
-                        labelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        selectedContainerColor = colorScheme.primary,
+                        selectedLabelColor = colorScheme.onPrimary,
+                        containerColor = colorScheme.surfaceVariant,
+                        labelColor = colorScheme.onSurfaceVariant,
                     ),
                     border = FilterChipDefaults.filterChipBorder(
                         enabled = true,
                         selected = isActive,
-                        selectedBorderColor = MaterialTheme.colorScheme.primary,
-                        borderColor = MaterialTheme.colorScheme.outline,
+                        selectedBorderColor = colorScheme.primary,
+                        borderColor = colorScheme.outline,
                         selectedBorderWidth = 1.5.dp,
                         borderWidth = 1.5.dp,
                     ),
@@ -69,9 +73,7 @@ fun SubjectChips(activeSubject: String, onSelect: (String) -> Unit) {
 }
 
 @Composable
-fun StatsRow() {
-    val tutorCount = 48
-
+fun StatsRow(tutorCount: Int = 0) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -81,18 +83,17 @@ fun StatsRow() {
         listOf(
             pluralStringResource(R.plurals.home_tutors_count, tutorCount, tutorCount),
             stringResource(R.string.stat_rating, 4.9),
-            stringResource(R.string.stat_response, "<2h"),
         ).forEach { label ->
             Surface(
                 modifier = Modifier.weight(1f),
                 shape = RoundedCornerShape(12.dp),
-                color = MaterialTheme.colorScheme.surface,
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+                color = colorScheme.surface,
+                border = BorderStroke(1.dp, colorScheme.outline),
             ) {
                 Text(
                     text = label,
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    style = typography.labelSmall,
+                    color = colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(horizontal = 8.dp, vertical = 10.dp),
                     textAlign = TextAlign.Center
                 )
@@ -103,8 +104,6 @@ fun StatsRow() {
 
 @Composable
 fun TutorList(tutors: List<Tutor>, onTutorClick: (Tutor) -> Unit) {
-    val tutorCount = 6
-
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -118,19 +117,20 @@ fun TutorList(tutors: List<Tutor>, onTutorClick: (Tutor) -> Unit) {
                 Text(
                     text = pluralStringResource(
                         R.plurals.home_tutors_count,
-                        tutorCount,
-                        tutorCount
+                        tutors.size,
+                        tutors.size,
                     ),
-                    style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    style = typography.labelMedium,
+                    color = colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(bottom = 12.dp),
                 )
             }
             itemsIndexed(tutors) { index, tutor ->
                 TutorCard(
                     tutor = tutor,
-                    colors = avatarColors(index),
-                    onClick = { onTutorClick(tutor) })
+                    colors = AvatarColors[index % AvatarColors.size],
+                    onClick = { onTutorClick(tutor) },
+                )
                 if (index < tutors.lastIndex) Spacer(Modifier.height(12.dp))
             }
         }
@@ -147,14 +147,14 @@ fun EmptyState() {
     ) {
         Text(
             stringResource(R.string.home_no_results),
-            style = MaterialTheme.typography.titleSmall,
-            color = MaterialTheme.colorScheme.onSurface
+            style = typography.titleSmall,
+            color = colorScheme.onSurface
         )
         Spacer(Modifier.height(4.dp))
         Text(
             stringResource(R.string.home_no_results_hint),
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            style = typography.bodySmall,
+            color = colorScheme.onSurfaceVariant
         )
     }
 }

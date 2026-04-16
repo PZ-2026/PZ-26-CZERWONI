@@ -13,7 +13,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -31,8 +32,8 @@ fun BookingHeader(tutor: Tutor, onBack: () -> Unit) {
             .background(
                 Brush.verticalGradient(
                     colors = listOf(
-                        MaterialTheme.colorScheme.primary.copy(alpha = 0.05f),
-                        MaterialTheme.colorScheme.primary.copy(alpha = 0.8f),
+                        colorScheme.primary.copy(alpha = 0.05f),
+                        colorScheme.primary.copy(alpha = 0.8f),
                     )
                 )
             )
@@ -44,7 +45,7 @@ fun BookingHeader(tutor: Tutor, onBack: () -> Unit) {
                 onClick = onBack,
                 modifier = Modifier
                     .size(36.dp)
-                    .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(12.dp))
+                    .background(colorScheme.surface, RoundedCornerShape(12.dp))
             ) {
                 Icon(
                     Icons.Default.ArrowBack,
@@ -55,13 +56,13 @@ fun BookingHeader(tutor: Tutor, onBack: () -> Unit) {
             Spacer(Modifier.height(16.dp))
             Text(
                 stringResource(R.string.booking_title),
-                style = MaterialTheme.typography.headlineSmall,
-                color = MaterialTheme.colorScheme.onBackground
+                style = typography.headlineSmall,
+                color = colorScheme.onBackground
             )
             Text(
                 "${tutor.name} · ${tutor.subjects}",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                style = typography.bodySmall,
+                color = colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(top = 4.dp)
             )
         }

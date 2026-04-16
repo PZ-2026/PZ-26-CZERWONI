@@ -62,12 +62,12 @@ fun StatsGrid(tutor: Tutor) {
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(10.dp),
     ) {
+        // TODO: Change placeholders to real data
         listOf(
-            Triple("🎓", "${tutor.lessonCount}", "Lekcji"),
-            Triple("⭐", "${tutor.rating}", "Ocena"),
-            Triple("🕐", "${tutor.yearsExp}+", "Lat doś."),
-            Triple("💬", tutor.responseTime, "Odpowiedź"),
-        ).forEach { (icon, value, label) ->
+            listOf("${12}", "Lekcji"),
+            listOf("${4.5}", "Ocena"),
+            listOf("${4}", "Nauczanych tematów"),
+        ).forEach { (value, label) ->
             Surface(
                 modifier = Modifier.weight(1f),
                 shape = RoundedCornerShape(14.dp),
@@ -75,7 +75,6 @@ fun StatsGrid(tutor: Tutor) {
                 border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
             ) {
                 Column(modifier = Modifier.padding(horizontal = 10.dp, vertical = 12.dp)) {
-                    Text(icon, style = MaterialTheme.typography.titleSmall)
                     Text(
                         value,
                         style = MaterialTheme.typography.titleMedium,

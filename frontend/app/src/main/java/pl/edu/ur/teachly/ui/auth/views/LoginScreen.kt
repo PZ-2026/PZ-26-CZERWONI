@@ -20,7 +20,8 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -64,8 +65,8 @@ fun LoginScreen(
             subtitle = stringResource(R.string.login_subtitle),
             background = HeaderBackground.Diagonal(
                 colors = listOf(
-                    MaterialTheme.colorScheme.onPrimaryContainer,
-                    MaterialTheme.colorScheme.primary,
+                    colorScheme.onPrimaryContainer,
+                    colorScheme.primary,
                 )
             ),
             topPadding = 20.dp,
@@ -77,7 +78,7 @@ fun LoginScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
+                .background(colorScheme.background)
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 24.dp)
                 .padding(top = 32.dp, bottom = 48.dp)
@@ -121,8 +122,8 @@ fun LoginScreen(
                 TextButton(onClick = { /* TODO: reset hasła */ }) {
                     Text(
                         text = stringResource(R.string.login_forgot_password),
-                        style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.primary,
+                        style = typography.labelMedium,
+                        color = colorScheme.primary,
                     )
                 }
             }
