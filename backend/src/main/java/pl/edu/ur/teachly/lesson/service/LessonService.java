@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.edu.ur.teachly.common.enums.LessonStatus;
+import pl.edu.ur.teachly.common.enums.PaymentStatus;
 import pl.edu.ur.teachly.common.enums.UserRole;
 import pl.edu.ur.teachly.common.exception.ResourceNotFoundException;
 import pl.edu.ur.teachly.common.exception.SlotNotAvailableException;
@@ -14,7 +15,6 @@ import pl.edu.ur.teachly.lesson.entity.Lesson;
 import pl.edu.ur.teachly.lesson.mapper.LessonMapper;
 import pl.edu.ur.teachly.lesson.repository.LessonRepository;
 import pl.edu.ur.teachly.subject.repository.SubjectRepository;
-import pl.edu.ur.teachly.tutor.dto.response.TimeSlot;
 import pl.edu.ur.teachly.tutor.dto.response.TimetableDayResponse;
 import pl.edu.ur.teachly.tutor.repository.TutorRepository;
 import pl.edu.ur.teachly.tutor.service.TimetableService;
@@ -23,11 +23,7 @@ import pl.edu.ur.teachly.user.repository.UserRepository;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 @Service
@@ -55,24 +51,19 @@ public class LessonService {
             throw new IllegalArgumentException("Niepoprawny zakres czasu");
         }
 
-        int numberOfSlots = (int) (duration / 30);
-
         List<TimetableDayResponse> available = timetableService.getTimetable(
                 request.tutorId(),
                 request.lessonDate(),
-                request.lessonDate()
+                request.lessonDate(),
+                studentId
         );
 
-        Set<LocalTime> availableStartTimes = available.stream()
+        boolean allAvailable = available.stream()
                 .flatMap(day -> day.getAvailableSlots() == null
                         ? Stream.empty()
                         : day.getAvailableSlots().stream())
-                .map(TimeSlot::getTimeFrom)
-                .collect(Collectors.toSet());
-
-        boolean allAvailable = IntStream.range(0, numberOfSlots)
-                .mapToObj(i -> request.timeFrom().plusMinutes(30L * i))
-                .allMatch(availableStartTimes::contains);
+                .anyMatch(slot -> !slot.getTimeFrom().isAfter(request.timeFrom())
+                        && !slot.getTimeTo().isBefore(request.timeTo()));
         if (!allAvailable) {
             throw new SlotNotAvailableException("Wybrany termin jest niedostępny");
         }
@@ -82,7 +73,7 @@ public class LessonService {
                 request.lessonDate(),
                 request.timeFrom(),
                 request.timeTo(),
-                request.lessonStatus()
+                LessonStatus.CONFIRMED
         );
         if (conflict) {
             throw new SlotNotAvailableException("Korepetytor ma już zarezerwowaną lekcję w tym czasie");
@@ -92,6 +83,8 @@ public class LessonService {
         lesson.setStudent(student);
         lesson.setTutor(tutor);
         lesson.setSubject(subject);
+        lesson.setLessonStatus(LessonStatus.PENDING);
+        lesson.setPaymentStatus(PaymentStatus.PENDING);
 
         return lessonMapper.toResponse(lessonRepository.save(lesson));
     }

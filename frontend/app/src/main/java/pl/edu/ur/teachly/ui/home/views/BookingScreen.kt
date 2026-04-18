@@ -26,6 +26,7 @@ import pl.edu.ur.teachly.R
 import pl.edu.ur.teachly.ui.components.booking.BookingSummaryBar
 import pl.edu.ur.teachly.ui.components.booking.DayPicker
 import pl.edu.ur.teachly.ui.components.booking.DurationPicker
+import pl.edu.ur.teachly.ui.components.booking.FormatPicker
 import pl.edu.ur.teachly.ui.components.booking.SubjectPicker
 import pl.edu.ur.teachly.ui.components.booking.TimeSlotGrid
 import pl.edu.ur.teachly.ui.components.other.AppHeader
@@ -96,11 +97,19 @@ fun BookingScreen(
                         onSelect = viewModel::onDurationSelect,
                     )
                     Spacer(Modifier.height(24.dp))
-                    if (state.subjects.isNotEmpty()) {
+                    if (state.tutorSubjects.isNotEmpty()) {
                         SubjectPicker(
-                            subjects = state.subjects.map { it.subjectName },
+                            subjects = state.tutorSubjects.map { it.subjectName },
                             selectedIndex = state.selectedSubjectIndex,
                             onSelect = viewModel::onSubjectSelect,
+                        )
+                        Spacer(Modifier.height(24.dp))
+                    }
+                    if (state.availableFormats.size > 1) {
+                        FormatPicker(
+                            formats = state.availableFormats,
+                            selectedFormat = state.selectedFormat,
+                            onSelect = viewModel::onFormatSelect,
                         )
                         Spacer(Modifier.height(24.dp))
                     }

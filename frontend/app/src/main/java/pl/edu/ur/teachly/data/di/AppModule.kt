@@ -37,7 +37,7 @@ val appModule = module {
     viewModel { RegisterViewModel(get()) }
     viewModel { SearchViewModel(get(), get()) }
     viewModel { HomeViewModel(get(), get(), get()) }
-    viewModel { BookingViewModel(get(), get(), get(), get()) }
+    viewModel { BookingViewModel(get(), get(), get()) }
     viewModel { ScheduleViewModel(get(), get()) }
     viewModel { TutorDetailViewModel(get(), get()) }
     viewModel { ProfileViewModel(get(), get(), get()) }
