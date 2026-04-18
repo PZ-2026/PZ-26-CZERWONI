@@ -1,4 +1,4 @@
-package pl.edu.ur.teachly.ui.home.viewmodels
+package pl.edu.ur.teachly.ui.booking.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

@@ -12,7 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -22,6 +22,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -42,31 +43,34 @@ fun ProfileHeader(
         modifier = Modifier
             .fillMaxWidth()
             .background(
-                Brush.verticalGradient(
-                    colors = listOf(
-                        colorScheme.primary.copy(alpha = 0.05f),
-                        colorScheme.primary.copy(alpha = 0.8f),
-                    )
+                Brush.linearGradient(
+                    colors = listOf(colorScheme.onPrimaryContainer, colorScheme.primary),
+                    start = Offset.Zero,
+                    end = Offset(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY),
                 )
             )
             .padding(horizontal = 24.dp)
-            .padding(top = 52.dp, bottom = 24.dp)
+            .padding(top = 28.dp, bottom = 28.dp)
     ) {
         Column {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 IconButton(
                     onClick = onBack,
                     modifier = Modifier
                         .size(36.dp)
-                        .background(colorScheme.surface, RoundedCornerShape(12.dp))
+                        .background(
+                            colorScheme.onPrimary.copy(alpha = 0.15f),
+                            RoundedCornerShape(10.dp),
+                        )
                 ) {
                     Icon(
-                        Icons.Default.ArrowBack,
+                        Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = stringResource(R.string.cd_back),
+                        tint = colorScheme.onPrimary,
                         modifier = Modifier.size(18.dp)
                     )
                 }
@@ -77,20 +81,21 @@ fun ProfileHeader(
                         modifier = Modifier
                             .size(36.dp)
                             .background(
-                                colorScheme.surface,
-                                RoundedCornerShape(12.dp)
+                                colorScheme.onPrimary.copy(alpha = 0.15f),
+                                RoundedCornerShape(10.dp),
                             )
                     ) {
                         Icon(
                             Icons.Default.Edit,
                             contentDescription = stringResource(R.string.cd_edit_profile),
-                            modifier = Modifier.size(18.dp)
+                            tint = colorScheme.onPrimary,
+                            modifier = Modifier.size(18.dp),
                         )
                     }
                 }
             }
 
-            Spacer(Modifier.height(20.dp))
+            Spacer(Modifier.height(24.dp))
 
             Row(
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -103,20 +108,18 @@ fun ProfileHeader(
 
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        profile.fullName,
+                        text = profile.fullName,
                         style = typography.titleLarge,
-                        color = colorScheme.onBackground
+                        color = colorScheme.onPrimary,
                     )
                     Text(
-                        stringResource(
-                            if (student)
-                                R.string.profile_student_role
-                            else
-                                R.string.profile_tutor_role
+                        text = stringResource(
+                            if (student) R.string.profile_student_role
+                            else R.string.profile_tutor_role
                         ),
                         style = typography.bodySmall,
-                        color = colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(top = 2.dp)
+                        color = colorScheme.onPrimary.copy(alpha = 0.75f),
+                        modifier = Modifier.padding(top = 2.dp),
                     )
                 }
             }

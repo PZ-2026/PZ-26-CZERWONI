@@ -8,13 +8,17 @@ import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalTime
 
-fun TutorResponse.toUiTutor(subjects: List<String> = emptyList()): Tutor = Tutor(
+fun TutorResponse.toUiTutor(
+    subjects: List<String> = emptyList(),
+    rating: Double = 0.0,
+    reviewCount: Int = 0,
+): Tutor = Tutor(
     id = id,
     name = "$firstName $lastName".trim(),
     initials = "${firstName.firstOrNull() ?: ""}${lastName.firstOrNull() ?: ""}",
     subjects = subjects,
-    rating = 0.0,
-    reviewCount = 0,
+    rating = rating,
+    reviewCount = reviewCount,
     pricePerHour = hourlyRate.toInt(),
     tags = buildList {
         if (offersOnline) add("Online")
@@ -41,7 +45,7 @@ fun LessonResponse.toScheduledClass(): ScheduledClass = ScheduledClass(
 
 fun LessonStatus.toPolishLabel(): String = when (this) {
     LessonStatus.PENDING -> "Oczekujące"
-    LessonStatus.CONFIRMED -> "Zaplanowane"
+    LessonStatus.CONFIRMED -> "Potwierdzone"
     LessonStatus.COMPLETED -> "Zakończone"
     LessonStatus.CANCELLED -> "Anulowane"
 }

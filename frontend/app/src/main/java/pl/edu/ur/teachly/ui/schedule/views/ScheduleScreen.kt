@@ -48,10 +48,11 @@ fun ScheduleScreen(
         AppHeader(
             title = "Terminarz",
             subtitle = if (state.isStudent) "Sprawdź swoje lekcje" else "Sprawdź swoje sesje",
-            background = HeaderBackground.Vertical(
-                listOf(colorScheme.primary.copy(0.05f), colorScheme.primary.copy(0.8f))
+            background = HeaderBackground.Diagonal(
+                listOf(colorScheme.onPrimaryContainer, colorScheme.primary)
             ),
             onBack = onBack,
+            bottomPadding = 30.dp
         )
 
         Spacer(modifier = Modifier.height(8.dp))

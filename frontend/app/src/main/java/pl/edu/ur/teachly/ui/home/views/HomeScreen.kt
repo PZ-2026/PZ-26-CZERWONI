@@ -49,8 +49,8 @@ fun HomeScreen(
         AppHeader(
             title = if (state.userName.isNotBlank()) "Witaj, ${state.userName}!" else "Witaj!",
             subtitle = if (state.isStudent) "Co dziś chcesz się nauczyć?" else "Zarządzaj swoimi lekcjami",
-            background = HeaderBackground.Vertical(
-                listOf(colorScheme.primary.copy(0.05f), colorScheme.primary.copy(0.8f))
+            background = HeaderBackground.Diagonal(
+                listOf(colorScheme.onPrimaryContainer, colorScheme.primary)
             ),
         )
 

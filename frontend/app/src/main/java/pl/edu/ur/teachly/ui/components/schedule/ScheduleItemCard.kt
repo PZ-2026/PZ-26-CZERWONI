@@ -29,6 +29,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import pl.edu.ur.teachly.ui.components.ScheduledClass
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 @Composable
 fun ScheduleItemCard(item: ScheduledClass, isStudent: Boolean = true) {
@@ -77,6 +80,8 @@ fun ScheduleItemCard(item: ScheduledClass, isStudent: Boolean = true) {
             }
 
             // Date
+            val formatter = DateTimeFormatter.ofPattern("d MMMM yyyy", Locale("pl"))
+            val formattedDate = item.day.format(formatter)
             InfoRow(
                 icon = {
                     Icon(
@@ -86,7 +91,7 @@ fun ScheduleItemCard(item: ScheduledClass, isStudent: Boolean = true) {
                         tint = colorScheme.primary
                     )
                 },
-                text = item.day.toString(),
+                text = formattedDate,
             )
 
             Spacer(Modifier.height(6.dp))
@@ -101,7 +106,10 @@ fun ScheduleItemCard(item: ScheduledClass, isStudent: Boolean = true) {
                         tint = colorScheme.primary
                     )
                 },
-                text = "${item.time} (${item.durationMinutes} min)",
+                text = run {
+                    val end = LocalTime.parse(item.time).plusMinutes(item.durationMinutes.toLong())
+                    "${item.time} - ${end.toString().take(5)} (${item.durationMinutes} min)"
+                }
             )
         }
     }
@@ -110,7 +118,7 @@ fun ScheduleItemCard(item: ScheduledClass, isStudent: Boolean = true) {
 @Composable
 private fun StatusBadge(status: String) {
     val containerColor = when (status) {
-        "Zaplanowane" -> colorScheme.primaryContainer
+        "Potwierdzone" -> colorScheme.primaryContainer
         "Oczekujące" -> colorScheme.inversePrimary
         "Zakończone" -> colorScheme.surfaceVariant
         else -> colorScheme.surface

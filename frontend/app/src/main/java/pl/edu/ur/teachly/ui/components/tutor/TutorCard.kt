@@ -58,13 +58,6 @@ fun TutorCard(
                 TutorAvatar(initials = tutor.initials, bg = avatarBg, fg = avatarFg, size = 48)
                 TutorCardInfo(tutor = tutor)
             }
-
-            HorizontalDivider(
-                modifier = Modifier.padding(vertical = 12.dp),
-                color = MaterialTheme.colorScheme.outline
-            )
-
-            NearestSlots(slots = tutor.nearestSlots)
         }
     }
 }
@@ -105,7 +98,8 @@ private fun TutorCardInfo(tutor: Tutor) {
                 Text(
                     text = tutor.name,
                     style = MaterialTheme.typography.titleSmall,
-                    color = MaterialTheme.colorScheme.onSurface
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.padding(bottom = 8.dp)
                 )
                 FlowRow(
                     horizontalArrangement = Arrangement.spacedBy(6.dp),
@@ -132,9 +126,12 @@ private fun TutorCardInfo(tutor: Tutor) {
         }
 
         Spacer(Modifier.height(8.dp))
-        RatingRow(rating = tutor.rating, reviewCount = tutor.reviewCount, isOnline = tutor.isOnline)
-        Spacer(Modifier.height(8.dp))
         TagRow(tags = tutor.tags)
+        HorizontalDivider(
+            modifier = Modifier.padding(vertical = 12.dp),
+            color = MaterialTheme.colorScheme.outline
+        )
+        RatingRow(rating = tutor.rating, reviewCount = tutor.reviewCount)
     }
 }
 
@@ -157,7 +154,7 @@ fun PriceLabel(price: Int, large: Boolean = false) {
 
 // Rating
 @Composable
-fun RatingRow(rating: Double, reviewCount: Int, isOnline: Boolean) {
+fun RatingRow(rating: Double, reviewCount: Int) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -188,35 +185,6 @@ fun TagRow(tags: List<String>) {
             ) {
                 Text(
                     text = tag,
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.primary,
-                )
-            }
-        }
-    }
-}
-
-// Closest slots
-@Composable
-fun NearestSlots(slots: List<String>) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(6.dp),
-    ) {
-        Text(
-            text = stringResource(R.string.tutor_nearest),
-            style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-        slots.forEach { slot ->
-            Box(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(8.dp))
-                    .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.10f))
-                    .padding(horizontal = 10.dp, vertical = 4.dp)
-            ) {
-                Text(
-                    text = slot,
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.primary,
                 )

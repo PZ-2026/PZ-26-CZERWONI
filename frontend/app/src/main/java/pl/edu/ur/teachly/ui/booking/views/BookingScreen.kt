@@ -1,4 +1,4 @@
-package pl.edu.ur.teachly.ui.home.views
+package pl.edu.ur.teachly.ui.booking.views
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -23,6 +23,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import org.koin.androidx.compose.koinViewModel
 import pl.edu.ur.teachly.R
+import pl.edu.ur.teachly.ui.booking.viewmodels.BookingViewModel
 import pl.edu.ur.teachly.ui.components.booking.BookingSummaryBar
 import pl.edu.ur.teachly.ui.components.booking.DayPicker
 import pl.edu.ur.teachly.ui.components.booking.DurationPicker
@@ -31,7 +32,6 @@ import pl.edu.ur.teachly.ui.components.booking.SubjectPicker
 import pl.edu.ur.teachly.ui.components.booking.TimeSlotGrid
 import pl.edu.ur.teachly.ui.components.other.AppHeader
 import pl.edu.ur.teachly.ui.components.other.HeaderBackground
-import pl.edu.ur.teachly.ui.home.viewmodels.BookingViewModel
 
 @Composable
 fun BookingScreen(
@@ -53,8 +53,8 @@ fun BookingScreen(
         AppHeader(
             title = stringResource(R.string.booking_title),
             subtitle = state.tutor?.let { "${it.firstName} ${it.lastName}" } ?: "...",
-            background = HeaderBackground.Vertical(
-                listOf(colorScheme.primary.copy(0.05f), colorScheme.primary.copy(0.8f))
+            background = HeaderBackground.Diagonal(
+                listOf(colorScheme.onPrimaryContainer, colorScheme.primary)
             ),
             onBack = onBack,
         )

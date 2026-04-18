@@ -58,7 +58,7 @@ class ProfileViewModel(
                 _profile.update { it.copy(isLoading = false) }
                 return@launch
             }
-            val role = tokenManager.roleFlow.first()
+            tokenManager.roleFlow.first()
 
             userRepository.getUserById(userId).fold(
                 onSuccess = { user ->
@@ -87,9 +87,10 @@ class ProfileViewModel(
     }
 
     fun startEditing() {
-        val p = _profile.value
-
-        _editState.value = ProfileEditState(firstName = p.firstName, lastName = p.lastName)
+        viewModelScope.launch {
+            val p = _profile.first { !it.isLoading }
+            _editState.value = ProfileEditState(firstName = p.firstName, lastName = p.lastName)
+        }
     }
 
     fun onFirstNameChange(value: String) = _editState.update { it.copy(firstName = value) }

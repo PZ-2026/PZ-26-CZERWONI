@@ -17,14 +17,14 @@ import pl.edu.ur.teachly.data.local.TokenManager
 import pl.edu.ur.teachly.ui.auth.views.LoginScreen
 import pl.edu.ur.teachly.ui.auth.views.RegisterScreen
 import pl.edu.ur.teachly.ui.auth.views.SplashScreen
-import pl.edu.ur.teachly.ui.home.views.BookingConfirmScreen
-import pl.edu.ur.teachly.ui.home.views.BookingScreen
+import pl.edu.ur.teachly.ui.booking.views.BookingConfirmScreen
+import pl.edu.ur.teachly.ui.booking.views.BookingScreen
 import pl.edu.ur.teachly.ui.home.views.HomeScreen
-import pl.edu.ur.teachly.ui.home.views.SearchScreen
 import pl.edu.ur.teachly.ui.profile.views.ProfileEditScreen
 import pl.edu.ur.teachly.ui.profile.views.StudentProfileScreen
 import pl.edu.ur.teachly.ui.profile.views.TutorProfileScreen
 import pl.edu.ur.teachly.ui.schedule.views.ScheduleScreen
+import pl.edu.ur.teachly.ui.search.views.SearchScreen
 import pl.edu.ur.teachly.ui.tutor.views.TutorDetailScreen
 
 @Composable

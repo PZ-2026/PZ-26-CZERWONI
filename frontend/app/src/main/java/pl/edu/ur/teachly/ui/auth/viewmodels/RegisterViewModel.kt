@@ -14,7 +14,7 @@ enum class UserRoleOption(
     val emoji: String,
     val title: String,
     val description: String,
-    val dataRole: pl.edu.ur.teachly.data.model.UserRole
+    val dataRole: UserRole
 ) {
     STUDENT("🎓", "Jestem uczniem", "Szukam korepetytora i chcę umawiać lekcje", UserRole.STUDENT),
     TUTOR("📖", "Jestem korepetytorem", "Oferuję lekcje i zarządzam harmonogramem", UserRole.TUTOR),

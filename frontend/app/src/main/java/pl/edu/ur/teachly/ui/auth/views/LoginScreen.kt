@@ -69,8 +69,8 @@ fun LoginScreen(
                     colorScheme.primary,
                 )
             ),
-            topPadding = 20.dp,
-            bottomPadding = 8.dp,
+            topPadding = 28.dp,
+            bottomPadding = 0.dp,
             decorativeCircle = true,
             onBack = onBack,
         )
@@ -81,7 +81,7 @@ fun LoginScreen(
                 .background(colorScheme.background)
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 24.dp)
-                .padding(top = 32.dp, bottom = 48.dp)
+                .padding(top = 32.dp)
         ) {
             AuthTextField(
                 value = uiState.email,

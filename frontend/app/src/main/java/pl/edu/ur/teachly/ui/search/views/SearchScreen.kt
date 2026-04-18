@@ -1,4 +1,4 @@
-package pl.edu.ur.teachly.ui.home.views
+package pl.edu.ur.teachly.ui.search.views
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -23,7 +23,7 @@ import pl.edu.ur.teachly.ui.components.home.HomeHeader
 import pl.edu.ur.teachly.ui.components.home.StatsRow
 import pl.edu.ur.teachly.ui.components.home.SubjectChips
 import pl.edu.ur.teachly.ui.components.home.TutorList
-import pl.edu.ur.teachly.ui.home.viewmodels.SearchViewModel
+import pl.edu.ur.teachly.ui.search.viewmodels.SearchViewModel
 
 @Composable
 fun SearchScreen(

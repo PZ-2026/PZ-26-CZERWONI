@@ -1,4 +1,4 @@
-package pl.edu.ur.teachly.ui.home.views
+package pl.edu.ur.teachly.ui.booking.views
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
