@@ -14,10 +14,13 @@ import pl.edu.ur.teachly.ui.components.ScheduledClass
 import pl.edu.ur.teachly.ui.components.toScheduledClass
 
 data class ScheduleUiState(
-    val upcomingClasses: List<ScheduledClass> = emptyList(),
-    val finishedClasses: List<ScheduledClass> = emptyList(),
+    val confirmedClasses: List<ScheduledClass> = emptyList(),
+    val pendingClasses: List<ScheduledClass> = emptyList(),
+    val completedClasses: List<ScheduledClass> = emptyList(),
+    val confirmedExpanded: Boolean = true,
+    val pendingExpanded: Boolean = true,
+    val completedExpanded: Boolean = false,
     val isStudent: Boolean = true,
-    val expanded: Boolean = false,
     val isLoading: Boolean = true,
     val error: String? = null,
 )
@@ -44,11 +47,10 @@ class ScheduleViewModel(
             }
             val role = tokenManager.roleFlow.first()
 
-            val result = if (role == "TUTOR") {
+            val result = if (role == "TUTOR")
                 lessonRepository.getTutorLessons(userId)
-            } else {
+            else
                 lessonRepository.getStudentLessons(userId)
-            }
 
             result.fold(
                 onSuccess = { lessons ->
@@ -56,12 +58,9 @@ class ScheduleViewModel(
                         val scheduled = lessons.map { it.toScheduledClass() }
                         _state.update {
                             it.copy(
-                                upcomingClasses = scheduled.filter { c ->
-                                    c.status != "Zakończone" && c.status != "Anulowane"
-                                },
-                                finishedClasses = scheduled.filter { c ->
-                                    c.status == "Zakończone"
-                                },
+                                confirmedClasses = scheduled.filter { c -> c.status == "Zaplanowane" },
+                                pendingClasses = scheduled.filter { c -> c.status == "Oczekujące" },
+                                completedClasses = scheduled.filter { c -> c.status == "Zakończone" },
                                 isStudent = role != "TUTOR",
                                 isLoading = false,
                             )
@@ -77,7 +76,7 @@ class ScheduleViewModel(
         }
     }
 
-    fun toggleExpanded() {
-        _state.update { it.copy(expanded = !it.expanded) }
-    }
+    fun toggleConfirmed() = _state.update { it.copy(confirmedExpanded = !it.confirmedExpanded) }
+    fun togglePending() = _state.update { it.copy(pendingExpanded = !it.pendingExpanded) }
+    fun toggleCompleted() = _state.update { it.copy(completedExpanded = !it.completedExpanded) }
 }

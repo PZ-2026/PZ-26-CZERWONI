@@ -11,7 +11,7 @@ fun SectionLabel(text: String, modifier: Modifier = Modifier) {
     Text(
         text = text.uppercase(),
         style = typography.labelSmall,
-        color = colorScheme.onSurfaceVariant,
+        color = colorScheme.onBackground,
         modifier = modifier,
     )
 }

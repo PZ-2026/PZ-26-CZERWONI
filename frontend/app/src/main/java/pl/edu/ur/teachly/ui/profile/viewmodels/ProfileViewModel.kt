@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import pl.edu.ur.teachly.data.local.TokenManager
+import pl.edu.ur.teachly.data.model.UserRole
 import pl.edu.ur.teachly.data.model.UserUpdateRequest
 import pl.edu.ur.teachly.data.repository.LessonRepository
 import pl.edu.ur.teachly.data.repository.UserRepository
@@ -18,6 +19,8 @@ data class StudentProfile(
     val lastName: String = "",
     val email: String = "",
     val phoneNumber: String? = null,
+    val role: UserRole = UserRole.STUDENT,
+    val createdAt: String = "",
     val lessonsCount: Int = 0,
     val isLoading: Boolean = true,
     val error: String? = null,
@@ -68,6 +71,8 @@ class ProfileViewModel(
                             lastName = user.lastName,
                             email = user.email,
                             phoneNumber = user.phoneNumber,
+                            role = user.role ?: UserRole.STUDENT,
+                            createdAt = user.createdAt,
                         )
                     }
                 },

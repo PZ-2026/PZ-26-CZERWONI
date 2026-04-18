@@ -68,15 +68,26 @@ public class LessonService {
             throw new SlotNotAvailableException("Wybrany termin jest niedostępny");
         }
 
-        boolean conflict = lessonRepository.existsConflictingLesson(
+        boolean tutorConflict = lessonRepository.existsConflictingLesson(
                 request.tutorId(),
                 request.lessonDate(),
                 request.timeFrom(),
                 request.timeTo(),
                 LessonStatus.CONFIRMED
         );
-        if (conflict) {
+        if (tutorConflict) {
             throw new SlotNotAvailableException("Korepetytor ma już zarezerwowaną lekcję w tym czasie");
+        }
+
+        boolean studentConflict = lessonRepository.existsConflictingStudentLesson(
+                studentId,
+                request.lessonDate(),
+                request.timeFrom(),
+                request.timeTo(),
+                LessonStatus.CANCELLED
+        );
+        if (studentConflict) {
+            throw new SlotNotAvailableException("Masz już zarezerwowaną lekcję w tym czasie");
         }
 
         Lesson lesson = lessonMapper.toEntity(request);
@@ -108,7 +119,7 @@ public class LessonService {
     @Transactional
     public LessonResponse changeLessonStatus(Integer lessonId, LessonStatusRequest request, User currentUser) {
         Lesson lesson = lessonRepository.findById(lessonId)
-                .orElseThrow(() -> new ResourceNotFoundException("Nie znaleziono lekcji o podanym id"));
+                .orElseThrow(() -> new ResourceNotFoundException("Nie znaleziono szukanej lekcji"));
 
         LessonStatus newStatus = request.lessonStatus();
         LessonStatus currentStatus = lesson.getLessonStatus();
@@ -117,7 +128,7 @@ public class LessonService {
             LocalDateTime lessonStart = LocalDateTime.of(lesson.getLessonDate(), lesson.getTimeFrom());
 
             if (!isValidTransition(currentStatus, newStatus, currentUser.getUserRole(), lessonStart)) {
-                throw new IllegalStateException("Nie można zmienić statusu lekcji z " + currentStatus + " na " + newStatus);
+                throw new IllegalStateException("Nie można zmienić statusu lekcji na wybrany");
             }
         }
 

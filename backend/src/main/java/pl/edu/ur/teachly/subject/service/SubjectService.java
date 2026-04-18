@@ -36,7 +36,7 @@ public class SubjectService {
     @Transactional
     public SubjectResponse addSubject(SubjectRequest request) {
         SubjectCategory category = categoryRepository.findById(request.categoryId())
-                .orElseThrow(() -> new ResourceNotFoundException("Nie znaleziono kategorii o podanym id"));
+                .orElseThrow(() -> new ResourceNotFoundException("Nie znaleziono szukanej kategorii"));
 
         Subject subject = subjectMapper.toEntity(request);
         subject.setCategory(category);

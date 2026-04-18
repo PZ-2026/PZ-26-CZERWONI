@@ -22,7 +22,7 @@ public class UserService {
     public UserResponse getUserById(Integer id) {
         return userRepository.findById(id)
                 .map(userMapper::toResponse)
-                .orElseThrow(() -> new ResourceNotFoundException("Nie znaleziono użytkownika o podanym id"));
+                .orElseThrow(() -> new ResourceNotFoundException("Nie znaleziono szukanego użytkownika"));
     }
 
     @Transactional(readOnly = true)
@@ -35,7 +35,7 @@ public class UserService {
     @Transactional
     public UserResponse updateUserProfile(Integer id, UserUpdateRequest request) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Nie znaleziono użytkownika o podanym id"));
+                .orElseThrow(() -> new ResourceNotFoundException("Nie znaleziono szukanego użytkownika"));
 
         userMapper.updateFromRequest(request, user);
         return userMapper.toResponse(userRepository.save(user));
@@ -44,7 +44,7 @@ public class UserService {
     @Transactional
     public void deactivateUser(Integer id) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Nie znaleziono użytkownika o podanym id"));
+                .orElseThrow(() -> new ResourceNotFoundException("Nie znaleziono szukanego użytkownika"));
         user.setIsActive(false);
         userRepository.save(user);
     }

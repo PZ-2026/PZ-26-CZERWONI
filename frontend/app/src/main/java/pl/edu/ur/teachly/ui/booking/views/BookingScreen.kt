@@ -52,7 +52,13 @@ fun BookingScreen(
     ) {
         AppHeader(
             title = stringResource(R.string.booking_title),
-            subtitle = state.tutor?.let { "${it.firstName} ${it.lastName}" } ?: "...",
+            subtitle = state.tutor?.let {
+                stringResource(
+                    R.string.tutor_name,
+                    it.firstName,
+                    it.lastName
+                )
+            } ?: "",
             background = HeaderBackground.Diagonal(
                 listOf(colorScheme.onPrimaryContainer, colorScheme.primary)
             ),

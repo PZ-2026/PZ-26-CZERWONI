@@ -126,11 +126,12 @@ fun SubjectPicker(
     selectedIndex: Int,
     onSelect: (Int) -> Unit,
 ) {
-    SectionLabel(text = "Przedmiot")
+    SectionLabel(text = stringResource(R.string.subject))
     Spacer(Modifier.height(10.dp))
 
     var expanded by remember { mutableStateOf(false) }
-    val selectedLabel = subjects.getOrElse(selectedIndex) { "Wybierz przedmiot" }
+    val selectedLabel =
+        subjects.getOrElse(selectedIndex) { stringResource(R.string.choose_subject) }
 
     ExposedDropdownMenuBox(
         expanded = expanded,
@@ -191,7 +192,7 @@ fun TimeSlotGrid(
 
     if (availableSlots.isEmpty()) {
         Text(
-            text = "Brak dostępnych terminów w tym dniu",
+            text = stringResource(R.string.no_available_slots_this_day),
             style = typography.bodyMedium,
             color = colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(vertical = 8.dp),
@@ -253,12 +254,15 @@ fun FormatPicker(
     selectedFormat: LessonFormat?,
     onSelect: (LessonFormat) -> Unit,
 ) {
-    SectionLabel(text = "Format lekcji")
+    SectionLabel(text = stringResource(R.string.lesson_format))
     Spacer(Modifier.height(10.dp))
     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
         formats.forEach { format ->
             val isSelected = format == selectedFormat
-            val label = if (format == LessonFormat.ONLINE) "Online" else "Stacjonarnie"
+            val label =
+                if (format == LessonFormat.ONLINE) stringResource(R.string.online) else stringResource(
+                    R.string.in_person
+                )
             Surface(
                 modifier = Modifier
                     .weight(1f)

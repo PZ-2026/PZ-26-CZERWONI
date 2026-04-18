@@ -12,7 +12,7 @@ class UserRepository(private val api: UserApiService) {
             if (response.isSuccessful) Result.success(response.body()!!)
             else Result.failure(Exception("Nie znaleziono użytkownika"))
         } catch (e: Exception) {
-            Result.failure(Exception("Brak połączenia z serwerem: ${e.message}"))
+            Result.failure(Exception("Brak połączenia z serwerem"))
         }
     }
 
@@ -20,9 +20,9 @@ class UserRepository(private val api: UserApiService) {
         return try {
             val response = api.updateUser(id, request)
             if (response.isSuccessful) Result.success(response.body()!!)
-            else Result.failure(Exception("Błąd aktualizacji profilu: ${response.code()}"))
+            else Result.failure(Exception("Błąd aktualizacji profilu"))
         } catch (e: Exception) {
-            Result.failure(Exception("Brak połączenia z serwerem: ${e.message}"))
+            Result.failure(Exception("Brak połączenia z serwerem"))
         }
     }
 }

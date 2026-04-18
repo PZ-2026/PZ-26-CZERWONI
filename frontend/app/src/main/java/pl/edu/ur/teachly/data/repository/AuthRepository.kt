@@ -45,7 +45,7 @@ class AuthRepository(
                 Result.failure(Exception(detail))
             }
         } catch (e: Exception) {
-            Result.failure(Exception("Brak połączenia z serwerem: ${e.message}"))
+            Result.failure(Exception("Brak połączenia z serwerem"))
         }
     }
 
@@ -74,7 +74,7 @@ class AuthRepository(
                 Result.failure(Exception(detail))
             }
         } catch (e: Exception) {
-            Result.failure(Exception("Brak połączenia z serwerem: ${e.message}"))
+            Result.failure(Exception("Brak połączenia z serwerem"))
         }
     }
 

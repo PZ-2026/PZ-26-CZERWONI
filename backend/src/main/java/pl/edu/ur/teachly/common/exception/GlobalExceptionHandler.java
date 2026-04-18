@@ -45,7 +45,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(org.springframework.security.core.AuthenticationException.class)
     public ProblemDetail handleAuthenticationException(org.springframework.security.core.AuthenticationException ex) {
-        return ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, "Nieprawidłowy email lub hasło");
+        return ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, "Nieprawidłowe dane użytkownika");
     }
 
     @ExceptionHandler(org.springframework.security.access.AccessDeniedException.class)
@@ -55,8 +55,6 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ProblemDetail handleGlobalException(Exception ex) {
-        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, "Wystąpił nieoczekiwany błąd serwera");
-        problemDetail.setProperty("errorCause", ex.getMessage());
-        return problemDetail;
+        return ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, "Wystąpił nieoczekiwany błąd serwera");
     }
 }

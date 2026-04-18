@@ -11,9 +11,9 @@ class LessonRepository(private val api: LessonApiService) {
         return try {
             val response = api.createLesson(studentId, request)
             if (response.isSuccessful) Result.success(response.body()!!)
-            else Result.failure(Exception("Błąd tworzenia lekcji: ${response.code()}"))
+            else Result.failure(Exception("Błąd tworzenia lekcji"))
         } catch (e: Exception) {
-            Result.failure(Exception("Brak połączenia z serwerem: ${e.message}"))
+            Result.failure(Exception("Brak połączenia z serwerem"))
         }
     }
 
@@ -21,9 +21,9 @@ class LessonRepository(private val api: LessonApiService) {
         return try {
             val response = api.getStudentLessons(studentId)
             if (response.isSuccessful) Result.success(response.body()!!)
-            else Result.failure(Exception("Błąd pobierania lekcji: ${response.code()}"))
+            else Result.failure(Exception("Błąd pobierania lekcji"))
         } catch (e: Exception) {
-            Result.failure(Exception("Brak połączenia z serwerem: ${e.message}"))
+            Result.failure(Exception("Brak połączenia z serwerem"))
         }
     }
 
@@ -31,9 +31,9 @@ class LessonRepository(private val api: LessonApiService) {
         return try {
             val response = api.getTutorLessons(tutorId)
             if (response.isSuccessful) Result.success(response.body()!!)
-            else Result.failure(Exception("Błąd pobierania lekcji: ${response.code()}"))
+            else Result.failure(Exception("Błąd pobierania lekcji"))
         } catch (e: Exception) {
-            Result.failure(Exception("Brak połączenia z serwerem: ${e.message}"))
+            Result.failure(Exception("Brak połączenia z serwerem"))
         }
     }
 
@@ -44,9 +44,9 @@ class LessonRepository(private val api: LessonApiService) {
         return try {
             val response = api.changeLessonStatus(lessonId, request)
             if (response.isSuccessful) Result.success(response.body()!!)
-            else Result.failure(Exception("Błąd zmiany statusu: ${response.code()}"))
+            else Result.failure(Exception("Błąd zmiany statusu"))
         } catch (e: Exception) {
-            Result.failure(Exception("Brak połączenia z serwerem: ${e.message}"))
+            Result.failure(Exception("Brak połączenia z serwerem"))
         }
     }
 }

@@ -1,4 +1,4 @@
-package pl.edu.ur.teachly.ui.components.tutor
+package pl.edu.ur.teachly.ui.components.other
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -79,7 +79,8 @@ fun TutorAvatar(
         ) {
             Text(
                 text = initials,
-                style = if (size >= 64) MaterialTheme.typography.titleMedium else MaterialTheme.typography.labelMedium,
+                style = if (size >= 64) MaterialTheme.typography.titleMedium
+                else MaterialTheme.typography.labelMedium,
                 color = fg,
             )
         }
@@ -94,7 +95,7 @@ private fun TutorCardInfo(tutor: Tutor) {
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.Top,
         ) {
-            Column {
+            Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = tutor.name,
                     style = MaterialTheme.typography.titleSmall,
@@ -122,26 +123,27 @@ private fun TutorCardInfo(tutor: Tutor) {
                     }
                 }
             }
-            PriceLabel(price = tutor.pricePerHour)
+            TutorHourlyRate(price = tutor.pricePerHour)
         }
 
         Spacer(Modifier.height(8.dp))
-        TagRow(tags = tutor.tags)
+        TutorFormatTags(tags = tutor.tags)
         HorizontalDivider(
             modifier = Modifier.padding(vertical = 12.dp),
             color = MaterialTheme.colorScheme.outline
         )
-        RatingRow(rating = tutor.rating, reviewCount = tutor.reviewCount)
+        TutorAverageRating(rating = tutor.rating, reviewCount = tutor.reviewCount)
     }
 }
 
 // Price
 @Composable
-fun PriceLabel(price: Int, large: Boolean = false) {
+fun TutorHourlyRate(price: Int, large: Boolean = false) {
     Column(horizontalAlignment = Alignment.End) {
         Text(
             text = stringResource(R.string.tutor_price_format, price),
-            style = if (large) MaterialTheme.typography.headlineSmall else MaterialTheme.typography.titleMedium,
+            style = if (large) MaterialTheme.typography.headlineSmall
+            else MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.primary,
         )
         Text(
@@ -154,27 +156,36 @@ fun PriceLabel(price: Int, large: Boolean = false) {
 
 // Rating
 @Composable
-fun RatingRow(rating: Double, reviewCount: Int) {
+fun TutorAverageRating(rating: Double, reviewCount: Int) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        Text(
-            text = stringResource(R.string.tutor_rating_format, rating),
-            style = MaterialTheme.typography.labelMedium,
-            color = Color(0xFFD97706),
-        )
-        Text(
-            text = stringResource(R.string.tutor_reviews_format, reviewCount),
-            style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
+        if (reviewCount == 0) {
+            Text(
+                text = "Brak ocen",
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        } else {
+            Text(
+                text = stringResource(R.string.tutor_rating_format, rating),
+                style = MaterialTheme.typography.labelMedium,
+                fontWeight = FontWeight.SemiBold,
+                color = Color(0xFFD97706),
+            )
+            Text(
+                text = stringResource(R.string.tutor_reviews_format, reviewCount),
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
     }
 }
 
 // Tags
 @Composable
-fun TagRow(tags: List<String>) {
+fun TutorFormatTags(tags: List<String>) {
     Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
         tags.forEach { tag ->
             Box(
@@ -192,3 +203,4 @@ fun TagRow(tags: List<String>) {
         }
     }
 }
+

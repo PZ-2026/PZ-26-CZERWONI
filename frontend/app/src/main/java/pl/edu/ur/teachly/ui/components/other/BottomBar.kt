@@ -60,7 +60,7 @@ fun BottomBar(
             colors = NavigationBarItemDefaults.colors(
                 selectedIconColor = colorScheme.surface,
                 selectedTextColor = colorScheme.onSurface,
-                indicatorColor = colorScheme.primaryContainer,
+                indicatorColor = colorScheme.primary,
                 unselectedIconColor = colorScheme.onSurfaceVariant,
                 unselectedTextColor = colorScheme.onSurfaceVariant
             )
@@ -83,7 +83,7 @@ fun BottomBar(
             colors = NavigationBarItemDefaults.colors(
                 selectedIconColor = colorScheme.surface,
                 selectedTextColor = colorScheme.onSurface,
-                indicatorColor = colorScheme.primaryContainer,
+                indicatorColor = colorScheme.primary,
                 unselectedIconColor = colorScheme.onSurfaceVariant,
                 unselectedTextColor = colorScheme.onSurfaceVariant
             )
@@ -106,7 +106,7 @@ fun BottomBar(
             colors = NavigationBarItemDefaults.colors(
                 selectedIconColor = colorScheme.surface,
                 selectedTextColor = colorScheme.onSurface,
-                indicatorColor = colorScheme.primaryContainer,
+                indicatorColor = colorScheme.primary,
                 unselectedIconColor = colorScheme.onSurfaceVariant,
                 unselectedTextColor = colorScheme.onSurfaceVariant
             )

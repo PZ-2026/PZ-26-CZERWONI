@@ -1,4 +1,4 @@
-package pl.edu.ur.teachly.ui.components.schedule
+package pl.edu.ur.teachly.ui.components.other
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
@@ -26,12 +26,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import pl.edu.ur.teachly.R
 import pl.edu.ur.teachly.ui.components.ScheduledClass
 import java.time.LocalTime
-import java.time.format.DateTimeFormatter
-import java.util.Locale
 
 @Composable
 fun ScheduleItemCard(item: ScheduledClass, isStudent: Boolean = true) {
@@ -62,7 +62,8 @@ fun ScheduleItemCard(item: ScheduledClass, isStudent: Boolean = true) {
             Spacer(Modifier.height(8.dp))
 
             // Person row — tutor for student, student for tutor
-            val personLabel = if (isStudent) "Korepetytor" else "Uczeń"
+            val personLabel =
+                if (isStudent) stringResource(R.string.tutor) else stringResource(R.string.student)
             val personName = if (isStudent) item.tutorName else item.studentName
             if (personName.isNotBlank()) {
                 InfoRow(
@@ -80,8 +81,6 @@ fun ScheduleItemCard(item: ScheduledClass, isStudent: Boolean = true) {
             }
 
             // Date
-            val formatter = DateTimeFormatter.ofPattern("d MMMM yyyy", Locale("pl"))
-            val formattedDate = item.day.format(formatter)
             InfoRow(
                 icon = {
                     Icon(
@@ -91,7 +90,7 @@ fun ScheduleItemCard(item: ScheduledClass, isStudent: Boolean = true) {
                         tint = colorScheme.primary
                     )
                 },
-                text = formattedDate,
+                text = formatDate(item.day),
             )
 
             Spacer(Modifier.height(6.dp))
@@ -118,9 +117,9 @@ fun ScheduleItemCard(item: ScheduledClass, isStudent: Boolean = true) {
 @Composable
 private fun StatusBadge(status: String) {
     val containerColor = when (status) {
-        "Potwierdzone" -> colorScheme.primaryContainer
-        "Oczekujące" -> colorScheme.inversePrimary
-        "Zakończone" -> colorScheme.surfaceVariant
+        stringResource(R.string.confirmed) -> colorScheme.primaryContainer
+        stringResource(R.string.pending) -> colorScheme.inversePrimary
+        stringResource(R.string.completed) -> colorScheme.surfaceVariant
         else -> colorScheme.surface
     }
     Surface(shape = MaterialTheme.shapes.small, color = containerColor) {

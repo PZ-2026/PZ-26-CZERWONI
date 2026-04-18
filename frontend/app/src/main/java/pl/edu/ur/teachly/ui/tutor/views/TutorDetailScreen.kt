@@ -76,7 +76,6 @@ fun TutorDetailScreen(
                 ProfileHeader(
                     profile = profile,
                     avatarColor = AvatarColors[avatarIndex % AvatarColors.size],
-                    student = false,
                     onBack = onBack,
                 )
 

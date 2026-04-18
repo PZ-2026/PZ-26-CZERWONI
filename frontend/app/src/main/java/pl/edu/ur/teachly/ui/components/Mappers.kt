@@ -12,6 +12,7 @@ fun TutorResponse.toUiTutor(
     subjects: List<String> = emptyList(),
     rating: Double = 0.0,
     reviewCount: Int = 0,
+    lessonCount: Int = 0,
 ): Tutor = Tutor(
     id = id,
     name = "$firstName $lastName".trim(),
@@ -27,6 +28,7 @@ fun TutorResponse.toUiTutor(
     isOnline = offersOnline,
     nearestSlots = emptyList(),
     bio = bio ?: "",
+    lessonCount = lessonCount,
 )
 
 fun LessonResponse.toScheduledClass(): ScheduledClass = ScheduledClass(

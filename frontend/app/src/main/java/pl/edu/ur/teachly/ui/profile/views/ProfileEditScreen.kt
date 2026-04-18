@@ -13,7 +13,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -69,7 +69,7 @@ fun ProfileEditScreen(
             ) {
                 IconButton(onClick = onBack) {
                     Icon(
-                        Icons.Default.ArrowBack,
+                        Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = stringResource(R.string.cd_back),
                         tint = MaterialTheme.colorScheme.onSurface,
                     )
@@ -94,7 +94,11 @@ fun ProfileEditScreen(
             Spacer(modifier = Modifier.height(24.dp))
 
             val initials =
-                "${editState.firstName.firstOrNull() ?: ""}${editState.lastName.firstOrNull() ?: ""}"
+                stringResource(
+                    R.string.initials,
+                    editState.firstName.firstOrNull() ?: "",
+                    editState.lastName.firstOrNull() ?: ""
+                )
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
                 InitialsAvatar(initials = initials, avatarColor = AvatarColors[0], size = 96.dp)
             }
@@ -105,14 +109,14 @@ fun ProfileEditScreen(
                 label = stringResource(R.string.field_first_name),
                 value = editState.firstName,
                 onValueChange = viewModel::onFirstNameChange,
-                placeholder = "Jan",
+                placeholder = stringResource(R.string.first_name_placeholder),
                 capitalize = true,
             )
             AuthTextField(
                 label = stringResource(R.string.field_last_name),
                 value = editState.lastName,
                 onValueChange = viewModel::onLastNameChange,
-                placeholder = "Kowalski",
+                placeholder = stringResource(R.string.last_name_placeholder),
                 capitalize = true,
             )
 

@@ -27,18 +27,24 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import pl.edu.ur.teachly.R
+import pl.edu.ur.teachly.data.model.UserRole
 import pl.edu.ur.teachly.ui.components.other.InitialsAvatar
 import pl.edu.ur.teachly.ui.profile.viewmodels.StudentProfile
 import pl.edu.ur.teachly.ui.theme.AvatarColor
 
 @Composable
 fun ProfileHeader(
-    profile: StudentProfile,            // student profile on default
+    profile: StudentProfile,
     avatarColor: AvatarColor,
-    student: Boolean = true,
+    role: UserRole = UserRole.STUDENT,
     onBack: () -> Unit,
-    onEditClick: (() -> Unit)? = null,  // null = guest view
+    onEditClick: (() -> Unit)? = null,
 ) {
+    val roleLabel = when (role) {
+        UserRole.STUDENT -> stringResource(R.string.profile_student_role)
+        UserRole.TUTOR -> stringResource(R.string.profile_tutor_role)
+        UserRole.ADMIN -> stringResource(R.string.profile_admin_role)
+    }
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -71,7 +77,7 @@ fun ProfileHeader(
                         Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = stringResource(R.string.cd_back),
                         tint = colorScheme.onPrimary,
-                        modifier = Modifier.size(18.dp)
+                        modifier = Modifier.size(20.dp),
                     )
                 }
 
@@ -113,10 +119,7 @@ fun ProfileHeader(
                         color = colorScheme.onPrimary,
                     )
                     Text(
-                        text = stringResource(
-                            if (student) R.string.profile_student_role
-                            else R.string.profile_tutor_role
-                        ),
+                        text = roleLabel,
                         style = typography.bodySmall,
                         color = colorScheme.onPrimary.copy(alpha = 0.75f),
                         modifier = Modifier.padding(top = 2.dp),

@@ -51,7 +51,7 @@ public class ReviewService {
     @Transactional
     public ReviewResponse updateReview(Integer reviewId, ReviewRequest request) {
         Review review = reviewRepository.findById(reviewId)
-                .orElseThrow(() -> new ResourceNotFoundException("Nie znaleziono opinii o podanym id"));
+                .orElseThrow(() -> new ResourceNotFoundException("Nie znaleziono szukanej opinii"));
 
         review.setRating(request.rating());
         review.setComment(request.comment());
@@ -61,7 +61,7 @@ public class ReviewService {
     @Transactional
     public void deleteReview(Integer reviewId) {
         if (!reviewRepository.existsById(reviewId)) {
-            throw new ResourceNotFoundException("Nie znaleziono opinii o podanym id");
+            throw new ResourceNotFoundException("Nie znaleziono szukanej opinii");
         }
         reviewRepository.deleteById(reviewId);
     }

@@ -54,7 +54,13 @@ fun BookingSummaryBar(
                     ) {
                         Column {
                             Text(
-                                "${day.shortName} ${day.dayNumber} · $selectedSlot · $selectedDuration min",
+                                stringResource(
+                                    R.string.booking_summary_time,
+                                    day.shortName,
+                                    day.dayNumber,
+                                    selectedSlot,
+                                    selectedDuration
+                                ),
                                 style = typography.bodySmall,
                                 color = colorScheme.onSurfaceVariant,
                             )
@@ -66,7 +72,7 @@ fun BookingSummaryBar(
                             )
                         }
                         Text(
-                            "$price zł",
+                            stringResource(R.string.price_value, price),
                             style = typography.headlineSmall,
                             color = colorScheme.primary,
                         )

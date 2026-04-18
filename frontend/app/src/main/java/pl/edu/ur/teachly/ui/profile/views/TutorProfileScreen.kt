@@ -11,6 +11,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AlternateEmail
+import androidx.compose.material.icons.filled.AttachMoney
+import androidx.compose.material.icons.filled.CalendarToday
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Wifi
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.MaterialTheme.typography
@@ -28,13 +34,19 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import org.koin.androidx.compose.koinViewModel
 import pl.edu.ur.teachly.R
+import pl.edu.ur.teachly.data.model.UserRole
 import pl.edu.ur.teachly.ui.components.other.PrimaryButton
+import pl.edu.ur.teachly.ui.components.other.formatDate
+import pl.edu.ur.teachly.ui.components.profile.ProfileDataCard
+import pl.edu.ur.teachly.ui.components.profile.ProfileDataDivider
 import pl.edu.ur.teachly.ui.components.profile.ProfileHeader
+import pl.edu.ur.teachly.ui.components.profile.ProfileInfoRow
 import pl.edu.ur.teachly.ui.components.tutor.TutorDetailBody
 import pl.edu.ur.teachly.ui.profile.viewmodels.StudentProfile
 import pl.edu.ur.teachly.ui.profile.viewmodels.TutorProfileViewModel
 import pl.edu.ur.teachly.ui.profile.viewmodels.TutorStats
 import pl.edu.ur.teachly.ui.theme.AvatarColors
+import java.time.LocalDate
 
 @Composable
 fun TutorProfileScreen(
@@ -73,7 +85,7 @@ fun TutorProfileScreen(
                 ProfileHeader(
                     profile = profile,
                     avatarColor = AvatarColors[avatarIndex % AvatarColors.size],
-                    student = false,
+                    role = UserRole.TUTOR,
                     onBack = onBack,
                     onEditClick = if (isMyProfile) onEditClick else null,
                 )
@@ -89,10 +101,48 @@ fun TutorProfileScreen(
                     TutorDetailBody(tutor = t)
 
                     if (isMyProfile) {
+                        ProfileDataCard(title = stringResource(R.string.account_data)) {
+                            if (state.email.isNotBlank()) {
+                                ProfileInfoRow(
+                                    icon = Icons.Default.AlternateEmail,
+                                    label = stringResource(R.string.email),
+                                    value = state.email,
+                                )
+                                ProfileDataDivider()
+                            }
+                            ProfileInfoRow(
+                                icon = Icons.Default.AttachMoney,
+                                label = stringResource(R.string.hourly_rate),
+                                value = stringResource(R.string.hourly_rate_value, t.pricePerHour),
+                            )
+                            ProfileDataDivider()
+                            ProfileInfoRow(
+                                icon = Icons.Default.Wifi,
+                                label = stringResource(R.string.lesson_format),
+                                value = t.tags.joinToString(" / "),
+                            )
+                            if (profile.createdAt.isNotBlank()) { // TODO: Can add this to profile / not necessary
+                                ProfileDataDivider()
+                                ProfileInfoRow(
+                                    icon = Icons.Default.CalendarToday,
+                                    label = stringResource(R.string.account_active_since),
+                                    value = formatDate(LocalDate.parse(profile.createdAt.take(10))),
+                                )
+                            }
+                            ProfileDataDivider()
+                            ProfileInfoRow(
+                                icon = Icons.Default.Person,
+                                label = stringResource(R.string.role),
+                                value = stringResource(R.string.tutor),
+                            )
+                        }
+                    }
+
+                    if (isMyProfile) {
                         PrimaryButton(
                             text = stringResource(R.string.profile_logout),
                             onClick = onLogout,
-                            modifier = Modifier.padding(bottom = 24.dp),
+                            modifier = Modifier.padding(bottom = 24.dp, top = 8.dp),
                         )
                     }
                 }
@@ -104,7 +154,7 @@ fun TutorProfileScreen(
             contentAlignment = Alignment.Center,
         ) {
             Text(
-                text = "Nie znaleziono profilu",
+                text = stringResource(R.string.profile_not_found),
                 style = typography.bodyMedium,
                 color = colorScheme.onSurfaceVariant,
             )
@@ -121,31 +171,43 @@ fun TutorStatsSection(stats: TutorStats) {
             fontWeight = FontWeight.Bold,
             color = colorScheme.onBackground,
         )
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-        ) {
-            StatCard(
-                value = "${stats.completedLessons}",
-                label = stringResource(R.string.tutor_lessons_count),
-                modifier = Modifier.weight(1f),
-            )
-            StatCard(
-                value = "${stats.reviewsCount}",
-                label = stringResource(R.string.tutor_reviews_count),
-                modifier = Modifier.weight(1f),
-            )
-            StatCard(
-                value = "%.0f zł".format(stats.totalEarnings),
-                label = stringResource(R.string.tutor_earnings),
-                modifier = Modifier.weight(1f),
-            )
+        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
+                TutorStatCard(
+                    value = "${stats.completedLessons}",
+                    label = stringResource(R.string.tutor_lessons_count),
+                    modifier = Modifier.weight(1f),
+                )
+                TutorStatCard(
+                    value = if (stats.avgRating > 0.0) "%.1f".format(stats.avgRating) else "–",
+                    label = stringResource(R.string.avg_rating),
+                    modifier = Modifier.weight(1f),
+                )
+            }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
+                TutorStatCard(
+                    value = "${stats.reviewsCount}",
+                    label = stringResource(R.string.tutor_reviews_count),
+                    modifier = Modifier.weight(1f),
+                )
+                TutorStatCard(
+                    value = stringResource(R.string.total_earnings).format(stats.totalEarnings),
+                    label = stringResource(R.string.tutor_earnings),
+                    modifier = Modifier.weight(1f),
+                )
+            }
         }
     }
 }
 
 @Composable
-fun StatCard(value: String, label: String, modifier: Modifier = Modifier) {
+fun TutorStatCard(value: String, label: String, modifier: Modifier = Modifier) {
     Surface(
         modifier = modifier,
         shape = RoundedCornerShape(16.dp),
