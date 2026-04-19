@@ -4,16 +4,17 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.edu.ur.teachly.common.enums.LessonStatus;
+import pl.edu.ur.teachly.common.enums.PaymentStatus;
 import pl.edu.ur.teachly.common.enums.UserRole;
 import pl.edu.ur.teachly.common.exception.ResourceNotFoundException;
 import pl.edu.ur.teachly.common.exception.SlotNotAvailableException;
 import pl.edu.ur.teachly.lesson.dto.request.LessonRequest;
+import pl.edu.ur.teachly.lesson.dto.request.LessonStatusRequest;
 import pl.edu.ur.teachly.lesson.dto.response.LessonResponse;
 import pl.edu.ur.teachly.lesson.entity.Lesson;
 import pl.edu.ur.teachly.lesson.mapper.LessonMapper;
 import pl.edu.ur.teachly.lesson.repository.LessonRepository;
 import pl.edu.ur.teachly.subject.repository.SubjectRepository;
-import pl.edu.ur.teachly.tutor.dto.response.TimeSlot;
 import pl.edu.ur.teachly.tutor.dto.response.TimetableDayResponse;
 import pl.edu.ur.teachly.tutor.repository.TutorRepository;
 import pl.edu.ur.teachly.tutor.service.TimetableService;
@@ -22,11 +23,7 @@ import pl.edu.ur.teachly.user.repository.UserRepository;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 @Service
@@ -54,43 +51,51 @@ public class LessonService {
             throw new IllegalArgumentException("Niepoprawny zakres czasu");
         }
 
-        int numberOfSlots = (int) (duration / 30);
-
         List<TimetableDayResponse> available = timetableService.getTimetable(
                 request.tutorId(),
                 request.lessonDate(),
-                request.lessonDate()
+                request.lessonDate(),
+                studentId
         );
 
-        Set<LocalTime> availableStartTimes = available.stream()
+        boolean allAvailable = available.stream()
                 .flatMap(day -> day.getAvailableSlots() == null
                         ? Stream.empty()
                         : day.getAvailableSlots().stream())
-                .map(TimeSlot::getTimeFrom)
-                .collect(Collectors.toSet());
-
-        boolean allAvailable = IntStream.range(0, numberOfSlots)
-                .mapToObj(i -> request.timeFrom().plusMinutes(30L * i))
-                .allMatch(availableStartTimes::contains);
+                .anyMatch(slot -> !slot.getTimeFrom().isAfter(request.timeFrom())
+                        && !slot.getTimeTo().isBefore(request.timeTo()));
         if (!allAvailable) {
             throw new SlotNotAvailableException("Wybrany termin jest niedostępny");
         }
 
-        boolean conflict = lessonRepository.existsConflictingLesson(
+        boolean tutorConflict = lessonRepository.existsConflictingLesson(
                 request.tutorId(),
                 request.lessonDate(),
                 request.timeFrom(),
                 request.timeTo(),
-                request.lessonStatus()
+                LessonStatus.CONFIRMED
         );
-        if (conflict) {
+        if (tutorConflict) {
             throw new SlotNotAvailableException("Korepetytor ma już zarezerwowaną lekcję w tym czasie");
+        }
+
+        boolean studentConflict = lessonRepository.existsConflictingStudentLesson(
+                studentId,
+                request.lessonDate(),
+                request.timeFrom(),
+                request.timeTo(),
+                LessonStatus.CANCELLED
+        );
+        if (studentConflict) {
+            throw new SlotNotAvailableException("Masz już zarezerwowaną lekcję w tym czasie");
         }
 
         Lesson lesson = lessonMapper.toEntity(request);
         lesson.setStudent(student);
         lesson.setTutor(tutor);
         lesson.setSubject(subject);
+        lesson.setLessonStatus(LessonStatus.PENDING);
+        lesson.setPaymentStatus(PaymentStatus.PENDING);
 
         return lessonMapper.toResponse(lessonRepository.save(lesson));
     }
@@ -112,22 +117,25 @@ public class LessonService {
     }
 
     @Transactional
-    public LessonResponse changeLessonStatus(Integer lessonId, LessonRequest request, User currentUser) {
+    public LessonResponse changeLessonStatus(Integer lessonId, LessonStatusRequest request, User currentUser) {
         Lesson lesson = lessonRepository.findById(lessonId)
-                .orElseThrow(() -> new ResourceNotFoundException("Nie znaleziono lekcji o podanym id"));
+                .orElseThrow(() -> new ResourceNotFoundException("Nie znaleziono szukanej lekcji"));
 
         LessonStatus newStatus = request.lessonStatus();
         LessonStatus currentStatus = lesson.getLessonStatus();
 
         if (currentUser.getUserRole() != UserRole.ADMIN) {
-            LocalDateTime lessonStart = LocalDateTime.of(request.lessonDate(), request.timeFrom());
+            LocalDateTime lessonStart = LocalDateTime.of(lesson.getLessonDate(), lesson.getTimeFrom());
 
             if (!isValidTransition(currentStatus, newStatus, currentUser.getUserRole(), lessonStart)) {
-                throw new IllegalStateException("Nie można zmienić statusu lekcji z " + currentStatus + " na " + newStatus);
+                throw new IllegalStateException("Nie można zmienić statusu lekcji na wybrany");
             }
         }
 
         lesson.setLessonStatus(newStatus);
+        if (request.tutorNotes() != null) {
+            lesson.setTutorNotes(request.tutorNotes());
+        }
         return lessonMapper.toResponse(lessonRepository.save(lesson));
     }
 

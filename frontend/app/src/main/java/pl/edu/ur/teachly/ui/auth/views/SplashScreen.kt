@@ -6,7 +6,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,7 +21,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -46,15 +46,14 @@ import pl.edu.ur.teachly.R
 fun SplashScreen(
     onLoginClick: () -> Unit,
     onRegisterClick: () -> Unit,
-    onLogoClick: () -> Unit,
 ) {
     var visible by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) { visible = true }
 
     val authGradient = Brush.linearGradient(
         colors = listOf(
-            MaterialTheme.colorScheme.onPrimaryContainer,
-            MaterialTheme.colorScheme.primary,
+            colorScheme.onPrimaryContainer,
+            colorScheme.primary,
         ),
         start = Offset.Zero,
         end = Offset(1000f, 1000f)
@@ -77,7 +76,7 @@ fun SplashScreen(
             AnimatedVisibility(
                 visible = visible,
                 enter = fadeIn(tween(400)) + slideInVertically(tween(400)) { -20 }
-            ) { LogoRow(onLogoClick) }
+            ) { LogoRow() }
 
             AnimatedVisibility(
                 visible = visible,
@@ -101,7 +100,7 @@ fun SplashScreen(
 
 @Composable
 private fun DecorativeCircles() {
-    val colorScheme = MaterialTheme.colorScheme
+    val colorScheme = colorScheme
     Box(modifier = Modifier.fillMaxSize()) {
         Box(
             modifier = Modifier
@@ -132,9 +131,7 @@ private fun DecorativeCircles() {
 
 // Logo
 @Composable
-private fun LogoRow(
-    onLogoClick: () -> Unit
-) {
+private fun LogoRow() {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(10.dp)
@@ -143,8 +140,7 @@ private fun LogoRow(
             modifier = Modifier
                 .size(44.dp)
                 .clip(RoundedCornerShape(14.dp))
-                .background(MaterialTheme.colorScheme.primary)
-                .clickable(onClick = onLogoClick),
+                .background(colorScheme.primary),
             contentAlignment = Alignment.Center
         ) {
             Icon(
@@ -156,8 +152,8 @@ private fun LogoRow(
         }
         Text(
             text = stringResource(R.string.app_name),
-            style = MaterialTheme.typography.titleLarge,
-            color = MaterialTheme.colorScheme.onPrimary,
+            style = typography.titleLarge,
+            color = colorScheme.onPrimary,
         )
     }
 }
@@ -168,13 +164,13 @@ private fun HeadlineBlock() {
     Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
         Text(
             text = stringResource(R.string.splash_headline),
-            style = MaterialTheme.typography.displayLarge,
-            color = MaterialTheme.colorScheme.onPrimary,
+            style = typography.displayLarge,
+            color = colorScheme.onPrimary,
         )
         Text(
             text = stringResource(R.string.splash_subtitle),
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f),
+            style = typography.bodyLarge,
+            color = colorScheme.onPrimary.copy(alpha = 0.7f),
         )
     }
 }
@@ -193,13 +189,13 @@ private fun CtaButtons(
                 .height(56.dp),
             shape = RoundedCornerShape(18.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.secondary,
-                contentColor = MaterialTheme.colorScheme.onSecondary,
+                containerColor = colorScheme.secondary,
+                contentColor = colorScheme.onSecondary,
             )
         ) {
             Text(
                 text = stringResource(R.string.splash_register),
-                style = MaterialTheme.typography.labelLarge,
+                style = typography.labelLarge,
             )
         }
 
@@ -211,16 +207,16 @@ private fun CtaButtons(
             shape = RoundedCornerShape(18.dp),
             colors = ButtonDefaults.outlinedButtonColors(
                 containerColor = Color.Transparent,
-                contentColor = MaterialTheme.colorScheme.onPrimary,
+                contentColor = colorScheme.onPrimary,
             ),
             border = BorderStroke(
                 width = 1.5.dp,
-                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.3f),
+                color = colorScheme.onPrimary.copy(alpha = 0.3f),
             )
         ) {
             Text(
                 text = stringResource(R.string.splash_login),
-                style = MaterialTheme.typography.labelLarge,
+                style = typography.labelLarge,
             )
         }
     }

@@ -5,7 +5,7 @@ import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
@@ -39,8 +39,8 @@ fun BottomBar(
 
     NavigationBar(
         modifier = modifier,
-        containerColor = MaterialTheme.colorScheme.surface,
-        contentColor = MaterialTheme.colorScheme.onSurface
+        containerColor = colorScheme.surface,
+        contentColor = colorScheme.onSurface
     ) {
         NavigationBarItem(
             selected = isHome,
@@ -58,11 +58,11 @@ fun BottomBar(
             },
             label = { Text(stringResource(R.string.nav_home)) },
             colors = NavigationBarItemDefaults.colors(
-                selectedIconColor = MaterialTheme.colorScheme.surface,
-                selectedTextColor = MaterialTheme.colorScheme.onSurface,
-                indicatorColor = MaterialTheme.colorScheme.primaryContainer,
-                unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant
+                selectedIconColor = colorScheme.surface,
+                selectedTextColor = colorScheme.onSurface,
+                indicatorColor = colorScheme.primary,
+                unselectedIconColor = colorScheme.onSurfaceVariant,
+                unselectedTextColor = colorScheme.onSurfaceVariant
             )
         )
         NavigationBarItem(
@@ -81,16 +81,16 @@ fun BottomBar(
             },
             label = { Text(stringResource(R.string.nav_schedule)) },
             colors = NavigationBarItemDefaults.colors(
-                selectedIconColor = MaterialTheme.colorScheme.surface,
-                selectedTextColor = MaterialTheme.colorScheme.onSurface,
-                indicatorColor = MaterialTheme.colorScheme.primaryContainer,
-                unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant
+                selectedIconColor = colorScheme.surface,
+                selectedTextColor = colorScheme.onSurface,
+                indicatorColor = colorScheme.primary,
+                unselectedIconColor = colorScheme.onSurfaceVariant,
+                unselectedTextColor = colorScheme.onSurfaceVariant
             )
         )
         NavigationBarItem(
             selected = isProfile,
-            onClick = { 
+            onClick = {
                 navController.navigate(AppRoute.Profile) {
                     popUpTo(AppRoute.Home) { inclusive = false }
                     launchSingleTop = true
@@ -104,11 +104,11 @@ fun BottomBar(
             },
             label = { Text(stringResource(R.string.nav_profile)) },
             colors = NavigationBarItemDefaults.colors(
-                selectedIconColor = MaterialTheme.colorScheme.surface,
-                selectedTextColor = MaterialTheme.colorScheme.onSurface,
-                indicatorColor = MaterialTheme.colorScheme.primaryContainer,
-                unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant
+                selectedIconColor = colorScheme.surface,
+                selectedTextColor = colorScheme.onSurface,
+                indicatorColor = colorScheme.primary,
+                unselectedIconColor = colorScheme.onSurfaceVariant,
+                unselectedTextColor = colorScheme.onSurfaceVariant
             )
         )
 

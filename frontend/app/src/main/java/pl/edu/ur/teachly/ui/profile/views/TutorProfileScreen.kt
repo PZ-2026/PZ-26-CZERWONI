@@ -2,6 +2,7 @@ package pl.edu.ur.teachly.ui.profile.views
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,7 +11,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AlternateEmail
+import androidx.compose.material.icons.filled.AttachMoney
+import androidx.compose.material.icons.filled.CalendarToday
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Wifi
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -23,67 +32,132 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import org.koin.androidx.compose.koinViewModel
 import pl.edu.ur.teachly.R
-import pl.edu.ur.teachly.ui.components.AVATAR_COLORS
+import pl.edu.ur.teachly.data.model.UserRole
 import pl.edu.ur.teachly.ui.components.other.PrimaryButton
+import pl.edu.ur.teachly.ui.components.other.formatDate
+import pl.edu.ur.teachly.ui.components.profile.ProfileDataCard
+import pl.edu.ur.teachly.ui.components.profile.ProfileDataDivider
 import pl.edu.ur.teachly.ui.components.profile.ProfileHeader
+import pl.edu.ur.teachly.ui.components.profile.ProfileInfoRow
 import pl.edu.ur.teachly.ui.components.tutor.TutorDetailBody
 import pl.edu.ur.teachly.ui.profile.viewmodels.StudentProfile
 import pl.edu.ur.teachly.ui.profile.viewmodels.TutorProfileViewModel
 import pl.edu.ur.teachly.ui.profile.viewmodels.TutorStats
 import pl.edu.ur.teachly.ui.theme.AvatarColors
+import java.time.LocalDate
 
 @Composable
 fun TutorProfileScreen(
     tutorId: String,
+    isMyProfile: Boolean = false,
     onBack: () -> Unit,
     onEditClick: () -> Unit,
     onLogout: () -> Unit,
-    viewModel: TutorProfileViewModel = viewModel()
+    viewModel: TutorProfileViewModel = koinViewModel(),
 ) {
     LaunchedEffect(tutorId) { viewModel.loadProfile(tutorId) }
 
     val state by viewModel.state.collectAsState()
 
-    state.tutor?.let { t ->
-        val avatarIndex = remember(t.id) { (t.id - 1) % AVATAR_COLORS.size }
-        val profile = remember(t) {
-            StudentProfile(
-                firstName = t.name.substringBefore(" "),
-                lastName = t.name.substringAfter(" "),
-            )
-        }
+    when {
+        state.isLoading -> Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center,
+        ) { CircularProgressIndicator() }
 
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
-        ) {
-            ProfileHeader(
-                profile = profile,
-                avatarColor = AvatarColors[avatarIndex % AvatarColors.size],
-                student = false,
-                onBack = onBack,
-                onEditClick = onEditClick,
-            )
+        state.tutor != null -> {
+            val t = state.tutor!!
+            val avatarIndex = remember(t.id) { (t.id - 1) % AvatarColors.size }
+            val profile = remember(t) {
+                StudentProfile(
+                    firstName = t.name.substringBefore(" "),
+                    lastName = t.name.substringAfter(" "),
+                )
+            }
 
             Column(
                 modifier = Modifier
-                    .weight(1f)
-                    .verticalScroll(rememberScrollState())
-                    .padding(horizontal = 24.dp, vertical = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(24.dp)
+                    .fillMaxSize()
+                    .background(colorScheme.background)
             ) {
-                TutorStatsSection(stats = state.stats)
-                TutorDetailBody(tutor = t)
-
-                PrimaryButton(
-                    text = stringResource(R.string.profile_logout),
-                    onClick = onLogout,
-                    modifier = Modifier.padding(bottom = 24.dp)
+                ProfileHeader(
+                    profile = profile,
+                    avatarColor = AvatarColors[avatarIndex % AvatarColors.size],
+                    role = UserRole.TUTOR,
+                    onBack = onBack,
+                    onEditClick = if (isMyProfile) onEditClick else null,
                 )
+
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .verticalScroll(rememberScrollState())
+                        .padding(horizontal = 24.dp, vertical = 16.dp),
+                    verticalArrangement = Arrangement.spacedBy(24.dp),
+                ) {
+                    TutorStatsSection(stats = state.stats)
+                    TutorDetailBody(tutor = t)
+
+                    if (isMyProfile) {
+                        ProfileDataCard(title = stringResource(R.string.account_data)) {
+                            if (state.email.isNotBlank()) {
+                                ProfileInfoRow(
+                                    icon = Icons.Default.AlternateEmail,
+                                    label = stringResource(R.string.email),
+                                    value = state.email,
+                                )
+                                ProfileDataDivider()
+                            }
+                            ProfileInfoRow(
+                                icon = Icons.Default.AttachMoney,
+                                label = stringResource(R.string.hourly_rate),
+                                value = stringResource(R.string.hourly_rate_value, t.pricePerHour),
+                            )
+                            ProfileDataDivider()
+                            ProfileInfoRow(
+                                icon = Icons.Default.Wifi,
+                                label = stringResource(R.string.lesson_format),
+                                value = t.tags.joinToString(" / "),
+                            )
+                            if (profile.createdAt.isNotBlank()) { // TODO: Can add this to profile / not necessary
+                                ProfileDataDivider()
+                                ProfileInfoRow(
+                                    icon = Icons.Default.CalendarToday,
+                                    label = stringResource(R.string.account_active_since),
+                                    value = formatDate(LocalDate.parse(profile.createdAt.take(10))),
+                                )
+                            }
+                            ProfileDataDivider()
+                            ProfileInfoRow(
+                                icon = Icons.Default.Person,
+                                label = stringResource(R.string.role),
+                                value = stringResource(R.string.tutor),
+                            )
+                        }
+                    }
+
+                    if (isMyProfile) {
+                        PrimaryButton(
+                            text = stringResource(R.string.profile_logout),
+                            onClick = onLogout,
+                            modifier = Modifier.padding(bottom = 24.dp, top = 8.dp),
+                        )
+                    }
+                }
             }
+        }
+
+        else -> Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center,
+        ) {
+            Text(
+                text = stringResource(R.string.profile_not_found),
+                style = typography.bodyMedium,
+                color = colorScheme.onSurfaceVariant,
+            )
         }
     }
 }
@@ -93,55 +167,67 @@ fun TutorStatsSection(stats: TutorStats) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Text(
             text = stringResource(R.string.profile_stats_title),
-            style = MaterialTheme.typography.titleMedium,
+            style = typography.titleMedium,
             fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onBackground
+            color = colorScheme.onBackground,
         )
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            StatCard(
-                value = "${stats.lessonsCount}",
-                label = stringResource(R.string.tutor_lessons_count),
-                modifier = Modifier.weight(1f)
-            )
-            StatCard(
-                value = "${stats.reviewsCount}",
-                label = stringResource(R.string.tutor_reviews_count),
-                modifier = Modifier.weight(1f)
-            )
-            StatCard(
-                value = "%.2f zł".format(stats.totalEarnings),
-                label = stringResource(R.string.tutor_earnings),
-                modifier = Modifier.weight(1f)
-            )
+        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
+                TutorStatCard(
+                    value = "${stats.completedLessons}",
+                    label = stringResource(R.string.tutor_lessons_count),
+                    modifier = Modifier.weight(1f),
+                )
+                TutorStatCard(
+                    value = if (stats.avgRating > 0.0) "%.1f".format(stats.avgRating) else "–",
+                    label = stringResource(R.string.avg_rating),
+                    modifier = Modifier.weight(1f),
+                )
+            }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
+                TutorStatCard(
+                    value = "${stats.reviewsCount}",
+                    label = stringResource(R.string.tutor_reviews_count),
+                    modifier = Modifier.weight(1f),
+                )
+                TutorStatCard(
+                    value = stringResource(R.string.total_earnings).format(stats.totalEarnings),
+                    label = stringResource(R.string.tutor_earnings),
+                    modifier = Modifier.weight(1f),
+                )
+            }
         }
     }
 }
 
 @Composable
-fun StatCard(value: String, label: String, modifier: Modifier = Modifier) {
+fun TutorStatCard(value: String, label: String, modifier: Modifier = Modifier) {
     Surface(
         modifier = modifier,
         shape = RoundedCornerShape(16.dp),
-        color = MaterialTheme.colorScheme.surface,
-        shadowElevation = 2.dp
+        color = colorScheme.surface,
+        shadowElevation = 2.dp,
     ) {
         Column(
             modifier = Modifier.padding(12.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Text(
                 text = value,
-                style = MaterialTheme.typography.titleLarge,
+                style = typography.titleLarge,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary
+                color = colorScheme.primary,
             )
             Text(
                 text = label,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                style = typography.bodySmall,
+                color = colorScheme.onSurfaceVariant,
             )
         }
     }

@@ -15,7 +15,8 @@ import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -46,8 +47,8 @@ fun PasswordTextField(
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(
             text = label.uppercase(),
-            style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            style = typography.labelSmall,
+            color = colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(bottom = 8.dp),
         )
         OutlinedTextField(
@@ -57,15 +58,15 @@ fun PasswordTextField(
             placeholder = {
                 Text(
                     text = placeholder,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+                    style = typography.bodyMedium,
+                    color = colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
                 )
             },
             leadingIcon = {
                 Icon(
                     Icons.Default.Lock,
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    tint = colorScheme.onSurfaceVariant,
                     modifier = Modifier.size(20.dp),
                 )
             },
@@ -76,7 +77,7 @@ fun PasswordTextField(
                         contentDescription = stringResource(
                             if (visible) R.string.cd_hide_password else R.string.cd_show_password
                         ),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        tint = colorScheme.onSurfaceVariant,
                     )
                 }
             },

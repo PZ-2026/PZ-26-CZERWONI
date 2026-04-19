@@ -12,61 +12,72 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import pl.edu.ur.teachly.R
+import pl.edu.ur.teachly.data.model.UserRole
 import pl.edu.ur.teachly.ui.components.other.InitialsAvatar
 import pl.edu.ur.teachly.ui.profile.viewmodels.StudentProfile
 import pl.edu.ur.teachly.ui.theme.AvatarColor
 
 @Composable
 fun ProfileHeader(
-    profile: StudentProfile,            // student profile on default
+    profile: StudentProfile,
     avatarColor: AvatarColor,
-    student: Boolean = true,
+    role: UserRole = UserRole.STUDENT,
     onBack: () -> Unit,
-    onEditClick: (() -> Unit)? = null,  // null = guest view
+    onEditClick: (() -> Unit)? = null,
 ) {
+    val roleLabel = when (role) {
+        UserRole.STUDENT -> stringResource(R.string.profile_student_role)
+        UserRole.TUTOR -> stringResource(R.string.profile_tutor_role)
+        UserRole.ADMIN -> stringResource(R.string.profile_admin_role)
+    }
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .background(
-                Brush.verticalGradient(
-                    colors = listOf(
-                        MaterialTheme.colorScheme.primary.copy(alpha = 0.05f),
-                        MaterialTheme.colorScheme.primary.copy(alpha = 0.8f),
-                    )
+                Brush.linearGradient(
+                    colors = listOf(colorScheme.onPrimaryContainer, colorScheme.primary),
+                    start = Offset.Zero,
+                    end = Offset(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY),
                 )
             )
             .padding(horizontal = 24.dp)
-            .padding(top = 52.dp, bottom = 24.dp)
+            .padding(top = 28.dp, bottom = 28.dp)
     ) {
         Column {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 IconButton(
                     onClick = onBack,
                     modifier = Modifier
                         .size(36.dp)
-                        .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(12.dp))
+                        .background(
+                            colorScheme.onPrimary.copy(alpha = 0.15f),
+                            RoundedCornerShape(10.dp),
+                        )
                 ) {
                     Icon(
-                        Icons.Default.ArrowBack,
+                        Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = stringResource(R.string.cd_back),
-                        modifier = Modifier.size(18.dp)
+                        tint = colorScheme.onPrimary,
+                        modifier = Modifier.size(20.dp),
                     )
                 }
 
@@ -76,20 +87,21 @@ fun ProfileHeader(
                         modifier = Modifier
                             .size(36.dp)
                             .background(
-                                MaterialTheme.colorScheme.surface,
-                                RoundedCornerShape(12.dp)
+                                colorScheme.onPrimary.copy(alpha = 0.15f),
+                                RoundedCornerShape(10.dp),
                             )
                     ) {
                         Icon(
                             Icons.Default.Edit,
                             contentDescription = stringResource(R.string.cd_edit_profile),
-                            modifier = Modifier.size(18.dp)
+                            tint = colorScheme.onPrimary,
+                            modifier = Modifier.size(18.dp),
                         )
                     }
                 }
             }
 
-            Spacer(Modifier.height(20.dp))
+            Spacer(Modifier.height(24.dp))
 
             Row(
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -102,20 +114,15 @@ fun ProfileHeader(
 
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        profile.fullName,
-                        style = MaterialTheme.typography.titleLarge,
-                        color = MaterialTheme.colorScheme.onBackground
+                        text = profile.fullName,
+                        style = typography.titleLarge,
+                        color = colorScheme.onPrimary,
                     )
                     Text(
-                        stringResource(
-                            if (student)
-                                R.string.profile_student_role
-                            else
-                                R.string.profile_tutor_role
-                        ),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(top = 2.dp)
+                        text = roleLabel,
+                        style = typography.bodySmall,
+                        color = colorScheme.onPrimary.copy(alpha = 0.75f),
+                        modifier = Modifier.padding(top = 2.dp),
                     )
                 }
             }

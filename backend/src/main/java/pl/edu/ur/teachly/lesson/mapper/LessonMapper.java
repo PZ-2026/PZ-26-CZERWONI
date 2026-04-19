@@ -9,8 +9,13 @@ import pl.edu.ur.teachly.lesson.entity.Lesson;
 @Mapper(componentModel = "spring")
 public interface LessonMapper {
     @Mapping(source = "tutor.userId", target = "tutorId")
+    @Mapping(source = "tutor.user.firstName", target = "tutorFirstName")
+    @Mapping(source = "tutor.user.lastName", target = "tutorLastName")
     @Mapping(source = "student.id", target = "studentId")
+    @Mapping(source = "student.firstName", target = "studentFirstName")
+    @Mapping(source = "student.lastName", target = "studentLastName")
     @Mapping(source = "subject.id", target = "subjectId")
+    @Mapping(source = "subject.subjectName", target = "subjectName")
     LessonResponse toResponse(Lesson lesson);
 
     @Mapping(target = "id", ignore = true)

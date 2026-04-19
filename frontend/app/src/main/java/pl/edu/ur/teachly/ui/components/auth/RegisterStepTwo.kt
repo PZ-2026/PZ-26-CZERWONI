@@ -19,7 +19,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -48,7 +49,7 @@ fun StepTwoContent(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+            .background(colorScheme.background)
             .verticalScroll(rememberScrollState())
             .padding(horizontal = 24.dp)
             .padding(top = 28.dp, bottom = 48.dp),
@@ -57,7 +58,7 @@ fun StepTwoContent(
             value = uiState.firstName,
             onValueChange = viewModel::onFirstNameChange,
             label = stringResource(R.string.field_first_name),
-            placeholder = "Jan",
+            placeholder = stringResource(R.string.first_name_placeholder),
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
             keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) }),
             capitalize = true,
@@ -66,7 +67,7 @@ fun StepTwoContent(
             value = uiState.lastName,
             onValueChange = viewModel::onLastNameChange,
             label = stringResource(R.string.field_last_name),
-            placeholder = "Kowalski",
+            placeholder = stringResource(R.string.last_name_placeholder),
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
             keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) }),
             capitalize = true,
@@ -75,9 +76,20 @@ fun StepTwoContent(
             value = uiState.email,
             onValueChange = viewModel::onEmailChange,
             label = stringResource(R.string.field_email),
-            placeholder = "jan@example.com",
+            placeholder = stringResource(R.string.email_placeholder),
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Email,
+                imeAction = ImeAction.Next
+            ),
+            keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) }),
+        )
+        AuthTextField(
+            value = uiState.phoneNumber,
+            onValueChange = viewModel::onPhoneChange,
+            label = stringResource(R.string.field_phone),
+            placeholder = stringResource(R.string.phone_number_placeholder),
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Phone,
                 imeAction = ImeAction.Next
             ),
             keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) }),
@@ -104,13 +116,13 @@ fun StepTwoContent(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(14.dp))
-                .background(MaterialTheme.colorScheme.surfaceVariant)
+                .background(colorScheme.surfaceVariant)
                 .padding(16.dp)
         ) {
             Text(
                 text = stringResource(R.string.register_terms),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                style = typography.bodySmall,
+                color = colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth(),
             )

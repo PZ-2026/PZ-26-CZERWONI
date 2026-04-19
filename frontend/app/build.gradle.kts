@@ -1,9 +1,18 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
 }
+
+val localProperties = Properties()
+val localPropertiesFile = rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+    localProperties.load(localPropertiesFile.inputStream())
+}
+val baseUrl = localProperties.getProperty("BASE_URL") ?: "\"http://10.0.2.2:8080/\""
 
 android {
     namespace = "pl.edu.ur.teachly"
@@ -17,6 +26,8 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField("String", "BASE_URL", baseUrl)
     }
 
     buildTypes {
@@ -37,6 +48,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
@@ -59,6 +71,8 @@ dependencies {
     implementation(libs.okhttp.logging)
     implementation(libs.coroutines.android)
     implementation(libs.datastore.preferences)
+    implementation(libs.koin.android)
+    implementation(libs.koin.androidx.compose)
 
     // Tests & debug
     testImplementation(libs.junit)

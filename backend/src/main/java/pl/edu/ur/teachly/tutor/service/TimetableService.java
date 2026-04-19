@@ -28,7 +28,7 @@ public class TimetableService {
     private final HolidayRepository holidayRepository;
     private final LessonRepository lessonRepository;
 
-    public List<TimetableDayResponse> getTimetable(Integer tutorId, LocalDate fromDate, LocalDate toDate) {
+    public List<TimetableDayResponse> getTimetable(Integer tutorId, LocalDate fromDate, LocalDate toDate, Integer currentStudentId) {
 
         List<TutorAvailabilityRecurring> recurrings = recurringRepository.findByTutor_UserId(tutorId);
         List<TutorAvailabilityOverride> overrides = overrideRepository.findByTutor_UserIdAndOverrideDateBetween(tutorId, fromDate, toDate);
@@ -75,8 +75,11 @@ public class TimetableService {
             }
 
             List<Lesson> dayLessons = lessons.stream()
-                    .filter(l -> l.getLessonDate().equals(currentDate) &&
-                            (l.getLessonStatus() == LessonStatus.CONFIRMED || l.getLessonStatus() == LessonStatus.PENDING))
+                    .filter(l -> l.getLessonDate().equals(currentDate) && (
+                            l.getLessonStatus() == LessonStatus.CONFIRMED ||
+                                    (l.getLessonStatus() == LessonStatus.PENDING
+                                            && l.getStudent().getId().equals(currentStudentId))
+                    ))
                     .toList();
 
             for (Lesson lesson : dayLessons) {

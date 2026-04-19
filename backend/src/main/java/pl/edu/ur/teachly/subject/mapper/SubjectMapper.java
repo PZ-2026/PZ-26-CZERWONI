@@ -9,6 +9,7 @@ import pl.edu.ur.teachly.subject.entity.Subject;
 @Mapper(componentModel = "spring")
 public interface SubjectMapper {
     @Mapping(source = "category.id", target = "categoryId")
+    @Mapping(source = "category.categoryName", target = "categoryName")
     SubjectResponse toResponse(Subject subject);
 
     @Mapping(target = "id", ignore = true)

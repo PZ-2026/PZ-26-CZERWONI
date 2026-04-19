@@ -1,15 +1,33 @@
 package pl.edu.ur.teachly.data.repository
 
+import org.json.JSONObject
 import pl.edu.ur.teachly.data.local.TokenManager
 import pl.edu.ur.teachly.data.model.AuthResponse
 import pl.edu.ur.teachly.data.model.LoginRequest
 import pl.edu.ur.teachly.data.model.RegisterRequest
-import pl.edu.ur.teachly.data.remote.RetrofitClient
-import pl.edu.ur.teachly.ui.auth.viewmodels.UserRole
+import pl.edu.ur.teachly.data.model.UserRole
+import pl.edu.ur.teachly.data.remote.AuthApiService
+import retrofit2.Response
 
-class AuthRepository(private val tokenManager: TokenManager) {
+class AuthRepository(
+    private val api: AuthApiService,
+    private val tokenManager: TokenManager
+) {
 
-    private val api = RetrofitClient.authApi
+    private fun parseErrorDetail(response: Response<*>): String? {
+        return try {
+            val errorBody = response.errorBody()?.string()
+            if (errorBody != null) {
+                val jsonObject = JSONObject(errorBody)
+                if (jsonObject.has("detail")) {
+                    return jsonObject.getString("detail")
+                }
+            }
+            null
+        } catch (e: Exception) {
+            null
+        }
+    }
 
     suspend fun login(email: String, password: String): Result<AuthResponse> {
         return try {
@@ -23,8 +41,8 @@ class AuthRepository(private val tokenManager: TokenManager) {
                 )
                 Result.success(data)
             } else {
-                val message = "Błąd logowania"
-                Result.failure(Exception(message))
+                val detail = parseErrorDetail(response) ?: "Błąd logowania"
+                Result.failure(Exception(detail))
             }
         } catch (e: Exception) {
             Result.failure(Exception("Brak połączenia z serwerem"))
@@ -52,8 +70,8 @@ class AuthRepository(private val tokenManager: TokenManager) {
                 )
                 Result.success(data)
             } else {
-                val message = "Błąd rejestracji"
-                Result.failure(Exception(message))
+                val detail = parseErrorDetail(response) ?: "Błąd rejestracji"
+                Result.failure(Exception(detail))
             }
         } catch (e: Exception) {
             Result.failure(Exception("Brak połączenia z serwerem"))

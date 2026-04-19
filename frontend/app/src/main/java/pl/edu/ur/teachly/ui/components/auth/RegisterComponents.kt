@@ -12,7 +12,8 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -38,20 +39,20 @@ fun ColumnScope.StepProgressBar(step: Int) {
                 .weight(1f)
                 .height(4.dp)
                 .clip(RoundedCornerShape(2.dp))
-                .background(MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.2f))
+                .background(colorScheme.onPrimary.copy(alpha = 0.2f))
         ) {
             Box(
                 modifier = Modifier
                     .fillMaxHeight()
                     .fillMaxWidth(progress)
                     .clip(RoundedCornerShape(2.dp))
-                    .background(MaterialTheme.colorScheme.secondary)
+                    .background(colorScheme.secondary)
             )
         }
         Text(
             text = "$step/2",
-            style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.6f),
+            style = typography.labelSmall,
+            color = colorScheme.onPrimary.copy(alpha = 0.6f),
         )
     }
 }
