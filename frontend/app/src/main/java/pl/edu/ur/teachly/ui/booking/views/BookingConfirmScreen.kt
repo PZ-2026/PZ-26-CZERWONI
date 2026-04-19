@@ -1,4 +1,4 @@
-package pl.edu.ur.teachly.ui.home.views
+package pl.edu.ur.teachly.ui.booking.views
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -15,6 +15,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Text
@@ -50,7 +51,7 @@ fun BookingConfirmScreen(
     ) {
         SuccessIcon()
         Spacer(Modifier.height(24.dp))
-        ConfirmHeadline(tutorName = tutorName)
+        ConfirmHeadline()
         Spacer(Modifier.height(32.dp))
         BookingSummaryCard(
             tutorName = tutorName,
@@ -77,12 +78,17 @@ private fun SuccessIcon() {
             .background(DeepGreen700.copy(alpha = 0.15f)),
         contentAlignment = Alignment.Center,
     ) {
-        Icons.Default.Check
+        Icon(
+            imageVector = Icons.Default.Check,
+            contentDescription = null,
+            tint = DeepGreen700,
+            modifier = Modifier.size(40.dp),
+        )
     }
 }
 
 @Composable
-private fun ConfirmHeadline(tutorName: String) {
+private fun ConfirmHeadline() {
     Text(
         text = stringResource(R.string.confirm_title),
         style = typography.headlineMedium,
@@ -90,7 +96,7 @@ private fun ConfirmHeadline(tutorName: String) {
     )
     Spacer(Modifier.height(8.dp))
     Text(
-        text = stringResource(R.string.confirm_subtitle, tutorName),
+        text = stringResource(R.string.confirm_subtitle),
         style = typography.bodyMedium,
         color = colorScheme.onSurfaceVariant,
         textAlign = TextAlign.Center,
@@ -109,7 +115,7 @@ private fun BookingSummaryCard(
     val rows = listOf(
         listOf(stringResource(R.string.summary_date), lessonDate),
         listOf(stringResource(R.string.summary_time), "$timeFrom – $timeTo"),
-        listOf("Przedmiot", subjectName),
+        listOf(stringResource(R.string.subject), subjectName),
         listOf(stringResource(R.string.summary_tutor), tutorName),
         listOf(stringResource(R.string.summary_price), "$amount zł"),
     )

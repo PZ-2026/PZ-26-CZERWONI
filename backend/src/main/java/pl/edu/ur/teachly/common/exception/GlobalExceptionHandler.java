@@ -30,7 +30,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ProblemDetail handleValidationExceptions(MethodArgumentNotValidException ex) {
-        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "Błąd walidacji danych wejściowych");
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "Nieprawidłowe dane wejściowe");
 
         Map<String, String> errors = new HashMap<>();
         ex.getBindingResult().getAllErrors().forEach((error) -> {
@@ -45,18 +45,16 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(org.springframework.security.core.AuthenticationException.class)
     public ProblemDetail handleAuthenticationException(org.springframework.security.core.AuthenticationException ex) {
-        return ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, "Nieprawidłowy token JWT lub brak poświadczeń");
+        return ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, "Nieprawidłowe dane użytkownika");
     }
 
     @ExceptionHandler(org.springframework.security.access.AccessDeniedException.class)
     public ProblemDetail handleAccessDeniedException(org.springframework.security.access.AccessDeniedException ex) {
-        return ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN, "Brak wystarczających uprawnień do tego zasobu");
+        return ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN, "Brak wystarczających uprawnień");
     }
 
     @ExceptionHandler(Exception.class)
     public ProblemDetail handleGlobalException(Exception ex) {
-        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, "Wystąpił nieoczekiwany błąd serwera");
-        problemDetail.setProperty("errorCause", ex.getMessage());
-        return problemDetail;
+        return ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, "Wystąpił nieoczekiwany błąd serwera");
     }
 }

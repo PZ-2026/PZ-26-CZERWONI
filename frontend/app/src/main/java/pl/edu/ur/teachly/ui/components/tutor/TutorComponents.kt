@@ -9,39 +9,30 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import pl.edu.ur.teachly.R
 import pl.edu.ur.teachly.ui.components.Review
 import pl.edu.ur.teachly.ui.components.Tutor
-import pl.edu.ur.teachly.ui.components.other.SectionLabel
 
 @Composable
 fun TutorBioSection(tutor: Tutor) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Text(
-            text = stringResource(R.string.tutor_section_bio),
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onBackground
-        )
         Surface(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(16.dp),
-            color = MaterialTheme.colorScheme.surface,
+            color = colorScheme.surface,
             shadowElevation = 2.dp
         ) {
             Text(
                 text = tutor.bio,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurface,
+                style = typography.bodyMedium,
+                color = colorScheme.onSurface,
                 modifier = Modifier.padding(16.dp)
             )
         }
@@ -51,45 +42,13 @@ fun TutorBioSection(tutor: Tutor) {
 @Composable
 fun DetailSection(title: String, content: @Composable () -> Unit) {
     Column(modifier = Modifier.padding(bottom = 24.dp)) {
-        SectionLabel(text = title, modifier = Modifier.padding(bottom = 12.dp))
+        Text(
+            text = title,
+            style = typography.titleMedium,
+            color = colorScheme.onBackground,
+            modifier = Modifier.padding(bottom = 12.dp),
+        )
         content()
-    }
-}
-
-@Composable
-fun StatsGrid(tutor: Tutor) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(10.dp),
-    ) {
-        // TODO: Change placeholders to real data
-        listOf(
-            listOf("${12}", "Lekcji"),
-            listOf("${4.5}", "Ocena"),
-            listOf("${4}", "Nauczanych tematów"),
-        ).forEach { (value, label) ->
-            Surface(
-                modifier = Modifier.weight(1f),
-                shape = RoundedCornerShape(14.dp),
-                color = MaterialTheme.colorScheme.surfaceVariant,
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
-            ) {
-                Column(modifier = Modifier.padding(horizontal = 10.dp, vertical = 12.dp)) {
-                    Text(
-                        value,
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        modifier = Modifier.padding(top = 4.dp)
-                    )
-                    Text(
-                        label,
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(top = 2.dp)
-                    )
-                }
-            }
-        }
     }
 }
 
@@ -99,8 +58,8 @@ fun ReviewList(reviews: List<Review>) {
         reviews.forEach { review ->
             Surface(
                 shape = RoundedCornerShape(14.dp),
-                color = MaterialTheme.colorScheme.surfaceVariant,
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+                color = colorScheme.surfaceVariant,
+                border = BorderStroke(1.dp, colorScheme.outline),
             ) {
                 Column(
                     modifier = Modifier
@@ -113,20 +72,20 @@ fun ReviewList(reviews: List<Review>) {
                     ) {
                         Text(
                             review.authorName,
-                            style = MaterialTheme.typography.labelMedium,
-                            color = MaterialTheme.colorScheme.onSurface
+                            style = typography.labelMedium,
+                            color = colorScheme.onSurface
                         )
                         Text(
                             "★".repeat(review.rating),
-                            style = MaterialTheme.typography.labelSmall,
+                            style = typography.labelSmall,
                             color = Color(0xFFD97706)
                         )
                     }
                     Spacer(Modifier.height(6.dp))
                     Text(
                         review.text,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        style = typography.bodySmall,
+                        color = colorScheme.onSurfaceVariant
                     )
                 }
             }

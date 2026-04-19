@@ -58,7 +58,7 @@ fun StepTwoContent(
             value = uiState.firstName,
             onValueChange = viewModel::onFirstNameChange,
             label = stringResource(R.string.field_first_name),
-            placeholder = "Jan",
+            placeholder = stringResource(R.string.first_name_placeholder),
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
             keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) }),
             capitalize = true,
@@ -67,7 +67,7 @@ fun StepTwoContent(
             value = uiState.lastName,
             onValueChange = viewModel::onLastNameChange,
             label = stringResource(R.string.field_last_name),
-            placeholder = "Kowalski",
+            placeholder = stringResource(R.string.last_name_placeholder),
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
             keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) }),
             capitalize = true,
@@ -76,7 +76,7 @@ fun StepTwoContent(
             value = uiState.email,
             onValueChange = viewModel::onEmailChange,
             label = stringResource(R.string.field_email),
-            placeholder = "jan@example.com",
+            placeholder = stringResource(R.string.email_placeholder),
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Email,
                 imeAction = ImeAction.Next
@@ -87,7 +87,7 @@ fun StepTwoContent(
             value = uiState.phoneNumber,
             onValueChange = viewModel::onPhoneChange,
             label = stringResource(R.string.field_phone),
-            placeholder = "123456789",
+            placeholder = stringResource(R.string.phone_number_placeholder),
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Phone,
                 imeAction = ImeAction.Next

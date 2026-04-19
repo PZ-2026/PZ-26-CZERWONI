@@ -48,8 +48,8 @@ fun RegisterScreen(
                     colorScheme.primary,
                 )
             ),
-            topPadding = 20.dp,
-            bottomPadding = 8.dp,
+            topPadding = 28.dp,
+            bottomPadding = 0.dp,
             decorativeCircle = true,
             onBack = onBack,
         )

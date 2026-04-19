@@ -8,9 +8,9 @@ class SubjectRepository(private val api: SubjectApiService) {
         return try {
             val response = api.getAllSubjects()
             if (response.isSuccessful) Result.success(response.body()!!)
-            else Result.failure(Exception("Błąd pobierania przedmiotów: ${response.code()}"))
+            else Result.failure(Exception("Błąd pobierania przedmiotów"))
         } catch (e: Exception) {
-            Result.failure(Exception("Brak połączenia z serwerem: ${e.message}"))
+            Result.failure(Exception("Brak połączenia z serwerem"))
         }
     }
 }

@@ -1,4 +1,4 @@
-package pl.edu.ur.teachly.ui.home.viewmodels
+package pl.edu.ur.teachly.ui.booking.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -12,10 +12,9 @@ import pl.edu.ur.teachly.data.local.TokenManager
 import pl.edu.ur.teachly.data.model.LessonFormat
 import pl.edu.ur.teachly.data.model.LessonRequest
 import pl.edu.ur.teachly.data.model.LessonStatus
-import pl.edu.ur.teachly.data.model.SubjectResponse
 import pl.edu.ur.teachly.data.model.TutorResponse
+import pl.edu.ur.teachly.data.model.TutorSubjectResponse
 import pl.edu.ur.teachly.data.repository.LessonRepository
-import pl.edu.ur.teachly.data.repository.SubjectRepository
 import pl.edu.ur.teachly.data.repository.TutorRepository
 import pl.edu.ur.teachly.ui.components.CalendarDay
 import java.time.DayOfWeek
@@ -26,11 +25,13 @@ data class BookingUiState(
     val tutor: TutorResponse? = null,
     val calendarDays: List<Pair<CalendarDay, LocalDate>> = emptyList(),
     val timetableByDate: Map<String, List<String>> = emptyMap(),
-    val subjects: List<SubjectResponse> = emptyList(),
+    val tutorSubjects: List<TutorSubjectResponse> = emptyList(),
+    val availableFormats: List<LessonFormat> = emptyList(),
     val selectedDayIndex: Int = 0,
     val selectedSlot: String? = null,
     val selectedDuration: Int = 60,
     val selectedSubjectIndex: Int = 0,
+    val selectedFormat: LessonFormat? = null,
     val isLoading: Boolean = true,
     val isSubmitting: Boolean = false,
     val error: String? = null,
@@ -40,7 +41,6 @@ data class BookingUiState(
 class BookingViewModel(
     private val tutorRepository: TutorRepository,
     private val lessonRepository: LessonRepository,
-    private val subjectRepository: SubjectRepository,
     private val tokenManager: TokenManager,
 ) : ViewModel() {
 
@@ -56,19 +56,27 @@ class BookingViewModel(
 
             // Load tutor and subjects in parallel
             tutorRepository.getTutorById(tutorId).fold(
-                onSuccess = { tutor -> _state.update { it.copy(tutor = tutor) } },
-                onFailure = { e ->
+                onSuccess = { tutor ->
+                    val formats = buildList {
+                        if (tutor.offersOnline) add(LessonFormat.ONLINE)
+                        if (tutor.offersInPerson) add(LessonFormat.IN_PERSON)
+                    }
                     _state.update {
                         it.copy(
-                            error = e.message,
-                            isLoading = false
+                            tutor = tutor,
+                            availableFormats = formats,
+                            selectedFormat = formats.firstOrNull(),
                         )
-                    }; return@launch
+                    }
+                },
+                onFailure = { e ->
+                    _state.update { it.copy(error = e.message, isLoading = false) }
+                    return@launch
                 },
             )
 
-            subjectRepository.getAllSubjects().fold(
-                onSuccess = { subjects -> _state.update { it.copy(subjects = subjects) } },
+            tutorRepository.getTutorSubjects(tutorId).fold(
+                onSuccess = { subjects -> _state.update { it.copy(tutorSubjects = subjects) } },
                 onFailure = {},
             )
 
@@ -116,6 +124,10 @@ class BookingViewModel(
         _state.update { it.copy(selectedSubjectIndex = index) }
     }
 
+    fun onFormatSelect(format: LessonFormat) {
+        _state.update { it.copy(selectedFormat = format) }
+    }
+
     val availableSlotsForSelectedDay: List<String>
         get() {
             val date = _state.value.calendarDays.getOrNull(_state.value.selectedDayIndex)?.second
@@ -130,7 +142,8 @@ class BookingViewModel(
         val tutor = st.tutor ?: return
         val slot = st.selectedSlot ?: return
         val dayDate = st.calendarDays.getOrNull(st.selectedDayIndex)?.second ?: return
-        val subject = st.subjects.getOrNull(st.selectedSubjectIndex) ?: return
+        val subject = st.tutorSubjects.getOrNull(st.selectedSubjectIndex) ?: return
+        val format = st.selectedFormat ?: return
 
         // Validate consecutive slots
         val available = st.timetableByDate[dayDate.toString()] ?: emptyList()
@@ -154,11 +167,11 @@ class BookingViewModel(
             val amount = tutor.hourlyRate * st.selectedDuration / 60.0
             val request = LessonRequest(
                 tutorId = tutor.id,
-                subjectId = subject?.id ?: 1,
+                subjectId = subject.subjectId,
                 lessonDate = dayDate.toString(),
                 timeFrom = "$slot:00",
                 timeTo = "${endTime.toString().take(5)}:00",
-                format = LessonFormat.ONLINE,
+                format = format,
                 lessonStatus = LessonStatus.PENDING,
                 studentNotes = null,
                 amount = amount,

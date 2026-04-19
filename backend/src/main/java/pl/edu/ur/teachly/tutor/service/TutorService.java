@@ -32,13 +32,13 @@ public class TutorService {
     public TutorResponse getTutorById(Integer tutorId) {
         return tutorRepository.findById(tutorId)
                 .map(tutorMapper::toResponse)
-                .orElseThrow(() -> new ResourceNotFoundException("Nie znaleziono korepetytora o podanym id"));
+                .orElseThrow(() -> new ResourceNotFoundException("Nie znaleziono szukanego korepetytora"));
     }
 
     @Transactional(readOnly = true)
     public List<TutorSubjectResponse> getTutorSubjects(Integer tutorId) {
         tutorRepository.findById(tutorId)
-                .orElseThrow(() -> new ResourceNotFoundException("Nie znaleziono korepetytora o podanym id"));
+                .orElseThrow(() -> new ResourceNotFoundException("Nie znaleziono szukanego korepetytora"));
         return tutorSubjectRepository.findByTutor_UserId(tutorId).stream()
                 .map(tutorSubjectMapper::toResponse)
                 .toList();

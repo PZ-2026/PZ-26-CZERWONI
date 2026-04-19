@@ -28,7 +28,7 @@ public interface LessonRepository extends JpaRepository<Lesson, Integer> {
                 FROM Lesson l
                 WHERE l.tutor.userId = :tutorId
                   AND l.lessonDate = :date
-                  AND l.lessonStatus = :lessonStatus
+                  AND l.lessonStatus = :status
                   AND l.timeFrom < :timeTo
                   AND l.timeTo > :timeFrom
             """)
@@ -37,6 +37,23 @@ public interface LessonRepository extends JpaRepository<Lesson, Integer> {
             @Param("date") LocalDate date,
             @Param("timeFrom") LocalTime timeFrom,
             @Param("timeTo") LocalTime timeTo,
-            @Param("lessonStatus") LessonStatus lessonStatus
+            @Param("status") LessonStatus status
+    );
+
+    @Query("""
+                SELECT COUNT(l) > 0
+                FROM Lesson l
+                WHERE l.student.id = :studentId
+                  AND l.lessonDate = :date
+                  AND l.lessonStatus <> :cancelledStatus
+                  AND l.timeFrom < :timeTo
+                  AND l.timeTo > :timeFrom
+            """)
+    boolean existsConflictingStudentLesson(
+            @Param("studentId") Integer studentId,
+            @Param("date") LocalDate date,
+            @Param("timeFrom") LocalTime timeFrom,
+            @Param("timeTo") LocalTime timeTo,
+            @Param("cancelledStatus") LessonStatus cancelledStatus
     );
 }

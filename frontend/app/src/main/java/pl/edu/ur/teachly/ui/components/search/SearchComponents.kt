@@ -1,4 +1,4 @@
-package pl.edu.ur.teachly.ui.components.home
+package pl.edu.ur.teachly.ui.components.search
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.horizontalScroll
@@ -29,7 +29,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import pl.edu.ur.teachly.R
 import pl.edu.ur.teachly.ui.components.Tutor
-import pl.edu.ur.teachly.ui.components.tutor.TutorCard
+import pl.edu.ur.teachly.ui.components.other.TutorCard
 import pl.edu.ur.teachly.ui.theme.AvatarColors
 
 @Composable

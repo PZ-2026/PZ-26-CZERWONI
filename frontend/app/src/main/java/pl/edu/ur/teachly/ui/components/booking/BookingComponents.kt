@@ -35,6 +35,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import pl.edu.ur.teachly.R
+import pl.edu.ur.teachly.data.model.LessonFormat
 import pl.edu.ur.teachly.ui.components.CalendarDay
 import pl.edu.ur.teachly.ui.components.DURATION_OPTIONS
 import pl.edu.ur.teachly.ui.components.other.SectionLabel
@@ -125,11 +126,12 @@ fun SubjectPicker(
     selectedIndex: Int,
     onSelect: (Int) -> Unit,
 ) {
-    SectionLabel(text = "Przedmiot")
+    SectionLabel(text = stringResource(R.string.subject))
     Spacer(Modifier.height(10.dp))
 
     var expanded by remember { mutableStateOf(false) }
-    val selectedLabel = subjects.getOrElse(selectedIndex) { "Wybierz przedmiot" }
+    val selectedLabel =
+        subjects.getOrElse(selectedIndex) { stringResource(R.string.choose_subject) }
 
     ExposedDropdownMenuBox(
         expanded = expanded,
@@ -190,7 +192,7 @@ fun TimeSlotGrid(
 
     if (availableSlots.isEmpty()) {
         Text(
-            text = "Brak dostępnych terminów w tym dniu",
+            text = stringResource(R.string.no_available_slots_this_day),
             style = typography.bodyMedium,
             color = colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(vertical = 8.dp),
@@ -242,6 +244,49 @@ fun TimeSlotGrid(
                 }
             }
             repeat(columns - rowSlots.size) { Spacer(Modifier.weight(1f)) }
+        }
+    }
+}
+
+@Composable
+fun FormatPicker(
+    formats: List<LessonFormat>,
+    selectedFormat: LessonFormat?,
+    onSelect: (LessonFormat) -> Unit,
+) {
+    SectionLabel(text = stringResource(R.string.lesson_format))
+    Spacer(Modifier.height(10.dp))
+    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+        formats.forEach { format ->
+            val isSelected = format == selectedFormat
+            val label =
+                if (format == LessonFormat.ONLINE) stringResource(R.string.online) else stringResource(
+                    R.string.in_person
+                )
+            Surface(
+                modifier = Modifier
+                    .weight(1f)
+                    .clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null,
+                    ) { onSelect(format) },
+                shape = RoundedCornerShape(14.dp),
+                color = if (isSelected) colorScheme.primary else colorScheme.surfaceVariant,
+                border = if (isSelected) BorderStroke(2.dp, colorScheme.primary) else null,
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 14.dp),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Text(
+                        text = label,
+                        style = typography.labelMedium,
+                        color = if (isSelected) colorScheme.onPrimary else colorScheme.onSurfaceVariant,
+                    )
+                }
+            }
         }
     }
 }

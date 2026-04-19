@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import pl.edu.ur.teachly.data.local.TokenManager
 import pl.edu.ur.teachly.data.model.LessonStatus
@@ -20,9 +21,12 @@ data class HomeUiState(
     val userName: String = "",
     val isStudent: Boolean = true,
     val isAdmin: Boolean = false,
-    val upcomingLessons: List<ScheduledClass> = emptyList(),
+    val upcomingConfirmed: List<ScheduledClass> = emptyList(),
+    val upcomingPending: List<ScheduledClass> = emptyList(),
+    val confirmedExpanded: Boolean = true,
+    val pendingExpanded: Boolean = true,
     val totalLessons: Int = 0,
-    val pendingLessons: Int = 0,
+    val pendingLessonsCount: Int = 0,
     val isLoading: Boolean = true,
     val error: String? = null,
 )
@@ -75,13 +79,16 @@ class HomeViewModel(
                             .map { it.toScheduledClass() }
                             .filter { it.day >= today }
                             .sortedWith(compareBy({ it.day }, { it.time }))
-                            .take(3)
+
+                        val confirmed = upcoming.filter { it.status == "Zaplanowane" }
+                        val pending = upcoming.filter { it.status == "Oczekujące" }
 
                         _state.value = _state.value.copy(
                             isStudent = isStudent,
-                            upcomingLessons = upcoming,
+                            upcomingConfirmed = confirmed,
+                            upcomingPending = pending,
                             totalLessons = lessons.count { it.lessonStatus == LessonStatus.COMPLETED },
-                            pendingLessons = lessons.count { it.lessonStatus == LessonStatus.PENDING },
+                            pendingLessonsCount = lessons.count { it.lessonStatus == LessonStatus.PENDING },
                             isLoading = false,
                             error = null,
                         )
@@ -89,7 +96,7 @@ class HomeViewModel(
                         _state.value = _state.value.copy(
                             isStudent = isStudent,
                             isLoading = false,
-                            error = e.message
+                            error = e.message,
                         )
                     }
                 },
@@ -97,10 +104,13 @@ class HomeViewModel(
                     _state.value = _state.value.copy(
                         isStudent = isStudent,
                         isLoading = false,
-                        error = e.message
+                        error = e.message,
                     )
                 },
             )
         }
     }
+
+    fun toggleConfirmed() = _state.update { it.copy(confirmedExpanded = !it.confirmedExpanded) }
+    fun togglePending() = _state.update { it.copy(pendingExpanded = !it.pendingExpanded) }
 }

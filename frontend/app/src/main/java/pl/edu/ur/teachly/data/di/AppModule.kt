@@ -12,12 +12,12 @@ import pl.edu.ur.teachly.data.repository.TutorRepository
 import pl.edu.ur.teachly.data.repository.UserRepository
 import pl.edu.ur.teachly.ui.auth.viewmodels.LoginViewModel
 import pl.edu.ur.teachly.ui.auth.viewmodels.RegisterViewModel
-import pl.edu.ur.teachly.ui.home.viewmodels.BookingViewModel
+import pl.edu.ur.teachly.ui.booking.viewmodels.BookingViewModel
 import pl.edu.ur.teachly.ui.home.viewmodels.HomeViewModel
-import pl.edu.ur.teachly.ui.home.viewmodels.SearchViewModel
 import pl.edu.ur.teachly.ui.profile.viewmodels.ProfileViewModel
 import pl.edu.ur.teachly.ui.profile.viewmodels.TutorProfileViewModel
 import pl.edu.ur.teachly.ui.schedule.viewmodels.ScheduleViewModel
+import pl.edu.ur.teachly.ui.search.viewmodels.SearchViewModel
 import pl.edu.ur.teachly.ui.tutor.viewmodels.TutorDetailViewModel
 
 val appModule = module {
@@ -35,9 +35,9 @@ val appModule = module {
     // ViewModels
     viewModel { LoginViewModel(get()) }
     viewModel { RegisterViewModel(get()) }
-    viewModel { SearchViewModel(get(), get()) }
+    viewModel { SearchViewModel(get(), get(), get()) }
     viewModel { HomeViewModel(get(), get(), get()) }
-    viewModel { BookingViewModel(get(), get(), get(), get()) }
+    viewModel { BookingViewModel(get(), get(), get()) }
     viewModel { ScheduleViewModel(get(), get()) }
     viewModel { TutorDetailViewModel(get(), get()) }
     viewModel { ProfileViewModel(get(), get(), get()) }

@@ -2,6 +2,7 @@ package pl.edu.ur.teachly.ui.profile.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -18,11 +19,13 @@ data class TutorStats(
     val totalLessons: Int = 0,
     val completedLessons: Int = 0,
     val reviewsCount: Int = 0,
+    val avgRating: Double = 0.0,
     val totalEarnings: Double = 0.0,
 )
 
 data class TutorProfileState(
     val tutor: Tutor? = null,
+    val email: String = "",
     val stats: TutorStats = TutorStats(),
     val isLoading: Boolean = true,
     val error: String? = null,
@@ -47,18 +50,22 @@ class TutorProfileViewModel(
                 return@launch
             }
 
-            val subjects = tutorRepository.getTutorSubjects(id)
-                .getOrDefault(emptyList())
-                .map { it.subjectName }
+            val subjectsDeferred = async {
+                tutorRepository.getTutorSubjects(id)
+                    .getOrDefault(emptyList())
+                    .map { it.subjectName }
+            }
+            val lessonsDeferred = async { lessonRepository.getTutorLessons(id) }
+            val reviewsDeferred = async { reviewRepository.getTutorReviews(id) }
 
-            _state.update { it.copy(tutor = tutorResponse.toUiTutor(subjects)) }
+            val subjects = subjectsDeferred.await()
+            val lessonsResult = lessonsDeferred.await()
+            val reviewsResult = reviewsDeferred.await()
 
-            var totalLessons = 0
             var completedLessons = 0
             var totalEarnings = 0.0
-            lessonRepository.getTutorLessons(id).fold(
+            lessonsResult.fold(
                 onSuccess = { lessons ->
-                    totalLessons = lessons.size
                     completedLessons = lessons.count { it.lessonStatus == LessonStatus.COMPLETED }
                     totalEarnings = lessons
                         .filter { it.lessonStatus == LessonStatus.COMPLETED }
@@ -68,17 +75,30 @@ class TutorProfileViewModel(
             )
 
             var reviewsCount = 0
-            reviewRepository.getTutorReviews(id).fold(
-                onSuccess = { reviews -> reviewsCount = reviews.size },
+            var avgRating = 0.0
+            reviewsResult.fold(
+                onSuccess = { reviews ->
+                    reviewsCount = reviews.size
+                    if (reviews.isNotEmpty()) {
+                        avgRating = reviews.sumOf { it.rating } / reviews.size
+                    }
+                },
                 onFailure = {},
             )
 
             _state.update {
                 it.copy(
+                    tutor = tutorResponse.toUiTutor(
+                        subjects = subjects,
+                        rating = avgRating,
+                        reviewCount = reviewsCount,
+                        lessonCount = completedLessons,
+                    ),
+                    email = tutorResponse.email,
                     stats = TutorStats(
-                        totalLessons = totalLessons,
                         completedLessons = completedLessons,
                         reviewsCount = reviewsCount,
+                        avgRating = avgRating,
                         totalEarnings = totalEarnings,
                     ),
                     isLoading = false,

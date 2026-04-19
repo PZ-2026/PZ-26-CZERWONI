@@ -52,11 +52,22 @@ class TutorDetailViewModel(
                 return@launch
             }
 
-            // Load reviews
+            // Load reviews and compute rating
             reviewRepository.getTutorReviews(id).fold(
                 onSuccess = { reviews ->
                     try {
-                        _state.update { it.copy(reviews = reviews.map { r -> r.toUiReview() }) }
+                        val avgRating = if (reviews.isEmpty()) 0.0
+                        else reviews.sumOf { it.rating } / reviews.size
+                        val uiReviews = reviews.map { r -> r.toUiReview() }
+                        _state.update { s ->
+                            s.copy(
+                                tutor = s.tutor?.copy(
+                                    rating = avgRating,
+                                    reviewCount = reviews.size,
+                                ),
+                                reviews = uiReviews,
+                            )
+                        }
                     } catch (_: Exception) {
                     }
                 },

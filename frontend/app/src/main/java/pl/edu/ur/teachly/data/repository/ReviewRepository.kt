@@ -10,9 +10,9 @@ class ReviewRepository(private val api: ReviewApiService) {
         return try {
             val response = api.getTutorReviews(tutorId)
             if (response.isSuccessful) Result.success(response.body()!!)
-            else Result.failure(Exception("Błąd pobierania recenzji: ${response.code()}"))
+            else Result.failure(Exception("Błąd pobierania recenzji"))
         } catch (e: Exception) {
-            Result.failure(Exception("Brak połączenia z serwerem: ${e.message}"))
+            Result.failure(Exception("Brak połączenia z serwerem"))
         }
     }
 
@@ -20,9 +20,9 @@ class ReviewRepository(private val api: ReviewApiService) {
         return try {
             val response = api.addReview(studentId, request)
             if (response.isSuccessful) Result.success(response.body()!!)
-            else Result.failure(Exception("Błąd dodania recenzji: ${response.code()}"))
+            else Result.failure(Exception("Błąd dodania recenzji"))
         } catch (e: Exception) {
-            Result.failure(Exception("Brak połączenia z serwerem: ${e.message}"))
+            Result.failure(Exception("Brak połączenia z serwerem"))
         }
     }
 }

@@ -1,4 +1,4 @@
-package pl.edu.ur.teachly.ui.home.views
+package pl.edu.ur.teachly.ui.search.views
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -19,11 +19,11 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import org.koin.androidx.compose.koinViewModel
 import pl.edu.ur.teachly.ui.components.Tutor
-import pl.edu.ur.teachly.ui.components.home.HomeHeader
-import pl.edu.ur.teachly.ui.components.home.StatsRow
-import pl.edu.ur.teachly.ui.components.home.SubjectChips
-import pl.edu.ur.teachly.ui.components.home.TutorList
-import pl.edu.ur.teachly.ui.home.viewmodels.SearchViewModel
+import pl.edu.ur.teachly.ui.components.search.HomeHeader
+import pl.edu.ur.teachly.ui.components.search.StatsRow
+import pl.edu.ur.teachly.ui.components.search.SubjectChips
+import pl.edu.ur.teachly.ui.components.search.TutorList
+import pl.edu.ur.teachly.ui.search.viewmodels.SearchViewModel
 
 @Composable
 fun SearchScreen(

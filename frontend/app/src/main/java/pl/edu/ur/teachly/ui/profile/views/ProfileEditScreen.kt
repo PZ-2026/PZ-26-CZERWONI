@@ -11,15 +11,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -33,6 +30,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import org.koin.androidx.compose.koinViewModel
 import pl.edu.ur.teachly.R
+import pl.edu.ur.teachly.ui.components.auth.AuthTextField
 import pl.edu.ur.teachly.ui.components.other.InitialsAvatar
 import pl.edu.ur.teachly.ui.components.other.PrimaryButton
 import pl.edu.ur.teachly.ui.profile.viewmodels.ProfileViewModel
@@ -71,7 +69,7 @@ fun ProfileEditScreen(
             ) {
                 IconButton(onClick = onBack) {
                     Icon(
-                        Icons.Default.ArrowBack,
+                        Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = stringResource(R.string.cd_back),
                         tint = MaterialTheme.colorScheme.onSurface,
                     )
@@ -96,20 +94,30 @@ fun ProfileEditScreen(
             Spacer(modifier = Modifier.height(24.dp))
 
             val initials =
-                "${editState.firstName.firstOrNull() ?: ""}${editState.lastName.firstOrNull() ?: ""}"
-            InitialsAvatar(initials = initials, avatarColor = AvatarColors[0])
+                stringResource(
+                    R.string.initials,
+                    editState.firstName.firstOrNull() ?: "",
+                    editState.lastName.firstOrNull() ?: ""
+                )
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+                InitialsAvatar(initials = initials, avatarColor = AvatarColors[0], size = 96.dp)
+            }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
-            ProfileTextField(
+            AuthTextField(
                 label = stringResource(R.string.field_first_name),
                 value = editState.firstName,
                 onValueChange = viewModel::onFirstNameChange,
+                placeholder = stringResource(R.string.first_name_placeholder),
+                capitalize = true,
             )
-            ProfileTextField(
+            AuthTextField(
                 label = stringResource(R.string.field_last_name),
                 value = editState.lastName,
                 onValueChange = viewModel::onLastNameChange,
+                placeholder = stringResource(R.string.last_name_placeholder),
+                capitalize = true,
             )
 
             if (editState.error != null) {
@@ -132,31 +140,3 @@ fun ProfileEditScreen(
     }
 }
 
-@Composable
-fun ProfileTextField(
-    label: String,
-    value: String,
-    onValueChange: (String) -> Unit,
-    singleLine: Boolean = true,
-) {
-    Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-        Text(
-            text = label,
-            style = MaterialTheme.typography.labelMedium,
-            color = MaterialTheme.colorScheme.onBackground,
-        )
-        OutlinedTextField(
-            value = value,
-            onValueChange = onValueChange,
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = singleLine,
-            shape = RoundedCornerShape(12.dp),
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = MaterialTheme.colorScheme.primary,
-                unfocusedBorderColor = MaterialTheme.colorScheme.outline,
-                focusedContainerColor = MaterialTheme.colorScheme.surface,
-                unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
-            ),
-        )
-    }
-}

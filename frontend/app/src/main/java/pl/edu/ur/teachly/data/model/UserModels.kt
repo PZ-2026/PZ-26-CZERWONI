@@ -18,7 +18,7 @@ data class UserResponse(
     val email: String,
     val phoneNumber: String?,
     val avatarUrl: String?,
-    val role: UserRole,
+    val role: UserRole?,
     val isActive: Boolean,
     val createdAt: String,
     val updatedAt: String

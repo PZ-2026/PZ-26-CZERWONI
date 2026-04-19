@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import pl.edu.ur.teachly.tutor.dto.request.TutorAvailabilityOverrideRequest;
 import pl.edu.ur.teachly.tutor.dto.request.TutorAvailabilityRecurringRequest;
@@ -12,6 +13,7 @@ import pl.edu.ur.teachly.tutor.dto.response.TutorAvailabilityOverrideResponse;
 import pl.edu.ur.teachly.tutor.dto.response.TutorAvailabilityRecurringResponse;
 import pl.edu.ur.teachly.tutor.service.TimetableService;
 import pl.edu.ur.teachly.tutor.service.TutorAvailabilityService;
+import pl.edu.ur.teachly.user.entity.User;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -27,8 +29,10 @@ public class TutorAvailabilityController {
     public List<TimetableDayResponse> getTimetable(
             @PathVariable Integer tutorId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
-        return timetableService.getTimetable(tutorId, from, to);
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
+            @AuthenticationPrincipal User currentUser) {
+        Integer studentId = currentUser != null ? currentUser.getId() : null;
+        return timetableService.getTimetable(tutorId, from, to, studentId);
     }
 
     @GetMapping("/recurring")

@@ -1,4 +1,4 @@
-package pl.edu.ur.teachly.ui.components.tutor
+package pl.edu.ur.teachly.ui.components.other
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -58,13 +58,6 @@ fun TutorCard(
                 TutorAvatar(initials = tutor.initials, bg = avatarBg, fg = avatarFg, size = 48)
                 TutorCardInfo(tutor = tutor)
             }
-
-            HorizontalDivider(
-                modifier = Modifier.padding(vertical = 12.dp),
-                color = MaterialTheme.colorScheme.outline
-            )
-
-            NearestSlots(slots = tutor.nearestSlots)
         }
     }
 }
@@ -86,7 +79,8 @@ fun TutorAvatar(
         ) {
             Text(
                 text = initials,
-                style = if (size >= 64) MaterialTheme.typography.titleMedium else MaterialTheme.typography.labelMedium,
+                style = if (size >= 64) MaterialTheme.typography.titleMedium
+                else MaterialTheme.typography.labelMedium,
                 color = fg,
             )
         }
@@ -101,11 +95,12 @@ private fun TutorCardInfo(tutor: Tutor) {
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.Top,
         ) {
-            Column {
+            Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = tutor.name,
                     style = MaterialTheme.typography.titleSmall,
-                    color = MaterialTheme.colorScheme.onSurface
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.padding(bottom = 8.dp)
                 )
                 FlowRow(
                     horizontalArrangement = Arrangement.spacedBy(6.dp),
@@ -128,23 +123,27 @@ private fun TutorCardInfo(tutor: Tutor) {
                     }
                 }
             }
-            PriceLabel(price = tutor.pricePerHour)
+            TutorHourlyRate(price = tutor.pricePerHour)
         }
 
         Spacer(Modifier.height(8.dp))
-        RatingRow(rating = tutor.rating, reviewCount = tutor.reviewCount, isOnline = tutor.isOnline)
-        Spacer(Modifier.height(8.dp))
-        TagRow(tags = tutor.tags)
+        TutorFormatTags(tags = tutor.tags)
+        HorizontalDivider(
+            modifier = Modifier.padding(vertical = 12.dp),
+            color = MaterialTheme.colorScheme.outline
+        )
+        TutorAverageRating(rating = tutor.rating, reviewCount = tutor.reviewCount)
     }
 }
 
 // Price
 @Composable
-fun PriceLabel(price: Int, large: Boolean = false) {
+fun TutorHourlyRate(price: Int, large: Boolean = false) {
     Column(horizontalAlignment = Alignment.End) {
         Text(
             text = stringResource(R.string.tutor_price_format, price),
-            style = if (large) MaterialTheme.typography.headlineSmall else MaterialTheme.typography.titleMedium,
+            style = if (large) MaterialTheme.typography.headlineSmall
+            else MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.primary,
         )
         Text(
@@ -157,27 +156,36 @@ fun PriceLabel(price: Int, large: Boolean = false) {
 
 // Rating
 @Composable
-fun RatingRow(rating: Double, reviewCount: Int, isOnline: Boolean) {
+fun TutorAverageRating(rating: Double, reviewCount: Int) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        Text(
-            text = stringResource(R.string.tutor_rating_format, rating),
-            style = MaterialTheme.typography.labelMedium,
-            color = Color(0xFFD97706),
-        )
-        Text(
-            text = stringResource(R.string.tutor_reviews_format, reviewCount),
-            style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
+        if (reviewCount == 0) {
+            Text(
+                text = "Brak ocen",
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        } else {
+            Text(
+                text = stringResource(R.string.tutor_rating_format, rating),
+                style = MaterialTheme.typography.labelMedium,
+                fontWeight = FontWeight.SemiBold,
+                color = Color(0xFFD97706),
+            )
+            Text(
+                text = stringResource(R.string.tutor_reviews_format, reviewCount),
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
     }
 }
 
 // Tags
 @Composable
-fun TagRow(tags: List<String>) {
+fun TutorFormatTags(tags: List<String>) {
     Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
         tags.forEach { tag ->
             Box(
@@ -196,31 +204,3 @@ fun TagRow(tags: List<String>) {
     }
 }
 
-// Closest slots
-@Composable
-fun NearestSlots(slots: List<String>) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(6.dp),
-    ) {
-        Text(
-            text = stringResource(R.string.tutor_nearest),
-            style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-        slots.forEach { slot ->
-            Box(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(8.dp))
-                    .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.10f))
-                    .padding(horizontal = 10.dp, vertical = 4.dp)
-            ) {
-                Text(
-                    text = slot,
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.primary,
-                )
-            }
-        }
-    }
-}

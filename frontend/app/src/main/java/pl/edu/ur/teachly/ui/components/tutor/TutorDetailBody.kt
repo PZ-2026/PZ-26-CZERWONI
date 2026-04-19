@@ -15,7 +15,7 @@ import pl.edu.ur.teachly.ui.components.profile.SubjectsSection
 @Composable
 fun TutorDetailBody(tutor: Tutor, reviews: List<Review> = emptyList()) {
     Column(
-        modifier = Modifier.padding(horizontal = 12.dp, vertical = 20.dp),
+        modifier = Modifier.padding(vertical = 20.dp),
         verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
         DetailSection(title = stringResource(R.string.tutor_section_bio)) {
@@ -26,10 +26,6 @@ fun TutorDetailBody(tutor: Tutor, reviews: List<Review> = emptyList()) {
             DetailSection(title = stringResource(R.string.tutor_profile_subjects_title)) {
                 SubjectsSection(subjects = tutor.subjects, student = false)
             }
-        }
-
-        DetailSection(title = stringResource(R.string.tutor_section_stats)) {
-            StatsGrid(tutor = tutor)
         }
 
         if (reviews.isNotEmpty()) {

@@ -36,7 +36,7 @@ public class TutorAvailabilityService {
     @Transactional
     public TutorAvailabilityRecurringResponse addRecurring(Integer tutorId, TutorAvailabilityRecurringRequest request) {
         Tutor tutor = tutorRepository.findById(tutorId)
-                .orElseThrow(() -> new ResourceNotFoundException("Nie znaleziono korepetytora o podanym id"));
+                .orElseThrow(() -> new ResourceNotFoundException("Nie znaleziono szukanego korepetytora"));
         TutorAvailabilityRecurring entity = mapper.toEntity(request);
         entity.setTutor(tutor);
         return mapper.toResponse(recurringRepository.save(entity));
@@ -60,7 +60,7 @@ public class TutorAvailabilityService {
     @Transactional
     public TutorAvailabilityOverrideResponse addOverride(Integer tutorId, TutorAvailabilityOverrideRequest request) {
         Tutor tutor = tutorRepository.findById(tutorId)
-                .orElseThrow(() -> new ResourceNotFoundException("Nie znaleziono korepetytora o podanym id"));
+                .orElseThrow(() -> new ResourceNotFoundException("Nie znaleziono szukanego korepetytora"));
         TutorAvailabilityOverride entity = mapper.toEntity(request);
         entity.setTutor(tutor);
         return mapper.toResponse(overrideRepository.save(entity));
