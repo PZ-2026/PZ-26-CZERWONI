@@ -1,0 +1,46 @@
+services:
+
+  # PostgreSQL
+  db:
+    image: postgres:18-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: teachly
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d teachly"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  # Spring Boot backend
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      # Database
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/teachly
+      SPRING_DATASOURCE_USERNAME: ${DB_USER:-postgres}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD:-postgres}
+      SPRING_PROFILES_ACTIVE: docker
+      # JWT
+      APPLICATION_SECURITY_JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      APPLICATION_SECURITY_JWT_EXPIRATION: ${JWT_EXPIRATION:-86400000}
+      # JVM tuning for containers
+      JAVA_OPTS: "-XX:MaxRAMPercentage=75.0"
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
