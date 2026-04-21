@@ -16,7 +16,7 @@ import pl.edu.ur.teachly.data.model.TutorResponse
 import pl.edu.ur.teachly.data.model.TutorSubjectResponse
 import pl.edu.ur.teachly.data.repository.LessonRepository
 import pl.edu.ur.teachly.data.repository.TutorRepository
-import pl.edu.ur.teachly.ui.components.CalendarDay
+import pl.edu.ur.teachly.ui.models.CalendarDay
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalTime

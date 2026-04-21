@@ -9,10 +9,10 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import pl.edu.ur.teachly.data.repository.ReviewRepository
 import pl.edu.ur.teachly.data.repository.TutorRepository
-import pl.edu.ur.teachly.ui.components.Review
-import pl.edu.ur.teachly.ui.components.Tutor
-import pl.edu.ur.teachly.ui.components.toUiReview
-import pl.edu.ur.teachly.ui.components.toUiTutor
+import pl.edu.ur.teachly.ui.models.Review
+import pl.edu.ur.teachly.ui.models.Tutor
+import pl.edu.ur.teachly.ui.models.toUiReview
+import pl.edu.ur.teachly.ui.models.toUiTutor
 
 data class TutorDetailUiState(
     val tutor: Tutor? = null,

@@ -18,11 +18,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import org.koin.androidx.compose.koinViewModel
-import pl.edu.ur.teachly.ui.components.Tutor
 import pl.edu.ur.teachly.ui.components.search.HomeHeader
 import pl.edu.ur.teachly.ui.components.search.StatsRow
 import pl.edu.ur.teachly.ui.components.search.SubjectChips
 import pl.edu.ur.teachly.ui.components.search.TutorList
+import pl.edu.ur.teachly.ui.models.Tutor
 import pl.edu.ur.teachly.ui.search.viewmodels.SearchViewModel
 
 @Composable

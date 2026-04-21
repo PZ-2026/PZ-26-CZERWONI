@@ -28,8 +28,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import pl.edu.ur.teachly.R
-import pl.edu.ur.teachly.ui.components.Tutor
 import pl.edu.ur.teachly.ui.components.other.TutorCard
+import pl.edu.ur.teachly.ui.models.Tutor
 import pl.edu.ur.teachly.ui.theme.AvatarColors
 
 @Composable

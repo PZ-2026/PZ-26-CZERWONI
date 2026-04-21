@@ -17,8 +17,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import pl.edu.ur.teachly.ui.components.Review
-import pl.edu.ur.teachly.ui.components.Tutor
+import pl.edu.ur.teachly.ui.models.Review
+import pl.edu.ur.teachly.ui.models.Tutor
 
 @Composable
 fun TutorBioSection(tutor: Tutor) {

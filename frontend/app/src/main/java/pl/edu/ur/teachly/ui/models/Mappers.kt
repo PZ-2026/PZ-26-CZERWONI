@@ -1,4 +1,4 @@
-package pl.edu.ur.teachly.ui.components
+package pl.edu.ur.teachly.ui.models
 
 import pl.edu.ur.teachly.data.model.LessonResponse
 import pl.edu.ur.teachly.data.model.ReviewResponse

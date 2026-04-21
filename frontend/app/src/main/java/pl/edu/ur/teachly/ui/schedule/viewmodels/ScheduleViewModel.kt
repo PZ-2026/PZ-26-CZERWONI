@@ -11,8 +11,8 @@ import kotlinx.coroutines.launch
 import pl.edu.ur.teachly.data.local.TokenManager
 import pl.edu.ur.teachly.data.model.LessonStatus
 import pl.edu.ur.teachly.data.repository.LessonRepository
-import pl.edu.ur.teachly.ui.components.ScheduledClass
-import pl.edu.ur.teachly.ui.components.toScheduledClass
+import pl.edu.ur.teachly.ui.models.ScheduledClass
+import pl.edu.ur.teachly.ui.models.toScheduledClass
 
 data class ScheduleUiState(
     val confirmedClasses: List<ScheduledClass> = emptyList(),
