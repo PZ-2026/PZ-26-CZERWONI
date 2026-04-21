@@ -51,23 +51,34 @@ class RegisterViewModel(private val repository: AuthRepository) : ViewModel() {
     }
 
     fun onFirstNameChange(v: String) {
-        _uiState.value = _uiState.value.copy(firstName = v, errorMessage = null)
+        if (v.length <= 50) {
+            _uiState.value = _uiState.value.copy(firstName = v, errorMessage = null)
+        }
     }
 
     fun onLastNameChange(v: String) {
-        _uiState.value = _uiState.value.copy(lastName = v, errorMessage = null)
+        if (v.length <= 50) {
+            _uiState.value = _uiState.value.copy(lastName = v, errorMessage = null)
+        }
     }
 
     fun onEmailChange(v: String) {
-        _uiState.value = _uiState.value.copy(email = v, errorMessage = null)
+        if (v.length <= 100) {
+            _uiState.value = _uiState.value.copy(email = v, errorMessage = null)
+        }
     }
 
     fun onPhoneChange(v: String) {
-        _uiState.value = _uiState.value.copy(phoneNumber = v, errorMessage = null)
+        val digits = v.filter { it.isDigit() }
+        if (digits.length <= 9) {
+            _uiState.value = _uiState.value.copy(phoneNumber = digits, errorMessage = null)
+        }
     }
 
     fun onPasswordChange(v: String) {
-        _uiState.value = _uiState.value.copy(password = v, errorMessage = null)
+        if (v.length <= 100) {
+            _uiState.value = _uiState.value.copy(password = v, errorMessage = null)
+        }
     }
 
     fun register() {
@@ -98,9 +109,9 @@ class RegisterViewModel(private val repository: AuthRepository) : ViewModel() {
                 val selectedRole = state.selectedRole ?: UserRoleOption.STUDENT
                 val result = repository.register(
                     selectedRole.dataRole,
-                    state.firstName,
-                    state.lastName,
-                    state.email,
+                    state.firstName.trim(),
+                    state.lastName.trim(),
+                    state.email.trim().lowercase(),
                     state.phoneNumber,
                     state.password
                 )

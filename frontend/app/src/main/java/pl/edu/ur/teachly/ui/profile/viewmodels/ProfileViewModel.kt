@@ -98,8 +98,13 @@ class ProfileViewModel(
         }
     }
 
-    fun onFirstNameChange(value: String) = _editState.update { it.copy(firstName = value) }
-    fun onLastNameChange(value: String) = _editState.update { it.copy(lastName = value) }
+    fun onFirstNameChange(value: String) {
+        if (value.length <= 50) _editState.update { it.copy(firstName = value) }
+    }
+
+    fun onLastNameChange(value: String) {
+        if (value.length <= 50) _editState.update { it.copy(lastName = value) }
+    }
 
     fun saveProfile() {
         viewModelScope.launch {
