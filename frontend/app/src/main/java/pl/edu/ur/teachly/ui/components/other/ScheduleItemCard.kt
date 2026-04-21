@@ -16,6 +16,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Schedule
+import androidx.compose.material.icons.filled.School
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -31,13 +32,17 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import pl.edu.ur.teachly.R
-import pl.edu.ur.teachly.ui.components.ScheduledClass
+import pl.edu.ur.teachly.data.model.LessonFormat
+import pl.edu.ur.teachly.data.model.LessonStatus
+import pl.edu.ur.teachly.data.model.PaymentStatus
+import pl.edu.ur.teachly.data.model.UserRole
+import pl.edu.ur.teachly.ui.models.ScheduledClass
 import java.time.LocalTime
 
 @Composable
 fun ScheduleItemCard(
     item: ScheduledClass,
-    isStudent: Boolean = true,
+    userRole: UserRole = UserRole.STUDENT,
     onClick: (() -> Unit)? = null,
 ) {
     Card(
@@ -63,16 +68,51 @@ fun ScheduleItemCard(
                     fontWeight = FontWeight.Bold,
                     color = colorScheme.onSurface,
                 )
-                LessonStatusBadge(status = item.status)
+                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                    if (item.status != LessonStatus.PENDING && item.status != LessonStatus.CANCELLED) {
+                        val payLabel = when (item.paymentStatus) {
+                            PaymentStatus.PAID -> "Opłacone"
+                            PaymentStatus.PENDING -> "Nieopłacone"
+                            PaymentStatus.CANCELLED -> "Anulowane"
+                        }
+                        val payColor = when (item.paymentStatus) {
+                            PaymentStatus.PAID -> colorScheme.primary
+                            PaymentStatus.PENDING -> colorScheme.tertiary
+                            PaymentStatus.CANCELLED -> colorScheme.error
+                        }
+                        Surface(
+                            shape = MaterialTheme.shapes.small,
+                            color = payColor.copy(alpha = 0.12f)
+                        ) {
+                            Text(
+                                text = payLabel,
+                                style = typography.labelSmall,
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                                color = payColor,
+                            )
+                        }
+                    }
+
+                    LessonStatusBadge(status = item.status)
+                }
             }
 
             Spacer(Modifier.height(8.dp))
 
-            // Person row — tutor for student, student for tutor
-            val personLabel =
-                if (isStudent) stringResource(R.string.tutor) else stringResource(R.string.student)
-            val personName = if (isStudent) item.tutorName else item.studentName
-            if (personName.isNotBlank()) {
+            // Person row — tutor for student, student for tutor, admin sees both
+            val personLabel = when (userRole) {
+                UserRole.STUDENT -> stringResource(R.string.tutor)
+                UserRole.TUTOR -> stringResource(R.string.student)
+                UserRole.ADMIN -> "${stringResource(R.string.tutor)} | ${stringResource(R.string.student)}"
+            }
+
+            val personName = when (userRole) {
+                UserRole.STUDENT -> item.tutorName
+                UserRole.TUTOR -> item.studentName
+                UserRole.ADMIN -> "${item.tutorName} | ${item.studentName}"
+            }
+
+            if (personName.isNotBlank() && userRole != UserRole.ADMIN) {
                 InfoRow(
                     icon = {
                         Icon(
@@ -116,6 +156,25 @@ fun ScheduleItemCard(
                     val end = LocalTime.parse(item.time).plusMinutes(item.durationMinutes.toLong())
                     "${item.time} - ${end.toString().take(5)} (${item.durationMinutes} min)"
                 }
+            )
+
+            Spacer(Modifier.height(6.dp))
+
+            // Format
+            val formatLabel = when (item.format) {
+                LessonFormat.ONLINE -> "Online"
+                LessonFormat.IN_PERSON -> "Stacjonarnie"
+            }
+            InfoRow(
+                icon = {
+                    Icon(
+                        Icons.Default.School,
+                        null,
+                        modifier = Modifier.size(16.dp),
+                        tint = colorScheme.primary
+                    )
+                },
+                text = formatLabel
             )
         }
     }

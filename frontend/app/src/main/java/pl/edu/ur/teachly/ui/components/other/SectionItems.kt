@@ -12,12 +12,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import pl.edu.ur.teachly.ui.components.ScheduledClass
+import pl.edu.ur.teachly.data.model.UserRole
+import pl.edu.ur.teachly.ui.models.ScheduledClass
 
 @Composable
 fun SectionItems(
     classes: List<ScheduledClass>,
-    isStudent: Boolean,
+    userRole: UserRole,
     emptyText: String,
     onLessonClick: (lessonId: Int) -> Unit = {},
 ) {
@@ -42,7 +43,7 @@ fun SectionItems(
             classes.forEach { item ->
                 ScheduleItemCard(
                     item = item,
-                    isStudent = isStudent,
+                    userRole = userRole,
                     onClick = { onLessonClick(item.id.toIntOrNull() ?: return@ScheduleItemCard) },
                 )
             }

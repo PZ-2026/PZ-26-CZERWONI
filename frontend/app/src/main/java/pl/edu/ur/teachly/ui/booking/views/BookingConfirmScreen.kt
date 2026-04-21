@@ -38,6 +38,7 @@ fun BookingConfirmScreen(
     lessonDate: String,
     timeFrom: String,
     timeTo: String,
+    format: String,
     amount: String,
     onGoHome: () -> Unit,
 ) {
@@ -59,6 +60,7 @@ fun BookingConfirmScreen(
             lessonDate = lessonDate,
             timeFrom = timeFrom,
             timeTo = timeTo,
+            format = format,
             amount = amount,
         )
         Spacer(Modifier.height(32.dp))
@@ -110,6 +112,7 @@ private fun BookingSummaryCard(
     lessonDate: String,
     timeFrom: String,
     timeTo: String,
+    format: String,
     amount: String,
 ) {
     val rows = listOf(
@@ -117,6 +120,7 @@ private fun BookingSummaryCard(
         listOf(stringResource(R.string.summary_time), "$timeFrom – $timeTo"),
         listOf(stringResource(R.string.subject), subjectName),
         listOf(stringResource(R.string.summary_tutor), tutorName),
+        listOf("Format", format),
         listOf(stringResource(R.string.summary_price), "$amount zł"),
     )
 

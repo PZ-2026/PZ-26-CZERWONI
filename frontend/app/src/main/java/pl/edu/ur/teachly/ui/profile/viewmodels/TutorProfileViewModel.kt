@@ -12,8 +12,8 @@ import pl.edu.ur.teachly.data.model.LessonStatus
 import pl.edu.ur.teachly.data.repository.LessonRepository
 import pl.edu.ur.teachly.data.repository.ReviewRepository
 import pl.edu.ur.teachly.data.repository.TutorRepository
-import pl.edu.ur.teachly.ui.components.Tutor
-import pl.edu.ur.teachly.ui.components.toUiTutor
+import pl.edu.ur.teachly.ui.models.Tutor
+import pl.edu.ur.teachly.ui.models.toUiTutor
 
 data class TutorStats(
     val totalLessons: Int = 0,

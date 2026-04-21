@@ -23,6 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.koin.androidx.compose.koinViewModel
+import pl.edu.ur.teachly.data.model.UserRole
 import pl.edu.ur.teachly.ui.components.lesson.ActionsSection
 import pl.edu.ur.teachly.ui.components.lesson.InfoCard
 import pl.edu.ur.teachly.ui.components.lesson.NotesSection
@@ -80,9 +81,7 @@ fun LessonDetailScreen(
 
                 state.lesson != null -> {
                     val lesson = state.lesson!!
-                    val role = state.currentUserRole
-                    val isStudent = role != "TUTOR"
-                    val isTutor = role == "TUTOR"
+                    val userRole = state.currentUserRole ?: UserRole.STUDENT
                     val thirtyMinPast = viewModel.isThirtyMinutesAfterStart(lesson)
 
                     Column(
@@ -93,13 +92,12 @@ fun LessonDetailScreen(
                         verticalArrangement = Arrangement.spacedBy(16.dp),
                     ) {
                         // Info card
-                        InfoCard(lesson = lesson, isStudent = isStudent)
+                        InfoCard(lesson = lesson, userRole = userRole)
 
                         // Notes
                         NotesSection(
                             lesson = lesson,
-                            isStudent = isStudent,
-                            isTutor = isTutor,
+                            userRole = userRole,
                             isSaving = state.isSaving,
                             onSaveStudentNotes = { notes ->
                                 viewModel.saveStudentNotes(lesson.id, notes)
@@ -112,8 +110,7 @@ fun LessonDetailScreen(
                         // Actions
                         ActionsSection(
                             lesson = lesson,
-                            isStudent = isStudent,
-                            isTutor = isTutor,
+                            userRole = userRole,
                             isSaving = state.isSaving,
                             thirtyMinPast = thirtyMinPast,
                             onChangeStatus = { status ->

@@ -51,7 +51,7 @@ fun ScheduleScreen(
         AppHeader(
             title = stringResource(R.string.schedule),
             subtitle =
-                if (state.isStudent)
+                if (state.userRole == pl.edu.ur.teachly.data.model.UserRole.STUDENT || state.userRole == pl.edu.ur.teachly.data.model.UserRole.ADMIN)
                     stringResource(R.string.check_your_lessons)
                 else
                     stringResource(R.string.check_your_sessions),
@@ -119,7 +119,7 @@ fun ScheduleScreen(
                     ) {
                         SectionItems(
                             classes = state.confirmedClasses,
-                            isStudent = state.isStudent,
+                            userRole = state.userRole,
                             emptyText = stringResource(R.string.no_confirmed_lessons),
                             onLessonClick = onLessonClick,
                         )
@@ -144,7 +144,7 @@ fun ScheduleScreen(
                     ) {
                         SectionItems(
                             classes = state.pendingClasses,
-                            isStudent = state.isStudent,
+                            userRole = state.userRole,
                             emptyText = stringResource(R.string.no_pending_lessons),
                             onLessonClick = onLessonClick,
                         )
@@ -169,7 +169,7 @@ fun ScheduleScreen(
                     ) {
                         SectionItems(
                             classes = state.completedClasses,
-                            isStudent = state.isStudent,
+                            userRole = state.userRole,
                             emptyText = stringResource(R.string.no_completed_lessons),
                             onLessonClick = onLessonClick,
                         )
@@ -194,8 +194,8 @@ fun ScheduleScreen(
                     ) {
                         SectionItems(
                             classes = state.cancelledClasses,
-                            isStudent = state.isStudent,
-                            emptyText = stringResource(R.string.no_pending_lessons),
+                            userRole = state.userRole,
+                            emptyText = stringResource(R.string.no_cancelled_lessons),
                             onLessonClick = onLessonClick,
                         )
                     }

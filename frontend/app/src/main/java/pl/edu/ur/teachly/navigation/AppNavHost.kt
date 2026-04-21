@@ -98,7 +98,7 @@ fun AppNavHost(
             BookingScreen(
                 tutorId = args.tutorId,
                 onBack = { navController.popBackStack() },
-                onConfirm = { tutorName, subjectName, lessonDate, timeFrom, timeTo, amount ->
+                onConfirm = { tutorName, subjectName, lessonDate, timeFrom, timeTo, format, amount ->
                     navController.navigate(
                         AppRoute.BookingConfirm(
                             tutorName = tutorName,
@@ -106,6 +106,7 @@ fun AppNavHost(
                             lessonDate = lessonDate,
                             timeFrom = timeFrom,
                             timeTo = timeTo,
+                            format = format,
                             amount = amount,
                         )
                     )
@@ -121,6 +122,7 @@ fun AppNavHost(
                 lessonDate = args.lessonDate,
                 timeFrom = args.timeFrom,
                 timeTo = args.timeTo,
+                format = args.format,
                 amount = args.amount,
                 onGoHome = { navController.navigateToHome() },
             )

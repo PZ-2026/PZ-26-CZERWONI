@@ -34,6 +34,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
 import org.koin.androidx.compose.koinViewModel
 import pl.edu.ur.teachly.R
+import pl.edu.ur.teachly.data.model.UserRole
 import pl.edu.ur.teachly.ui.components.other.AppHeader
 import pl.edu.ur.teachly.ui.components.other.HeaderBackground
 import pl.edu.ur.teachly.ui.components.other.PrimaryButton
@@ -66,9 +67,10 @@ fun HomeScreen(
                 R.string.hello_name,
                 state.userName
             ) else stringResource(R.string.hello),
-            subtitle = if (state.isStudent) stringResource(R.string.home_student_subtitle) else stringResource(
-                R.string.home_tutor_subtitle
-            ),
+            subtitle =
+                if (state.userRole == UserRole.STUDENT) // TODO: Handle admin
+                    stringResource(R.string.home_student_subtitle)
+                else stringResource(R.string.home_tutor_subtitle),
             background = HeaderBackground.Diagonal(
                 listOf(colorScheme.onPrimaryContainer, colorScheme.primary)
             ),
@@ -118,10 +120,21 @@ fun HomeScreen(
                     }
                 }
 
+                if (state.userRole == UserRole.STUDENT || state.userRole == UserRole.ADMIN) { // TODO: Handle admin
+                    item {
+                        PrimaryButton(
+                            text = stringResource(R.string.search_tutor),
+                            onClick = onSearchClick,
+                            modifier = Modifier.padding(horizontal = 8.dp),
+                        )
+                        Spacer(Modifier.height(12.dp))
+                    }
+                }
+
                 item {
                     Text(
                         text =
-                            if (state.isStudent)
+                            if (state.userRole == UserRole.STUDENT || state.userRole == UserRole.ADMIN) // TODO: Handle admin
                                 stringResource(R.string.upcoming_lessons)
                             else
                                 stringResource(R.string.upcoming_sessions),
@@ -149,7 +162,7 @@ fun HomeScreen(
                     ) {
                         SectionItems(
                             classes = state.upcomingConfirmed,
-                            isStudent = state.isStudent,
+                            userRole = state.userRole,
                             emptyText = stringResource(R.string.no_confirmed_lessons),
                             onLessonClick = onLessonClick,
                         )
@@ -174,20 +187,9 @@ fun HomeScreen(
                     ) {
                         SectionItems(
                             classes = state.upcomingPending,
-                            isStudent = state.isStudent,
+                            userRole = state.userRole,
                             emptyText = stringResource(R.string.no_pending_lessons),
                             onLessonClick = onLessonClick,
-                        )
-                    }
-                }
-
-                if (state.isStudent) {
-                    item {
-                        Spacer(Modifier.height(12.dp))
-                        PrimaryButton(
-                            text = stringResource(R.string.search_tutor),
-                            onClick = onSearchClick,
-                            modifier = Modifier.padding(horizontal = 8.dp),
                         )
                     }
                 }
