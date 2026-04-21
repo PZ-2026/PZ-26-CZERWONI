@@ -16,15 +16,17 @@ import pl.edu.ur.teachly.data.model.TutorResponse
 import pl.edu.ur.teachly.data.model.TutorSubjectResponse
 import pl.edu.ur.teachly.data.repository.LessonRepository
 import pl.edu.ur.teachly.data.repository.TutorRepository
-import pl.edu.ur.teachly.ui.components.CalendarDay
+import pl.edu.ur.teachly.ui.models.CalendarDay
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalTime
 
+data class TimeSlotUI(val time: String, val isAvailable: Boolean)
+
 data class BookingUiState(
     val tutor: TutorResponse? = null,
     val calendarDays: List<Pair<CalendarDay, LocalDate>> = emptyList(),
-    val timetableByDate: Map<String, List<String>> = emptyMap(),
+    val timetableByDate: Map<String, List<TimeSlotUI>> = emptyMap(),
     val tutorSubjects: List<TutorSubjectResponse> = emptyList(),
     val availableFormats: List<LessonFormat> = emptyList(),
     val selectedDayIndex: Int = 0,
@@ -88,17 +90,24 @@ class BookingViewModel(
                     val byDate = timetable
                         .groupBy { it.date }
                         .mapValues { entry ->
-                            entry.value.flatMap { day ->
-                                day.availableSlots.flatMap { slot ->
-                                    val start = LocalTime.parse(slot.timeFrom)
-                                    val end = LocalTime.parse(slot.timeTo)
+                            val daySlots = entry.value.flatMap { it.availableSlots }
+                            if (daySlots.isEmpty()) emptyList<TimeSlotUI>()
+                            else {
+                                val minTime = daySlots.minOf { LocalTime.parse(it.timeFrom) }
+                                val maxTime = daySlots.maxOf { LocalTime.parse(it.timeTo) }
 
-                                    generateSequence(start) { current ->
-                                        val next = current.plusMinutes(30)
-                                        if (next < end) next else null
-                                    }.map { it.toString().take(5) }
-                                        .toList()
-                                }
+                                generateSequence(minTime) { current ->
+                                    val next = current.plusMinutes(30)
+                                    if (next < maxTime) next else null
+                                }.map { time ->
+                                    val tStr = time.toString().take(5)
+                                    val isAvail = daySlots.any { slot ->
+                                        val s = LocalTime.parse(slot.timeFrom)
+                                        val e = LocalTime.parse(slot.timeTo)
+                                        !time.isBefore(s) && !time.plusMinutes(30).isAfter(e)
+                                    }
+                                    TimeSlotUI(tStr, isAvail)
+                                }.toList()
                             }
                         }
                     _state.update { it.copy(timetableByDate = byDate, isLoading = false) }
@@ -128,15 +137,44 @@ class BookingViewModel(
         _state.update { it.copy(selectedFormat = format) }
     }
 
-    val availableSlotsForSelectedDay: List<String>
+    val availableSlotsForSelectedDay: List<TimeSlotUI>
         get() {
             val date = _state.value.calendarDays.getOrNull(_state.value.selectedDayIndex)?.second
                 ?: return emptyList()
-            return _state.value.timetableByDate[date.toString()] ?: emptyList()
+            val slotsForDay = _state.value.timetableByDate[date.toString()] ?: return emptyList()
+
+            val duration = _state.value.selectedDuration
+            val slotsNeeded = duration / 30
+
+            return slotsForDay.mapIndexed { index, slot ->
+                if (!slot.isAvailable) return@mapIndexed slot
+
+                val allFit = (0 until slotsNeeded).all { i ->
+                    val futureIndex = index + i
+                    futureIndex < slotsForDay.size && slotsForDay[futureIndex].isAvailable
+                }
+
+                slot.copy(isAvailable = allFit)
+            }
         }
 
+    fun isDurationAvailable(duration: Int): Boolean {
+        val st = _state.value
+        val slot = st.selectedSlot ?: return true // all allowed if no slot selected
+        val dayDate = st.calendarDays.getOrNull(st.selectedDayIndex)?.second ?: return true
+        val slotsForDay = st.timetableByDate[dayDate.toString()] ?: return false
+
+        val startTime = LocalTime.parse(slot)
+        val slotsNeeded = duration / 30
+
+        return (0 until slotsNeeded).all { i ->
+            val slotTime = startTime.plusMinutes(30L * i).toString().take(5)
+            slotsForDay.find { it.time == slotTime }?.isAvailable == true
+        }
+    }
+
     fun confirmBooking(
-        onSuccess: (tutorName: String, subjectName: String, lessonDate: String, timeFrom: String, timeTo: String, amount: String) -> Unit
+        onSuccess: (tutorName: String, subjectName: String, lessonDate: String, timeFrom: String, timeTo: String, format: String, amount: String) -> Unit
     ) {
         val st = _state.value
         val tutor = st.tutor ?: return
@@ -146,7 +184,9 @@ class BookingViewModel(
         val format = st.selectedFormat ?: return
 
         // Validate consecutive slots
-        val available = st.timetableByDate[dayDate.toString()] ?: emptyList()
+        val available =
+            st.timetableByDate[dayDate.toString()]?.filter { it.isAvailable }?.map { it.time }
+                ?: emptyList()
         val startTime = LocalTime.parse(slot)
         val slotsNeeded = st.selectedDuration / 30
         val allAvailable = (0 until slotsNeeded).all { i ->
@@ -180,12 +220,17 @@ class BookingViewModel(
             lessonRepository.createLesson(userId, request).fold(
                 onSuccess = { lesson ->
                     _state.update { it.copy(isSubmitting = false) }
+                    val formatLabel = when (format) {
+                        LessonFormat.ONLINE -> "Online"
+                        LessonFormat.IN_PERSON -> "Stacjonarnie"
+                    }
                     onSuccess(
                         "${tutor.firstName} ${tutor.lastName}",
                         lesson.subjectName,
                         lesson.lessonDate,
                         lesson.timeFrom.take(5),
                         lesson.timeTo.take(5),
+                        formatLabel,
                         "%.2f".format(lesson.amount),
                     )
                 },
@@ -198,7 +243,7 @@ class BookingViewModel(
 
     private fun buildCalendarDays(): List<Pair<CalendarDay, LocalDate>> {
         val today = LocalDate.now()
-        return (0..6).map { offset ->
+        return (0..13).map { offset ->
             val date = today.plusDays(offset.toLong())
             val shortName = when (date.dayOfWeek) {
                 DayOfWeek.MONDAY -> "Pon"

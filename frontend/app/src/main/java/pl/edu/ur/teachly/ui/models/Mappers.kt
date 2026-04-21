@@ -1,7 +1,6 @@
-package pl.edu.ur.teachly.ui.components
+package pl.edu.ur.teachly.ui.models
 
 import pl.edu.ur.teachly.data.model.LessonResponse
-import pl.edu.ur.teachly.data.model.LessonStatus
 import pl.edu.ur.teachly.data.model.ReviewResponse
 import pl.edu.ur.teachly.data.model.TutorResponse
 import java.time.Duration
@@ -42,18 +41,45 @@ fun LessonResponse.toScheduledClass(): ScheduledClass = ScheduledClass(
         Duration.between(LocalTime.parse(timeFrom), LocalTime.parse(timeTo))
             .toMinutes().toInt().coerceAtLeast(0)
     } else 0,
-    status = lessonStatus.toPolishLabel(),
+    status = lessonStatus,
+    format = format,
+    paymentStatus = paymentStatus,
 )
-
-fun LessonStatus.toPolishLabel(): String = when (this) {
-    LessonStatus.PENDING -> "Oczekujące"
-    LessonStatus.CONFIRMED -> "Potwierdzone"
-    LessonStatus.COMPLETED -> "Zakończone"
-    LessonStatus.CANCELLED -> "Anulowane"
-}
 
 fun ReviewResponse.toUiReview(): Review = Review(
     authorName = "$studentFirstName $studentLastName".trim(),
     text = comment ?: "",
     rating = rating.toInt().coerceIn(1, 5),
+)
+
+fun LessonResponse.toUiLessonDetail(): LessonDetail = LessonDetail(
+    id = id,
+    subjectName = subjectName,
+    tutorId = tutorId,
+    tutorFirstName = tutorFirstName,
+    tutorLastName = tutorLastName,
+    studentId = studentId,
+    studentFirstName = studentFirstName,
+    studentLastName = studentLastName,
+    lessonDate = try {
+        LocalDate.parse(lessonDate)
+    } catch (e: Exception) {
+        LocalDate.now()
+    },
+    timeFrom = try {
+        LocalTime.parse(timeFrom)
+    } catch (e: Exception) {
+        LocalTime.MIN
+    },
+    timeTo = try {
+        LocalTime.parse(timeTo)
+    } catch (e: Exception) {
+        LocalTime.MIN
+    },
+    format = format,
+    lessonStatus = lessonStatus,
+    tutorNotes = tutorNotes,
+    studentNotes = studentNotes,
+    amount = amount,
+    paymentStatus = paymentStatus,
 )

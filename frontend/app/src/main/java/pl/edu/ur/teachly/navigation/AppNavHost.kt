@@ -1,4 +1,4 @@
-package pl.edu.ur.teachly.ui.navigation
+package pl.edu.ur.teachly.navigation
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,6 +22,7 @@ import pl.edu.ur.teachly.ui.auth.views.SplashScreen
 import pl.edu.ur.teachly.ui.booking.views.BookingConfirmScreen
 import pl.edu.ur.teachly.ui.booking.views.BookingScreen
 import pl.edu.ur.teachly.ui.home.views.HomeScreen
+import pl.edu.ur.teachly.ui.lesson.views.LessonDetailScreen
 import pl.edu.ur.teachly.ui.profile.viewmodels.ProfileViewModel
 import pl.edu.ur.teachly.ui.profile.viewmodels.TutorProfileViewModel
 import pl.edu.ur.teachly.ui.profile.views.AdminProfileScreen
@@ -70,6 +71,7 @@ fun AppNavHost(
         composable<AppRoute.Home> {
             HomeScreen(
                 onSearchClick = { navController.navigate(AppRoute.Search) },
+                onLessonClick = { lessonId -> navController.navigate(AppRoute.LessonDetail(lessonId)) },
             )
         }
 
@@ -96,7 +98,7 @@ fun AppNavHost(
             BookingScreen(
                 tutorId = args.tutorId,
                 onBack = { navController.popBackStack() },
-                onConfirm = { tutorName, subjectName, lessonDate, timeFrom, timeTo, amount ->
+                onConfirm = { tutorName, subjectName, lessonDate, timeFrom, timeTo, format, amount ->
                     navController.navigate(
                         AppRoute.BookingConfirm(
                             tutorName = tutorName,
@@ -104,6 +106,7 @@ fun AppNavHost(
                             lessonDate = lessonDate,
                             timeFrom = timeFrom,
                             timeTo = timeTo,
+                            format = format,
                             amount = amount,
                         )
                     )
@@ -119,15 +122,28 @@ fun AppNavHost(
                 lessonDate = args.lessonDate,
                 timeFrom = args.timeFrom,
                 timeTo = args.timeTo,
+                format = args.format,
                 amount = args.amount,
                 onGoHome = { navController.navigateToHome() },
+            )
+        }
+
+        // Lesson detail
+        composable<AppRoute.LessonDetail> { backStackEntry ->
+            val args = backStackEntry.toRoute<AppRoute.LessonDetail>()
+            LessonDetailScreen(
+                lessonId = args.lessonId,
+                onBack = { navController.popBackStack() },
+                onGoToTutor = { tutorId -> navController.navigate(AppRoute.TutorDetail(tutorId)) },
+                onRebook = { tutorId -> navController.navigate(AppRoute.Booking(tutorId.toString())) },
             )
         }
 
         // Schedule
         composable<AppRoute.Schedule> {
             ScheduleScreen(
-                onBack = { navController.popBackStack() }
+                onBack = { navController.popBackStack() },
+                onLessonClick = { lessonId -> navController.navigate(AppRoute.LessonDetail(lessonId)) },
             )
         }
 

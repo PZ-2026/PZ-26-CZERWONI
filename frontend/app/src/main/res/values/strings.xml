@@ -162,12 +162,14 @@
     <string name="first_name_placeholder">Jan</string>
     <string name="last_name_placeholder">Kowalski</string>
     <string name="email_placeholder">jan@example.com</string>
-    <string name="phone_number_placeholder">123456789</string>
+    <string name="phone_number_placeholder">123 456 789</string>
     <string name="tutor_name">%1$s %2$s</string>
     <string name="price_value">%1$s zł</string>
-    <string name="booking_summary_time">%1$s %2$s / %3$s / %4$s min</string>
+    <string name="booking_summary_time">%1$s %2$s | %3$s | %4$s min</string>
     <string name="activity">Aktywność</string>
     <string name="hourly_rate_value">%1$s zł / h</string>
     <string name="total_earnings">%.0f zł</string>
     <string name="avg_rating">Średnia ocena</string>
+    <string name="cancelled">Anulowane</string>
+    <string name="no_cancelled_lessons">Brak anulowanych lekcji</string>
 </resources>
