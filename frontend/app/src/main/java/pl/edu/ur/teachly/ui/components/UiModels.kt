@@ -1,5 +1,6 @@
 package pl.edu.ur.teachly.ui.components
 
+import pl.edu.ur.teachly.data.model.LessonStatus
 import java.time.LocalDate
 import kotlin.math.roundToInt
 
@@ -37,7 +38,7 @@ data class ScheduledClass(
     val day: LocalDate,
     val time: String,
     val durationMinutes: Int,
-    val status: String,
+    val status: LessonStatus,
 )
 
 data class Review(

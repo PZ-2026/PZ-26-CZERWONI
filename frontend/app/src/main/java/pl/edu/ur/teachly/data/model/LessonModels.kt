@@ -17,6 +17,12 @@ data class LessonStatusRequest(
     val tutorNotes: String?
 )
 
+data class StudentNotesRequest(val studentNotes: String?)
+
+data class TutorNotesRequest(val tutorNotes: String?)
+
+data class PaymentStatusRequest(val paymentStatus: PaymentStatus)
+
 data class LessonResponse(
     val id: Int,
     val tutorId: Int,

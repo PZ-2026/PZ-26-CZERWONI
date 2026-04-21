@@ -1,6 +1,7 @@
 package pl.edu.ur.teachly.ui.components.other
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -34,9 +35,15 @@ import pl.edu.ur.teachly.ui.components.ScheduledClass
 import java.time.LocalTime
 
 @Composable
-fun ScheduleItemCard(item: ScheduledClass, isStudent: Boolean = true) {
+fun ScheduleItemCard(
+    item: ScheduledClass,
+    isStudent: Boolean = true,
+    onClick: (() -> Unit)? = null,
+) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier),
         colors = CardDefaults.cardColors(containerColor = colorScheme.surface),
         shape = RoundedCornerShape(20.dp),
         border = BorderStroke(1.dp, colorScheme.outline),
@@ -56,7 +63,7 @@ fun ScheduleItemCard(item: ScheduledClass, isStudent: Boolean = true) {
                     fontWeight = FontWeight.Bold,
                     color = colorScheme.onSurface,
                 )
-                StatusBadge(status = item.status)
+                LessonStatusBadge(status = item.status)
             }
 
             Spacer(Modifier.height(8.dp))

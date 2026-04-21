@@ -170,4 +170,5 @@
     <string name="hourly_rate_value">%1$s zł / h</string>
     <string name="total_earnings">%.0f zł</string>
     <string name="avg_rating">Średnia ocena</string>
+    <string name="cancelled">Anulowane</string>
 </resources>

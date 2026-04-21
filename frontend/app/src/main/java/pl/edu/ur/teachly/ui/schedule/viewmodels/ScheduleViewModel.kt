@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import pl.edu.ur.teachly.data.local.TokenManager
+import pl.edu.ur.teachly.data.model.LessonStatus
 import pl.edu.ur.teachly.data.repository.LessonRepository
 import pl.edu.ur.teachly.ui.components.ScheduledClass
 import pl.edu.ur.teachly.ui.components.toScheduledClass
@@ -17,9 +18,11 @@ data class ScheduleUiState(
     val confirmedClasses: List<ScheduledClass> = emptyList(),
     val pendingClasses: List<ScheduledClass> = emptyList(),
     val completedClasses: List<ScheduledClass> = emptyList(),
+    val cancelledClasses: List<ScheduledClass> = emptyList(),
     val confirmedExpanded: Boolean = true,
     val pendingExpanded: Boolean = true,
     val completedExpanded: Boolean = false,
+    val cancelledExpanded: Boolean = false,
     val isStudent: Boolean = true,
     val isLoading: Boolean = true,
     val error: String? = null,
@@ -58,9 +61,10 @@ class ScheduleViewModel(
                         val scheduled = lessons.map { it.toScheduledClass() }
                         _state.update {
                             it.copy(
-                                confirmedClasses = scheduled.filter { c -> c.status == "Zaplanowane" },
-                                pendingClasses = scheduled.filter { c -> c.status == "Oczekujące" },
-                                completedClasses = scheduled.filter { c -> c.status == "Zakończone" },
+                                confirmedClasses = scheduled.filter { c -> c.status == LessonStatus.CONFIRMED },
+                                pendingClasses = scheduled.filter { c -> c.status == LessonStatus.PENDING },
+                                completedClasses = scheduled.filter { c -> c.status == LessonStatus.COMPLETED },
+                                cancelledClasses = scheduled.filter { c -> c.status == LessonStatus.CANCELLED },
                                 isStudent = role != "TUTOR",
                                 isLoading = false,
                             )
@@ -79,4 +83,5 @@ class ScheduleViewModel(
     fun toggleConfirmed() = _state.update { it.copy(confirmedExpanded = !it.confirmedExpanded) }
     fun togglePending() = _state.update { it.copy(pendingExpanded = !it.pendingExpanded) }
     fun toggleCompleted() = _state.update { it.copy(completedExpanded = !it.completedExpanded) }
+    fun toggleCancelled() = _state.update { it.copy(cancelledExpanded = !it.cancelledExpanded) }
 }

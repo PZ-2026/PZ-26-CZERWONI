@@ -26,6 +26,7 @@ import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -36,6 +37,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.repeatOnLifecycle
 import org.koin.androidx.compose.koinViewModel
 import pl.edu.ur.teachly.R
 import pl.edu.ur.teachly.ui.components.ScheduledClass
@@ -44,12 +48,20 @@ import pl.edu.ur.teachly.ui.components.other.HeaderBackground
 import pl.edu.ur.teachly.ui.components.other.ScheduleItemCard
 import pl.edu.ur.teachly.ui.schedule.viewmodels.ScheduleViewModel
 
+
 @Composable
 fun ScheduleScreen(
     viewModel: ScheduleViewModel = koinViewModel(),
     onBack: () -> Unit,
+    onLessonClick: (lessonId: Int) -> Unit = {},
 ) {
     val state by viewModel.state.collectAsState()
+    val lifecycleOwner = LocalLifecycleOwner.current
+    LaunchedEffect(lifecycleOwner.lifecycle) {
+        lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+            viewModel.load()
+        }
+    }
 
     Column(modifier = Modifier.fillMaxSize()) {
         AppHeader(
@@ -105,6 +117,7 @@ fun ScheduleScreen(
                 ),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
+                // Confirmed
                 item {
                     SectionHeader(
                         title = stringResource(R.string.confirmed),
@@ -124,16 +137,18 @@ fun ScheduleScreen(
                             classes = state.confirmedClasses,
                             isStudent = state.isStudent,
                             emptyText = stringResource(R.string.no_confirmed_lessons),
+                            onLessonClick = onLessonClick,
                         )
                     }
                 }
 
+                // Pending
                 item {
                     SectionHeader(
                         title = stringResource(R.string.pending),
                         count = state.pendingClasses.size,
                         expanded = state.pendingExpanded,
-                        badgeColor = Color(0xFFF59E0B),
+                        badgeColor = colorScheme.tertiary,
                         onToggle = viewModel::togglePending,
                     )
                 }
@@ -147,10 +162,12 @@ fun ScheduleScreen(
                             classes = state.pendingClasses,
                             isStudent = state.isStudent,
                             emptyText = stringResource(R.string.no_pending_lessons),
+                            onLessonClick = onLessonClick,
                         )
                     }
                 }
 
+                // Completed
                 item {
                     SectionHeader(
                         title = stringResource(R.string.completed),
@@ -170,6 +187,32 @@ fun ScheduleScreen(
                             classes = state.completedClasses,
                             isStudent = state.isStudent,
                             emptyText = stringResource(R.string.no_completed_lessons),
+                            onLessonClick = onLessonClick,
+                        )
+                    }
+                }
+
+                // Cancelled
+                item {
+                    SectionHeader(
+                        title = stringResource(R.string.cancelled),
+                        count = state.cancelledClasses.size,
+                        expanded = state.cancelledExpanded,
+                        badgeColor = colorScheme.error,
+                        onToggle = viewModel::toggleCancelled,
+                    )
+                }
+                item {
+                    AnimatedVisibility(
+                        visible = state.cancelledExpanded,
+                        enter = expandVertically(),
+                        exit = shrinkVertically(),
+                    ) {
+                        SectionItems(
+                            classes = state.cancelledClasses,
+                            isStudent = state.isStudent,
+                            emptyText = stringResource(R.string.no_pending_lessons),
+                            onLessonClick = onLessonClick,
                         )
                     }
                 }
@@ -237,6 +280,7 @@ private fun SectionItems(
     classes: List<ScheduledClass>,
     isStudent: Boolean,
     emptyText: String,
+    onLessonClick: (lessonId: Int) -> Unit = {},
 ) {
     Column(
         modifier = Modifier.padding(top = 8.dp),
@@ -257,7 +301,11 @@ private fun SectionItems(
             }
         } else {
             classes.forEach { item ->
-                ScheduleItemCard(item = item, isStudent = isStudent)
+                ScheduleItemCard(
+                    item = item,
+                    isStudent = isStudent,
+                    onClick = { onLessonClick(item.id.toIntOrNull() ?: return@ScheduleItemCard) },
+                )
             }
         }
     }

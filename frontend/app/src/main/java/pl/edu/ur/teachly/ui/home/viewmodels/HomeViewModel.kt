@@ -80,8 +80,8 @@ class HomeViewModel(
                             .filter { it.day >= today }
                             .sortedWith(compareBy({ it.day }, { it.time }))
 
-                        val confirmed = upcoming.filter { it.status == "Zaplanowane" }
-                        val pending = upcoming.filter { it.status == "Oczekujące" }
+                        val confirmed = upcoming.filter { it.status == LessonStatus.CONFIRMED }
+                        val pending = upcoming.filter { it.status == LessonStatus.PENDING }
 
                         _state.value = _state.value.copy(
                             isStudent = isStudent,

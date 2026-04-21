@@ -1,6 +1,7 @@
 package pl.edu.ur.teachly.lesson.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.edu.ur.teachly.common.enums.LessonStatus;
@@ -8,8 +9,7 @@ import pl.edu.ur.teachly.common.enums.PaymentStatus;
 import pl.edu.ur.teachly.common.enums.UserRole;
 import pl.edu.ur.teachly.common.exception.ResourceNotFoundException;
 import pl.edu.ur.teachly.common.exception.SlotNotAvailableException;
-import pl.edu.ur.teachly.lesson.dto.request.LessonRequest;
-import pl.edu.ur.teachly.lesson.dto.request.LessonStatusRequest;
+import pl.edu.ur.teachly.lesson.dto.request.*;
 import pl.edu.ur.teachly.lesson.dto.response.LessonResponse;
 import pl.edu.ur.teachly.lesson.entity.Lesson;
 import pl.edu.ur.teachly.lesson.mapper.LessonMapper;
@@ -101,6 +101,13 @@ public class LessonService {
     }
 
     @Transactional(readOnly = true)
+    public LessonResponse getLesson(Integer lessonId) {
+        return lessonRepository.findById(lessonId)
+                .map(lessonMapper::toResponse)
+                .orElseThrow(() -> new ResourceNotFoundException("Nie znaleziono szukanej lekcji"));
+    }
+
+    @Transactional(readOnly = true)
     public List<LessonResponse> getStudentLessons(Integer studentId) {
         return lessonRepository.findByStudent_Id(studentId)
                 .stream()
@@ -117,17 +124,18 @@ public class LessonService {
     }
 
     @Transactional
-    public LessonResponse changeLessonStatus(Integer lessonId, LessonStatusRequest request, User currentUser) {
+    public LessonResponse changeLessonStatus(Integer lessonId, LessonStatusRequest request) {
         Lesson lesson = lessonRepository.findById(lessonId)
                 .orElseThrow(() -> new ResourceNotFoundException("Nie znaleziono szukanej lekcji"));
 
         LessonStatus newStatus = request.lessonStatus();
         LessonStatus currentStatus = lesson.getLessonStatus();
+        UserRole currentUserRole = getCurrentUserRole();
 
-        if (currentUser.getUserRole() != UserRole.ADMIN) {
+        if (currentUserRole != UserRole.ADMIN) {
             LocalDateTime lessonStart = LocalDateTime.of(lesson.getLessonDate(), lesson.getTimeFrom());
 
-            if (!isValidTransition(currentStatus, newStatus, currentUser.getUserRole(), lessonStart)) {
+            if (!isValidTransition(currentStatus, newStatus, currentUserRole, lessonStart)) {
                 throw new IllegalStateException("Nie można zmienić statusu lekcji na wybrany");
             }
         }
@@ -137,6 +145,38 @@ public class LessonService {
             lesson.setTutorNotes(request.tutorNotes());
         }
         return lessonMapper.toResponse(lessonRepository.save(lesson));
+    }
+
+    @Transactional
+    public LessonResponse updateStudentNotes(Integer lessonId, StudentNotesRequest request) {
+        Lesson lesson = lessonRepository.findById(lessonId)
+                .orElseThrow(() -> new ResourceNotFoundException("Nie znaleziono szukanej lekcji"));
+        lesson.setStudentNotes(request.studentNotes());
+        return lessonMapper.toResponse(lessonRepository.save(lesson));
+    }
+
+    @Transactional
+    public LessonResponse updateTutorNotes(Integer lessonId, TutorNotesRequest request) {
+        Lesson lesson = lessonRepository.findById(lessonId)
+                .orElseThrow(() -> new ResourceNotFoundException("Nie znaleziono szukanej lekcji"));
+        lesson.setTutorNotes(request.tutorNotes());
+        return lessonMapper.toResponse(lessonRepository.save(lesson));
+    }
+
+    @Transactional
+    public LessonResponse updatePaymentStatus(Integer lessonId, PaymentStatusRequest request) {
+        Lesson lesson = lessonRepository.findById(lessonId)
+                .orElseThrow(() -> new ResourceNotFoundException("Nie znaleziono szukanej lekcji"));
+        lesson.setPaymentStatus(request.paymentStatus());
+        return lessonMapper.toResponse(lessonRepository.save(lesson));
+    }
+
+    private UserRole getCurrentUserRole() {
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !(auth.getPrincipal() instanceof User user)) {
+            throw new IllegalStateException("Brak uwierzytelnienia");
+        }
+        return user.getUserRole();
     }
 
     private boolean isValidTransition(LessonStatus current, LessonStatus next, UserRole userRole, LocalDateTime lessonStart) {

@@ -28,6 +28,7 @@ import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -38,6 +39,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.repeatOnLifecycle
 import org.koin.androidx.compose.koinViewModel
 import pl.edu.ur.teachly.R
 import pl.edu.ur.teachly.ui.components.ScheduledClass
@@ -52,8 +56,15 @@ import pl.edu.ur.teachly.ui.home.viewmodels.HomeViewModel
 fun HomeScreen(
     onSearchClick: () -> Unit = {},
     viewModel: HomeViewModel = koinViewModel(),
+    onLessonClick: (lessonId: Int) -> Unit = {},
 ) {
     val state by viewModel.uiState.collectAsState()
+    val lifecycleOwner = LocalLifecycleOwner.current
+    LaunchedEffect(lifecycleOwner.lifecycle) {
+        lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+            viewModel.load()
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -131,6 +142,7 @@ fun HomeScreen(
                     )
                 }
 
+                // Confirmed
                 item {
                     HomeSectionHeader(
                         title = stringResource(R.string.confirmed),
@@ -150,10 +162,12 @@ fun HomeScreen(
                             classes = state.upcomingConfirmed,
                             isStudent = state.isStudent,
                             emptyText = stringResource(R.string.no_confirmed_lessons),
+                            onLessonClick = onLessonClick,
                         )
                     }
                 }
 
+                // Pending
                 item {
                     HomeSectionHeader(
                         title = stringResource(R.string.pending),
@@ -173,6 +187,7 @@ fun HomeScreen(
                             classes = state.upcomingPending,
                             isStudent = state.isStudent,
                             emptyText = stringResource(R.string.no_pending_lessons),
+                            onLessonClick = onLessonClick,
                         )
                     }
                 }
@@ -251,6 +266,7 @@ private fun HomeSectionItems(
     classes: List<ScheduledClass>,
     isStudent: Boolean,
     emptyText: String,
+    onLessonClick: (lessonId: Int) -> Unit = {},
 ) {
     Column(
         modifier = Modifier.padding(top = 8.dp),
@@ -271,7 +287,11 @@ private fun HomeSectionItems(
             }
         } else {
             classes.forEach { item ->
-                ScheduleItemCard(item = item, isStudent = isStudent)
+                ScheduleItemCard(
+                    item = item,
+                    isStudent = isStudent,
+                    onClick = { onLessonClick(item.id.toIntOrNull() ?: return@ScheduleItemCard) },
+                )
             }
         }
     }

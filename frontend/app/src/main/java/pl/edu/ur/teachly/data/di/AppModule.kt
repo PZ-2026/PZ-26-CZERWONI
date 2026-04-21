@@ -14,6 +14,7 @@ import pl.edu.ur.teachly.ui.auth.viewmodels.LoginViewModel
 import pl.edu.ur.teachly.ui.auth.viewmodels.RegisterViewModel
 import pl.edu.ur.teachly.ui.booking.viewmodels.BookingViewModel
 import pl.edu.ur.teachly.ui.home.viewmodels.HomeViewModel
+import pl.edu.ur.teachly.ui.lesson.viewmodels.LessonDetailViewModel
 import pl.edu.ur.teachly.ui.profile.viewmodels.ProfileViewModel
 import pl.edu.ur.teachly.ui.profile.viewmodels.TutorProfileViewModel
 import pl.edu.ur.teachly.ui.schedule.viewmodels.ScheduleViewModel
@@ -40,6 +41,7 @@ val appModule = module {
     viewModel { BookingViewModel(get(), get(), get()) }
     viewModel { ScheduleViewModel(get(), get()) }
     viewModel { TutorDetailViewModel(get(), get()) }
+    viewModel { LessonDetailViewModel(get(), get()) }
     viewModel { ProfileViewModel(get(), get(), get()) }
     viewModel { TutorProfileViewModel(get(), get(), get()) }
 }

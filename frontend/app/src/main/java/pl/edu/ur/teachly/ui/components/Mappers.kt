@@ -1,7 +1,6 @@
 package pl.edu.ur.teachly.ui.components
 
 import pl.edu.ur.teachly.data.model.LessonResponse
-import pl.edu.ur.teachly.data.model.LessonStatus
 import pl.edu.ur.teachly.data.model.ReviewResponse
 import pl.edu.ur.teachly.data.model.TutorResponse
 import java.time.Duration
@@ -42,15 +41,8 @@ fun LessonResponse.toScheduledClass(): ScheduledClass = ScheduledClass(
         Duration.between(LocalTime.parse(timeFrom), LocalTime.parse(timeTo))
             .toMinutes().toInt().coerceAtLeast(0)
     } else 0,
-    status = lessonStatus.toPolishLabel(),
+    status = lessonStatus,
 )
-
-fun LessonStatus.toPolishLabel(): String = when (this) {
-    LessonStatus.PENDING -> "Oczekujące"
-    LessonStatus.CONFIRMED -> "Potwierdzone"
-    LessonStatus.COMPLETED -> "Zakończone"
-    LessonStatus.CANCELLED -> "Anulowane"
-}
 
 fun ReviewResponse.toUiReview(): Review = Review(
     authorName = "$studentFirstName $studentLastName".trim(),
