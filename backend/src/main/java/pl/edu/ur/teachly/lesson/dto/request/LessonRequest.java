@@ -1,8 +1,6 @@
 package pl.edu.ur.teachly.lesson.dto.request;
 
-import jakarta.validation.constraints.AssertTrue;
-import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.*;
 import pl.edu.ur.teachly.common.enums.LessonFormat;
 import pl.edu.ur.teachly.common.enums.LessonStatus;
 
@@ -32,10 +30,12 @@ public record LessonRequest(
         @NotNull(message = "Status lekcji jest wymagany")
         LessonStatus lessonStatus,
 
+        @Size(max = 500, message = "Notatka może mieć maksymalnie 500 znaków")
         String studentNotes,
 
         @NotNull(message = "Kwota jest wymagana")
         @DecimalMin(value = "0.0", inclusive = false, message = "Kwota musi być większa niż 0")
+        @DecimalMax(value = "1000.0", message = "Kwota nie może być większa niż 1 000zł")
         BigDecimal amount
 
 ) {

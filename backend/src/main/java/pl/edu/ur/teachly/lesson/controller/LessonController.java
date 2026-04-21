@@ -43,12 +43,12 @@ public class LessonController {
     }
 
     @PatchMapping("/{lessonId}/student-notes")
-    public LessonResponse updateStudentNotes(@PathVariable Integer lessonId, @RequestBody StudentNotesRequest request) {
+    public LessonResponse updateStudentNotes(@PathVariable Integer lessonId, @Valid @RequestBody StudentNotesRequest request) {
         return lessonService.updateStudentNotes(lessonId, request);
     }
 
     @PatchMapping("/{lessonId}/tutor-notes")
-    public LessonResponse updateTutorNotes(@PathVariable Integer lessonId, @RequestBody TutorNotesRequest request) {
+    public LessonResponse updateTutorNotes(@PathVariable Integer lessonId, @Valid @RequestBody TutorNotesRequest request) {
         return lessonService.updateTutorNotes(lessonId, request);
     }
 
