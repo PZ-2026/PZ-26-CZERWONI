@@ -1,6 +1,5 @@
 package pl.edu.ur.teachly.ui.components.search
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -13,7 +12,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.MaterialTheme.colorScheme
@@ -25,7 +23,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import pl.edu.ur.teachly.R
 import pl.edu.ur.teachly.ui.components.other.TutorCard
@@ -72,35 +69,6 @@ fun SubjectChips(
     }
 }
 
-@Composable
-fun StatsRow(tutorCount: Int = 0) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 24.dp, vertical = 14.dp),
-        horizontalArrangement = Arrangement.spacedBy(10.dp),
-    ) {
-        listOf(
-            pluralStringResource(R.plurals.home_tutors_count, tutorCount, tutorCount),
-            stringResource(R.string.stat_rating, 4.9),
-        ).forEach { label ->
-            Surface(
-                modifier = Modifier.weight(1f),
-                shape = RoundedCornerShape(12.dp),
-                color = colorScheme.surface,
-                border = BorderStroke(1.dp, colorScheme.outline),
-            ) {
-                Text(
-                    text = label,
-                    style = typography.labelSmall,
-                    color = colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 10.dp),
-                    textAlign = TextAlign.Center
-                )
-            }
-        }
-    }
-}
 
 @Composable
 fun TutorList(tutors: List<Tutor>, onTutorClick: (Tutor) -> Unit) {
@@ -108,7 +76,7 @@ fun TutorList(tutors: List<Tutor>, onTutorClick: (Tutor) -> Unit) {
         modifier = Modifier
             .fillMaxSize()
             .padding(horizontal = 24.dp)
-            .padding(bottom = 32.dp),
+            .padding(top = 16.dp, bottom = 32.dp),
     ) {
         if (tutors.isEmpty()) {
             item { EmptyState() }
@@ -120,9 +88,10 @@ fun TutorList(tutors: List<Tutor>, onTutorClick: (Tutor) -> Unit) {
                         tutors.size,
                         tutors.size,
                     ),
-                    style = typography.labelMedium,
-                    color = colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(bottom = 12.dp),
+                    style = typography.titleMedium,
+                    fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+                    color = colorScheme.onBackground,
+                    modifier = Modifier.padding(bottom = 16.dp),
                 )
             }
             itemsIndexed(tutors) { index, tutor ->

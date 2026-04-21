@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import pl.edu.ur.teachly.data.local.TokenManager
 import pl.edu.ur.teachly.data.model.LessonStatus
+import pl.edu.ur.teachly.data.model.UserRole
 import pl.edu.ur.teachly.data.repository.LessonRepository
 import pl.edu.ur.teachly.ui.models.ScheduledClass
 import pl.edu.ur.teachly.ui.models.toScheduledClass
@@ -23,7 +24,7 @@ data class ScheduleUiState(
     val pendingExpanded: Boolean = true,
     val completedExpanded: Boolean = false,
     val cancelledExpanded: Boolean = false,
-    val isStudent: Boolean = true,
+    val userRole: UserRole = UserRole.STUDENT,
     val isLoading: Boolean = true,
     val error: String? = null,
 )
@@ -48,9 +49,14 @@ class ScheduleViewModel(
                 _state.update { it.copy(isLoading = false) }
                 return@launch
             }
-            val role = tokenManager.roleFlow.first()
+            val roleName = tokenManager.roleFlow.first() ?: "STUDENT"
+            val role = try {
+                UserRole.valueOf(roleName)
+            } catch (e: Exception) {
+                UserRole.STUDENT
+            }
 
-            val result = if (role == "TUTOR")
+            val result = if (role == UserRole.TUTOR)
                 lessonRepository.getTutorLessons(userId)
             else
                 lessonRepository.getStudentLessons(userId)
@@ -65,7 +71,7 @@ class ScheduleViewModel(
                                 pendingClasses = scheduled.filter { c -> c.status == LessonStatus.PENDING },
                                 completedClasses = scheduled.filter { c -> c.status == LessonStatus.COMPLETED },
                                 cancelledClasses = scheduled.filter { c -> c.status == LessonStatus.CANCELLED },
-                                isStudent = role != "TUTOR",
+                                userRole = role,
                                 isLoading = false,
                             )
                         }

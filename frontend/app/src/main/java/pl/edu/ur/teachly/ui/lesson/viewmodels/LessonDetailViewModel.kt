@@ -9,18 +9,18 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import pl.edu.ur.teachly.data.local.TokenManager
-import pl.edu.ur.teachly.data.model.LessonResponse
 import pl.edu.ur.teachly.data.model.LessonStatus
 import pl.edu.ur.teachly.data.model.LessonStatusRequest
 import pl.edu.ur.teachly.data.model.PaymentStatus
+import pl.edu.ur.teachly.data.model.UserRole
 import pl.edu.ur.teachly.data.repository.LessonRepository
-import java.time.LocalDate
-import java.time.LocalTime
+import pl.edu.ur.teachly.ui.models.LessonDetail
+import pl.edu.ur.teachly.ui.models.toUiLessonDetail
 
 data class LessonDetailUiState(
-    val lesson: LessonResponse? = null,
+    val lesson: LessonDetail? = null,
     val currentUserId: Int? = null,
-    val currentUserRole: String? = null,
+    val currentUserRole: UserRole? = null,
     val isLoading: Boolean = true,
     val error: String? = null,
     val isSaving: Boolean = false,
@@ -40,12 +40,17 @@ class LessonDetailViewModel(
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, error = null) }
             val userId = tokenManager.userIdFlow.first()
-            val role = tokenManager.roleFlow.first()
+            val roleName = tokenManager.roleFlow.first()
+            val role = try {
+                UserRole.valueOf(roleName ?: "STUDENT")
+            } catch (e: Exception) {
+                UserRole.STUDENT
+            }
             lessonRepository.getLesson(lessonId).fold(
                 onSuccess = { lesson ->
                     _state.update {
                         it.copy(
-                            lesson = lesson,
+                            lesson = lesson.toUiLessonDetail(),
                             currentUserId = userId,
                             currentUserRole = role,
                             isLoading = false,
@@ -67,7 +72,7 @@ class LessonDetailViewModel(
                     onSuccess = { updated ->
                         _state.update {
                             it.copy(
-                                lesson = updated,
+                                lesson = updated.toUiLessonDetail(),
                                 isSaving = false,
                                 actionSuccess = "Status zmieniony"
                             )
@@ -87,7 +92,7 @@ class LessonDetailViewModel(
                 onSuccess = { updated ->
                     _state.update {
                         it.copy(
-                            lesson = updated,
+                            lesson = updated.toUiLessonDetail(),
                             isSaving = false,
                             actionSuccess = "Notatki zapisane"
                         )
@@ -107,7 +112,7 @@ class LessonDetailViewModel(
                 onSuccess = { updated ->
                     _state.update {
                         it.copy(
-                            lesson = updated,
+                            lesson = updated.toUiLessonDetail(),
                             isSaving = false,
                             actionSuccess = "Notatki zapisane"
                         )
@@ -127,7 +132,7 @@ class LessonDetailViewModel(
                 onSuccess = { updated ->
                     _state.update {
                         it.copy(
-                            lesson = updated,
+                            lesson = updated.toUiLessonDetail(),
                             isSaving = false,
                             actionSuccess = "Oznaczono jako opłaconą"
                         )
@@ -144,10 +149,9 @@ class LessonDetailViewModel(
         _state.update { it.copy(actionError = null, actionSuccess = null) }
     }
 
-    fun isThirtyMinutesAfterStart(lesson: LessonResponse): Boolean {
+    fun isThirtyMinutesAfterStart(lesson: LessonDetail): Boolean {
         return try {
-            val start = LocalDate.parse(lesson.lessonDate)
-                .atTime(LocalTime.parse(lesson.timeFrom))
+            val start = lesson.lessonDate.atTime(lesson.timeFrom)
             java.time.LocalDateTime.now().isAfter(start.plusMinutes(30))
         } catch (e: Exception) {
             false

@@ -19,17 +19,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import pl.edu.ur.teachly.data.model.LessonResponse
 import pl.edu.ur.teachly.data.model.LessonStatus
 import pl.edu.ur.teachly.data.model.PaymentStatus
+import pl.edu.ur.teachly.data.model.UserRole
 import pl.edu.ur.teachly.ui.components.other.ConfirmConfig
 import pl.edu.ur.teachly.ui.components.other.ConfirmDialog
+import pl.edu.ur.teachly.ui.models.LessonDetail
 
 @Composable
 fun ActionsSection(
-    lesson: LessonResponse,
-    isStudent: Boolean,
-    isTutor: Boolean,
+    lesson: LessonDetail,
+    userRole: UserRole,
     isSaving: Boolean,
     thirtyMinPast: Boolean,
     onChangeStatus: (LessonStatus) -> Unit,
@@ -46,7 +46,7 @@ fun ActionsSection(
 
     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
 
-        if (isStudent) {
+        if (userRole == UserRole.STUDENT || userRole == UserRole.ADMIN) {
             // Go to tutor profile (always)
             OutlinedButton(
                 onClick = onGoToTutor,
@@ -90,7 +90,7 @@ fun ActionsSection(
             }
         }
 
-        if (isTutor) {
+        if (userRole == UserRole.TUTOR || userRole == UserRole.ADMIN) {
             // Accept/reject (if pending)
             if (status == LessonStatus.PENDING) {
                 Button(

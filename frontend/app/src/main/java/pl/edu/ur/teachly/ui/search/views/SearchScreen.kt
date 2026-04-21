@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Text
@@ -18,8 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import org.koin.androidx.compose.koinViewModel
-import pl.edu.ur.teachly.ui.components.search.HomeHeader
-import pl.edu.ur.teachly.ui.components.search.StatsRow
+import pl.edu.ur.teachly.ui.components.search.SearchHeader
 import pl.edu.ur.teachly.ui.components.search.SubjectChips
 import pl.edu.ur.teachly.ui.components.search.TutorList
 import pl.edu.ur.teachly.ui.models.Tutor
@@ -38,7 +36,7 @@ fun SearchScreen(
             .fillMaxSize()
             .background(colorScheme.background)
     ) {
-        HomeHeader(
+        SearchHeader(
             query = uiState.query,
             onQueryChange = viewModel::onQueryChange,
             onClear = viewModel::clearQuery,
@@ -49,7 +47,6 @@ fun SearchScreen(
             activeSubject = uiState.activeSubject,
             onSelect = viewModel::onSubjectSelect,
         )
-        HorizontalDivider(color = colorScheme.outline)
 
         when {
             uiState.isLoading -> Box(
@@ -70,7 +67,6 @@ fun SearchScreen(
             }
 
             else -> {
-                StatsRow(tutorCount = uiState.tutors.size)
                 TutorList(tutors = uiState.tutors, onTutorClick = onTutorClick)
             }
         }

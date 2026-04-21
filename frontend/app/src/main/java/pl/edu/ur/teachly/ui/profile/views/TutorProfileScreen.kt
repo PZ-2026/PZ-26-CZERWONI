@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -149,15 +150,55 @@ fun TutorProfileScreen(
             }
         }
 
-        else -> Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center,
-        ) {
-            Text(
-                text = stringResource(R.string.profile_not_found),
-                style = typography.bodyMedium,
-                color = colorScheme.onSurfaceVariant,
-            )
+        else -> {
+            if (isMyProfile) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(colorScheme.background),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = "Profil nieuzupełniony",
+                        style = typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = colorScheme.onSurface,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+                    Text(
+                        text = "Musisz skonfigurować swój profil korepetytora, aby inni mogli Cię znaleźć.",
+                        style = typography.bodyMedium,
+                        color = colorScheme.onSurfaceVariant,
+                        modifier = Modifier
+                            .padding(horizontal = 32.dp)
+                            .padding(bottom = 24.dp),
+                        textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                    )
+                    PrimaryButton(
+                        text = "Uzupełnij dane korepetytora",
+                        onClick = { /* TODO: Handle tutor data change */ },
+                        modifier = Modifier.padding(horizontal = 32.dp)
+                    )
+                    androidx.compose.foundation.layout.Spacer(Modifier.height(16.dp))
+                    PrimaryButton(
+                        text = stringResource(R.string.profile_logout),
+                        onClick = onLogout,
+                        modifier = Modifier.padding(horizontal = 32.dp)
+                    )
+                }
+            } else {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Text(
+                        text = stringResource(R.string.profile_not_found),
+                        style = typography.bodyMedium,
+                        color = colorScheme.onSurfaceVariant,
+                    )
+                }
+            }
         }
     }
 }

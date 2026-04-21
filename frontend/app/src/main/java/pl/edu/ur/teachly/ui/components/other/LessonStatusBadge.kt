@@ -17,7 +17,7 @@ fun LessonStatusBadge(status: LessonStatus) {
     val (label, color) = when (status) {
         LessonStatus.PENDING -> "Oczekująca" to colorScheme.tertiary
         LessonStatus.CONFIRMED -> "Potwierdzona" to colorScheme.primary
-        LessonStatus.COMPLETED -> "Zakończona" to colorScheme.outline
+        LessonStatus.COMPLETED -> "Zakończona" to colorScheme.onSurfaceVariant
         LessonStatus.CANCELLED -> "Anulowana" to colorScheme.error
     }
     Surface(

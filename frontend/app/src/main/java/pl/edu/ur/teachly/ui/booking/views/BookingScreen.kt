@@ -37,7 +37,7 @@ import pl.edu.ur.teachly.ui.components.other.HeaderBackground
 fun BookingScreen(
     tutorId: String,
     onBack: () -> Unit,
-    onConfirm: (tutorName: String, subjectName: String, lessonDate: String, timeFrom: String, timeTo: String, amount: String) -> Unit,
+    onConfirm: (tutorName: String, subjectName: String, lessonDate: String, timeFrom: String, timeTo: String, format: String, amount: String) -> Unit,
     viewModel: BookingViewModel = koinViewModel(),
 ) {
     val tutorIdInt = tutorId.toIntOrNull() ?: 0
@@ -92,15 +92,22 @@ fun BookingScreen(
                         .verticalScroll(rememberScrollState())
                         .padding(horizontal = 24.dp, vertical = 20.dp)
                 ) {
+                    val availabilityColors = state.calendarDays.map { (_, date) ->
+                        val slotsCount =
+                            state.timetableByDate[date.toString()]?.count { it.isAvailable } ?: 0
+                        when {
+                            slotsCount >= 6 -> colorScheme.primary
+                            slotsCount in 3..5 -> colorScheme.tertiary
+                            slotsCount in 1..2 -> colorScheme.error
+                            else -> colorScheme.outlineVariant
+                        }
+                    }
+
                     DayPicker(
                         days = state.calendarDays.map { it.first },
                         selectedIndex = state.selectedDayIndex,
+                        availabilityColors = availabilityColors,
                         onSelect = { index -> viewModel.onDaySelect(index) },
-                    )
-                    Spacer(Modifier.height(24.dp))
-                    DurationPicker(
-                        selected = state.selectedDuration,
-                        onSelect = viewModel::onDurationSelect,
                     )
                     Spacer(Modifier.height(24.dp))
                     if (state.tutorSubjects.isNotEmpty()) {
@@ -119,6 +126,12 @@ fun BookingScreen(
                         )
                         Spacer(Modifier.height(24.dp))
                     }
+                    DurationPicker(
+                        selected = state.selectedDuration,
+                        isDurationAvailable = viewModel::isDurationAvailable,
+                        onSelect = viewModel::onDurationSelect,
+                    )
+                    Spacer(Modifier.height(24.dp))
                     TimeSlotGrid(
                         availableSlots = availableSlots,
                         selectedSlot = state.selectedSlot,
@@ -143,8 +156,16 @@ fun BookingScreen(
                     selectedDuration = state.selectedDuration,
                     isSubmitting = state.isSubmitting,
                     onConfirm = {
-                        viewModel.confirmBooking { tutorName, subjectName, lessonDate, timeFrom, timeTo, amount ->
-                            onConfirm(tutorName, subjectName, lessonDate, timeFrom, timeTo, amount)
+                        viewModel.confirmBooking { tutorName, subjectName, lessonDate, timeFrom, timeTo, format, amount ->
+                            onConfirm(
+                                tutorName,
+                                subjectName,
+                                lessonDate,
+                                timeFrom,
+                                timeTo,
+                                format,
+                                amount
+                            )
                         }
                     },
                 )

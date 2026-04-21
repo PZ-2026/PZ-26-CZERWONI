@@ -36,7 +36,7 @@ import androidx.compose.ui.unit.dp
 import pl.edu.ur.teachly.R
 
 @Composable
-fun HomeHeader(
+fun SearchHeader(
     query: String,
     onQueryChange: (String) -> Unit,
     onClear: () -> Unit,

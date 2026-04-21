@@ -22,13 +22,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import pl.edu.ur.teachly.data.model.LessonResponse
+import pl.edu.ur.teachly.data.model.UserRole
+import pl.edu.ur.teachly.ui.models.LessonDetail
 
 @Composable
 fun NotesSection(
-    lesson: LessonResponse,
-    isStudent: Boolean,
-    isTutor: Boolean,
+    lesson: LessonDetail,
+    userRole: UserRole,
     isSaving: Boolean,
     onSaveStudentNotes: (String) -> Unit,
     onSaveTutorNotes: (String) -> Unit,
@@ -55,7 +55,7 @@ fun NotesSection(
             NoteField(
                 label = "Notatki ucznia",
                 initialValue = lesson.studentNotes ?: "",
-                editable = isStudent,
+                editable = userRole == UserRole.STUDENT || userRole == UserRole.ADMIN,
                 isSaving = isSaving,
                 onSave = onSaveStudentNotes,
             )
@@ -64,7 +64,7 @@ fun NotesSection(
             NoteField(
                 label = "Notatki korepetytora",
                 initialValue = lesson.tutorNotes ?: "",
-                editable = isTutor,
+                editable = userRole == UserRole.TUTOR || userRole == UserRole.ADMIN,
                 isSaving = isSaving,
                 onSave = onSaveTutorNotes,
             )

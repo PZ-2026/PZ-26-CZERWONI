@@ -27,13 +27,14 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import pl.edu.ur.teachly.data.model.LessonFormat
-import pl.edu.ur.teachly.data.model.LessonResponse
 import pl.edu.ur.teachly.data.model.PaymentStatus
+import pl.edu.ur.teachly.data.model.UserRole
 import pl.edu.ur.teachly.ui.components.other.LessonStatusBadge
-import java.time.LocalTime
+import pl.edu.ur.teachly.ui.components.other.formatDate
+import pl.edu.ur.teachly.ui.models.LessonDetail
 
 @Composable
-fun InfoCard(lesson: LessonResponse, isStudent: Boolean) {
+fun InfoCard(lesson: LessonDetail, userRole: UserRole) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(20.dp),
@@ -61,38 +62,29 @@ fun InfoCard(lesson: LessonResponse, isStudent: Boolean) {
             }
 
             // Person
-            val personLabel = if (isStudent) "Korepetytor" else "Uczeń"
-            val personName = if (isStudent)
-                "${lesson.tutorFirstName} ${lesson.tutorLastName}".trim()
-            else
-                "${lesson.studentFirstName} ${lesson.studentLastName}".trim()
+            val personLabel = when (userRole) {
+                UserRole.STUDENT -> "Korepetytor"
+                UserRole.TUTOR -> "Uczeń"
+                UserRole.ADMIN -> "Korepetytor / Uczeń"
+            }
+            val personName = when (userRole) {
+                UserRole.STUDENT -> "${lesson.tutorFirstName} ${lesson.tutorLastName}".trim()
+                UserRole.TUTOR -> "${lesson.studentFirstName} ${lesson.studentLastName}".trim()
+                UserRole.ADMIN -> "${lesson.tutorFirstName} ${lesson.tutorLastName} / ${lesson.studentFirstName} ${lesson.studentLastName}"
+            }
             DetailRow(Icons.Default.Person, "$personLabel: $personName")
 
             // Date
-            DetailRow(Icons.Default.CalendarMonth, lesson.lessonDate)
+            DetailRow(Icons.Default.CalendarMonth, formatDate(lesson.lessonDate))
 
             // Time
-            val endTime = try {
-                LocalTime.parse(lesson.timeFrom).plusMinutes(
-                    java.time.Duration.between(
-                        LocalTime.parse(lesson.timeFrom),
-                        LocalTime.parse(lesson.timeTo),
-                    ).toMinutes()
-                ).toString().take(5)
-            } catch (e: Exception) {
-                lesson.timeTo.take(5)
-            }
-            val durationMin = try {
-                java.time.Duration.between(
-                    LocalTime.parse(lesson.timeFrom),
-                    LocalTime.parse(lesson.timeTo)
-                ).toMinutes()
-            } catch (e: Exception) {
-                0L
-            }
+            val endTime = lesson.timeFrom.plusMinutes(
+                java.time.Duration.between(lesson.timeFrom, lesson.timeTo).toMinutes()
+            )
+            val durationMin = java.time.Duration.between(lesson.timeFrom, lesson.timeTo).toMinutes()
             DetailRow(
                 Icons.Default.Schedule,
-                "${lesson.timeFrom.take(5)} – $endTime | ($durationMin min)"
+                "${lesson.timeFrom} - $endTime | ($durationMin min)"
             )
 
             // Format

@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import pl.edu.ur.teachly.data.local.TokenManager
 import pl.edu.ur.teachly.data.model.LessonStatus
+import pl.edu.ur.teachly.data.model.UserRole
 import pl.edu.ur.teachly.data.repository.LessonRepository
 import pl.edu.ur.teachly.data.repository.UserRepository
 import pl.edu.ur.teachly.ui.models.ScheduledClass
@@ -19,8 +20,7 @@ import java.time.LocalDate
 
 data class HomeUiState(
     val userName: String = "",
-    val isStudent: Boolean = true,
-    val isAdmin: Boolean = false,
+    val userRole: UserRole = UserRole.STUDENT,
     val upcomingConfirmed: List<ScheduledClass> = emptyList(),
     val upcomingPending: List<ScheduledClass> = emptyList(),
     val confirmedExpanded: Boolean = true,
@@ -53,8 +53,12 @@ class HomeViewModel(
                 _state.value = HomeUiState(isLoading = false)
                 return@launch
             }
-            val role = tokenManager.roleFlow.first()
-            val isStudent = role == "STUDENT"
+            val roleName = tokenManager.roleFlow.first() ?: "STUDENT"
+            val role = try {
+                UserRole.valueOf(roleName)
+            } catch (e: Exception) {
+                UserRole.STUDENT
+            }
 
             userRepository.getUserById(userId).fold(
                 onSuccess = { user -> _state.value = _state.value.copy(userName = user.firstName) },
@@ -62,12 +66,9 @@ class HomeViewModel(
             )
 
             val lessonsResult = when (role) {
-                "STUDENT" -> lessonRepository.getStudentLessons(userId)
-                "TUTOR" -> lessonRepository.getTutorLessons(userId)
-                else -> {
-                    _state.value = _state.value.copy(isStudent = isStudent, isLoading = false)
-                    return@launch
-                }
+                UserRole.STUDENT -> lessonRepository.getStudentLessons(userId)
+                UserRole.TUTOR -> lessonRepository.getTutorLessons(userId)
+                UserRole.ADMIN -> lessonRepository.getStudentLessons(userId) // TODO: Handle admin
             }
 
             lessonsResult.fold(
@@ -84,7 +85,7 @@ class HomeViewModel(
                         val pending = upcoming.filter { it.status == LessonStatus.PENDING }
 
                         _state.value = _state.value.copy(
-                            isStudent = isStudent,
+                            userRole = role,
                             upcomingConfirmed = confirmed,
                             upcomingPending = pending,
                             totalLessons = lessons.count { it.lessonStatus == LessonStatus.COMPLETED },
@@ -94,7 +95,7 @@ class HomeViewModel(
                         )
                     } catch (e: Exception) {
                         _state.value = _state.value.copy(
-                            isStudent = isStudent,
+                            userRole = role,
                             isLoading = false,
                             error = e.message,
                         )
@@ -102,7 +103,7 @@ class HomeViewModel(
                 },
                 onFailure = { e ->
                     _state.value = _state.value.copy(
-                        isStudent = isStudent,
+                        userRole = role,
                         isLoading = false,
                         error = e.message,
                     )
