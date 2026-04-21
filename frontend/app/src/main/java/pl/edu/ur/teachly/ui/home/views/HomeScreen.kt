@@ -4,8 +4,6 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,14 +14,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Text
@@ -31,10 +23,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -44,11 +34,11 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
 import org.koin.androidx.compose.koinViewModel
 import pl.edu.ur.teachly.R
-import pl.edu.ur.teachly.ui.components.ScheduledClass
 import pl.edu.ur.teachly.ui.components.other.AppHeader
 import pl.edu.ur.teachly.ui.components.other.HeaderBackground
 import pl.edu.ur.teachly.ui.components.other.PrimaryButton
-import pl.edu.ur.teachly.ui.components.other.ScheduleItemCard
+import pl.edu.ur.teachly.ui.components.other.SectionHeader
+import pl.edu.ur.teachly.ui.components.other.SectionItems
 import pl.edu.ur.teachly.ui.components.other.StatCard
 import pl.edu.ur.teachly.ui.home.viewmodels.HomeViewModel
 
@@ -142,9 +132,8 @@ fun HomeScreen(
                     )
                 }
 
-                // Confirmed
                 item {
-                    HomeSectionHeader(
+                    SectionHeader(
                         title = stringResource(R.string.confirmed),
                         count = state.upcomingConfirmed.size,
                         expanded = state.confirmedExpanded,
@@ -158,7 +147,7 @@ fun HomeScreen(
                         enter = expandVertically(),
                         exit = shrinkVertically(),
                     ) {
-                        HomeSectionItems(
+                        SectionItems(
                             classes = state.upcomingConfirmed,
                             isStudent = state.isStudent,
                             emptyText = stringResource(R.string.no_confirmed_lessons),
@@ -169,7 +158,7 @@ fun HomeScreen(
 
                 // Pending
                 item {
-                    HomeSectionHeader(
+                    SectionHeader(
                         title = stringResource(R.string.pending),
                         count = state.upcomingPending.size,
                         expanded = state.pendingExpanded,
@@ -183,7 +172,7 @@ fun HomeScreen(
                         enter = expandVertically(),
                         exit = shrinkVertically(),
                     ) {
-                        HomeSectionItems(
+                        SectionItems(
                             classes = state.upcomingPending,
                             isStudent = state.isStudent,
                             emptyText = stringResource(R.string.no_pending_lessons),
@@ -207,92 +196,3 @@ fun HomeScreen(
     }
 }
 
-@Composable
-private fun HomeSectionHeader(
-    title: String,
-    count: Int,
-    expanded: Boolean,
-    badgeColor: Color,
-    onToggle: () -> Unit,
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(12.dp))
-            .background(colorScheme.surface)
-            .clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = null,
-                onClick = onToggle,
-            )
-            .padding(horizontal = 16.dp, vertical = 14.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween,
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(10.dp),
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(10.dp)
-                    .clip(RoundedCornerShape(3.dp))
-                    .background(badgeColor)
-            )
-            Text(
-                text = title,
-                style = typography.titleSmall,
-                fontWeight = FontWeight.SemiBold,
-                color = colorScheme.onSurface,
-            )
-            Text(
-                text = "($count)",
-                style = typography.bodySmall,
-                color = colorScheme.onSurfaceVariant,
-            )
-        }
-        Icon(
-            imageVector = if (expanded) Icons.Default.KeyboardArrowUp
-            else Icons.Default.KeyboardArrowDown,
-            contentDescription = if (expanded) stringResource(R.string.hide) else stringResource(R.string.expand),
-            tint = colorScheme.onSurfaceVariant,
-            modifier = Modifier.size(20.dp),
-        )
-    }
-}
-
-@Composable
-private fun HomeSectionItems(
-    classes: List<ScheduledClass>,
-    isStudent: Boolean,
-    emptyText: String,
-    onLessonClick: (lessonId: Int) -> Unit = {},
-) {
-    Column(
-        modifier = Modifier.padding(top = 8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-        if (classes.isEmpty()) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 16.dp),
-                contentAlignment = Alignment.Center,
-            ) {
-                Text(
-                    text = emptyText,
-                    style = typography.bodyMedium,
-                    color = colorScheme.onBackground.copy(alpha = 0.45f),
-                )
-            }
-        } else {
-            classes.forEach { item ->
-                ScheduleItemCard(
-                    item = item,
-                    isStudent = isStudent,
-                    onClick = { onLessonClick(item.id.toIntOrNull() ?: return@ScheduleItemCard) },
-                )
-            }
-        }
-    }
-}
