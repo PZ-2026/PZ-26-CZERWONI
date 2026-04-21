@@ -1,4 +1,4 @@
-package pl.edu.ur.teachly.ui.navigation
+package pl.edu.ur.teachly.navigation
 
 import kotlinx.serialization.Serializable
 
@@ -14,16 +14,19 @@ sealed interface AppRoute {
     @Serializable
     data object Register : AppRoute
 
-    // Home flow
+    // Home
     @Serializable
     data object Home : AppRoute
 
+    // Search
     @Serializable
     data object Search : AppRoute
 
+    // Tutor details
     @Serializable
     data class TutorDetail(val tutorId: Int) : AppRoute
 
+    // Booking flow
     @Serializable
     data class Booking(val tutorId: String) : AppRoute
 
@@ -36,6 +39,10 @@ sealed interface AppRoute {
         val timeTo: String,
         val amount: String,
     ) : AppRoute
+
+    // Lesson detail
+    @Serializable
+    data class LessonDetail(val lessonId: Int) : AppRoute
 
     // Schedule
     @Serializable

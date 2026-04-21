@@ -9,8 +9,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import androidx.core.view.WindowCompat
 import androidx.navigation.compose.rememberNavController
+import pl.edu.ur.teachly.navigation.AppNavHost
 import pl.edu.ur.teachly.ui.components.other.BottomBar
-import pl.edu.ur.teachly.ui.navigation.AppNavHost
 import pl.edu.ur.teachly.ui.theme.TeachlyTheme
 
 class MainActivity : ComponentActivity() {

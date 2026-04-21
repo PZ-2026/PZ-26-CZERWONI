@@ -17,7 +17,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import pl.edu.ur.teachly.R
-import pl.edu.ur.teachly.ui.navigation.AppRoute
+import pl.edu.ur.teachly.navigation.AppRoute
 
 @Composable
 fun BottomBar(
