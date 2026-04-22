@@ -19,8 +19,5 @@ public record ReviewResponse(
         // Review
         BigDecimal rating,
         String comment,
-
         LocalDateTime createdAt,
-        LocalDateTime updatedAt
-) {
-}
+        LocalDateTime updatedAt) {}

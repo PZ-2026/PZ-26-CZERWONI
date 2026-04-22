@@ -1,10 +1,9 @@
 package pl.edu.ur.teachly.tutor.entity;
 
 import jakarta.persistence.*;
+import java.math.BigDecimal;
 import lombok.*;
 import pl.edu.ur.teachly.user.entity.User;
-
-import java.math.BigDecimal;
 
 @Entity
 @Table(name = "tutors")
@@ -14,8 +13,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Tutor {
-    @Id
-    private Integer userId;
+    @Id private Integer userId;
 
     @OneToOne(fetch = FetchType.LAZY)
     @MapsId

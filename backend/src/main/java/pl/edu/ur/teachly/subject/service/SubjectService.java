@@ -1,5 +1,6 @@
 package pl.edu.ur.teachly.subject.service;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,8 +17,6 @@ import pl.edu.ur.teachly.subject.mapper.SubjectMapper;
 import pl.edu.ur.teachly.subject.repository.SubjectCategoryRepository;
 import pl.edu.ur.teachly.subject.repository.SubjectRepository;
 
-import java.util.List;
-
 @Service
 @RequiredArgsConstructor
 public class SubjectService {
@@ -28,15 +27,18 @@ public class SubjectService {
 
     @Transactional(readOnly = true)
     public List<SubjectResponse> getAllSubjects() {
-        return subjectRepository.findAll().stream()
-                .map(subjectMapper::toResponse)
-                .toList();
+        return subjectRepository.findAll().stream().map(subjectMapper::toResponse).toList();
     }
 
     @Transactional
     public SubjectResponse addSubject(SubjectRequest request) {
-        SubjectCategory category = categoryRepository.findById(request.categoryId())
-                .orElseThrow(() -> new ResourceNotFoundException("Nie znaleziono szukanej kategorii"));
+        SubjectCategory category =
+                categoryRepository
+                        .findById(request.categoryId())
+                        .orElseThrow(
+                                () ->
+                                        new ResourceNotFoundException(
+                                                "Nie znaleziono szukanej kategorii"));
 
         Subject subject = subjectMapper.toEntity(request);
         subject.setCategory(category);
@@ -53,9 +55,7 @@ public class SubjectService {
 
     @Transactional(readOnly = true)
     public List<SubjectCategoryResponse> getAllCategories() {
-        return categoryRepository.findAll().stream()
-                .map(categoryMapper::toResponse)
-                .toList();
+        return categoryRepository.findAll().stream().map(categoryMapper::toResponse).toList();
     }
 
     @Transactional
@@ -70,9 +70,9 @@ public class SubjectService {
             throw new ResourceNotFoundException("Nie znaleziono kategorii do usunięcia");
         }
         if (!subjectRepository.findByCategory_Id(id).isEmpty()) {
-            throw new BusinessValidationException("Nie można usunąć kategorii, ponieważ przypisane są do niej przedmioty");
+            throw new BusinessValidationException(
+                    "Nie można usunąć kategorii, ponieważ przypisane są do niej przedmioty");
         }
         categoryRepository.deleteById(id);
     }
 }
-

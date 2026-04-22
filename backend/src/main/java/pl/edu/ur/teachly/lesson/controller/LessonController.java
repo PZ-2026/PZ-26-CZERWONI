@@ -1,14 +1,13 @@
 package pl.edu.ur.teachly.lesson.controller;
 
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import pl.edu.ur.teachly.lesson.dto.request.*;
 import pl.edu.ur.teachly.lesson.dto.response.LessonResponse;
 import pl.edu.ur.teachly.lesson.service.LessonService;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/lessons")
@@ -18,7 +17,8 @@ public class LessonController {
 
     @PostMapping("/student/{studentId}")
     @ResponseStatus(HttpStatus.CREATED)
-    public LessonResponse createLesson(@PathVariable Integer studentId, @Valid @RequestBody LessonRequest request) {
+    public LessonResponse createLesson(
+            @PathVariable Integer studentId, @Valid @RequestBody LessonRequest request) {
         return lessonService.createLesson(studentId, request);
     }
 
@@ -38,22 +38,26 @@ public class LessonController {
     }
 
     @PatchMapping("/{lessonId}/status")
-    public LessonResponse changeLessonStatus(@PathVariable Integer lessonId, @Valid @RequestBody LessonStatusRequest request) {
+    public LessonResponse changeLessonStatus(
+            @PathVariable Integer lessonId, @Valid @RequestBody LessonStatusRequest request) {
         return lessonService.changeLessonStatus(lessonId, request);
     }
 
     @PatchMapping("/{lessonId}/student-notes")
-    public LessonResponse updateStudentNotes(@PathVariable Integer lessonId, @Valid @RequestBody StudentNotesRequest request) {
+    public LessonResponse updateStudentNotes(
+            @PathVariable Integer lessonId, @Valid @RequestBody StudentNotesRequest request) {
         return lessonService.updateStudentNotes(lessonId, request);
     }
 
     @PatchMapping("/{lessonId}/tutor-notes")
-    public LessonResponse updateTutorNotes(@PathVariable Integer lessonId, @Valid @RequestBody TutorNotesRequest request) {
+    public LessonResponse updateTutorNotes(
+            @PathVariable Integer lessonId, @Valid @RequestBody TutorNotesRequest request) {
         return lessonService.updateTutorNotes(lessonId, request);
     }
 
     @PatchMapping("/{lessonId}/payment")
-    public LessonResponse updatePaymentStatus(@PathVariable Integer lessonId, @Valid @RequestBody PaymentStatusRequest request) {
+    public LessonResponse updatePaymentStatus(
+            @PathVariable Integer lessonId, @Valid @RequestBody PaymentStatusRequest request) {
         return lessonService.updatePaymentStatus(lessonId, request);
     }
 }

@@ -5,10 +5,6 @@ import jakarta.validation.constraints.NotBlank;
 
 public record LoginRequest(
         @NotBlank(message = "Email nie może być pusty")
-        @Email(message = "Nieprawidłowy format email")
-        String email,
-
-        @NotBlank(message = "Hasło nie może być puste")
-        String password
-) {
-}
+                @Email(message = "Nieprawidłowy format email")
+                String email,
+        @NotBlank(message = "Hasło nie może być puste") String password) {}

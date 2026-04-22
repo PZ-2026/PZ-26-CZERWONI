@@ -1,6 +1,8 @@
 package pl.edu.ur.teachly.tutor.controller;
 
 import jakarta.validation.Valid;
+import java.time.LocalDate;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -14,9 +16,6 @@ import pl.edu.ur.teachly.tutor.dto.response.TutorAvailabilityRecurringResponse;
 import pl.edu.ur.teachly.tutor.service.TimetableService;
 import pl.edu.ur.teachly.tutor.service.TutorAvailabilityService;
 import pl.edu.ur.teachly.user.entity.User;
-
-import java.time.LocalDate;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/tutors/{tutorId}/availability")
@@ -36,13 +35,16 @@ public class TutorAvailabilityController {
     }
 
     @GetMapping("/recurring")
-    public List<TutorAvailabilityRecurringResponse> getRecurringByTutor(@PathVariable Integer tutorId) {
+    public List<TutorAvailabilityRecurringResponse> getRecurringByTutor(
+            @PathVariable Integer tutorId) {
         return availabilityService.getRecurringByTutor(tutorId);
     }
 
     @PostMapping("/recurring")
     @ResponseStatus(HttpStatus.CREATED)
-    public TutorAvailabilityRecurringResponse addRecurring(@PathVariable Integer tutorId, @Valid @RequestBody TutorAvailabilityRecurringRequest request) {
+    public TutorAvailabilityRecurringResponse addRecurring(
+            @PathVariable Integer tutorId,
+            @Valid @RequestBody TutorAvailabilityRecurringRequest request) {
         return availabilityService.addRecurring(tutorId, request);
     }
 
@@ -53,13 +55,16 @@ public class TutorAvailabilityController {
     }
 
     @GetMapping("/override")
-    public List<TutorAvailabilityOverrideResponse> getOverridesByTutor(@PathVariable Integer tutorId) {
+    public List<TutorAvailabilityOverrideResponse> getOverridesByTutor(
+            @PathVariable Integer tutorId) {
         return availabilityService.getOverridesByTutor(tutorId);
     }
 
     @PostMapping("/override")
     @ResponseStatus(HttpStatus.CREATED)
-    public TutorAvailabilityOverrideResponse addOverride(@PathVariable Integer tutorId, @Valid @RequestBody TutorAvailabilityOverrideRequest request) {
+    public TutorAvailabilityOverrideResponse addOverride(
+            @PathVariable Integer tutorId,
+            @Valid @RequestBody TutorAvailabilityOverrideRequest request) {
         return availabilityService.addOverride(tutorId, request);
     }
 

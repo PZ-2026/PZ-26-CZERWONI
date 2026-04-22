@@ -1,15 +1,14 @@
 package pl.edu.ur.teachly.review.entity;
 
 import jakarta.persistence.*;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import pl.edu.ur.teachly.tutor.entity.Tutor;
 import pl.edu.ur.teachly.user.entity.User;
-
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "reviews")

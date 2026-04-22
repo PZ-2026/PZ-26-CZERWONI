@@ -8,6 +8,4 @@ public record TutorAvailabilityOverrideResponse(
         Integer tutorId,
         LocalDate overrideDate,
         LocalTime timeFrom,
-        LocalTime timeTo
-) {
-}
+        LocalTime timeTo) {}

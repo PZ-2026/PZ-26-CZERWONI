@@ -1,6 +1,10 @@
 package pl.edu.ur.teachly.lesson.entity;
 
 import jakarta.persistence.*;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -11,11 +15,6 @@ import pl.edu.ur.teachly.common.enums.PaymentStatus;
 import pl.edu.ur.teachly.subject.entity.Subject;
 import pl.edu.ur.teachly.tutor.entity.Tutor;
 import pl.edu.ur.teachly.user.entity.User;
-
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 
 @Entity
 @Table(name = "lessons")

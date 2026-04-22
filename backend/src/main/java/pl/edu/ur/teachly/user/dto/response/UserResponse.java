@@ -1,8 +1,7 @@
 package pl.edu.ur.teachly.user.dto.response;
 
-import pl.edu.ur.teachly.common.enums.UserRole;
-
 import java.time.LocalDateTime;
+import pl.edu.ur.teachly.common.enums.UserRole;
 
 public record UserResponse(
         Integer id,
@@ -14,6 +13,4 @@ public record UserResponse(
         UserRole role,
         Boolean isActive,
         LocalDateTime createdAt,
-        LocalDateTime updatedAt
-) {
-}
+        LocalDateTime updatedAt) {}

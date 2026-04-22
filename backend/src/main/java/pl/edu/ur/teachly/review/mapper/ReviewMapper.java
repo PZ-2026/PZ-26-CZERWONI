@@ -23,4 +23,3 @@ public interface ReviewMapper {
     @Mapping(target = "updatedAt", ignore = true)
     Review toEntity(ReviewRequest request);
 }
-
