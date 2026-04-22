@@ -1,5 +1,6 @@
 package pl.edu.ur.teachly.tutor.service;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,8 +16,6 @@ import pl.edu.ur.teachly.tutor.mapper.TutorAvailabilityMapper;
 import pl.edu.ur.teachly.tutor.repository.TutorAvailabilityOverrideRepository;
 import pl.edu.ur.teachly.tutor.repository.TutorAvailabilityRecurringRepository;
 import pl.edu.ur.teachly.tutor.repository.TutorRepository;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -34,9 +33,15 @@ public class TutorAvailabilityService {
     }
 
     @Transactional
-    public TutorAvailabilityRecurringResponse addRecurring(Integer tutorId, TutorAvailabilityRecurringRequest request) {
-        Tutor tutor = tutorRepository.findById(tutorId)
-                .orElseThrow(() -> new ResourceNotFoundException("Nie znaleziono szukanego korepetytora"));
+    public TutorAvailabilityRecurringResponse addRecurring(
+            Integer tutorId, TutorAvailabilityRecurringRequest request) {
+        Tutor tutor =
+                tutorRepository
+                        .findById(tutorId)
+                        .orElseThrow(
+                                () ->
+                                        new ResourceNotFoundException(
+                                                "Nie znaleziono szukanego korepetytora"));
         TutorAvailabilityRecurring entity = mapper.toEntity(request);
         entity.setTutor(tutor);
         return mapper.toResponse(recurringRepository.save(entity));
@@ -58,9 +63,15 @@ public class TutorAvailabilityService {
     }
 
     @Transactional
-    public TutorAvailabilityOverrideResponse addOverride(Integer tutorId, TutorAvailabilityOverrideRequest request) {
-        Tutor tutor = tutorRepository.findById(tutorId)
-                .orElseThrow(() -> new ResourceNotFoundException("Nie znaleziono szukanego korepetytora"));
+    public TutorAvailabilityOverrideResponse addOverride(
+            Integer tutorId, TutorAvailabilityOverrideRequest request) {
+        Tutor tutor =
+                tutorRepository
+                        .findById(tutorId)
+                        .orElseThrow(
+                                () ->
+                                        new ResourceNotFoundException(
+                                                "Nie znaleziono szukanego korepetytora"));
         TutorAvailabilityOverride entity = mapper.toEntity(request);
         entity.setTutor(tutor);
         return mapper.toResponse(overrideRepository.save(entity));

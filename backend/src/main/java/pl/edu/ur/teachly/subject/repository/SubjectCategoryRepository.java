@@ -5,6 +5,4 @@ import org.springframework.stereotype.Repository;
 import pl.edu.ur.teachly.subject.entity.SubjectCategory;
 
 @Repository
-public interface SubjectCategoryRepository extends JpaRepository<SubjectCategory, Integer> {
-}
-
+public interface SubjectCategoryRepository extends JpaRepository<SubjectCategory, Integer> {}

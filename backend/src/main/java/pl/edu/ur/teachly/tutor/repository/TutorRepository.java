@@ -5,5 +5,4 @@ import org.springframework.stereotype.Repository;
 import pl.edu.ur.teachly.tutor.entity.Tutor;
 
 @Repository
-public interface TutorRepository extends JpaRepository<Tutor, Integer> {
-}
+public interface TutorRepository extends JpaRepository<Tutor, Integer> {}

@@ -51,6 +51,16 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 
+// Automatization when compiling
+// 1. Always format code (Spotless)
+tasks.named('compileJava') {
+    dependsOn 'spotlessApply'
+}
+// 2. Always check code quality (Checkstyle)
+tasks.named('compileJava') {
+    finalizedBy 'checkstyleMain'
+}
+
 // Spotless
 spotless {
     java {

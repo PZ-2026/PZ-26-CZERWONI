@@ -11,5 +11,4 @@ public class TeachlyApplication {
     public static void main(String[] args) {
         SpringApplication.run(TeachlyApplication.class, args);
     }
-
 }

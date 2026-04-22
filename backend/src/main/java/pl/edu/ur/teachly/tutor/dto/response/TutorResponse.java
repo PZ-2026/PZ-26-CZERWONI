@@ -11,6 +11,4 @@ public record TutorResponse(
         String bio,
         BigDecimal hourlyRate,
         Boolean offersOnline,
-        Boolean offersInPerson
-) {
-}
+        Boolean offersInPerson) {}

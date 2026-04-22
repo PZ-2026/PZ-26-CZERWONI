@@ -14,12 +14,16 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
 
     private final HandlerExceptionResolver resolver;
 
-    public CustomAuthenticationEntryPoint(@Qualifier("handlerExceptionResolver") HandlerExceptionResolver resolver) {
+    public CustomAuthenticationEntryPoint(
+            @Qualifier("handlerExceptionResolver") HandlerExceptionResolver resolver) {
         this.resolver = resolver;
     }
 
     @Override
-    public void commence(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull AuthenticationException authException) {
+    public void commence(
+            @NonNull HttpServletRequest request,
+            @NonNull HttpServletResponse response,
+            @NonNull AuthenticationException authException) {
         resolver.resolveException(request, response, null, authException);
     }
 }

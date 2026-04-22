@@ -11,6 +11,7 @@ RUN chmod +x gradlew && ./gradlew dependencies --no-daemon --quiet
 
 # Build application
 COPY src ./src
+COPY config ./config
 RUN ./gradlew bootJar --no-daemon --quiet -x test
 
 # Stage 2: Runtime

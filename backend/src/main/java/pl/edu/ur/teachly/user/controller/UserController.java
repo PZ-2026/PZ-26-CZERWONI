@@ -1,14 +1,13 @@
 package pl.edu.ur.teachly.user.controller;
 
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import pl.edu.ur.teachly.user.dto.request.UserUpdateRequest;
 import pl.edu.ur.teachly.user.dto.response.UserResponse;
 import pl.edu.ur.teachly.user.service.UserService;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/users")
@@ -27,7 +26,8 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public UserResponse updateUserProfile(@PathVariable Integer id, @Valid @RequestBody UserUpdateRequest request) {
+    public UserResponse updateUserProfile(
+            @PathVariable Integer id, @Valid @RequestBody UserUpdateRequest request) {
         return userService.updateUserProfile(id, request);
     }
 

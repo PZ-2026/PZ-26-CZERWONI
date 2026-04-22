@@ -28,15 +28,18 @@ public class AuthService {
     @Transactional
     public AuthResponse register(RegisterRequest request) {
 
-        userRepository.findByEmailOrPhoneNumber(request.email(), request.phoneNumber())
-                .ifPresent(user -> {
-                    if (user.getEmail().equals(request.email())) {
-                        throw new BusinessValidationException("Email jest już zajęty");
-                    }
-                    if (user.getPhoneNumber().equals(request.phoneNumber())) {
-                        throw new BusinessValidationException("Numer telefonu jest już zajęty");
-                    }
-                });
+        userRepository
+                .findByEmailOrPhoneNumber(request.email(), request.phoneNumber())
+                .ifPresent(
+                        user -> {
+                            if (user.getEmail().equals(request.email())) {
+                                throw new BusinessValidationException("Email jest już zajęty");
+                            }
+                            if (user.getPhoneNumber().equals(request.phoneNumber())) {
+                                throw new BusinessValidationException(
+                                        "Numer telefonu jest już zajęty");
+                            }
+                        });
 
         User user = userMapper.toEntity(request);
         user.setPasswordHash(passwordEncoder.encode(request.password()));
@@ -49,12 +52,10 @@ public class AuthService {
 
     @Transactional(readOnly = true)
     public AuthResponse login(LoginRequest request) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.email(),
-                        request.password()
-                )
-        );
+        Authentication authentication =
+                authenticationManager.authenticate(
+                        new UsernamePasswordAuthenticationToken(
+                                request.email(), request.password()));
 
         User user = (User) authentication.getPrincipal();
 
