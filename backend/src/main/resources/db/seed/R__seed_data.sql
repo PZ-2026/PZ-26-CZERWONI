@@ -299,10 +299,10 @@ ON CONFLICT DO NOTHING;
 WITH t AS (SELECT user_id FROM tutors)
 INSERT
 INTO tutor_availability_override (tutor_id, override_date, time_from, time_to)
-VALUES ((SELECT user_id FROM t WHERE user_id = 1), '2025-12-24', NULL, NULL),
-       ((SELECT user_id FROM t WHERE user_id = 2), '2025-11-10', '10:00', '14:00'),
-       ((SELECT user_id FROM t WHERE user_id = 3), '2025-11-15', '10:00', '11:00'),
-       ((SELECT user_id FROM t WHERE user_id = 4), '2025-12-31', NULL, NULL)
+VALUES ((SELECT user_id FROM t WHERE user_id = 1), '2026-05-01', NULL, NULL),
+       ((SELECT user_id FROM t WHERE user_id = 2), '2026-05-02', '10:00', '14:00'),
+       ((SELECT user_id FROM t WHERE user_id = 3), '2026-05-03', '10:00', '11:00'),
+       ((SELECT user_id FROM t WHERE user_id = 4), '2026-05-04', NULL, NULL)
 ON CONFLICT DO NOTHING;
 
 -- 8. holidays
@@ -334,97 +334,97 @@ VALUES
     -- zakończone / opłacone
     ((SELECT user_id FROM t WHERE user_id = 2), (SELECT id FROM s WHERE id = 9),
      (SELECT id FROM sub WHERE subject_name = 'Fizyka'),
-     '2025-10-10', '18:00', '19:30', 'ONLINE', 'COMPLETED', 'Elektromagnetyzm - prawa Faradaya i Lenza.',
-     'Bardzo przejrzyste wyjaśnienia.', 105.00, 'PAID', '2025-10-10 19:40:00'),
+     '2026-04-23', '18:00', '19:30', 'ONLINE', 'COMPLETED', 'Elektromagnetyzm - prawa Faradaya i Lenza.',
+     'Bardzo przejrzyste wyjaśnienia.', 105.00, 'PAID', '2026-04-23 19:40:00'),
 
     ((SELECT user_id FROM t WHERE user_id = 3), (SELECT id FROM s WHERE id = 7),
      (SELECT id FROM sub WHERE subject_name = 'Język angielski'),
-     '2025-10-12', '09:00', '10:00', 'IN_PERSON', 'COMPLETED', 'Rozmowy o podróżach i pracy.', NULL, 90.00, 'PAID',
-     '2025-10-12 10:10:00'),
+     '2026-04-24', '09:00', '10:00', 'IN_PERSON', 'COMPLETED', 'Rozmowy o podróżach i pracy.', NULL, 90.00, 'PAID',
+     '2026-04-24 10:10:00'),
 
     ((SELECT user_id FROM t WHERE user_id = 4), (SELECT id FROM s WHERE id = 12),
      (SELECT id FROM sub WHERE subject_name = 'Biologia'),
-     '2025-10-14', '15:00', '16:30', 'IN_PERSON', 'COMPLETED', 'Budowa DNA i RNA.', 'Teraz rozumiem lepiej genetykę!',
-     65.00, 'PAID', '2025-10-14 16:35:00'),
+     '2026-04-25', '15:00', '16:30', 'IN_PERSON', 'COMPLETED', 'Budowa DNA i RNA.', 'Teraz rozumiem lepiej genetykę!',
+     65.00, 'PAID', '2026-04-25 16:35:00'),
 
     ((SELECT user_id FROM t WHERE user_id = 5), (SELECT id FROM s WHERE id = 13),
      (SELECT id FROM sub WHERE subject_name = 'Fortepian'),
-     '2025-10-15', '14:00', '15:00', 'IN_PERSON', 'COMPLETED', 'Ćwiczenie sonaty Mozarta.', NULL, 75.00, 'PAID',
-     '2025-10-15 15:10:00'),
+     '2026-04-26', '14:00', '15:00', 'IN_PERSON', 'COMPLETED', 'Ćwiczenie sonaty Mozarta.', NULL, 75.00, 'PAID',
+     '2026-04-26 15:10:00'),
 
     -- potwierdzone / płatność oczekująca
     ((SELECT user_id FROM t WHERE user_id = 1), (SELECT id FROM s WHERE id = 8),
      (SELECT id FROM sub WHERE subject_name = 'Matematyka'),
-     '2025-11-02', '17:00', '18:30', 'ONLINE', 'CONFIRMED', 'Przygotowanie do matury próbnej.', NULL, 120.00, 'PENDING',
+     '2026-04-27', '17:00', '18:30', 'ONLINE', 'CONFIRMED', 'Przygotowanie do matury próbnej.', NULL, 120.00, 'PENDING',
      NULL),
 
     ((SELECT user_id FROM t WHERE user_id = 3), (SELECT id FROM s WHERE id = 14),
      (SELECT id FROM sub WHERE subject_name = 'Język niemiecki'),
-     '2025-11-03', '10:00', '11:30', 'ONLINE', 'CONFIRMED', 'Konwersacje na poziomie B2.', NULL, 90.00, 'PENDING',
+     '2026-04-28', '10:00', '11:30', 'ONLINE', 'CONFIRMED', 'Konwersacje na poziomie B2.', NULL, 90.00, 'PENDING',
      NULL),
 
     -- oczekujące (pending)
     ((SELECT user_id FROM t WHERE user_id = 2), (SELECT id FROM s WHERE id = 6),
      (SELECT id FROM sub WHERE subject_name = 'Algorytmy'),
-     '2025-11-05', '18:00', '19:00', 'ONLINE', 'PENDING', 'Rozwiązywanie zadań z algorytmiki.', NULL, 70.00, 'PENDING',
+     '2026-04-29', '18:00', '19:00', 'ONLINE', 'PENDING', 'Rozwiązywanie zadań z algorytmiki.', NULL, 70.00, 'PENDING',
      NULL),
 
     ((SELECT user_id FROM t WHERE user_id = 5), (SELECT id FROM s WHERE id = 15),
      (SELECT id FROM sub WHERE subject_name = 'Gitara'),
-     '2025-11-06', '15:00', '16:00', 'IN_PERSON', 'PENDING', 'Ćwiczenie akordów i rytmiki.', NULL, 75.00, 'PENDING',
+     '2026-04-30', '15:00', '16:00', 'IN_PERSON', 'PENDING', 'Ćwiczenie akordów i rytmiki.', NULL, 75.00, 'PENDING',
      NULL),
 
     -- anulowane
     ((SELECT user_id FROM t WHERE user_id = 1), (SELECT id FROM s WHERE id = 7),
      (SELECT id FROM sub WHERE subject_name = 'Matematyka'),
-     '2025-11-07', '17:00', '18:00', 'ONLINE', 'CANCELLED', 'Uczeń odwołał lekcję.', NULL, 80.00, 'CANCELLED', NULL),
+     '2026-05-01', '17:00', '18:00', 'ONLINE', 'CANCELLED', 'Uczeń odwołał lekcję.', NULL, 80.00, 'CANCELLED', NULL),
 
     ((SELECT user_id FROM t WHERE user_id = 4), (SELECT id FROM s WHERE id = 9),
      (SELECT id FROM sub WHERE subject_name = 'Chemia'),
-     '2025-11-08', '16:00', '17:00', 'IN_PERSON', 'CANCELLED', NULL, 'Choroba - przepraszam.', 65.00, 'CANCELLED', NULL),
+     '2026-05-02', '16:00', '17:00', 'IN_PERSON', 'CANCELLED', NULL, 'Choroba - przepraszam.', 65.00, 'CANCELLED', NULL),
 
     ((SELECT user_id FROM t WHERE user_id = 21), (SELECT id FROM s WHERE id = 23),
      (SELECT id FROM sub WHERE subject_name = 'Historia sztuki'),
-     '2025-12-01', '10:00', '11:00', 'IN_PERSON', 'COMPLETED', 'Analiza obrazów impresjonistów.', 'Bardzo fajne i zwięzłe notatki, dziękuję!', 100.00, 'PAID', '2025-12-01 11:30:00'),
+     '2026-05-03', '10:00', '11:00', 'IN_PERSON', 'COMPLETED', 'Analiza obrazów impresjonistów.', 'Bardzo fajne i zwięzłe notatki, dziękuję!', 100.00, 'PAID', '2026-05-03 11:30:00'),
     ((SELECT user_id FROM t WHERE user_id = 22), (SELECT id FROM s WHERE id = 24),
      (SELECT id FROM sub WHERE subject_name = 'Rachunkowość'),
-     '2025-12-02', '18:00', '19:00', 'ONLINE', 'CONFIRMED', 'Bilans i rachunek wyników na zaliczenie w technikum.', NULL, 130.00, 'PENDING', NULL),
+     '2026-05-04', '18:00', '19:00', 'ONLINE', 'CONFIRMED', 'Bilans i rachunek wyników na zaliczenie w technikum.', NULL, 130.00, 'PENDING', NULL),
     ((SELECT user_id FROM t WHERE user_id = 25), (SELECT id FROM s WHERE id = 26),
      (SELECT id FROM sub WHERE subject_name = 'Czytanie i pisanie'),
-     '2025-12-03', '15:00', '16:00', 'IN_PERSON', 'COMPLETED', 'Rozpoznawanie samogłosek i sylabizowanie.', 'Super podejście do dziecka!', 90.00, 'PAID', '2025-12-03 16:30:00'),
+     '2026-05-05', '15:00', '16:00', 'IN_PERSON', 'COMPLETED', 'Rozpoznawanie samogłosek i sylabizowanie.', 'Super podejście do dziecka!', 90.00, 'PAID', '2026-05-05 16:30:00'),
     ((SELECT user_id FROM t WHERE user_id = 28), (SELECT id FROM s WHERE id = 31),
      (SELECT id FROM sub WHERE subject_name = 'Matematyka'),
-     '2025-12-05', '16:00', '17:30', 'ONLINE', 'COMPLETED', 'Funkcje kwadratowe.', 'Na maksa logicznie wytłumaczone.', 127.50, 'PAID', '2025-12-05 17:40:00'),
+     '2026-05-06', '16:00', '17:30', 'ONLINE', 'COMPLETED', 'Funkcje kwadratowe.', 'Na maksa logicznie wytłumaczone.', 127.50, 'PAID', '2026-05-06 17:40:00'),
     ((SELECT user_id FROM t WHERE user_id = 28), (SELECT id FROM s WHERE id = 32),
      (SELECT id FROM sub WHERE subject_name = 'Fizyka'),
-     '2025-12-06', '14:00', '15:00', 'IN_PERSON', 'CONFIRMED', 'Dynamika Newtona', NULL, 85.00, 'PENDING', NULL),
+     '2026-05-07', '14:00', '15:00', 'IN_PERSON', 'CONFIRMED', 'Dynamika Newtona', NULL, 85.00, 'PENDING', NULL),
     ((SELECT user_id FROM t WHERE user_id = 29), (SELECT id FROM s WHERE id = 33),
      (SELECT id FROM sub WHERE subject_name = 'Język angielski'),
-     '2025-12-07', '17:00', '18:00', 'ONLINE', 'PENDING', 'Czasy przeszłe w storytellingu', NULL, 95.00, 'PENDING', NULL),
+     '2026-05-08', '17:00', '18:00', 'ONLINE', 'PENDING', 'Czasy przeszłe w storytellingu', NULL, 95.00, 'PENDING', NULL),
     ((SELECT user_id FROM t WHERE user_id = 29), (SELECT id FROM s WHERE id = 34),
      (SELECT id FROM sub WHERE subject_name = 'Język francuski'),
-     '2025-12-08', '16:00', '17:00', 'ONLINE', 'COMPLETED', 'Francuska wymowa - nosówki.', 'Bardzo fajne materiały.', 95.00, 'PAID', '2025-12-08 17:10:00'),
+     '2026-05-09', '16:00', '17:00', 'ONLINE', 'COMPLETED', 'Francuska wymowa - nosówki.', 'Bardzo fajne materiały.', 95.00, 'PAID', '2026-05-09 17:10:00'),
     ((SELECT user_id FROM t WHERE user_id = 30), (SELECT id FROM s WHERE id = 35),
      (SELECT id FROM sub WHERE subject_name = 'Geografia'),
-     '2025-12-09', '15:00', '16:00', 'IN_PERSON', 'CANCELLED', NULL, 'Choroba.', 75.00, 'CANCELLED', NULL),
+     '2026-05-10', '15:00', '16:00', 'IN_PERSON', 'CANCELLED', NULL, 'Choroba.', 75.00, 'CANCELLED', NULL),
     ((SELECT user_id FROM t WHERE user_id = 30), (SELECT id FROM s WHERE id = 31),
      (SELECT id FROM sub WHERE subject_name = 'Biologia'),
-     '2025-12-10', '11:00', '12:00', 'IN_PERSON', 'COMPLETED', 'Cytologia - budowa komórki', 'Mnóstwo ciekawostek naukowych.', 75.00, 'PAID', '2025-12-10 12:15:00'),
+     '2026-05-11', '11:00', '12:00', 'IN_PERSON', 'COMPLETED', 'Cytologia - budowa komórki', 'Mnóstwo ciekawostek naukowych.', 75.00, 'PAID', '2026-05-11 12:15:00'),
     ((SELECT user_id FROM t WHERE user_id = 1), (SELECT id FROM s WHERE id = 32),
      (SELECT id FROM sub WHERE subject_name = 'Matematyka'),
-     '2025-12-11', '16:00', '17:00', 'IN_PERSON', 'COMPLETED', 'Równania liniowe.', 'Jasno i przejrzyście', 80.00, 'PAID', '2025-12-11 17:00:00'),
+     '2026-05-12', '16:00', '17:00', 'IN_PERSON', 'COMPLETED', 'Równania liniowe.', 'Jasno i przejrzyście', 80.00, 'PAID', '2026-05-12 17:00:00'),
     ((SELECT user_id FROM t WHERE user_id = 2), (SELECT id FROM s WHERE id = 33),
      (SELECT id FROM sub WHERE subject_name = 'Programowanie'),
-     '2025-12-12', '18:00', '19:30', 'ONLINE', 'CONFIRMED', 'Wprowadzenie do Pythona.', NULL, 105.00, 'PENDING', NULL),
+     '2026-05-13', '18:00', '19:30', 'ONLINE', 'CONFIRMED', 'Wprowadzenie do Pythona.', NULL, 105.00, 'PENDING', NULL),
     ((SELECT user_id FROM t WHERE user_id = 17), (SELECT id FROM s WHERE id = 34),
      (SELECT id FROM sub WHERE subject_name = 'Egzamin ósmoklasisty'),
-     '2025-12-15', '16:00', '17:00', 'ONLINE', 'COMPLETED', 'Powtórzenie przed egzaminem.', 'Syn czuje się wreszcie przygotowany.', 120.00, 'PAID', '2025-12-15 17:30:00'),
+     '2026-05-12', '16:00', '17:00', 'ONLINE', 'COMPLETED', 'Powtórzenie przed egzaminem.', 'Syn czuje się wreszcie przygotowany.', 120.00, 'PAID', '2026-05-12 17:30:00'),
     ((SELECT user_id FROM t WHERE user_id = 28), (SELECT id FROM s WHERE id = 35),
      (SELECT id FROM sub WHERE subject_name = 'Fizyka'),
-     '2025-12-16', '16:00', '17:00', 'IN_PERSON', 'PENDING', 'Termodynamika.', NULL, 85.00, 'PENDING', NULL),
+     '2026-05-13', '16:00', '17:00', 'IN_PERSON', 'PENDING', 'Termodynamika.', NULL, 85.00, 'PENDING', NULL),
     ((SELECT user_id FROM t WHERE user_id = 29), (SELECT id FROM s WHERE id = 31),
      (SELECT id FROM sub WHERE subject_name = 'Język angielski'),
-     '2025-12-17', '18:00', '19:00', 'ONLINE', 'CANCELLED', NULL, 'Zmiana planów', 95.00, 'CANCELLED', NULL)
+     '2026-05-14', '18:00', '19:00', 'ONLINE', 'CANCELLED', NULL, 'Zmiana planów', 95.00, 'CANCELLED', NULL)
 ON CONFLICT DO NOTHING;
 
 -- 10. reviews
