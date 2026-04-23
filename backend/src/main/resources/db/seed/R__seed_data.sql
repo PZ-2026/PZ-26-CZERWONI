@@ -5,7 +5,11 @@ VALUES ('Matematyka i nauki ścisłe'),
        ('Nauki humanistyczne'),
        ('Informatyka'),
        ('Nauki przyrodnicze'),
-       ('Muzyka i sztuka')
+       ('Muzyka i sztuka'),
+       ('Przygotowanie do egzaminów'),
+       ('Nauki społeczne'),
+       ('Przedmioty zawodowe'),
+       ('Edukacja wczesnoszkolna')
 ON CONFLICT (category_name) DO NOTHING;
 
 -- 2. subjects
@@ -30,7 +34,17 @@ VALUES ('Matematyka', (SELECT id FROM cat WHERE category_name = 'Matematyka i na
        ('Biologia', (SELECT id FROM cat WHERE category_name = 'Nauki przyrodnicze')),
        ('Geografia', (SELECT id FROM cat WHERE category_name = 'Nauki przyrodnicze')),
        ('Gitara', (SELECT id FROM cat WHERE category_name = 'Muzyka i sztuka')),
-       ('Fortepian', (SELECT id FROM cat WHERE category_name = 'Muzyka i sztuka'))
+       ('Fortepian', (SELECT id FROM cat WHERE category_name = 'Muzyka i sztuka')),
+       ('Egzamin ósmoklasisty', (SELECT id FROM cat WHERE category_name = 'Przygotowanie do egzaminów')),
+       ('Matura podstawowa', (SELECT id FROM cat WHERE category_name = 'Przygotowanie do egzaminów')),
+       ('Wiedza o społeczeństwie', (SELECT id FROM cat WHERE category_name = 'Nauki społeczne')),
+       ('Podstawy przedsiębiorczości', (SELECT id FROM cat WHERE category_name = 'Nauki społeczne')),
+       ('Plastyka', (SELECT id FROM cat WHERE category_name = 'Muzyka i sztuka')),
+       ('Historia sztuki', (SELECT id FROM cat WHERE category_name = 'Muzyka i sztuka')),
+       ('Rachunkowość', (SELECT id FROM cat WHERE category_name = 'Przedmioty zawodowe')),
+       ('Logistyka', (SELECT id FROM cat WHERE category_name = 'Przedmioty zawodowe')),
+       ('Czytanie i pisanie', (SELECT id FROM cat WHERE category_name = 'Edukacja wczesnoszkolna')),
+       ('Matematyka dla dzieci', (SELECT id FROM cat WHERE category_name = 'Edukacja wczesnoszkolna'))
 ON CONFLICT (subject_name) DO NOTHING;
 
 -- 3. users
@@ -66,7 +80,45 @@ VALUES ('Anna', 'Kowalska', 'anna.kowalska@example.com', '501100001',
        ('Julia', 'Nowakowska', 'julia.nowakowska@example.com', '502200010',
         '$2a$12$rKqh3gMWzdPTHj5bPCMOa.n1tnVriPkHW7i.WuXi5vfazkUX2AZoy', 'STUDENT', '/uploads/avatars/user_15.jpg'),
        ('Adam', 'Szczur', 'admin@example.com', '503300001',
-        '$2a$12$rKqh3gMWzdPTHj5bPCMOa.n1tnVriPkHW7i.WuXi5vfazkUX2AZoy', 'ADMIN', '/uploads/avatars/user_16.jpg')
+        '$2a$12$rKqh3gMWzdPTHj5bPCMOa.n1tnVriPkHW7i.WuXi5vfazkUX2AZoy', 'ADMIN', '/uploads/avatars/user_16.jpg'),
+       ('Magdalena', 'Bąk', 'magdalena.bak@example.com', '601200301',
+        '$2a$12$rKqh3gMWzdPTHj5bPCMOa.n1tnVriPkHW7i.WuXi5vfazkUX2AZoy', 'TUTOR', '/uploads/avatars/user_17.jpg'),
+       ('Dawid', 'Kwiatkowski', 'dawid.kwiatkowski@example.com', '601200302',
+        '$2a$12$rKqh3gMWzdPTHj5bPCMOa.n1tnVriPkHW7i.WuXi5vfazkUX2AZoy', 'TUTOR', '/uploads/avatars/user_18.jpg'),
+       ('Igor', 'Kaczmarek', 'igor.kaczmarek@example.com', '602300401',
+        '$2a$12$rKqh3gMWzdPTHj5bPCMOa.n1tnVriPkHW7i.WuXi5vfazkUX2AZoy', 'STUDENT', '/uploads/avatars/user_19.jpg'),
+       ('Oliwia', 'Zając', 'oliwia.zajac@example.com', '602300402',
+        '$2a$12$rKqh3gMWzdPTHj5bPCMOa.n1tnVriPkHW7i.WuXi5vfazkUX2AZoy', 'STUDENT', '/uploads/avatars/user_20.jpg'),
+       ('Jan', 'Kowalski', 'jan.kowal@example.com', '701100101',
+        '$2a$12$rKqh3gMWzdPTHj5bPCMOa.n1tnVriPkHW7i.WuXi5vfazkUX2AZoy', 'TUTOR', '/uploads/avatars/user_21.jpg'),
+       ('Zbigniew', 'Wodecki', 'zbigniew.wodecki@example.com', '701100102',
+        '$2a$12$rKqh3gMWzdPTHj5bPCMOa.n1tnVriPkHW7i.WuXi5vfazkUX2AZoy', 'TUTOR', '/uploads/avatars/user_22.jpg'),
+       ('Patryk', 'Dudek', 'patryk.dudek@example.com', '702200201',
+        '$2a$12$rKqh3gMWzdPTHj5bPCMOa.n1tnVriPkHW7i.WuXi5vfazkUX2AZoy', 'STUDENT', '/uploads/avatars/user_23.jpg'),
+       ('Zuzanna', 'Kowal', 'zuzanna.kowal@example.com', '702200202',
+        '$2a$12$rKqh3gMWzdPTHj5bPCMOa.n1tnVriPkHW7i.WuXi5vfazkUX2AZoy', 'STUDENT', '/uploads/avatars/user_24.jpg'),
+       ('Kornelia', 'Mikołajczak', 'kornelia.mikolajczak@example.com', '801100101',
+        '$2a$12$rKqh3gMWzdPTHj5bPCMOa.n1tnVriPkHW7i.WuXi5vfazkUX2AZoy', 'TUTOR', '/uploads/avatars/user_25.jpg'),
+       ('Ignacy', 'Wilk', 'ignacy.wilk@example.com', '802200201',
+        '$2a$12$rKqh3gMWzdPTHj5bPCMOa.n1tnVriPkHW7i.WuXi5vfazkUX2AZoy', 'STUDENT', '/uploads/avatars/user_26.jpg'),
+       ('Matylda', 'Lis', 'matylda.lis@example.com', '802200202',
+        '$2a$12$rKqh3gMWzdPTHj5bPCMOa.n1tnVriPkHW7i.WuXi5vfazkUX2AZoy', 'STUDENT', '/uploads/avatars/user_27.jpg'),
+       ('Krzysztof', 'Tomaszewski', 'krzysztof.tomaszewski@example.com', '901100101',
+        '$2a$12$rKqh3gMWzdPTHj5bPCMOa.n1tnVriPkHW7i.WuXi5vfazkUX2AZoy', 'TUTOR', '/uploads/avatars/user_28.jpg'),
+       ('Weronika', 'Polańska', 'weronika.polanska@example.com', '901100102',
+        '$2a$12$rKqh3gMWzdPTHj5bPCMOa.n1tnVriPkHW7i.WuXi5vfazkUX2AZoy', 'TUTOR', '/uploads/avatars/user_29.jpg'),
+       ('Szymon', 'Kowalczyk', 'szymon.kowalczyk@example.com', '901100103',
+        '$2a$12$rKqh3gMWzdPTHj5bPCMOa.n1tnVriPkHW7i.WuXi5vfazkUX2AZoy', 'TUTOR', '/uploads/avatars/user_30.jpg'),
+       ('Alicja', 'Bielska', 'alicja.bielska@example.com', '902200201',
+        '$2a$12$rKqh3gMWzdPTHj5bPCMOa.n1tnVriPkHW7i.WuXi5vfazkUX2AZoy', 'STUDENT', '/uploads/avatars/user_31.jpg'),
+       ('Dominik', 'Mazurek', 'dominik.mazurek@example.com', '902200202',
+        '$2a$12$rKqh3gMWzdPTHj5bPCMOa.n1tnVriPkHW7i.WuXi5vfazkUX2AZoy', 'STUDENT', '/uploads/avatars/user_32.jpg'),
+       ('Klaudia', 'Jabłońska', 'klaudia.jablonska@example.com', '902200203',
+        '$2a$12$rKqh3gMWzdPTHj5bPCMOa.n1tnVriPkHW7i.WuXi5vfazkUX2AZoy', 'STUDENT', '/uploads/avatars/user_33.jpg'),
+       ('Olaf', 'Stępień', 'olaf.stepien@example.com', '902200204',
+        '$2a$12$rKqh3gMWzdPTHj5bPCMOa.n1tnVriPkHW7i.WuXi5vfazkUX2AZoy', 'STUDENT', '/uploads/avatars/user_34.jpg'),
+       ('Nina', 'Szewczyk', 'nina.szewczyk@example.com', '902200205',
+        '$2a$12$rKqh3gMWzdPTHj5bPCMOa.n1tnVriPkHW7i.WuXi5vfazkUX2AZoy', 'STUDENT', '/uploads/avatars/user_35.jpg')
 ON CONFLICT (email) DO NOTHING;
 
 -- 4. tutors
@@ -88,7 +140,31 @@ VALUES ((SELECT id FROM u WHERE email = 'anna.kowalska@example.com'),
         65.00, FALSE, TRUE),
        ((SELECT id FROM u WHERE email = 'monika.lewandowska@example.com'),
         'Pianistka i nauczycielka muzyki. Uczę gry na fortepianie i gitarze na każdym poziomie zaawansowania.',
-        75.00, TRUE, TRUE)
+        75.00, TRUE, TRUE),
+       ((SELECT id FROM u WHERE email = 'magdalena.bak@example.com'),
+        'Doświadczona nauczycielka i egzaminatorka OKE. Skutecznie przygotowuję do egzaminu ósmoklasisty oraz matury.',
+        120.00, TRUE, TRUE),
+       ((SELECT id FROM u WHERE email = 'dawid.kwiatkowski@example.com'),
+        'Nauczyciel licealny. Prowadzę zajęcia wyrównawcze oraz poszerzające wiedzę z WOS-u i Podstaw Przedsiębiorczości.',
+        150.00, TRUE, FALSE),
+       ((SELECT id FROM u WHERE email = 'jan.kowal@example.com'),
+        'Nauczyciel plastyki i historii sztuki. Przygotowuję do matury z historii sztuki oraz pomagam przy tworzeniu teczki na ASP.',
+        100.00, FALSE, TRUE),
+       ((SELECT id FROM u WHERE email = 'zbigniew.wodecki@example.com'),
+        'Nauczyciel w technikum ekonomicznym. Pomagam nadrobić zaległości z rachunkowości i logistyki.',
+        130.00, TRUE, TRUE),
+       ((SELECT id FROM u WHERE email = 'kornelia.mikolajczak@example.com'),
+        'Nauczycielka edukacji wczesnoszkolnej. Pomagam najmłodszym w nauce czytania, pisania i podstaw matematyki.',
+        90.00, TRUE, TRUE),
+       ((SELECT id FROM u WHERE email = 'krzysztof.tomaszewski@example.com'),
+        'Pomogę zrozumieć najtrudniejsze zagadnienia z fizyki i matematyki w prosty i logiczny sposób.',
+        85.00, TRUE, TRUE),
+       ((SELECT id FROM u WHERE email = 'weronika.polanska@example.com'),
+        'Oferuję konwersacje i przygotowanie do egzaminów językowych. Posiadam wspaniały akcent i materiały.',
+        95.00, TRUE, FALSE),
+       ((SELECT id FROM u WHERE email = 'szymon.kowalczyk@example.com'),
+        'Przekazuję wiedzę o świecie w fascynujący sposób, wplatam wiele ciekawostek geograficznych i biologicznych.',
+        75.00, FALSE, TRUE)
 ON CONFLICT (user_id) DO NOTHING;
 
 -- 5. tutor_subjects
@@ -128,7 +204,47 @@ VALUES
     ((SELECT user_id FROM t WHERE user_id = (SELECT id FROM u WHERE email = 'monika.lewandowska@example.com')),
      (SELECT id FROM s WHERE subject_name = 'Fortepian'), TRUE, TRUE, FALSE, FALSE, FALSE),
     ((SELECT user_id FROM t WHERE user_id = (SELECT id FROM u WHERE email = 'monika.lewandowska@example.com')),
-     (SELECT id FROM s WHERE subject_name = 'Gitara'), TRUE, TRUE, FALSE, FALSE, FALSE)
+     (SELECT id FROM s WHERE subject_name = 'Gitara'), TRUE, TRUE, FALSE, FALSE, FALSE),
+    -- Magdalena
+    ((SELECT user_id FROM t WHERE user_id = (SELECT id FROM u WHERE email = 'magdalena.bak@example.com')),
+     (SELECT id FROM s WHERE subject_name = 'Egzamin ósmoklasisty'), TRUE, FALSE, FALSE, TRUE, FALSE),
+    ((SELECT user_id FROM t WHERE user_id = (SELECT id FROM u WHERE email = 'magdalena.bak@example.com')),
+     (SELECT id FROM s WHERE subject_name = 'Matura podstawowa'), FALSE, TRUE, FALSE, TRUE, FALSE),
+    -- Dawid
+    ((SELECT user_id FROM t WHERE user_id = (SELECT id FROM u WHERE email = 'dawid.kwiatkowski@example.com')),
+     (SELECT id FROM s WHERE subject_name = 'Wiedza o społeczeństwie'), TRUE, TRUE, FALSE, TRUE, FALSE),
+    ((SELECT user_id FROM t WHERE user_id = (SELECT id FROM u WHERE email = 'dawid.kwiatkowski@example.com')),
+     (SELECT id FROM s WHERE subject_name = 'Podstawy przedsiębiorczości'), FALSE, TRUE, FALSE, FALSE, FALSE),
+    -- Jan
+    ((SELECT user_id FROM t WHERE user_id = (SELECT id FROM u WHERE email = 'jan.kowal@example.com')),
+     (SELECT id FROM s WHERE subject_name = 'Plastyka'), TRUE, TRUE, FALSE, FALSE, FALSE),
+    ((SELECT user_id FROM t WHERE user_id = (SELECT id FROM u WHERE email = 'jan.kowal@example.com')),
+     (SELECT id FROM s WHERE subject_name = 'Historia sztuki'), TRUE, TRUE, FALSE, TRUE, FALSE),
+    -- Zbigniew
+    ((SELECT user_id FROM t WHERE user_id = (SELECT id FROM u WHERE email = 'zbigniew.wodecki@example.com')),
+     (SELECT id FROM s WHERE subject_name = 'Rachunkowość'), FALSE, TRUE, TRUE, TRUE, TRUE),
+    ((SELECT user_id FROM t WHERE user_id = (SELECT id FROM u WHERE email = 'zbigniew.wodecki@example.com')),
+     (SELECT id FROM s WHERE subject_name = 'Logistyka'), FALSE, TRUE, TRUE, TRUE, TRUE),
+    -- Kornelia
+    ((SELECT user_id FROM t WHERE user_id = (SELECT id FROM u WHERE email = 'kornelia.mikolajczak@example.com')),
+     (SELECT id FROM s WHERE subject_name = 'Czytanie i pisanie'), TRUE, FALSE, FALSE, FALSE, FALSE),
+    ((SELECT user_id FROM t WHERE user_id = (SELECT id FROM u WHERE email = 'kornelia.mikolajczak@example.com')),
+     (SELECT id FROM s WHERE subject_name = 'Matematyka dla dzieci'), TRUE, FALSE, FALSE, FALSE, FALSE),
+    -- Krzysztof
+    ((SELECT user_id FROM t WHERE user_id = (SELECT id FROM u WHERE email = 'krzysztof.tomaszewski@example.com')),
+     (SELECT id FROM s WHERE subject_name = 'Matematyka'), TRUE, TRUE, TRUE, TRUE, FALSE),
+    ((SELECT user_id FROM t WHERE user_id = (SELECT id FROM u WHERE email = 'krzysztof.tomaszewski@example.com')),
+     (SELECT id FROM s WHERE subject_name = 'Fizyka'), FALSE, TRUE, TRUE, TRUE, FALSE),
+    -- Weronika
+    ((SELECT user_id FROM t WHERE user_id = (SELECT id FROM u WHERE email = 'weronika.polanska@example.com')),
+     (SELECT id FROM s WHERE subject_name = 'Język angielski'), TRUE, TRUE, TRUE, TRUE, TRUE),
+    ((SELECT user_id FROM t WHERE user_id = (SELECT id FROM u WHERE email = 'weronika.polanska@example.com')),
+     (SELECT id FROM s WHERE subject_name = 'Język francuski'), TRUE, TRUE, TRUE, TRUE, TRUE),
+    -- Szymon
+    ((SELECT user_id FROM t WHERE user_id = (SELECT id FROM u WHERE email = 'szymon.kowalczyk@example.com')),
+     (SELECT id FROM s WHERE subject_name = 'Geografia'), TRUE, TRUE, FALSE, TRUE, FALSE),
+    ((SELECT user_id FROM t WHERE user_id = (SELECT id FROM u WHERE email = 'szymon.kowalczyk@example.com')),
+     (SELECT id FROM s WHERE subject_name = 'Biologia'), TRUE, TRUE, FALSE, TRUE, FALSE)
 ON CONFLICT (tutor_id, subject_id) DO NOTHING;
 
 -- 6. tutor_availability_recurring
@@ -159,17 +275,34 @@ VALUES
     -- Monika: wt/czw/sob 14:00–18:00
     ((SELECT user_id FROM t WHERE user_id = 5), 1, '14:00', '18:00', NULL),
     ((SELECT user_id FROM t WHERE user_id = 5), 3, '14:00', '18:00', NULL),
-    ((SELECT user_id FROM t WHERE user_id = 5), 5, '10:00', '14:00', NULL)
+    ((SELECT user_id FROM t WHERE user_id = 5), 5, '10:00', '14:00', NULL),
+    ((SELECT user_id FROM t WHERE user_id = 17), 2, '16:00', '20:00', NULL),
+    ((SELECT user_id FROM t WHERE user_id = 17), 4, '16:00', '20:00', NULL),
+    ((SELECT user_id FROM t WHERE user_id = 18), 1, '10:00', '15:00', NULL),
+    ((SELECT user_id FROM t WHERE user_id = 18), 3, '10:00', '15:00', NULL),
+    ((SELECT user_id FROM t WHERE user_id = 21), 0, '09:00', '12:00', NULL),
+    ((SELECT user_id FROM t WHERE user_id = 21), 1, '09:00', '12:00', NULL),
+    ((SELECT user_id FROM t WHERE user_id = 22), 2, '14:00', '19:00', NULL),
+    ((SELECT user_id FROM t WHERE user_id = 22), 5, '08:00', '14:00', NULL),
+    ((SELECT user_id FROM t WHERE user_id = 25), 0, '15:00', '18:00', NULL),
+    ((SELECT user_id FROM t WHERE user_id = 25), 2, '15:00', '18:00', NULL),
+    ((SELECT user_id FROM t WHERE user_id = 25), 4, '15:00', '18:00', NULL),
+    ((SELECT user_id FROM t WHERE user_id = 28), 1, '16:00', '21:00', NULL),
+    ((SELECT user_id FROM t WHERE user_id = 28), 3, '16:00', '21:00', NULL),
+    ((SELECT user_id FROM t WHERE user_id = 29), 0, '12:00', '16:00', NULL),
+    ((SELECT user_id FROM t WHERE user_id = 29), 2, '12:00', '16:00', NULL),
+    ((SELECT user_id FROM t WHERE user_id = 30), 1, '17:00', '20:00', NULL),
+    ((SELECT user_id FROM t WHERE user_id = 30), 3, '17:00', '20:00', NULL)
 ON CONFLICT DO NOTHING;
 
 -- 7. tutor_availability_override
 WITH t AS (SELECT user_id FROM tutors)
 INSERT
 INTO tutor_availability_override (tutor_id, override_date, time_from, time_to)
-VALUES ((SELECT user_id FROM t WHERE user_id = 1), '2025-12-24', NULL, NULL),
-       ((SELECT user_id FROM t WHERE user_id = 2), '2025-11-10', '10:00', '14:00'),
-       ((SELECT user_id FROM t WHERE user_id = 3), '2025-11-15', '10:00', '11:00'),
-       ((SELECT user_id FROM t WHERE user_id = 4), '2025-12-31', NULL, NULL)
+VALUES ((SELECT user_id FROM t WHERE user_id = 1), '2026-05-01', NULL, NULL),
+       ((SELECT user_id FROM t WHERE user_id = 2), '2026-05-02', '10:00', '14:00'),
+       ((SELECT user_id FROM t WHERE user_id = 3), '2026-05-03', '10:00', '11:00'),
+       ((SELECT user_id FROM t WHERE user_id = 4), '2026-05-04', NULL, NULL)
 ON CONFLICT DO NOTHING;
 
 -- 8. holidays
@@ -201,54 +334,97 @@ VALUES
     -- zakończone / opłacone
     ((SELECT user_id FROM t WHERE user_id = 2), (SELECT id FROM s WHERE id = 9),
      (SELECT id FROM sub WHERE subject_name = 'Fizyka'),
-     '2025-10-10', '18:00', '19:30', 'ONLINE', 'COMPLETED', 'Elektromagnetyzm - prawa Faradaya i Lenza.',
-     'Bardzo przejrzyste wyjaśnienia.', 105.00, 'PAID', '2025-10-10 19:40:00'),
+     '2026-04-23', '18:00', '19:30', 'ONLINE', 'COMPLETED', 'Elektromagnetyzm - prawa Faradaya i Lenza.',
+     'Bardzo przejrzyste wyjaśnienia.', 105.00, 'PAID', '2026-04-23 19:40:00'),
 
     ((SELECT user_id FROM t WHERE user_id = 3), (SELECT id FROM s WHERE id = 7),
      (SELECT id FROM sub WHERE subject_name = 'Język angielski'),
-     '2025-10-12', '09:00', '10:00', 'IN_PERSON', 'COMPLETED', 'Rozmowy o podróżach i pracy.', NULL, 90.00, 'PAID',
-     '2025-10-12 10:10:00'),
+     '2026-04-24', '09:00', '10:00', 'IN_PERSON', 'COMPLETED', 'Rozmowy o podróżach i pracy.', NULL, 90.00, 'PAID',
+     '2026-04-24 10:10:00'),
 
     ((SELECT user_id FROM t WHERE user_id = 4), (SELECT id FROM s WHERE id = 12),
      (SELECT id FROM sub WHERE subject_name = 'Biologia'),
-     '2025-10-14', '15:00', '16:30', 'IN_PERSON', 'COMPLETED', 'Budowa DNA i RNA.', 'Teraz rozumiem lepiej genetykę!',
-     65.00, 'PAID', '2025-10-14 16:35:00'),
+     '2026-04-25', '15:00', '16:30', 'IN_PERSON', 'COMPLETED', 'Budowa DNA i RNA.', 'Teraz rozumiem lepiej genetykę!',
+     65.00, 'PAID', '2026-04-25 16:35:00'),
 
     ((SELECT user_id FROM t WHERE user_id = 5), (SELECT id FROM s WHERE id = 13),
      (SELECT id FROM sub WHERE subject_name = 'Fortepian'),
-     '2025-10-15', '14:00', '15:00', 'IN_PERSON', 'COMPLETED', 'Ćwiczenie sonaty Mozarta.', NULL, 75.00, 'PAID',
-     '2025-10-15 15:10:00'),
+     '2026-04-26', '14:00', '15:00', 'IN_PERSON', 'COMPLETED', 'Ćwiczenie sonaty Mozarta.', NULL, 75.00, 'PAID',
+     '2026-04-26 15:10:00'),
 
     -- potwierdzone / płatność oczekująca
     ((SELECT user_id FROM t WHERE user_id = 1), (SELECT id FROM s WHERE id = 8),
      (SELECT id FROM sub WHERE subject_name = 'Matematyka'),
-     '2025-11-02', '17:00', '18:30', 'ONLINE', 'CONFIRMED', 'Przygotowanie do matury próbnej.', NULL, 120.00, 'PENDING',
+     '2026-04-27', '17:00', '18:30', 'ONLINE', 'CONFIRMED', 'Przygotowanie do matury próbnej.', NULL, 120.00, 'PENDING',
      NULL),
 
     ((SELECT user_id FROM t WHERE user_id = 3), (SELECT id FROM s WHERE id = 14),
      (SELECT id FROM sub WHERE subject_name = 'Język niemiecki'),
-     '2025-11-03', '10:00', '11:30', 'ONLINE', 'CONFIRMED', 'Konwersacje na poziomie B2.', NULL, 90.00, 'PENDING',
+     '2026-04-28', '10:00', '11:30', 'ONLINE', 'CONFIRMED', 'Konwersacje na poziomie B2.', NULL, 90.00, 'PENDING',
      NULL),
 
     -- oczekujące (pending)
     ((SELECT user_id FROM t WHERE user_id = 2), (SELECT id FROM s WHERE id = 6),
      (SELECT id FROM sub WHERE subject_name = 'Algorytmy'),
-     '2025-11-05', '18:00', '19:00', 'ONLINE', 'PENDING', 'Rozwiązywanie zadań z algorytmiki.', NULL, 70.00, 'PENDING',
+     '2026-04-29', '18:00', '19:00', 'ONLINE', 'PENDING', 'Rozwiązywanie zadań z algorytmiki.', NULL, 70.00, 'PENDING',
      NULL),
 
     ((SELECT user_id FROM t WHERE user_id = 5), (SELECT id FROM s WHERE id = 15),
      (SELECT id FROM sub WHERE subject_name = 'Gitara'),
-     '2025-11-06', '15:00', '16:00', 'IN_PERSON', 'PENDING', 'Ćwiczenie akordów i rytmiki.', NULL, 75.00, 'PENDING',
+     '2026-04-30', '15:00', '16:00', 'IN_PERSON', 'PENDING', 'Ćwiczenie akordów i rytmiki.', NULL, 75.00, 'PENDING',
      NULL),
 
     -- anulowane
     ((SELECT user_id FROM t WHERE user_id = 1), (SELECT id FROM s WHERE id = 7),
      (SELECT id FROM sub WHERE subject_name = 'Matematyka'),
-     '2025-11-07', '17:00', '18:00', 'ONLINE', 'CANCELLED', 'Uczeń odwołał lekcję.', NULL, 80.00, 'CANCELLED', NULL),
+     '2026-05-01', '17:00', '18:00', 'ONLINE', 'CANCELLED', 'Uczeń odwołał lekcję.', NULL, 80.00, 'CANCELLED', NULL),
 
     ((SELECT user_id FROM t WHERE user_id = 4), (SELECT id FROM s WHERE id = 9),
      (SELECT id FROM sub WHERE subject_name = 'Chemia'),
-     '2025-11-08', '16:00', '17:00', 'IN_PERSON', 'CANCELLED', NULL, 'Choroba - przepraszam.', 65.00, 'CANCELLED', NULL)
+     '2026-05-02', '16:00', '17:00', 'IN_PERSON', 'CANCELLED', NULL, 'Choroba - przepraszam.', 65.00, 'CANCELLED', NULL),
+
+    ((SELECT user_id FROM t WHERE user_id = 21), (SELECT id FROM s WHERE id = 23),
+     (SELECT id FROM sub WHERE subject_name = 'Historia sztuki'),
+     '2026-05-03', '10:00', '11:00', 'IN_PERSON', 'COMPLETED', 'Analiza obrazów impresjonistów.', 'Bardzo fajne i zwięzłe notatki, dziękuję!', 100.00, 'PAID', '2026-05-03 11:30:00'),
+    ((SELECT user_id FROM t WHERE user_id = 22), (SELECT id FROM s WHERE id = 24),
+     (SELECT id FROM sub WHERE subject_name = 'Rachunkowość'),
+     '2026-05-04', '18:00', '19:00', 'ONLINE', 'CONFIRMED', 'Bilans i rachunek wyników na zaliczenie w technikum.', NULL, 130.00, 'PENDING', NULL),
+    ((SELECT user_id FROM t WHERE user_id = 25), (SELECT id FROM s WHERE id = 26),
+     (SELECT id FROM sub WHERE subject_name = 'Czytanie i pisanie'),
+     '2026-05-05', '15:00', '16:00', 'IN_PERSON', 'COMPLETED', 'Rozpoznawanie samogłosek i sylabizowanie.', 'Super podejście do dziecka!', 90.00, 'PAID', '2026-05-05 16:30:00'),
+    ((SELECT user_id FROM t WHERE user_id = 28), (SELECT id FROM s WHERE id = 31),
+     (SELECT id FROM sub WHERE subject_name = 'Matematyka'),
+     '2026-05-06', '16:00', '17:30', 'ONLINE', 'COMPLETED', 'Funkcje kwadratowe.', 'Na maksa logicznie wytłumaczone.', 127.50, 'PAID', '2026-05-06 17:40:00'),
+    ((SELECT user_id FROM t WHERE user_id = 28), (SELECT id FROM s WHERE id = 32),
+     (SELECT id FROM sub WHERE subject_name = 'Fizyka'),
+     '2026-05-07', '14:00', '15:00', 'IN_PERSON', 'CONFIRMED', 'Dynamika Newtona', NULL, 85.00, 'PENDING', NULL),
+    ((SELECT user_id FROM t WHERE user_id = 29), (SELECT id FROM s WHERE id = 33),
+     (SELECT id FROM sub WHERE subject_name = 'Język angielski'),
+     '2026-05-08', '17:00', '18:00', 'ONLINE', 'PENDING', 'Czasy przeszłe w storytellingu', NULL, 95.00, 'PENDING', NULL),
+    ((SELECT user_id FROM t WHERE user_id = 29), (SELECT id FROM s WHERE id = 34),
+     (SELECT id FROM sub WHERE subject_name = 'Język francuski'),
+     '2026-05-09', '16:00', '17:00', 'ONLINE', 'COMPLETED', 'Francuska wymowa - nosówki.', 'Bardzo fajne materiały.', 95.00, 'PAID', '2026-05-09 17:10:00'),
+    ((SELECT user_id FROM t WHERE user_id = 30), (SELECT id FROM s WHERE id = 35),
+     (SELECT id FROM sub WHERE subject_name = 'Geografia'),
+     '2026-05-10', '15:00', '16:00', 'IN_PERSON', 'CANCELLED', NULL, 'Choroba.', 75.00, 'CANCELLED', NULL),
+    ((SELECT user_id FROM t WHERE user_id = 30), (SELECT id FROM s WHERE id = 31),
+     (SELECT id FROM sub WHERE subject_name = 'Biologia'),
+     '2026-05-11', '11:00', '12:00', 'IN_PERSON', 'COMPLETED', 'Cytologia - budowa komórki', 'Mnóstwo ciekawostek naukowych.', 75.00, 'PAID', '2026-05-11 12:15:00'),
+    ((SELECT user_id FROM t WHERE user_id = 1), (SELECT id FROM s WHERE id = 32),
+     (SELECT id FROM sub WHERE subject_name = 'Matematyka'),
+     '2026-05-12', '16:00', '17:00', 'IN_PERSON', 'COMPLETED', 'Równania liniowe.', 'Jasno i przejrzyście', 80.00, 'PAID', '2026-05-12 17:00:00'),
+    ((SELECT user_id FROM t WHERE user_id = 2), (SELECT id FROM s WHERE id = 33),
+     (SELECT id FROM sub WHERE subject_name = 'Programowanie'),
+     '2026-05-13', '18:00', '19:30', 'ONLINE', 'CONFIRMED', 'Wprowadzenie do Pythona.', NULL, 105.00, 'PENDING', NULL),
+    ((SELECT user_id FROM t WHERE user_id = 17), (SELECT id FROM s WHERE id = 34),
+     (SELECT id FROM sub WHERE subject_name = 'Egzamin ósmoklasisty'),
+     '2026-05-12', '16:00', '17:00', 'ONLINE', 'COMPLETED', 'Powtórzenie przed egzaminem.', 'Syn czuje się wreszcie przygotowany.', 120.00, 'PAID', '2026-05-12 17:30:00'),
+    ((SELECT user_id FROM t WHERE user_id = 28), (SELECT id FROM s WHERE id = 35),
+     (SELECT id FROM sub WHERE subject_name = 'Fizyka'),
+     '2026-05-13', '16:00', '17:00', 'IN_PERSON', 'PENDING', 'Termodynamika.', NULL, 85.00, 'PENDING', NULL),
+    ((SELECT user_id FROM t WHERE user_id = 29), (SELECT id FROM s WHERE id = 31),
+     (SELECT id FROM sub WHERE subject_name = 'Język angielski'),
+     '2026-05-14', '18:00', '19:00', 'ONLINE', 'CANCELLED', NULL, 'Zmiana planów', 95.00, 'CANCELLED', NULL)
 ON CONFLICT DO NOTHING;
 
 -- 10. reviews
@@ -275,5 +451,29 @@ VALUES ((SELECT user_id FROM t WHERE user_id = 1), 6, 5.0,
        ((SELECT user_id FROM t WHERE user_id = 5), 11, 5.0,
         'Monika jest fantastyczną nauczycielką fortepianu. Gram już pierwszy utwór Chopina!'),
        ((SELECT user_id FROM t WHERE user_id = 5), 15, 4.5,
-        'Gitara z Moniką to super przygoda. Nauczyłem się już kilku akordów.')
+        'Gitara z Moniką to super przygoda. Nauczyłem się już kilku akordów.'),
+       ((SELECT user_id FROM t WHERE user_id = 17), 19, 5.0,
+        'Pani Magda to niesamowita nauczycielka, wreszcie nie stresuję się egzaminem ósmoklasisty.'),
+       ((SELECT user_id FROM t WHERE user_id = 18), 20, 5.0,
+        'Trudne tematy z WOS-u Pan Dawid tłumaczy na chłopski rozum, świetne przygotowanie do matury.'),
+       ((SELECT user_id FROM t WHERE user_id = 21), 23, 5.0,
+        'Zawsze miałem problem z zapamiętaniem epok, ale zajęcia z Panem Jankiem mega mi pomogły.'),
+       ((SELECT user_id FROM t WHERE user_id = 22), 24, 5.0,
+        'Rachunkowość z Panem Zbigniewem w końcu weszła mi do głowy. Sprawdzian zaliczony na 4+.'),
+       ((SELECT user_id FROM t WHERE user_id = 25), 26, 5.0,
+        'Pani Kornelia ma anielską cierpliwość na zajęciach. Synek wreszcie zaczął składać literki bez płaczu.'),
+       ((SELECT user_id FROM t WHERE user_id = 25), 27, 4.5,
+        'Dzięki korepetycjom córeczka pokochała dodawanie i odejmowanie za pomocą jabłuszek i klocków.'),
+       ((SELECT user_id FROM t WHERE user_id = 28), 31, 5.0,
+        'Pan Krzysztof uratował moją ocenę z matematyki. Nareszcie kapuję funkcje kwadratowe.'),
+       ((SELECT user_id FROM t WHERE user_id = 28), 32, 4.0,
+        'Bardzo fajnie i konkretnie. Czekamy na kolejną lekcję.'),
+       ((SELECT user_id FROM t WHERE user_id = 29), 34, 5.0,
+        'Dobre przygotowanie materiałów i świetna atmosfera na zajęciach, bardzo polecam Weronikę.'),
+       ((SELECT user_id FROM t WHERE user_id = 30), 31, 4.5,
+        'Prawdziwy pasjonat, nigdy nie przypuszczałam że biologia komórki może być tak ciekawa.'),
+       ((SELECT user_id FROM t WHERE user_id = 1), 32, 5.0,
+        'Jestem w szoku jak Pani Anna szybko wyłapuje luki w wiedzy z matematyki!'),
+       ((SELECT user_id FROM t WHERE user_id = 17), 34, 5.0,
+        'Z taką nauczycielką żaden egzamin nie jest straszny.')
 ON CONFLICT DO NOTHING;
