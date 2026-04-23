@@ -15,14 +15,20 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.MaterialTheme.typography
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -38,10 +44,12 @@ import pl.edu.ur.teachly.data.model.UserRole
 import pl.edu.ur.teachly.ui.components.other.AppHeader
 import pl.edu.ur.teachly.ui.components.other.HeaderBackground
 import pl.edu.ur.teachly.ui.components.other.PrimaryButton
-import pl.edu.ur.teachly.ui.components.other.cards.StatCard
-import pl.edu.ur.teachly.ui.components.other.section.SectionHeader
-import pl.edu.ur.teachly.ui.components.other.section.SectionItems
+import pl.edu.ur.teachly.ui.components.other.SectionHeader
+import pl.edu.ur.teachly.ui.components.other.SectionItems
+import pl.edu.ur.teachly.ui.components.other.StatCard
 import pl.edu.ur.teachly.ui.home.viewmodels.HomeViewModel
+import pl.edu.ur.teachly.ui.review.views.PendingReviewFormDialog
+import pl.edu.ur.teachly.ui.review.views.PendingReviewsSummaryDialog
 
 @Composable
 fun HomeScreen(
@@ -50,6 +58,9 @@ fun HomeScreen(
     onLessonClick: (lessonId: Int) -> Unit = {},
 ) {
     val state by viewModel.uiState.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
+    val successMessage = stringResource(R.string.review_submitted_success)
+
     val lifecycleOwner = LocalLifecycleOwner.current
     LaunchedEffect(lifecycleOwner.lifecycle) {
         lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
@@ -57,144 +68,196 @@ fun HomeScreen(
         }
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(colorScheme.background)
-    ) {
-        AppHeader(
-            title = if (state.userName.isNotBlank()) stringResource(
-                R.string.hello_name,
-                state.userName
-            ) else stringResource(R.string.hello),
-            subtitle =
-                if (state.userRole == UserRole.STUDENT) // TODO: Handle admin
-                    stringResource(R.string.home_student_subtitle)
-                else stringResource(R.string.home_tutor_subtitle),
-            background = HeaderBackground.Diagonal(
-                listOf(colorScheme.onPrimaryContainer, colorScheme.primary)
-            ),
+    // Show snackbar after pending review submitted
+    LaunchedEffect(state.pendingReviewSubmitted) {
+        if (state.pendingReviewSubmitted) {
+            snackbarHostState.showSnackbar(successMessage) // najpierw pokaż
+            viewModel.clearPendingReviewSubmitted()        // potem wyczyść flagę
+        }
+    }
+
+    // Auto-open the form when there is exactly 1 pending review
+    LaunchedEffect(state.pendingReviews) {
+        if (state.pendingReviews.size == 1 && state.selectedPendingReview == null) {
+            viewModel.selectPendingReview(state.pendingReviews[0])
+        }
+    }
+
+    // Summary dialog — multiple unreviewed tutors
+    if (state.pendingReviews.size > 1 && state.selectedPendingReview == null) {
+        PendingReviewsSummaryDialog(
+            reviews = state.pendingReviews,
+            onSelect = viewModel::selectPendingReview,
+            onDismiss = viewModel::dismissAllPendingReviews,
         )
+    }
 
-        when {
-            state.isLoading -> Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center,
-            ) { CircularProgressIndicator() }
+    // Full review form — single selected tutor
+    state.selectedPendingReview?.let { pending ->
+        PendingReviewFormDialog(
+            pending = pending,
+            isLoading = state.isSubmittingPendingReview,
+            error = state.pendingReviewError,
+            onDismiss = {
+                if (state.pendingReviews.size <= 1) viewModel.dismissAllPendingReviews()
+                else viewModel.dismissSelectedPendingReview()
+            },
+            onSubmit = { rating, comment -> viewModel.submitPendingReview(rating, comment) },
+        )
+    }
 
-            state.error != null -> Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center,
-            ) {
-                Text(
-                    text = state.error!!,
-                    style = typography.bodyMedium,
-                    color = colorScheme.error,
-                    modifier = Modifier.padding(24.dp),
-                )
-            }
+    Box(modifier = Modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(colorScheme.background)
+        ) {
+            AppHeader(
+                title = if (state.userName.isNotBlank()) stringResource(
+                    R.string.hello_name,
+                    state.userName
+                ) else stringResource(R.string.hello),
+                subtitle =
+                    if (state.userRole == UserRole.STUDENT) // TODO: Handle admin
+                        stringResource(R.string.home_student_subtitle)
+                    else stringResource(R.string.home_tutor_subtitle),
+                background = HeaderBackground.Diagonal(
+                    listOf(colorScheme.onPrimaryContainer, colorScheme.primary)
+                ),
+            )
 
-            else -> LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 20.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                item {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 8.dp)
-                            .padding(bottom = 12.dp),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp),
-                    ) {
-                        StatCard(
-                            modifier = Modifier.weight(1f),
-                            value = "${state.totalLessons}",
-                            label = stringResource(R.string.completed_lessons),
-                        )
-                        StatCard(
-                            modifier = Modifier.weight(1f),
-                            value = "${state.pendingLessonsCount}",
-                            label = stringResource(R.string.pending_lessons),
-                        )
-                    }
-                }
+            when {
+                state.isLoading -> Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center,
+                ) { CircularProgressIndicator() }
 
-                if (state.userRole == UserRole.STUDENT || state.userRole == UserRole.ADMIN) { // TODO: Handle admin
-                    item {
-                        PrimaryButton(
-                            text = stringResource(R.string.search_tutor),
-                            onClick = onSearchClick,
-                            modifier = Modifier.padding(horizontal = 8.dp),
-                        )
-                        Spacer(Modifier.height(12.dp))
-                    }
-                }
-
-                item {
+                state.error != null -> Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center,
+                ) {
                     Text(
-                        text =
-                            if (state.userRole == UserRole.STUDENT || state.userRole == UserRole.ADMIN) // TODO: Handle admin
-                                stringResource(R.string.upcoming_lessons)
-                            else
-                                stringResource(R.string.upcoming_sessions),
-                        style = typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = colorScheme.onBackground,
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                        text = state.error!!,
+                        style = typography.bodyMedium,
+                        color = colorScheme.error,
+                        modifier = Modifier.padding(24.dp),
                     )
                 }
 
-                item {
-                    SectionHeader(
-                        title = stringResource(R.string.confirmed),
-                        count = state.upcomingConfirmed.size,
-                        expanded = state.confirmedExpanded,
-                        badgeColor = colorScheme.primary,
-                        onToggle = viewModel::toggleConfirmed,
-                    )
-                }
-                item {
-                    AnimatedVisibility(
-                        visible = state.confirmedExpanded,
-                        enter = expandVertically(),
-                        exit = shrinkVertically(),
-                    ) {
-                        SectionItems(
-                            classes = state.upcomingConfirmed,
-                            userRole = state.userRole,
-                            emptyText = stringResource(R.string.no_confirmed_lessons),
-                            onLessonClick = onLessonClick,
+                else -> LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 20.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    item {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 8.dp)
+                                .padding(bottom = 12.dp),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp),
+                        ) {
+                            StatCard(
+                                modifier = Modifier.weight(1f),
+                                value = "${state.totalLessons}",
+                                label = stringResource(R.string.completed_lessons),
+                            )
+                            StatCard(
+                                modifier = Modifier.weight(1f),
+                                value = "${state.pendingLessonsCount}",
+                                label = stringResource(R.string.pending_lessons),
+                            )
+                        }
+                    }
+
+                    if (state.userRole == UserRole.STUDENT || state.userRole == UserRole.ADMIN) { // TODO: Handle admin
+                        item {
+                            PrimaryButton(
+                                text = stringResource(R.string.search_tutor),
+                                onClick = onSearchClick,
+                                modifier = Modifier.padding(horizontal = 8.dp),
+                            )
+                            Spacer(Modifier.height(12.dp))
+                        }
+                    }
+
+                    item {
+                        Text(
+                            text =
+                                if (state.userRole == UserRole.STUDENT || state.userRole == UserRole.ADMIN) // TODO: Handle admin
+                                    stringResource(R.string.upcoming_lessons)
+                                else
+                                    stringResource(R.string.upcoming_sessions),
+                            style = typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = colorScheme.onBackground,
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
                         )
                     }
-                }
 
-                // Pending
-                item {
-                    SectionHeader(
-                        title = stringResource(R.string.pending),
-                        count = state.upcomingPending.size,
-                        expanded = state.pendingExpanded,
-                        badgeColor = Color(0xFFF59E0B),
-                        onToggle = viewModel::togglePending,
-                    )
-                }
-                item {
-                    AnimatedVisibility(
-                        visible = state.pendingExpanded,
-                        enter = expandVertically(),
-                        exit = shrinkVertically(),
-                    ) {
-                        SectionItems(
-                            classes = state.upcomingPending,
-                            userRole = state.userRole,
-                            emptyText = stringResource(R.string.no_pending_lessons),
-                            onLessonClick = onLessonClick,
+                    item {
+                        SectionHeader(
+                            title = stringResource(R.string.confirmed),
+                            count = state.upcomingConfirmed.size,
+                            expanded = state.confirmedExpanded,
+                            badgeColor = colorScheme.primary,
+                            onToggle = viewModel::toggleConfirmed,
                         )
+                    }
+                    item {
+                        AnimatedVisibility(
+                            visible = state.confirmedExpanded,
+                            enter = expandVertically(),
+                            exit = shrinkVertically(),
+                        ) {
+                            SectionItems(
+                                classes = state.upcomingConfirmed,
+                                userRole = state.userRole,
+                                emptyText = stringResource(R.string.no_confirmed_lessons),
+                                onLessonClick = onLessonClick,
+                            )
+                        }
+                    }
+
+                    item {
+                        SectionHeader(
+                            title = stringResource(R.string.pending),
+                            count = state.upcomingPending.size,
+                            expanded = state.pendingExpanded,
+                            badgeColor = Color(0xFFF59E0B),
+                            onToggle = viewModel::togglePending,
+                        )
+                    }
+                    item {
+                        AnimatedVisibility(
+                            visible = state.pendingExpanded,
+                            enter = expandVertically(),
+                            exit = shrinkVertically(),
+                        ) {
+                            SectionItems(
+                                classes = state.upcomingPending,
+                                userRole = state.userRole,
+                                emptyText = stringResource(R.string.no_pending_lessons),
+                                onLessonClick = onLessonClick,
+                            )
+                        }
                     }
                 }
             }
         }
+
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 16.dp),
+        ) { data ->
+            Snackbar(
+                snackbarData = data,
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary,
+                shape = RoundedCornerShape(14.dp),
+            )
+        }
     }
 }
-

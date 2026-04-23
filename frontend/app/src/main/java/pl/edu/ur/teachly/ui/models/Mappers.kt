@@ -47,6 +47,8 @@ fun LessonResponse.toScheduledClass(): ScheduledClass = ScheduledClass(
 )
 
 fun ReviewResponse.toUiReview(): Review = Review(
+    id = id,
+    studentId = studentId,
     authorName = "$studentFirstName $studentLastName".trim(),
     text = comment ?: "",
     rating = rating.toInt().coerceIn(1, 5),
