@@ -1,4 +1,4 @@
-package pl.edu.ur.teachly.ui.components.other
+package pl.edu.ur.teachly.ui.components.other.section
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -13,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import pl.edu.ur.teachly.data.model.UserRole
+import pl.edu.ur.teachly.ui.components.other.cards.ScheduleItemCard
 import pl.edu.ur.teachly.ui.models.ScheduledClass
 
 @Composable

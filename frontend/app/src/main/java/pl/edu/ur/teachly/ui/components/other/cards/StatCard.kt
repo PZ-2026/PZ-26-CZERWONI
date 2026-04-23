@@ -1,4 +1,4 @@
-package pl.edu.ur.teachly.ui.components.other
+package pl.edu.ur.teachly.ui.components.other.cards
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding

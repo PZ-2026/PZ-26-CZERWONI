@@ -38,9 +38,9 @@ import pl.edu.ur.teachly.data.model.UserRole
 import pl.edu.ur.teachly.ui.components.other.AppHeader
 import pl.edu.ur.teachly.ui.components.other.HeaderBackground
 import pl.edu.ur.teachly.ui.components.other.PrimaryButton
-import pl.edu.ur.teachly.ui.components.other.SectionHeader
-import pl.edu.ur.teachly.ui.components.other.SectionItems
-import pl.edu.ur.teachly.ui.components.other.StatCard
+import pl.edu.ur.teachly.ui.components.other.cards.StatCard
+import pl.edu.ur.teachly.ui.components.other.section.SectionHeader
+import pl.edu.ur.teachly.ui.components.other.section.SectionItems
 import pl.edu.ur.teachly.ui.home.viewmodels.HomeViewModel
 
 @Composable

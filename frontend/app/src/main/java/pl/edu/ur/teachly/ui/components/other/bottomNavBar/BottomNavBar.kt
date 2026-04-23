@@ -1,14 +1,14 @@
-package pl.edu.ur.teachly.ui.components.other
+package pl.edu.ur.teachly.ui.components.other.bottomNavBar
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -20,7 +20,7 @@ import pl.edu.ur.teachly.R
 import pl.edu.ur.teachly.navigation.AppRoute
 
 @Composable
-fun BottomBar(
+fun BottomNavBar(
     navController: NavController,
     modifier: Modifier = Modifier
 ) {
@@ -34,6 +34,7 @@ fun BottomBar(
     }
 
     val isHome = routeStr.contains("Home")
+    val isSearch = routeStr.contains("Search")
     val isSchedule = routeStr.contains("Schedule")
     val isProfile = routeStr.contains("Profile")
 
@@ -57,13 +58,24 @@ fun BottomBar(
                 )
             },
             label = { Text(stringResource(R.string.nav_home)) },
-            colors = NavigationBarItemDefaults.colors(
-                selectedIconColor = colorScheme.surface,
-                selectedTextColor = colorScheme.onSurface,
-                indicatorColor = colorScheme.primary,
-                unselectedIconColor = colorScheme.onSurfaceVariant,
-                unselectedTextColor = colorScheme.onSurfaceVariant
-            )
+            colors = navItemColors()
+        )
+        NavigationBarItem(
+            selected = isSearch,
+            onClick = {
+                navController.navigate(AppRoute.Search) {
+                    popUpTo(AppRoute.Search) { inclusive = false }
+                    launchSingleTop = true
+                }
+            },
+            icon = {
+                Icon(
+                    Icons.Default.Search,
+                    contentDescription = stringResource(R.string.nav_search)
+                )
+            },
+            label = { Text(stringResource(R.string.nav_search)) },
+            colors = navItemColors()
         )
         NavigationBarItem(
             selected = isSchedule,
@@ -80,13 +92,7 @@ fun BottomBar(
                 )
             },
             label = { Text(stringResource(R.string.nav_schedule)) },
-            colors = NavigationBarItemDefaults.colors(
-                selectedIconColor = colorScheme.surface,
-                selectedTextColor = colorScheme.onSurface,
-                indicatorColor = colorScheme.primary,
-                unselectedIconColor = colorScheme.onSurfaceVariant,
-                unselectedTextColor = colorScheme.onSurfaceVariant
-            )
+            colors = navItemColors()
         )
         NavigationBarItem(
             selected = isProfile,
@@ -103,13 +109,7 @@ fun BottomBar(
                 )
             },
             label = { Text(stringResource(R.string.nav_profile)) },
-            colors = NavigationBarItemDefaults.colors(
-                selectedIconColor = colorScheme.surface,
-                selectedTextColor = colorScheme.onSurface,
-                indicatorColor = colorScheme.primary,
-                unselectedIconColor = colorScheme.onSurfaceVariant,
-                unselectedTextColor = colorScheme.onSurfaceVariant
-            )
+            colors = navItemColors()
         )
 
     }

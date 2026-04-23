@@ -1,4 +1,4 @@
-package pl.edu.ur.teachly.ui.components.other
+package pl.edu.ur.teachly.ui.components.other.cards
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
@@ -36,6 +36,8 @@ import pl.edu.ur.teachly.data.model.LessonFormat
 import pl.edu.ur.teachly.data.model.LessonStatus
 import pl.edu.ur.teachly.data.model.PaymentStatus
 import pl.edu.ur.teachly.data.model.UserRole
+import pl.edu.ur.teachly.ui.components.other.LessonStatusBadge
+import pl.edu.ur.teachly.ui.components.other.formatDate
 import pl.edu.ur.teachly.ui.models.ScheduledClass
 import java.time.LocalTime
 
