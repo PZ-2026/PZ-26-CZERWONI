@@ -172,4 +172,9 @@
     <string name="avg_rating">Średnia ocena</string>
     <string name="cancelled">Anulowane</string>
     <string name="no_cancelled_lessons">Brak anulowanych lekcji</string>
+    <string name="nav_search">Szukaj</string>
+    <string name="data">Dane</string>
+    <string name="lessons">Lekcje</string>
+    <string name="users">Użytkownicy</string>
+    <string name="dashboard">Dashboard</string>
 </resources>

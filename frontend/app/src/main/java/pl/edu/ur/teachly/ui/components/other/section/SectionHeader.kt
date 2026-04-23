@@ -1,4 +1,4 @@
-package pl.edu.ur.teachly.ui.components.other
+package pl.edu.ur.teachly.ui.components.other.section
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable

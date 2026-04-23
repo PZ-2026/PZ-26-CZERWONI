@@ -10,7 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.core.view.WindowCompat
 import androidx.navigation.compose.rememberNavController
 import pl.edu.ur.teachly.navigation.AppNavHost
-import pl.edu.ur.teachly.ui.components.other.BottomBar
+import pl.edu.ur.teachly.ui.components.other.bottomNavBar.BottomNavBar
 import pl.edu.ur.teachly.ui.theme.TeachlyTheme
 
 class MainActivity : ComponentActivity() {
@@ -23,7 +23,7 @@ class MainActivity : ComponentActivity() {
             TeachlyTheme {
                 val navController = rememberNavController()
                 Scaffold(
-                    bottomBar = { BottomBar(navController = navController) }
+                    bottomBar = { BottomNavBar(navController = navController) }
                 ) { innerPadding ->
                     AppNavHost(
                         navController = navController,

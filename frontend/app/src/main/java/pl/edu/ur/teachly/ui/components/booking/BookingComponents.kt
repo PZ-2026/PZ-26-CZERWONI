@@ -40,7 +40,7 @@ import androidx.compose.ui.unit.dp
 import pl.edu.ur.teachly.R
 import pl.edu.ur.teachly.data.model.LessonFormat
 import pl.edu.ur.teachly.ui.booking.viewmodels.TimeSlotUI
-import pl.edu.ur.teachly.ui.components.other.SectionLabel
+import pl.edu.ur.teachly.ui.components.other.section.SectionLabel
 import pl.edu.ur.teachly.ui.models.CalendarDay
 import pl.edu.ur.teachly.ui.models.DURATION_OPTIONS
 

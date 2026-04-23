@@ -25,7 +25,7 @@ import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import pl.edu.ur.teachly.R
-import pl.edu.ur.teachly.ui.components.other.TutorCard
+import pl.edu.ur.teachly.ui.components.other.cards.TutorCard
 import pl.edu.ur.teachly.ui.models.Tutor
 import pl.edu.ur.teachly.ui.theme.AvatarColors
 

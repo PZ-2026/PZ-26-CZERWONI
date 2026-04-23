@@ -27,8 +27,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import pl.edu.ur.teachly.R
-import pl.edu.ur.teachly.ui.components.other.OutlinedCard
 import pl.edu.ur.teachly.ui.components.other.PrimaryButton
+import pl.edu.ur.teachly.ui.components.other.cards.OutlinedCard
 import pl.edu.ur.teachly.ui.theme.DeepGreen700
 
 @Composable

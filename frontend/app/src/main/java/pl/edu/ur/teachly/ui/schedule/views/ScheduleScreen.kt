@@ -28,8 +28,8 @@ import org.koin.androidx.compose.koinViewModel
 import pl.edu.ur.teachly.R
 import pl.edu.ur.teachly.ui.components.other.AppHeader
 import pl.edu.ur.teachly.ui.components.other.HeaderBackground
-import pl.edu.ur.teachly.ui.components.other.SectionHeader
-import pl.edu.ur.teachly.ui.components.other.SectionItems
+import pl.edu.ur.teachly.ui.components.other.section.SectionHeader
+import pl.edu.ur.teachly.ui.components.other.section.SectionItems
 import pl.edu.ur.teachly.ui.schedule.viewmodels.ScheduleViewModel
 
 
