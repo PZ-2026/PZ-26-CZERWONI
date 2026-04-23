@@ -53,7 +53,7 @@ import org.koin.androidx.compose.koinViewModel
 import pl.edu.ur.teachly.R
 import pl.edu.ur.teachly.data.model.ReviewResponse
 import pl.edu.ur.teachly.ui.components.other.PrimaryButton
-import pl.edu.ur.teachly.ui.components.other.StatCard
+import pl.edu.ur.teachly.ui.components.other.cards.StatCard
 import pl.edu.ur.teachly.ui.components.other.formatDate
 import pl.edu.ur.teachly.ui.components.profile.ProfileDataCard
 import pl.edu.ur.teachly.ui.components.profile.ProfileDataDivider
@@ -168,6 +168,7 @@ fun StudentProfileScreen(
                     profile = profile,
                     onLogout = onLogout,
                 )
+
                 1 -> MyReviewsTab(
                     reviews = reviewsState.reviews,
                     isLoading = reviewsState.isLoading,
