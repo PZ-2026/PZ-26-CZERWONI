@@ -1,4 +1,4 @@
-package pl.edu.ur.teachly.ui.components.other.bottomNavBar
+package pl.edu.ur.teachly.ui.components.other.navbar
 
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.NavigationBarItemDefaults
@@ -12,3 +12,4 @@ fun navItemColors() = NavigationBarItemDefaults.colors(
     unselectedIconColor = colorScheme.onSurfaceVariant,
     unselectedTextColor = colorScheme.onSurfaceVariant
 )
+

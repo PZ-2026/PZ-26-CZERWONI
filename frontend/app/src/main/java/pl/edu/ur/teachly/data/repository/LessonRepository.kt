@@ -1,5 +1,6 @@
 package pl.edu.ur.teachly.data.repository
 
+import pl.edu.ur.teachly.data.model.AdminLessonUpdateRequest
 import pl.edu.ur.teachly.data.model.LessonRequest
 import pl.edu.ur.teachly.data.model.LessonResponse
 import pl.edu.ur.teachly.data.model.LessonStatusRequest
@@ -9,6 +10,29 @@ import pl.edu.ur.teachly.data.model.TutorNotesRequest
 import pl.edu.ur.teachly.data.remote.LessonApiService
 
 class LessonRepository(private val api: LessonApiService) {
+
+    suspend fun getAllLessons(): Result<List<LessonResponse>> {
+        return try {
+            val response = api.getAllLessons()
+            if (response.isSuccessful) Result.success(response.body()!!)
+            else Result.failure(Exception("Błąd pobierania lekcji"))
+        } catch (e: Exception) {
+            Result.failure(Exception("Brak połączenia z serwerem"))
+        }
+    }
+
+    suspend fun adminUpdateLesson(
+        lessonId: Int,
+        request: AdminLessonUpdateRequest
+    ): Result<LessonResponse> {
+        return try {
+            val response = api.adminUpdateLesson(lessonId, request)
+            if (response.isSuccessful) Result.success(response.body()!!)
+            else Result.failure(Exception("Błąd aktualizacji lekcji"))
+        } catch (e: Exception) {
+            Result.failure(Exception("Brak połączenia z serwerem"))
+        }
+    }
 
     suspend fun createLesson(studentId: Int, request: LessonRequest): Result<LessonResponse> {
         return try {

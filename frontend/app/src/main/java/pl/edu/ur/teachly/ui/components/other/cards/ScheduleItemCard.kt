@@ -20,10 +20,8 @@ import androidx.compose.material.icons.filled.School
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.MaterialTheme.typography
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -34,9 +32,9 @@ import androidx.compose.ui.unit.dp
 import pl.edu.ur.teachly.R
 import pl.edu.ur.teachly.data.model.LessonFormat
 import pl.edu.ur.teachly.data.model.LessonStatus
-import pl.edu.ur.teachly.data.model.PaymentStatus
 import pl.edu.ur.teachly.data.model.UserRole
-import pl.edu.ur.teachly.ui.components.other.LessonStatusBadge
+import pl.edu.ur.teachly.ui.components.other.badges.LessonStatusBadge
+import pl.edu.ur.teachly.ui.components.other.badges.PaymentStatusBadge
 import pl.edu.ur.teachly.ui.components.other.formatDate
 import pl.edu.ur.teachly.ui.models.ScheduledClass
 import java.time.LocalTime
@@ -58,7 +56,7 @@ fun ScheduleItemCard(
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
 
-            // Subject and status badge
+            // Subject and status badges
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -72,29 +70,8 @@ fun ScheduleItemCard(
                 )
                 Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                     if (item.status != LessonStatus.PENDING && item.status != LessonStatus.CANCELLED) {
-                        val payLabel = when (item.paymentStatus) {
-                            PaymentStatus.PAID -> "Opłacone"
-                            PaymentStatus.PENDING -> "Nieopłacone"
-                            PaymentStatus.CANCELLED -> "Anulowane"
-                        }
-                        val payColor = when (item.paymentStatus) {
-                            PaymentStatus.PAID -> colorScheme.primary
-                            PaymentStatus.PENDING -> colorScheme.tertiary
-                            PaymentStatus.CANCELLED -> colorScheme.error
-                        }
-                        Surface(
-                            shape = MaterialTheme.shapes.small,
-                            color = payColor.copy(alpha = 0.12f)
-                        ) {
-                            Text(
-                                text = payLabel,
-                                style = typography.labelSmall,
-                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                                color = payColor,
-                            )
-                        }
+                        PaymentStatusBadge(status = item.paymentStatus)
                     }
-
                     LessonStatusBadge(status = item.status)
                 }
             }
@@ -179,24 +156,6 @@ fun ScheduleItemCard(
                 text = formatLabel
             )
         }
-    }
-}
-
-@Composable
-private fun StatusBadge(status: String) {
-    val containerColor = when (status) {
-        stringResource(R.string.confirmed) -> colorScheme.primaryContainer
-        stringResource(R.string.pending) -> colorScheme.inversePrimary
-        stringResource(R.string.completed) -> colorScheme.surfaceVariant
-        else -> colorScheme.surface
-    }
-    Surface(shape = MaterialTheme.shapes.small, color = containerColor) {
-        Text(
-            text = status,
-            style = typography.labelSmall,
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-            color = colorScheme.onSurface,
-        )
     }
 }
 

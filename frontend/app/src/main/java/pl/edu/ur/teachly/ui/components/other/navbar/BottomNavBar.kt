@@ -1,4 +1,4 @@
-package pl.edu.ur.teachly.ui.components.other.bottomNavBar
+package pl.edu.ur.teachly.ui.components.other.navbar
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange

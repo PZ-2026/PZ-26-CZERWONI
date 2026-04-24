@@ -1,6 +1,7 @@
 package pl.edu.ur.teachly.data.repository;
 
 import pl.edu.ur.teachly.data.model.TimetableDayResponse
+import pl.edu.ur.teachly.data.model.TutorRequest
 import pl.edu.ur.teachly.data.model.TutorResponse
 import pl.edu.ur.teachly.data.model.TutorSubjectResponse
 import pl.edu.ur.teachly.data.remote.TutorApiService
@@ -46,6 +47,16 @@ class TutorRepository(private val api: TutorApiService) {
             val response = api.getTimetable(tutorId, from, to)
             if (response.isSuccessful) Result.success(response.body()!!)
             else Result.failure(Exception("Błąd pobierania harmonogramu"))
+        } catch (e: Exception) {
+            Result.failure(Exception("Brak połączenia z serwerem"))
+        }
+    }
+
+    suspend fun adminUpdateTutor(id: Int, request: TutorRequest): Result<TutorResponse> {
+        return try {
+            val response = api.adminUpdateTutor(id, request)
+            if (response.isSuccessful) Result.success(response.body()!!)
+            else Result.failure(Exception("Błąd aktualizacji korepetytora"))
         } catch (e: Exception) {
             Result.failure(Exception("Brak połączenia z serwerem"))
         }

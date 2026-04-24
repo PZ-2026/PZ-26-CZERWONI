@@ -5,6 +5,7 @@ import pl.edu.ur.teachly.data.model.TutorAvailabilityOverrideRequest
 import pl.edu.ur.teachly.data.model.TutorAvailabilityOverrideResponse
 import pl.edu.ur.teachly.data.model.TutorAvailabilityRecurringRequest
 import pl.edu.ur.teachly.data.model.TutorAvailabilityRecurringResponse
+import pl.edu.ur.teachly.data.model.TutorRequest
 import pl.edu.ur.teachly.data.model.TutorResponse
 import pl.edu.ur.teachly.data.model.TutorSubjectResponse
 import retrofit2.Response
@@ -12,6 +13,7 @@ import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Path
 import retrofit2.http.Query
 
@@ -70,4 +72,10 @@ interface TutorApiService {
         @Path("tutorId") tutorId: Int,
         @Path("id") id: Int
     ): Response<Unit>
+
+    @PUT("api/tutors/{id}/admin")
+    suspend fun adminUpdateTutor(
+        @Path("id") id: Int,
+        @Body request: TutorRequest
+    ): Response<TutorResponse>
 }

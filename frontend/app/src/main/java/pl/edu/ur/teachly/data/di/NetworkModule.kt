@@ -4,6 +4,7 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.dsl.module
 import pl.edu.ur.teachly.BuildConfig
+import pl.edu.ur.teachly.data.remote.AdminApiService
 import pl.edu.ur.teachly.data.remote.AuthApiService
 import pl.edu.ur.teachly.data.remote.AuthInterceptor
 import pl.edu.ur.teachly.data.remote.HolidayApiService
@@ -49,4 +50,5 @@ val networkModule = module {
     single { get<Retrofit>().create(SubjectApiService::class.java) }
     single { get<Retrofit>().create(UserApiService::class.java) }
     single { get<Retrofit>().create(HolidayApiService::class.java) }
+    single { get<Retrofit>().create(AdminApiService::class.java) }
 }
