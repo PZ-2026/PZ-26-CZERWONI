@@ -1,6 +1,5 @@
 package pl.edu.ur.teachly.subject.service;
 
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +15,8 @@ import pl.edu.ur.teachly.subject.mapper.SubjectCategoryMapper;
 import pl.edu.ur.teachly.subject.mapper.SubjectMapper;
 import pl.edu.ur.teachly.subject.repository.SubjectCategoryRepository;
 import pl.edu.ur.teachly.subject.repository.SubjectRepository;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -46,6 +47,27 @@ public class SubjectService {
     }
 
     @Transactional
+    public SubjectResponse updateSubject(Integer id, SubjectRequest request) {
+        Subject subject =
+                subjectRepository
+                        .findById(id)
+                        .orElseThrow(
+                                () ->
+                                        new ResourceNotFoundException(
+                                                "Nie znaleziono przedmiotu do edycji"));
+        SubjectCategory category =
+                categoryRepository
+                        .findById(request.categoryId())
+                        .orElseThrow(
+                                () ->
+                                        new ResourceNotFoundException(
+                                                "Nie znaleziono szukanej kategorii"));
+        subject.setSubjectName(request.subjectName());
+        subject.setCategory(category);
+        return subjectMapper.toResponse(subjectRepository.save(subject));
+    }
+
+    @Transactional
     public void deleteSubject(Integer id) {
         if (!subjectRepository.existsById(id)) {
             throw new ResourceNotFoundException("Nie znaleziono przedmiotu do usunięcia");
@@ -61,6 +83,19 @@ public class SubjectService {
     @Transactional
     public SubjectCategoryResponse addSubjectCategory(SubjectCategoryRequest request) {
         SubjectCategory category = categoryMapper.toEntity(request);
+        return categoryMapper.toResponse(categoryRepository.save(category));
+    }
+
+    @Transactional
+    public SubjectCategoryResponse updateSubjectCategory(Integer id, SubjectCategoryRequest request) {
+        SubjectCategory category =
+                categoryRepository
+                        .findById(id)
+                        .orElseThrow(
+                                () ->
+                                        new ResourceNotFoundException(
+                                                "Nie znaleziono kategorii do edycji"));
+        category.setCategoryName(request.categoryName());
         return categoryMapper.toResponse(categoryRepository.save(category));
     }
 

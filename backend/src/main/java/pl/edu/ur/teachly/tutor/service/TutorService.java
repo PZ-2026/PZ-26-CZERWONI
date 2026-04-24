@@ -1,16 +1,18 @@
 package pl.edu.ur.teachly.tutor.service;
 
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.edu.ur.teachly.common.exception.ResourceNotFoundException;
+import pl.edu.ur.teachly.tutor.dto.request.TutorRequest;
 import pl.edu.ur.teachly.tutor.dto.response.TutorResponse;
 import pl.edu.ur.teachly.tutor.dto.response.TutorSubjectResponse;
 import pl.edu.ur.teachly.tutor.mapper.TutorMapper;
 import pl.edu.ur.teachly.tutor.mapper.TutorSubjectMapper;
 import pl.edu.ur.teachly.tutor.repository.TutorRepository;
 import pl.edu.ur.teachly.tutor.repository.TutorSubjectRepository;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -47,5 +49,18 @@ public class TutorService {
         return tutorSubjectRepository.findByTutor_UserId(tutorId).stream()
                 .map(tutorSubjectMapper::toResponse)
                 .toList();
+    }
+
+    @Transactional
+    public TutorResponse adminUpdateTutor(Integer tutorId, TutorRequest request) {
+        var tutor =
+                tutorRepository
+                        .findById(tutorId)
+                        .orElseThrow(
+                                () ->
+                                        new ResourceNotFoundException(
+                                                "Nie znaleziono szukanego korepetytora"));
+        tutorMapper.updateFromRequest(request, tutor);
+        return tutorMapper.toResponse(tutorRepository.save(tutor));
     }
 }

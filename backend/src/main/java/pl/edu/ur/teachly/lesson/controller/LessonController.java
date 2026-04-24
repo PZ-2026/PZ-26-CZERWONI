@@ -1,19 +1,27 @@
 package pl.edu.ur.teachly.lesson.controller;
 
 import jakarta.validation.Valid;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import pl.edu.ur.teachly.lesson.dto.request.*;
 import pl.edu.ur.teachly.lesson.dto.response.LessonResponse;
 import pl.edu.ur.teachly.lesson.service.LessonService;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/lessons")
 @RequiredArgsConstructor
 public class LessonController {
     private final LessonService lessonService;
+
+    @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
+    public List<LessonResponse> getAllLessons() {
+        return lessonService.getAllLessons();
+    }
 
     @PostMapping("/student/{studentId}")
     @ResponseStatus(HttpStatus.CREATED)
@@ -35,6 +43,13 @@ public class LessonController {
     @GetMapping("/{lessonId}")
     public LessonResponse getLesson(@PathVariable Integer lessonId) {
         return lessonService.getLesson(lessonId);
+    }
+
+    @PutMapping("/{lessonId}/admin")
+    @PreAuthorize("hasRole('ADMIN')")
+    public LessonResponse adminUpdateLesson(
+            @PathVariable Integer lessonId, @Valid @RequestBody AdminLessonUpdateRequest request) {
+        return lessonService.adminUpdateLesson(lessonId, request);
     }
 
     @PatchMapping("/{lessonId}/status")

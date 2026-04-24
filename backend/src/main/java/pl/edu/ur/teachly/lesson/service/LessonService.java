@@ -1,9 +1,5 @@
 package pl.edu.ur.teachly.lesson.service;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -24,6 +20,11 @@ import pl.edu.ur.teachly.tutor.repository.TutorRepository;
 import pl.edu.ur.teachly.tutor.service.TimetableService;
 import pl.edu.ur.teachly.user.entity.User;
 import pl.edu.ur.teachly.user.repository.UserRepository;
+
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -121,6 +122,32 @@ public class LessonService {
                 .findById(lessonId)
                 .map(lessonMapper::toResponse)
                 .orElseThrow(() -> new ResourceNotFoundException("Nie znaleziono szukanej lekcji"));
+    }
+
+    @Transactional(readOnly = true)
+    public List<LessonResponse> getAllLessons() {
+        return lessonRepository.findAll().stream().map(lessonMapper::toResponse).toList();
+    }
+
+    @Transactional
+    public LessonResponse adminUpdateLesson(Integer lessonId, AdminLessonUpdateRequest request) {
+        Lesson lesson =
+                lessonRepository
+                        .findById(lessonId)
+                        .orElseThrow(
+                                () ->
+                                        new ResourceNotFoundException(
+                                                "Nie znaleziono szukanej lekcji"));
+        lesson.setLessonDate(request.lessonDate());
+        lesson.setTimeFrom(request.timeFrom());
+        lesson.setTimeTo(request.timeTo());
+        lesson.setFormat(request.format());
+        lesson.setLessonStatus(request.lessonStatus());
+        lesson.setPaymentStatus(request.paymentStatus());
+        lesson.setAmount(request.amount());
+        lesson.setStudentNotes(request.studentNotes());
+        lesson.setTutorNotes(request.tutorNotes());
+        return lessonMapper.toResponse(lessonRepository.save(lesson));
     }
 
     @Transactional(readOnly = true)
