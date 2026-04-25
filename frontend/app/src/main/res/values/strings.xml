@@ -172,9 +172,34 @@
     <string name="avg_rating">Średnia ocena</string>
     <string name="cancelled">Anulowane</string>
     <string name="no_cancelled_lessons">Brak anulowanych lekcji</string>
-    <string name="nav_search">Szukaj</string>
-    <string name="data">Dane</string>
-    <string name="lessons">Lekcje</string>
-    <string name="users">Użytkownicy</string>
+
+    <!-- Reviews -->
+    <string name="reviews_section_title">Opinie</string>
+    <string name="review_add_btn">Wystaw recenzję</string>
+    <string name="reviews_see_all_btn">Zobacz więcej</string>
+    <string name="review_dialog_title">Wystaw recenzję</string>
+    <string name="review_dialog_rating_label">Twoja ocena</string>
+    <string name="review_dialog_comment_hint">Komentarz (opcjonalnie)</string>
+    <string name="review_dialog_submit">Wyślij</string>
+    <string name="reviews_empty">Brak opinii</string>
+    <string name="all_reviews_title">Wszystkie opinie</string>
+    <string name="my_reviews_title">Moje opinie</string>
+    <string name="my_reviews_empty">Nie wystawiłeś jeszcze żadnej opinii</string>
+    <string name="review_edit_dialog_title">Edytuj recenzję</string>
+    <string name="review_about_tutor">Korepetytor: %1$s %2$s</string>
+
+    <string name="review_submitted_success">Opinia została wysłana!</string>
+
+    <!-- Pending reviews popup -->
+    <string name="pending_review_question">Jak oceniasz zajęcia z tym korepetytorem?</string>
+    <string name="pending_review_skip">Pomiń</string>
+    <string name="pending_review_skip_all">Pomiń wszystkie</string>
+    <string name="pending_review_submit">Wyślij opinię</string>
+    <string name="pending_reviews_title">Niewystawione opinie</string>
+    <string name="pending_reviews_subtitle">Masz %d korepetytorów do ocenienia</string>
+    <string name="nav_search">Szukaj\n</string>
     <string name="dashboard">Dashboard</string>
+    <string name="users">Użytkownicy</string>
+    <string name="lessons">Lekcje</string>
+    <string name="data">Dane</string>
 </resources>

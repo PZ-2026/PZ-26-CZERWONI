@@ -8,4 +8,6 @@ import pl.edu.ur.teachly.review.entity.Review;
 @Repository
 public interface ReviewRepository extends JpaRepository<Review, Integer> {
     List<Review> findByTutor_UserId(Integer tutorId);
+
+    List<Review> findByStudent_Id(Integer studentId);
 }

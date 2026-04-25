@@ -17,6 +17,11 @@ interface ReviewApiService {
         @Path("tutorId") tutorId: Int
     ): Response<List<ReviewResponse>>
 
+    @GET("api/reviews/student/{studentId}")
+    suspend fun getStudentReviews(
+        @Path("studentId") studentId: Int
+    ): Response<List<ReviewResponse>>
+
     @POST("api/reviews/student/{studentId}")
     suspend fun addReview(
         @Path("studentId") studentId: Int,

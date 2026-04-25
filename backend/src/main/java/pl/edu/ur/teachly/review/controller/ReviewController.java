@@ -20,6 +20,11 @@ public class ReviewController {
         return reviewService.getTutorReviews(tutorId);
     }
 
+    @GetMapping("/student/{studentId}")
+    public List<ReviewResponse> getStudentReviews(@PathVariable Integer studentId) {
+        return reviewService.getStudentReviews(studentId);
+    }
+
     @PostMapping("/student/{studentId}")
     @ResponseStatus(HttpStatus.CREATED)
     public ReviewResponse addReview(

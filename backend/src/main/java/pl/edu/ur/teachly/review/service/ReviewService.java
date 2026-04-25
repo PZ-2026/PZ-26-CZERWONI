@@ -83,4 +83,11 @@ public class ReviewService {
                 .map(reviewMapper::toResponse)
                 .toList();
     }
+
+    @Transactional(readOnly = true)
+    public List<ReviewResponse> getStudentReviews(Integer studentId) {
+        return reviewRepository.findByStudent_Id(studentId).stream()
+                .map(reviewMapper::toResponse)
+                .toList();
+    }
 }
