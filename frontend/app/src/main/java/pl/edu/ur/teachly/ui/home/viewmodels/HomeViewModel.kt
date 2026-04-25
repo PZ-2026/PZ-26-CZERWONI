@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import pl.edu.ur.teachly.data.local.ReviewPreferencesManager
 import pl.edu.ur.teachly.data.local.TokenManager
 import pl.edu.ur.teachly.data.model.LessonStatus
 import pl.edu.ur.teachly.data.model.ReviewRequest
@@ -51,15 +52,12 @@ class HomeViewModel(
     private val lessonRepository: LessonRepository,
     private val userRepository: UserRepository,
     private val reviewRepository: ReviewRepository,
+    private val reviewPreferencesManager: ReviewPreferencesManager,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(HomeUiState())
     val uiState: StateFlow<HomeUiState> = _state
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), HomeUiState())
-
-    // Keeps track of tutors explicitly dismissed in this session so the popup
-    // doesn't reappear every time the user navigates back to the Home screen.
-    private val dismissedTutorIds = mutableSetOf<Int>()
 
     init {
         load()
@@ -118,12 +116,13 @@ class HomeViewModel(
                         if (role == UserRole.STUDENT) {
                             val completedLessons = lessons.filter { it.lessonStatus == LessonStatus.COMPLETED }
                             if (completedLessons.isNotEmpty()) {
+                                val permanentlyDismissed = reviewPreferencesManager.dismissedTutorIdsFlow.first()
                                 reviewRepository.getStudentReviews(userId).fold(
                                     onSuccess = { reviews ->
                                         val reviewedTutorIds = reviews.map { it.tutorId }.toSet()
                                         val pendingReviews = completedLessons
                                             .filter { it.tutorId !in reviewedTutorIds }
-                                            .filter { it.tutorId !in dismissedTutorIds }
+                                            .filter { it.tutorId !in permanentlyDismissed }
                                             .distinctBy { it.tutorId }
                                             .map { lesson ->
                                                 PendingReviewInfo(
@@ -172,10 +171,15 @@ class HomeViewModel(
         _state.update { it.copy(selectedPendingReview = null, pendingReviewError = null) }
     }
 
-    /** User explicitly skips — remember so the popup doesn't reappear this session. */
+    /** User explicitly skips — permanently remember in DataStore so the popup never returns. */
     fun dismissAllPendingReviews() {
-        _state.value.pendingReviews.forEach { dismissedTutorIds.add(it.tutorId) }
-        _state.value.selectedPendingReview?.let { dismissedTutorIds.add(it.tutorId) }
+        val toDismiss = buildSet {
+            addAll(_state.value.pendingReviews.map { it.tutorId })
+            _state.value.selectedPendingReview?.let { add(it.tutorId) }
+        }
+        viewModelScope.launch {
+            reviewPreferencesManager.dismissTutors(toDismiss)
+        }
         _state.update {
             it.copy(
                 pendingReviews = emptyList(),
