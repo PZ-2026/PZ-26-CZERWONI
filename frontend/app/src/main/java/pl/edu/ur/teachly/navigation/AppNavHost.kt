@@ -39,6 +39,7 @@ import pl.edu.ur.teachly.ui.profile.views.AdminProfileScreen
 import pl.edu.ur.teachly.ui.profile.views.ProfileEditScreen
 import pl.edu.ur.teachly.ui.profile.views.StudentProfileScreen
 import pl.edu.ur.teachly.ui.profile.views.TutorProfileScreen
+import pl.edu.ur.teachly.ui.review.views.AllReviewsScreen
 import pl.edu.ur.teachly.ui.schedule.views.ScheduleScreen
 import pl.edu.ur.teachly.ui.search.views.SearchScreen
 import pl.edu.ur.teachly.ui.tutor.views.TutorDetailScreen
@@ -116,6 +117,9 @@ fun AppNavHost(
                 tutorId = args.tutorId.toString(),
                 onBack = { navController.popBackStack() },
                 onBookClick = { navController.navigate(AppRoute.Booking(args.tutorId.toString())) },
+                onSeeAllReviews = {
+                    navController.navigate(AppRoute.AllReviews(args.tutorId, ""))
+                },
             )
         }
 
@@ -194,6 +198,11 @@ fun AppNavHost(
                     onBack = { navController.popBackStack() },
                     onEditClick = { navController.navigate(AppRoute.ProfileEdit) },
                     onLogout = { navController.navigateToSplash() },
+                    onSeeAllReviews = {
+                        userId?.let {
+                            navController.navigate(AppRoute.AllReviews(it, ""))
+                        }
+                    },
                     viewModel = tutorViewModel,
                 )
 
@@ -232,6 +241,18 @@ fun AppNavHost(
                 onBack = { navController.popBackStack() },
                 onEditClick = {},
                 onLogout = {},
+                onSeeAllReviews = {
+                    navController.navigate(AppRoute.AllReviews(args.tutorId, ""))
+                },
+            )
+        }
+
+        composable<AppRoute.AllReviews> { backStackEntry ->
+            val args = backStackEntry.toRoute<AppRoute.AllReviews>()
+            AllReviewsScreen(
+                tutorId = args.tutorId,
+                tutorName = args.tutorName,
+                onBack = { navController.popBackStack() },
             )
         }
 
