@@ -57,7 +57,7 @@ val appModule = module {
     viewModel { TutorDetailViewModel(get(), get(), get(), get()) }
     viewModel { LessonDetailViewModel(get(), get()) }
     viewModel { ProfileViewModel(get(), get(), get()) }
-    viewModel { TutorProfileViewModel(get(), get(), get(), get(), get()) }
+    viewModel { TutorProfileViewModel(get(), get(), get(), get()) }
     viewModel { AllReviewsViewModel(get()) }
     viewModel { MyReviewsViewModel(get(), get()) }
 

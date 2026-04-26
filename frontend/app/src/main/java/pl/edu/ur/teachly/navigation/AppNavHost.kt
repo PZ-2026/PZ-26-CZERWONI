@@ -20,6 +20,7 @@ import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 import pl.edu.ur.teachly.data.local.TokenManager
 import pl.edu.ur.teachly.ui.admin.views.AdminDashboardScreen
+import pl.edu.ur.teachly.ui.admin.views.AdminDataScreen
 import pl.edu.ur.teachly.ui.admin.views.AdminHolidaysScreen
 import pl.edu.ur.teachly.ui.admin.views.AdminLessonsScreen
 import pl.edu.ur.teachly.ui.admin.views.AdminReviewsScreen
@@ -267,6 +268,10 @@ fun AppNavHost(
 
         composable<AppRoute.AdminLessons> {
             AdminLessonsScreen()
+        }
+
+        composable<AppRoute.AdminData> {
+            AdminDataScreen()
         }
 
         composable<AppRoute.AdminHolidays> {

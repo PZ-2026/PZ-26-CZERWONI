@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -49,6 +48,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import org.koin.androidx.compose.koinViewModel
 import pl.edu.ur.teachly.ui.admin.viewmodels.AdminDashboardViewModel
+import pl.edu.ur.teachly.ui.components.admin.AdminScreenHeader
 
 @Composable
 fun AdminDashboardScreen(
@@ -62,29 +62,11 @@ fun AdminDashboardScreen(
             .background(colorScheme.background)
     ) {
         // Header
-        Surface(
-            color = colorScheme.primary,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Row(
-                modifier = Modifier.padding(horizontal = 20.dp, vertical = 16.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                Icon(
-                    Icons.Default.Shield,
-                    contentDescription = null,
-                    tint = colorScheme.onPrimary,
-                    modifier = Modifier.size(28.dp)
-                )
-                Text(
-                    text = "Panel Administratora",
-                    style = typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = colorScheme.onPrimary
-                )
-            }
-        }
+        AdminScreenHeader(
+            title = "Panel Administratora",
+            icon = Icons.Default.Shield,
+            modifier = Modifier.fillMaxWidth(),
+        )
 
         when {
             state.isLoading -> Box(

@@ -79,6 +79,9 @@ sealed interface AppRoute {
     data class AdminLessonEdit(val lessonId: Int) : AppRoute
 
     @Serializable
+    data object AdminData : AppRoute
+
+    @Serializable
     data object AdminHolidays : AppRoute
 
     @Serializable

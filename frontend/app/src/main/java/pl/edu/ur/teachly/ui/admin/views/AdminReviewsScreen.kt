@@ -4,17 +4,13 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.MaterialTheme.typography
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -22,30 +18,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import pl.edu.ur.teachly.ui.components.admin.AdminScreenHeader
 
 // TODO: Implement once review rebuilding task is done
 @Composable
-fun AdminReviewsScreen() {
+fun AdminReviewsScreen(showHeader: Boolean = true) {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(colorScheme.background)
     ) {
-        Surface(color = colorScheme.primary) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    "Opinie korepetytorów",
-                    style = typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = colorScheme.onPrimary
-                )
-            }
-        }
+        if (showHeader) AdminScreenHeader(title = "Opinie korepetytorów")
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
@@ -76,3 +59,4 @@ fun AdminReviewsScreen() {
         }
     }
 }
+

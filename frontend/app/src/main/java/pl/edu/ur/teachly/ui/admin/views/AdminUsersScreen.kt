@@ -1,5 +1,6 @@
 package pl.edu.ur.teachly.ui.admin.views
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -11,19 +12,22 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Block
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.LockOpen
+import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme.colorScheme
@@ -49,7 +53,12 @@ import pl.edu.ur.teachly.data.model.UserResponse
 import pl.edu.ur.teachly.data.model.UserRole
 import pl.edu.ur.teachly.ui.admin.viewmodels.AdminUsersViewModel
 import pl.edu.ur.teachly.ui.components.admin.AdminMessageSnackbars
+import pl.edu.ur.teachly.ui.components.admin.AdminScreenHeader
 import pl.edu.ur.teachly.ui.components.admin.AdminSearchBar
+import pl.edu.ur.teachly.ui.components.other.FilterChips
+import pl.edu.ur.teachly.ui.components.other.cards.CardInfoRow
+import pl.edu.ur.teachly.ui.components.other.dialog.DialogChipRow
+import pl.edu.ur.teachly.ui.components.other.dialog.DialogSectionLabel
 
 @Composable
 fun AdminUsersScreen(
@@ -71,43 +80,22 @@ fun AdminUsersScreen(
             .fillMaxSize()
             .background(colorScheme.background)
     ) {
-        // Header
-        Surface(color = colorScheme.primary) {
-            Column(modifier = Modifier.padding(8.dp)) {
-                Text(
-                    "Użytkownicy",
-                    style = typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = colorScheme.onPrimary
-                )
-                Spacer(Modifier.height(8.dp))
-                AdminSearchBar(
-                    value = state.searchQuery,
-                    onValueChange = { viewModel.onSearchChange(it) },
-                    placeholder = "Szukaj po imieniu, nazwisku, email...",
-                )
-                Spacer(Modifier.height(8.dp))
-                // Role filter chips
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(4.dp),
-                ) {
-                    listOf(null, UserRole.STUDENT, UserRole.TUTOR, UserRole.ADMIN).forEach { role ->
-                        FilterChip(
-                            selected = state.selectedRole == role,
-                            onClick = { viewModel.onRoleFilterChange(role) },
-                            label = { Text(role?.name ?: "Wszyscy") },
-                            colors = FilterChipDefaults.filterChipColors(
-                                selectedContainerColor = colorScheme.secondary,
-                                selectedLabelColor = colorScheme.onSecondary,
-                                containerColor = colorScheme.surfaceVariant,
-                                labelColor = colorScheme.onSurfaceVariant,
-                            ),
-                        )
-                    }
-                }
-            }
+        AdminScreenHeader(title = "Użytkownicy") {
+            AdminSearchBar(
+                value = state.searchQuery,
+                onValueChange = { viewModel.onSearchChange(it) },
+                placeholder = "Szukaj po imieniu, nazwisku, email...",
+            )
+            Spacer(Modifier.height(8.dp))
+            FilterChips(
+                items = listOf("Wszyscy") + UserRole.entries.map { it.name },
+                activeItem = state.selectedRole?.name ?: "Wszyscy",
+                onSelect = { label ->
+                    viewModel.onRoleFilterChange(
+                        if (label == "Wszyscy") null else UserRole.valueOf(label)
+                    )
+                },
+            )
         }
 
         AdminMessageSnackbars(successMessage = state.successMessage, errorMessage = state.error)
@@ -180,32 +168,36 @@ fun AdminUsersScreen(
 private fun UserAdminCard(
     user: UserResponse,
     onEdit: () -> Unit,
-    onBanToggle: () -> Unit
+    onBanToggle: () -> Unit,
 ) {
     Card(
-        shape = RoundedCornerShape(12.dp),
+        modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
-            containerColor = if (user.isActive) colorScheme.surface else colorScheme.errorContainer.copy(
-                alpha = 0.3f
-            )
-        )
+            containerColor = if (user.isActive) colorScheme.surface
+            else colorScheme.errorContainer.copy(alpha = 0.3f)
+        ),
+        shape = RoundedCornerShape(20.dp),
+        border = BorderStroke(
+            1.dp,
+            if (user.isActive) colorScheme.outline else colorScheme.error.copy(alpha = 0.5f)
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
     ) {
-        Row(
-            modifier = Modifier.padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column(
-                modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
+        Column(modifier = Modifier.padding(16.dp)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     Text(
-                        "${user.firstName} ${user.lastName}",
-                        style = typography.titleSmall,
-                        fontWeight = FontWeight.Bold
+                        text = "${user.firstName} ${user.lastName}",
+                        style = typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = colorScheme.onSurface,
                     )
                     RoleBadge(user.role)
                     if (!user.isActive) {
@@ -219,30 +211,51 @@ private fun UserAdminCard(
                         }
                     }
                 }
-                Text(user.email, style = typography.bodySmall, color = colorScheme.onSurfaceVariant)
-                user.phoneNumber?.let {
-                    Text(
-                        it,
-                        style = typography.bodySmall,
-                        color = colorScheme.onSurfaceVariant
-                    )
+                Row {
+                    IconButton(onClick = onEdit) {
+                        Icon(
+                            Icons.Default.Edit,
+                            contentDescription = "Edytuj",
+                            tint = colorScheme.primary
+                        )
+                    }
+                    IconButton(onClick = onBanToggle) {
+                        Icon(
+                            if (user.isActive) Icons.Default.Block else Icons.Default.LockOpen,
+                            contentDescription = if (user.isActive) "Zablokuj" else "Odblokuj",
+                            tint = if (user.isActive) colorScheme.error else colorScheme.primary,
+                        )
+                    }
                 }
             }
-            Row {
-                IconButton(onClick = onEdit) {
+
+            Spacer(Modifier.height(8.dp))
+
+            CardInfoRow(
+                icon = {
                     Icon(
-                        Icons.Default.Edit,
-                        contentDescription = "Edytuj",
+                        Icons.Default.Email,
+                        null,
+                        modifier = Modifier.size(16.dp),
                         tint = colorScheme.primary
                     )
-                }
-                IconButton(onClick = onBanToggle) {
-                    Icon(
-                        if (user.isActive) Icons.Default.Block else Icons.Default.LockOpen,
-                        contentDescription = if (user.isActive) "Zablokuj" else "Odblokuj",
-                        tint = if (user.isActive) colorScheme.error else colorScheme.primary
-                    )
-                }
+                },
+                text = user.email,
+            )
+
+            user.phoneNumber?.let {
+                Spacer(Modifier.height(6.dp))
+                CardInfoRow(
+                    icon = {
+                        Icon(
+                            Icons.Default.Phone,
+                            null,
+                            modifier = Modifier.size(16.dp),
+                            tint = colorScheme.primary
+                        )
+                    },
+                    text = it,
+                )
             }
         }
     }
@@ -269,7 +282,7 @@ private fun RoleBadge(role: UserRole?) {
 private fun AdminUserEditDialog(
     user: UserResponse,
     onDismiss: () -> Unit,
-    onSave: (AdminUserUpdateRequest) -> Unit
+    onSave: (AdminUserUpdateRequest) -> Unit,
 ) {
     var firstName by remember { mutableStateOf(user.firstName) }
     var lastName by remember { mutableStateOf(user.lastName) }
@@ -277,48 +290,56 @@ private fun AdminUserEditDialog(
     var phone by remember { mutableStateOf(user.phoneNumber ?: "") }
     var role by remember { mutableStateOf(user.role ?: UserRole.STUDENT) }
 
+    val isValid = firstName.isNotBlank() && lastName.isNotBlank()
+            && email.isNotBlank() && phone.length == 9
+
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Edytuj użytkownika") },
+        title = { Text("Edytuj użytkownika #${user.id}") },
         text = {
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                OutlinedTextField(
-                    value = firstName,
-                    onValueChange = { firstName = it },
-                    label = { Text("Imię") },
-                    modifier = Modifier.fillMaxWidth(),
-                    singleLine = true
-                )
-                OutlinedTextField(
-                    value = lastName,
-                    onValueChange = { lastName = it },
-                    label = { Text("Nazwisko") },
-                    modifier = Modifier.fillMaxWidth(),
-                    singleLine = true
-                )
+            Column(
+                modifier = Modifier.verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    OutlinedTextField(
+                        value = firstName,
+                        onValueChange = { firstName = it },
+                        label = { Text("Imię") },
+                        modifier = Modifier.weight(1f),
+                        singleLine = true,
+                    )
+                    OutlinedTextField(
+                        value = lastName,
+                        onValueChange = { lastName = it },
+                        label = { Text("Nazwisko") },
+                        modifier = Modifier.weight(1f),
+                        singleLine = true,
+                    )
+                }
                 OutlinedTextField(
                     value = email,
                     onValueChange = { email = it },
                     label = { Text("Email") },
+                    leadingIcon = { Icon(Icons.Default.Email, null) },
                     modifier = Modifier.fillMaxWidth(),
-                    singleLine = true
+                    singleLine = true,
                 )
                 OutlinedTextField(
                     value = phone,
-                    onValueChange = { if (it.length <= 10) phone = it },
+                    onValueChange = { if (it.length <= 9) phone = it },
                     label = { Text("Telefon") },
+                    leadingIcon = { Icon(Icons.Default.Phone, null) },
                     modifier = Modifier.fillMaxWidth(),
-                    singleLine = true
+                    singleLine = true,
                 )
-                Text("Rola", style = typography.labelMedium)
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    UserRole.entries.forEach { r ->
-                        FilterChip(
-                            selected = role == r,
-                            onClick = { role = r },
-                            label = { Text(r.name) })
-                    }
-                }
+                DialogSectionLabel("Rola")
+                DialogChipRow(
+                    entries = UserRole.entries,
+                    selected = role,
+                    onSelect = { role = it },
+                    label = { it.name },
+                )
             }
         },
         confirmButton = {
@@ -335,7 +356,7 @@ private fun AdminUserEditDialog(
                         )
                     )
                 },
-                enabled = firstName.isNotBlank() && lastName.isNotBlank() && email.isNotBlank() && phone.length == 10
+                enabled = isValid,
             ) { Text("Zapisz") }
         },
         dismissButton = { TextButton(onClick = onDismiss) { Text("Anuluj") } }

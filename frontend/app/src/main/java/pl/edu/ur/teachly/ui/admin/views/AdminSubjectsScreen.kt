@@ -1,5 +1,6 @@
 package pl.edu.ur.teachly.ui.admin.views
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -7,33 +8,39 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Category
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material.icons.filled.School
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.FilledIconButton
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -53,10 +60,13 @@ import pl.edu.ur.teachly.data.model.SubjectCategoryResponse
 import pl.edu.ur.teachly.data.model.SubjectResponse
 import pl.edu.ur.teachly.ui.admin.viewmodels.AdminSubjectsViewModel
 import pl.edu.ur.teachly.ui.components.admin.AdminMessageSnackbars
+import pl.edu.ur.teachly.ui.components.admin.AdminScreenHeader
+import pl.edu.ur.teachly.ui.components.other.cards.CardInfoRow
 
 @Composable
 fun AdminSubjectsScreen(
-    viewModel: AdminSubjectsViewModel = koinViewModel()
+    viewModel: AdminSubjectsViewModel = koinViewModel(),
+    showHeader: Boolean = true,
 ) {
     val state by viewModel.state.collectAsState()
     var selectedTab by remember { mutableIntStateOf(0) }
@@ -76,44 +86,17 @@ fun AdminSubjectsScreen(
         }
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(colorScheme.background)
-    ) {
-        Surface(color = colorScheme.primary) {
-            Column {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 8.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        "Dane platformy",
-                        style = typography.titleLarge,
-                        fontWeight = FontWeight.Bold,
-                        color = colorScheme.onPrimary
-                    )
-                    FilledIconButton(
-                        onClick = {
-                            if (selectedTab == 0) showAddSubjectDialog =
-                                true else showAddCategoryDialog = true
-                        },
-                        colors = IconButtonDefaults.filledIconButtonColors(containerColor = colorScheme.onPrimary)
-                    ) {
-                        Icon(
-                            Icons.Default.Add,
-                            contentDescription = "Dodaj",
-                            tint = colorScheme.primary
-                        )
-                    }
-                }
-                TabRow(
+    Box(modifier = Modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(colorScheme.background)
+        ) {
+            val innerTabs = @Composable {
+                PrimaryTabRow(
                     selectedTabIndex = selectedTab,
                     containerColor = colorScheme.primary,
-                    contentColor = colorScheme.onPrimary
+                    contentColor = colorScheme.onPrimary,
                 ) {
                     Tab(
                         selected = selectedTab == 0,
@@ -125,44 +108,73 @@ fun AdminSubjectsScreen(
                         text = { Text("Kategorie") })
                 }
             }
+            if (showHeader) {
+                AdminScreenHeader(title = "Dane platformy") { innerTabs() }
+            } else {
+                Surface(color = colorScheme.surface, shadowElevation = 2.dp) {
+                    Column {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp, vertical = 8.dp),
+                            horizontalArrangement = Arrangement.End,
+                        ) { }
+                        innerTabs()
+                    }
+                }
+            }
+
+            AdminMessageSnackbars(successMessage = state.successMessage, errorMessage = state.error)
+
+            when {
+                state.isLoading -> Box(
+                    Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) { CircularProgressIndicator() }
+
+                selectedTab == 0 -> LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    items(state.subjects) { subject ->
+                        SubjectCard(
+                            subject = subject,
+                            onEdit = { showEditSubjectDialog = subject },
+                            onDelete = { showDeleteSubjectDialog = subject }
+                        )
+                    }
+                }
+
+                else -> LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    items(state.categories) { category ->
+                        CategoryCard(
+                            category = category,
+                            subjectCount = state.subjects.count { it.categoryId == category.id },
+                            onEdit = { showEditCategoryDialog = category },
+                            onDelete = { showDeleteCategoryDialog = category }
+                        )
+                    }
+                }
+            }
         }
-
-        AdminMessageSnackbars(successMessage = state.successMessage, errorMessage = state.error)
-
-        when {
-            state.isLoading -> Box(
-                Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) { CircularProgressIndicator() }
-
-            selectedTab == 0 -> LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                items(state.subjects) { subject ->
-                    SubjectCard(
-                        subject = subject,
-                        onEdit = { showEditSubjectDialog = subject },
-                        onDelete = { showDeleteSubjectDialog = subject }
-                    )
-                }
-            }
-
-            else -> LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                items(state.categories) { category ->
-                    CategoryCard(
-                        category = category,
-                        subjectCount = state.subjects.count { it.categoryId == category.id },
-                        onEdit = { showEditCategoryDialog = category },
-                        onDelete = { showDeleteCategoryDialog = category }
-                    )
-                }
-            }
+        FloatingActionButton(
+            onClick = {
+                if (selectedTab == 0) showAddSubjectDialog = true
+                else showAddCategoryDialog = true
+            },
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .padding(16.dp),
+            containerColor = colorScheme.primary,
+            contentColor = colorScheme.onPrimary,
+            shape = CircleShape,
+        ) {
+            Icon(Icons.Default.Add, contentDescription = "Dodaj")
         }
     }
 
@@ -215,7 +227,7 @@ fun AdminSubjectsScreen(
 
     // Category dialogs
     if (showAddCategoryDialog) {
-        SimpleNameDialog(
+        CategoryDialog(
             title = "Dodaj kategorię",
             initialName = "",
             onDismiss = { showAddCategoryDialog = false },
@@ -223,7 +235,7 @@ fun AdminSubjectsScreen(
         )
     }
     showEditCategoryDialog?.let { category ->
-        SimpleNameDialog(
+        CategoryDialog(
             title = "Edytuj kategorię",
             initialName = category.categoryName,
             onDismiss = { showEditCategoryDialog = null },
@@ -255,37 +267,56 @@ fun AdminSubjectsScreen(
 
 @Composable
 private fun SubjectCard(subject: SubjectResponse, onEdit: () -> Unit, onDelete: () -> Unit) {
-    Card(shape = RoundedCornerShape(12.dp)) {
-        Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
-            Column(
-                modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = colorScheme.surface),
+        shape = RoundedCornerShape(20.dp),
+        border = BorderStroke(1.dp, colorScheme.outline),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
-                    subject.subjectName,
-                    style = typography.titleSmall,
-                    fontWeight = FontWeight.Bold
+                    text = subject.subjectName,
+                    style = typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = colorScheme.onSurface,
                 )
-                Text(
-                    "Kategoria: ${subject.categoryName}",
-                    style = typography.bodySmall,
-                    color = colorScheme.onSurfaceVariant
-                )
+                Row {
+                    IconButton(onClick = onEdit) {
+                        Icon(
+                            Icons.Default.Edit,
+                            contentDescription = "Edytuj",
+                            tint = colorScheme.primary
+                        )
+                    }
+                    IconButton(onClick = onDelete) {
+                        Icon(
+                            Icons.Default.Delete,
+                            contentDescription = "Usuń",
+                            tint = colorScheme.error
+                        )
+                    }
+                }
             }
-            IconButton(onClick = onEdit) {
-                Icon(
-                    Icons.Default.Edit,
-                    contentDescription = "Edytuj",
-                    tint = colorScheme.primary
-                )
-            }
-            IconButton(onClick = onDelete) {
-                Icon(
-                    Icons.Default.Delete,
-                    contentDescription = "Usuń",
-                    tint = colorScheme.error
-                )
-            }
+
+            Spacer(Modifier.height(8.dp))
+
+            CardInfoRow(
+                icon = {
+                    Icon(
+                        Icons.Default.Category,
+                        null,
+                        modifier = Modifier.size(16.dp),
+                        tint = colorScheme.primary
+                    )
+                },
+                text = "Kategoria: ${subject.categoryName}",
+            )
         }
     }
 }
@@ -295,39 +326,58 @@ private fun CategoryCard(
     category: SubjectCategoryResponse,
     subjectCount: Int,
     onEdit: () -> Unit,
-    onDelete: () -> Unit
+    onDelete: () -> Unit,
 ) {
-    Card(shape = RoundedCornerShape(12.dp)) {
-        Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
-            Column(
-                modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = colorScheme.surface),
+        shape = RoundedCornerShape(20.dp),
+        border = BorderStroke(1.dp, colorScheme.outline),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
-                    category.categoryName,
-                    style = typography.titleSmall,
-                    fontWeight = FontWeight.Bold
+                    text = category.categoryName,
+                    style = typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = colorScheme.onSurface,
                 )
-                Text(
-                    "Przedmioty: $subjectCount",
-                    style = typography.bodySmall,
-                    color = colorScheme.onSurfaceVariant
-                )
+                Row {
+                    IconButton(onClick = onEdit) {
+                        Icon(
+                            Icons.Default.Edit,
+                            contentDescription = "Edytuj",
+                            tint = colorScheme.primary
+                        )
+                    }
+                    IconButton(onClick = onDelete) {
+                        Icon(
+                            Icons.Default.Delete,
+                            contentDescription = "Usuń",
+                            tint = if (subjectCount == 0) colorScheme.error else colorScheme.onSurfaceVariant,
+                        )
+                    }
+                }
             }
-            IconButton(onClick = onEdit) {
-                Icon(
-                    Icons.Default.Edit,
-                    contentDescription = "Edytuj",
-                    tint = colorScheme.primary
-                )
-            }
-            IconButton(onClick = onDelete) {
-                Icon(
-                    Icons.Default.Delete,
-                    contentDescription = "Usuń",
-                    tint = if (subjectCount == 0) colorScheme.error else colorScheme.onSurfaceVariant
-                )
-            }
+
+            Spacer(Modifier.height(8.dp))
+
+            CardInfoRow(
+                icon = {
+                    Icon(
+                        Icons.Default.School,
+                        null,
+                        modifier = Modifier.size(16.dp),
+                        tint = colorScheme.primary
+                    )
+                },
+                text = "Przedmioty: $subjectCount",
+            )
         }
     }
 }
@@ -339,7 +389,7 @@ private fun SubjectDialog(
     initialCategoryId: Int,
     categories: List<SubjectCategoryResponse>,
     onDismiss: () -> Unit,
-    onSave: (String, Int) -> Unit
+    onSave: (String, Int) -> Unit,
 ) {
     var name by remember { mutableStateOf(initialName) }
     var categoryId by remember { mutableIntStateOf(initialCategoryId) }
@@ -355,8 +405,9 @@ private fun SubjectDialog(
                     value = name,
                     onValueChange = { if (it.length <= 100) name = it },
                     label = { Text("Nazwa przedmiotu") },
+                    leadingIcon = { Icon(Icons.Default.School, null) },
                     modifier = Modifier.fillMaxWidth(),
-                    singleLine = true
+                    singleLine = true,
                 )
                 Box(modifier = Modifier.fillMaxWidth()) {
                     OutlinedTextField(
@@ -364,25 +415,26 @@ private fun SubjectDialog(
                         onValueChange = {},
                         readOnly = true,
                         label = { Text("Kategoria") },
+                        leadingIcon = { Icon(Icons.Default.Category, null) },
                         trailingIcon = {
                             Icon(
-                                imageVector = if (expanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
-                                contentDescription = null
+                                if (expanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                                contentDescription = null,
                             )
                         },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable { expanded = true }
+                            .clickable { expanded = true },
                     )
                     DropdownMenu(
                         expanded = expanded,
                         onDismissRequest = { expanded = false },
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
                     ) {
                         categories.forEach { cat ->
                             DropdownMenuItem(
                                 text = { Text(cat.categoryName) },
-                                onClick = { categoryId = cat.id; expanded = false }
+                                onClick = { categoryId = cat.id; expanded = false },
                             )
                         }
                     }
@@ -392,21 +444,19 @@ private fun SubjectDialog(
         confirmButton = {
             TextButton(
                 onClick = { onSave(name.trim(), categoryId) },
-                enabled = name.isNotBlank() && categoryId > 0
-            ) {
-                Text("Zapisz")
-            }
+                enabled = name.isNotBlank() && categoryId > 0,
+            ) { Text("Zapisz") }
         },
         dismissButton = { TextButton(onClick = onDismiss) { Text("Anuluj") } }
     )
 }
 
 @Composable
-private fun SimpleNameDialog(
+private fun CategoryDialog(
     title: String,
     initialName: String,
     onDismiss: () -> Unit,
-    onSave: (String) -> Unit
+    onSave: (String) -> Unit,
 ) {
     var name by remember { mutableStateOf(initialName) }
     AlertDialog(
@@ -417,14 +467,15 @@ private fun SimpleNameDialog(
                 value = name,
                 onValueChange = { if (it.length <= 100) name = it },
                 label = { Text("Nazwa") },
+                leadingIcon = { Icon(Icons.Default.Edit, null) },
                 modifier = Modifier.fillMaxWidth(),
-                singleLine = true
+                singleLine = true,
             )
         },
         confirmButton = {
             TextButton(
                 onClick = { onSave(name.trim()) },
-                enabled = name.isNotBlank()
+                enabled = name.isNotBlank(),
             ) { Text("Zapisz") }
         },
         dismissButton = { TextButton(onClick = onDismiss) { Text("Anuluj") } }

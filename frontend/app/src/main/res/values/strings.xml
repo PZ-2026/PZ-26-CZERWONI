@@ -309,9 +309,15 @@
     <string name="admin_reviews_title">Opinie</string>
     <string name="admin_reviews_stub">Zarządzanie opiniami będzie dostępne wkrótce.</string>
 
-    <!-- Admin Settings -->
-    <string name="admin_settings_title">Ustawienia</string>
-    <string name="admin_settings_global_title">Ustawienia globalne platformy</string>
-    <string name="admin_settings_global_body">Konfiguracja globalnych ustawień platformy (prowizja, limity, parametry) będzie dostępna wkrótce.</string>
-    <string name="admin_settings_logout">Wyloguj się</string>
+    <string name="admin_users_subtitle">Zarządzaj użytkownikami systemu</string>
+    <string name="admin_lessons_subtitle">Wszystkie lekcje w systemie</string>
+    <string name="filter_all_users">Wszyscy</string>
+    <string name="filter_students">Uczniowie</string>
+    <string name="filter_tutors">Korepetytorzy</string>
+    <string name="filter_all_lessons">Wszystkie</string>
+    <string name="no_users">Brak użytkowników</string>
+    <string name="user_active">Aktywny</string>
+    <string name="user_inactive">Nieaktywny</string>
+    <string name="admin_users_count">%1$d użytkowników</string>
+    <string name="admin_lessons_count">%1$d lekcji</string>
 </resources>

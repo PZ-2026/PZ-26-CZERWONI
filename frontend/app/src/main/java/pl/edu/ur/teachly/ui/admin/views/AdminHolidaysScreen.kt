@@ -1,5 +1,6 @@
 package pl.edu.ur.teachly.ui.admin.views
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -9,30 +10,37 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Event
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.FilledIconButton
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -48,10 +56,13 @@ import org.koin.androidx.compose.koinViewModel
 import pl.edu.ur.teachly.data.model.HolidayResponse
 import pl.edu.ur.teachly.ui.admin.viewmodels.AdminHolidaysViewModel
 import pl.edu.ur.teachly.ui.components.admin.AdminMessageSnackbars
+import pl.edu.ur.teachly.ui.components.admin.AdminScreenHeader
+import pl.edu.ur.teachly.ui.components.other.cards.CardInfoRow
 
 @Composable
 fun AdminHolidaysScreen(
-    viewModel: AdminHolidaysViewModel = koinViewModel()
+    viewModel: AdminHolidaysViewModel = koinViewModel(),
+    showHeader: Boolean = true,
 ) {
     val state by viewModel.state.collectAsState()
     var showAddDialog by remember { mutableStateOf(false) }
@@ -65,59 +76,58 @@ fun AdminHolidaysScreen(
         }
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(colorScheme.background)
-    ) {
-        Surface(color = colorScheme.primary) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    "Święta i dni wolne",
-                    style = typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = colorScheme.onPrimary
-                )
-                FilledIconButton(
-                    onClick = { showAddDialog = true },
-                    colors = IconButtonDefaults.filledIconButtonColors(containerColor = colorScheme.onPrimary)
+    Box(modifier = Modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(colorScheme.background)
+        ) {
+            if (showHeader) {
+                AdminScreenHeader(title = "Święta i dni wolne")
+            } else {
+                Surface(color = colorScheme.surface, shadowElevation = 2.dp) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        horizontalArrangement = Arrangement.End,
+                    ) { }
+                }
+            }
+
+            AdminMessageSnackbars(successMessage = state.successMessage, errorMessage = state.error)
+
+            when {
+                state.isLoading -> Box(
+                    Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) { CircularProgressIndicator() }
+
+                else -> LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Icon(
-                        Icons.Default.Add,
-                        contentDescription = "Dodaj",
-                        tint = colorScheme.primary
-                    )
+                    items(state.holidays) { holiday ->
+                        HolidayCard(
+                            holiday = holiday,
+                            onEdit = { showEditDialog = holiday },
+                            onDelete = { showDeleteDialog = holiday }
+                        )
+                    }
                 }
             }
         }
-
-        AdminMessageSnackbars(successMessage = state.successMessage, errorMessage = state.error)
-
-        when {
-            state.isLoading -> Box(
-                Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) { CircularProgressIndicator() }
-
-            else -> LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                items(state.holidays) { holiday ->
-                    HolidayCard(
-                        holiday = holiday,
-                        onEdit = { showEditDialog = holiday },
-                        onDelete = { showDeleteDialog = holiday }
-                    )
-                }
-            }
+        FloatingActionButton(
+            onClick = { showAddDialog = true },
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .padding(16.dp),
+            containerColor = colorScheme.primary,
+            contentColor = colorScheme.onPrimary,
+            shape = CircleShape,
+        ) {
+            Icon(Icons.Default.Add, contentDescription = "Dodaj")
         }
     }
 
@@ -165,57 +175,104 @@ fun AdminHolidaysScreen(
 
 @Composable
 private fun HolidayCard(holiday: HolidayResponse, onEdit: () -> Unit, onDelete: () -> Unit) {
-    Card(shape = RoundedCornerShape(12.dp)) {
-        Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
-            Icon(
-                Icons.Default.Event,
-                contentDescription = null,
-                tint = colorScheme.primary,
-                modifier = Modifier.size(32.dp)
-            )
-            Spacer(Modifier.width(12.dp))
-            Column(modifier = Modifier.weight(1f)) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = colorScheme.surface),
+        shape = RoundedCornerShape(20.dp),
+        border = BorderStroke(1.dp, colorScheme.outline),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
                 Text(
-                    holiday.holidayDate,
-                    style = typography.titleSmall,
-                    fontWeight = FontWeight.Bold
+                    text = holiday.holidayDate,
+                    style = typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = colorScheme.onSurface,
                 )
-                holiday.description?.let {
-                    Text(
-                        it,
-                        style = typography.bodySmall,
-                        color = colorScheme.onSurfaceVariant
-                    )
+                Row {
+                    IconButton(onClick = onEdit) {
+                        Icon(
+                            Icons.Default.Edit,
+                            contentDescription = "Edytuj",
+                            tint = colorScheme.primary
+                        )
+                    }
+                    IconButton(onClick = onDelete) {
+                        Icon(
+                            Icons.Default.Delete,
+                            contentDescription = "Usuń",
+                            tint = colorScheme.error
+                        )
+                    }
                 }
             }
-            IconButton(onClick = onEdit) {
-                Icon(
-                    Icons.Default.Edit,
-                    contentDescription = "Edytuj",
-                    tint = colorScheme.primary
-                )
-            }
-            IconButton(onClick = onDelete) {
-                Icon(
-                    Icons.Default.Delete,
-                    contentDescription = "Usuń",
-                    tint = colorScheme.error
+
+            holiday.description?.let {
+                Spacer(Modifier.height(8.dp))
+                CardInfoRow(
+                    icon = {
+                        Icon(
+                            Icons.Default.Event,
+                            null,
+                            modifier = Modifier.size(16.dp),
+                            tint = colorScheme.primary
+                        )
+                    },
+                    text = it,
                 )
             }
         }
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun HolidayDialog(
     title: String,
     initialDate: String,
     initialDescription: String,
     onDismiss: () -> Unit,
-    onSave: (String, String?) -> Unit
+    onSave: (String, String?) -> Unit,
 ) {
     var date by remember { mutableStateOf(initialDate) }
     var description by remember { mutableStateOf(initialDescription) }
+    var showDatePicker by remember { mutableStateOf(false) }
+
+    val initialDateMillis = remember(initialDate) {
+        runCatching {
+            java.time.LocalDate.parse(initialDate)
+                .atStartOfDay(java.time.ZoneOffset.UTC)
+                .toInstant().toEpochMilli()
+        }.getOrNull()
+    }
+    val datePickerState = rememberDatePickerState(initialSelectedDateMillis = initialDateMillis)
+
+    if (showDatePicker) {
+        DatePickerDialog(
+            onDismissRequest = { showDatePicker = false },
+            confirmButton = {
+                TextButton(onClick = {
+                    datePickerState.selectedDateMillis?.let { millis ->
+                        date = java.time.Instant.ofEpochMilli(millis)
+                            .atZone(java.time.ZoneOffset.UTC)
+                            .toLocalDate()
+                            .toString()
+                    }
+                    showDatePicker = false
+                }) { Text("OK") }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDatePicker = false }) { Text("Anuluj") }
+            }
+        ) {
+            DatePicker(state = datePickerState)
+        }
+    }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -224,24 +281,31 @@ private fun HolidayDialog(
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 OutlinedTextField(
                     value = date,
-                    onValueChange = { date = it },
-                    label = { Text("Data (YYYY-MM-DD)") },
+                    onValueChange = {},
+                    readOnly = true,
+                    label = { Text("Data") },
+                    leadingIcon = { Icon(Icons.Default.CalendarMonth, null) },
+                    trailingIcon = {
+                        IconButton(onClick = { showDatePicker = true }) {
+                            Icon(Icons.Default.CalendarMonth, contentDescription = "Wybierz datę")
+                        }
+                    },
                     modifier = Modifier.fillMaxWidth(),
-                    singleLine = true
                 )
                 OutlinedTextField(
                     value = description,
                     onValueChange = { if (it.length <= 100) description = it },
                     label = { Text("Opis (opcjonalnie)") },
+                    leadingIcon = { Icon(Icons.Default.Info, null) },
                     modifier = Modifier.fillMaxWidth(),
-                    singleLine = true
+                    singleLine = true,
                 )
             }
         },
         confirmButton = {
             TextButton(
                 onClick = { onSave(date.trim(), description.trim().ifBlank { null }) },
-                enabled = date.isNotBlank()
+                enabled = date.isNotBlank(),
             ) { Text("Zapisz") }
         },
         dismissButton = { TextButton(onClick = onDismiss) { Text("Anuluj") } }

@@ -35,7 +35,7 @@ class MainActivity : ComponentActivity() {
                         if (role == "ADMIN") {
                             AdminBottomNavBar(navController = navController)
                         } else {
-                            BottomNavBar(navController = navController)
+                            BottomNavBar(navController = navController, role = role)
                         }
                     }
                 ) { innerPadding ->

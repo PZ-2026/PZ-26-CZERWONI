@@ -36,8 +36,9 @@ fun AdminBottomNavBar(
     val isDashboard = routeStr.contains("AdminDashboard")
     val isUsers = routeStr.contains("AdminUser")
     val isLessons = routeStr.contains("AdminLesson")
-    val isData = routeStr.contains("AdminHoliday") || routeStr.contains("AdminSubject")
-            || routeStr.contains("AdminTutor") || routeStr.contains("AdminReview")
+    val isData = routeStr.contains("AdminData") || routeStr.contains("AdminHoliday")
+            || routeStr.contains("AdminSubject") || routeStr.contains("AdminTutor")
+            || routeStr.contains("AdminReview")
     val isProfile = routeStr.contains("Profile")
 
     NavigationBar(
@@ -84,7 +85,7 @@ fun AdminBottomNavBar(
         NavigationBarItem(
             selected = isData,
             onClick = {
-                navController.navigate(AppRoute.AdminSubjects) {
+                navController.navigate(AppRoute.AdminData) {
                     popUpTo(AppRoute.AdminDashboard) { inclusive = false }
                     launchSingleTop = true
                 }

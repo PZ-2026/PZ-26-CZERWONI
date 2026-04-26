@@ -1,5 +1,6 @@
 package pl.edu.ur.teachly.ui.admin.views
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -11,13 +12,20 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Payments
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -25,7 +33,6 @@ import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -44,11 +51,16 @@ import pl.edu.ur.teachly.data.model.TutorRequest
 import pl.edu.ur.teachly.data.model.TutorResponse
 import pl.edu.ur.teachly.ui.admin.viewmodels.AdminTutorsViewModel
 import pl.edu.ur.teachly.ui.components.admin.AdminMessageSnackbars
+import pl.edu.ur.teachly.ui.components.admin.AdminScreenHeader
 import pl.edu.ur.teachly.ui.components.admin.AdminSearchBar
+import pl.edu.ur.teachly.ui.components.other.cards.CardInfoRow
+import pl.edu.ur.teachly.ui.components.other.dialog.DialogSectionLabel
+import pl.edu.ur.teachly.ui.components.other.dialog.DialogSwitchRow
 
 @Composable
 fun AdminTutorsScreen(
-    viewModel: AdminTutorsViewModel = koinViewModel()
+    viewModel: AdminTutorsViewModel = koinViewModel(),
+    showHeader: Boolean = true,
 ) {
     val state by viewModel.state.collectAsState()
     var showEditDialog by remember { mutableStateOf<TutorResponse?>(null) }
@@ -65,20 +77,23 @@ fun AdminTutorsScreen(
             .fillMaxSize()
             .background(colorScheme.background)
     ) {
-        Surface(color = colorScheme.primary) {
-            Column(modifier = Modifier.padding(16.dp)) {
-                Text(
-                    "Korepetytorzy",
-                    style = typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = colorScheme.onPrimary
-                )
-                Spacer(Modifier.height(8.dp))
+        if (showHeader) {
+            AdminScreenHeader(title = "Korepetytorzy") {
                 AdminSearchBar(
                     value = state.searchQuery,
                     onValueChange = { viewModel.onSearchChange(it) },
                     placeholder = "Szukaj po imieniu, nazwisku, email...",
                 )
+            }
+        } else {
+            Surface(color = colorScheme.surface, shadowElevation = 2.dp) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    AdminSearchBar(
+                        value = state.searchQuery,
+                        onValueChange = { viewModel.onSearchChange(it) },
+                        placeholder = "Szukaj po imieniu, nazwisku, email...",
+                    )
+                }
             }
         }
 
@@ -116,23 +131,79 @@ fun AdminTutorsScreen(
 
 @Composable
 private fun TutorAdminCard(tutor: TutorResponse, onEdit: () -> Unit) {
-    Card(shape = RoundedCornerShape(12.dp)) {
-        Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
-            Column(
-                modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = colorScheme.surface),
+        shape = RoundedCornerShape(20.dp),
+        border = BorderStroke(1.dp, colorScheme.outline),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
-                    "${tutor.firstName} ${tutor.lastName}",
-                    style = typography.titleSmall,
-                    fontWeight = FontWeight.Bold
+                    text = "${tutor.firstName} ${tutor.lastName}",
+                    style = typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = colorScheme.onSurface,
                 )
-                Text(
-                    tutor.email,
-                    style = typography.bodySmall,
-                    color = colorScheme.onSurfaceVariant
+                IconButton(onClick = onEdit) {
+                    Icon(
+                        Icons.Default.Edit,
+                        contentDescription = "Edytuj",
+                        tint = colorScheme.primary
+                    )
+                }
+            }
+
+            Spacer(Modifier.height(8.dp))
+
+            CardInfoRow(
+                icon = {
+                    Icon(
+                        Icons.Default.Email,
+                        null,
+                        modifier = Modifier.size(16.dp),
+                        tint = colorScheme.primary
+                    )
+                },
+                text = tutor.email,
+            )
+
+            Spacer(Modifier.height(6.dp))
+
+            CardInfoRow(
+                icon = {
+                    Icon(
+                        Icons.Default.Payments,
+                        null,
+                        modifier = Modifier.size(16.dp),
+                        tint = colorScheme.primary
+                    )
+                },
+                text = "Stawka: ${tutor.hourlyRate} PLN/h",
+            )
+
+            tutor.bio?.let {
+                Spacer(Modifier.height(6.dp))
+                CardInfoRow(
+                    icon = {
+                        Icon(
+                            Icons.Default.Info,
+                            null,
+                            modifier = Modifier.size(16.dp),
+                            tint = colorScheme.primary
+                        )
+                    },
+                    text = it.take(80) + if (it.length > 80) "..." else "",
                 )
-                Text("Stawka: ${tutor.hourlyRate} PLN/h", style = typography.bodySmall)
+            }
+
+            if (tutor.offersOnline || tutor.offersInPerson) {
+                Spacer(Modifier.height(10.dp))
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     if (tutor.offersOnline) Surface(
                         color = colorScheme.primaryContainer,
@@ -141,7 +212,7 @@ private fun TutorAdminCard(tutor: TutorResponse, onEdit: () -> Unit) {
                         Text(
                             "Online",
                             style = typography.labelSmall,
-                            color = colorScheme.onPrimaryContainer,
+                            color = colorScheme.onPrimary,
                             modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
                         )
                     }
@@ -157,20 +228,6 @@ private fun TutorAdminCard(tutor: TutorResponse, onEdit: () -> Unit) {
                         )
                     }
                 }
-                tutor.bio?.let {
-                    Text(
-                        it.take(80) + if (it.length > 80) "..." else "",
-                        style = typography.bodySmall,
-                        color = colorScheme.onSurfaceVariant
-                    )
-                }
-            }
-            IconButton(onClick = onEdit) {
-                Icon(
-                    Icons.Default.Edit,
-                    contentDescription = "Edytuj",
-                    tint = colorScheme.primary
-                )
             }
         }
     }
@@ -180,7 +237,7 @@ private fun TutorAdminCard(tutor: TutorResponse, onEdit: () -> Unit) {
 private fun TutorEditDialog(
     tutor: TutorResponse,
     onDismiss: () -> Unit,
-    onSave: (TutorRequest) -> Unit
+    onSave: (TutorRequest) -> Unit,
 ) {
     var bio by remember { mutableStateOf(tutor.bio ?: "") }
     var hourlyRate by remember { mutableStateOf(tutor.hourlyRate.toString()) }
@@ -191,37 +248,29 @@ private fun TutorEditDialog(
         onDismissRequest = onDismiss,
         title = { Text("Edytuj korepetytora") },
         text = {
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Column(
+                modifier = Modifier.verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
                 OutlinedTextField(
                     value = hourlyRate,
                     onValueChange = { hourlyRate = it },
                     label = { Text("Stawka godzinowa (PLN)") },
+                    leadingIcon = { Icon(Icons.Default.Payments, null) },
                     modifier = Modifier.fillMaxWidth(),
-                    singleLine = true
+                    singleLine = true,
                 )
                 OutlinedTextField(
                     value = bio,
                     onValueChange = { bio = it },
                     label = { Text("Bio") },
+                    leadingIcon = { Icon(Icons.Default.Info, null) },
                     modifier = Modifier.fillMaxWidth(),
-                    minLines = 3
+                    minLines = 3,
                 )
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text("Zajęcia online")
-                    Switch(checked = offersOnline, onCheckedChange = { offersOnline = it })
-                }
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text("Zajęcia stacjonarne")
-                    Switch(checked = offersInPerson, onCheckedChange = { offersInPerson = it })
-                }
+                DialogSectionLabel("Forma zajęć")
+                DialogSwitchRow("Zajęcia online", offersOnline) { offersOnline = it }
+                DialogSwitchRow("Zajęcia stacjonarne", offersInPerson) { offersInPerson = it }
             }
         },
         confirmButton = {
@@ -232,11 +281,11 @@ private fun TutorEditDialog(
                             bio = bio.ifBlank { null },
                             hourlyRate = hourlyRate.toDoubleOrNull() ?: tutor.hourlyRate,
                             offersOnline = offersOnline,
-                            offersInPerson = offersInPerson
+                            offersInPerson = offersInPerson,
                         )
                     )
                 },
-                enabled = hourlyRate.toDoubleOrNull() != null
+                enabled = hourlyRate.toDoubleOrNull() != null,
             ) { Text("Zapisz") }
         },
         dismissButton = { TextButton(onClick = onDismiss) { Text("Anuluj") } }
