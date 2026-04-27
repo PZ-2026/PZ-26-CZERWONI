@@ -12,6 +12,7 @@ data class TutorResponse(
     val firstName: String,
     val lastName: String,
     val email: String,
+    val phoneNumber: String?,
     val avatarUrl: String?,
     val bio: String?,
     val hourlyRate: Double,

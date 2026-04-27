@@ -259,19 +259,32 @@ fun AppNavHost(
 
         // Admin screens
         composable<AppRoute.AdminDashboard> {
-            AdminDashboardScreen()
+            AdminDashboardScreen(
+                onNavigate = { route ->
+                    navController.navigate(route) {
+                        popUpTo(AppRoute.AdminDashboard) { inclusive = false }
+                        launchSingleTop = true
+                    }
+                }
+            )
         }
 
-        composable<AppRoute.AdminUsers> {
-            AdminUsersScreen()
+        composable<AppRoute.AdminUsers> { backStackEntry ->
+            val args = backStackEntry.toRoute<AppRoute.AdminUsers>()
+            AdminUsersScreen(initialRoleFilter = args.roleFilter)
         }
 
-        composable<AppRoute.AdminLessons> {
-            AdminLessonsScreen()
+        composable<AppRoute.AdminLessons> { backStackEntry ->
+            val args = backStackEntry.toRoute<AppRoute.AdminLessons>()
+            AdminLessonsScreen(initialStatusFilter = args.statusFilter)
         }
 
-        composable<AppRoute.AdminData> {
-            AdminDataScreen()
+        composable<AppRoute.AdminData> { backStackEntry ->
+            val args = backStackEntry.toRoute<AppRoute.AdminData>()
+            AdminDataScreen(
+                initialTab = args.initialTab,
+                initialSubjectTab = args.initialSubjectTab
+            )
         }
 
         composable<AppRoute.AdminHolidays> {

@@ -29,6 +29,7 @@ import pl.edu.ur.teachly.R
 import pl.edu.ur.teachly.data.model.UserRole
 import pl.edu.ur.teachly.ui.components.other.PrimaryButton
 import pl.edu.ur.teachly.ui.components.other.formatDate
+import pl.edu.ur.teachly.ui.components.other.formatPhoneNumber
 import pl.edu.ur.teachly.ui.components.profile.AdminBadge
 import pl.edu.ur.teachly.ui.components.profile.ProfileDataCard
 import pl.edu.ur.teachly.ui.components.profile.ProfileDataDivider
@@ -84,8 +85,8 @@ fun AdminProfileScreen(
                             value = profile.email,
                         )
                     }
-                    val phone = profile.phoneNumber
-                    if (!phone.isNullOrBlank()) {
+                    val phone = formatPhoneNumber(profile.phoneNumber.toString())
+                    if (phone.isNotBlank()) {
                         ProfileDataDivider()
                         ProfileInfoRow(
                             icon = Icons.Default.Phone,

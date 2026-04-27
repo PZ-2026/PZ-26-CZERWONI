@@ -18,6 +18,7 @@ import androidx.compose.material.icons.filled.AlternateEmail
 import androidx.compose.material.icons.filled.AttachMoney
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.Wifi
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme.colorScheme
@@ -45,6 +46,7 @@ import pl.edu.ur.teachly.data.model.ReviewResponse
 import pl.edu.ur.teachly.data.model.UserRole
 import pl.edu.ur.teachly.ui.components.other.PrimaryButton
 import pl.edu.ur.teachly.ui.components.other.formatDate
+import pl.edu.ur.teachly.ui.components.other.formatPhoneNumber
 import pl.edu.ur.teachly.ui.components.profile.ProfileDataCard
 import pl.edu.ur.teachly.ui.components.profile.ProfileDataDivider
 import pl.edu.ur.teachly.ui.components.profile.ProfileHeader
@@ -148,6 +150,15 @@ fun TutorProfileScreen(
                                     icon = Icons.Default.AlternateEmail,
                                     label = stringResource(R.string.email),
                                     value = state.email,
+                                )
+                                ProfileDataDivider()
+                            }
+                            val phone = state.phoneNumber?.let { formatPhoneNumber(it) }
+                            if (!phone.isNullOrBlank()) {
+                                ProfileInfoRow(
+                                    icon = Icons.Default.Phone,
+                                    label = stringResource(R.string.field_phone),
+                                    value = phone,
                                 )
                                 ProfileDataDivider()
                             }

@@ -61,7 +61,7 @@ fun AdminBottomNavBar(
         NavigationBarItem(
             selected = isUsers,
             onClick = {
-                navController.navigate(AppRoute.AdminUsers) {
+                navController.navigate(AppRoute.AdminUsers()) {
                     popUpTo(AppRoute.AdminDashboard) { inclusive = false }
                     launchSingleTop = true
                 }
@@ -73,7 +73,7 @@ fun AdminBottomNavBar(
         NavigationBarItem(
             selected = isLessons,
             onClick = {
-                navController.navigate(AppRoute.AdminLessons) {
+                navController.navigate(AppRoute.AdminLessons()) {
                     popUpTo(AppRoute.AdminDashboard) { inclusive = false }
                     launchSingleTop = true
                 }
@@ -85,7 +85,7 @@ fun AdminBottomNavBar(
         NavigationBarItem(
             selected = isData,
             onClick = {
-                navController.navigate(AppRoute.AdminData) {
+                navController.navigate(AppRoute.AdminData()) {
                     popUpTo(AppRoute.AdminDashboard) { inclusive = false }
                     launchSingleTop = true
                 }

@@ -23,6 +23,7 @@ import pl.edu.ur.teachly.ui.models.toUiTutor
 data class TutorProfileState(
     val tutor: Tutor? = null,
     val email: String = "",
+    val phoneNumber: String? = "",
     val stats: TutorStats = TutorStats(),
     val reviews: List<ReviewResponse> = emptyList(),
     val canReview: Boolean = false,
@@ -118,6 +119,7 @@ class TutorProfileViewModel(
                         lessonCount = completedLessons,
                     ),
                     email = tutorResponse.email,
+                    phoneNumber = tutorResponse.phoneNumber,
                     stats = TutorStats(
                         completedLessons = completedLessons,
                         reviewsCount = reviewsCount,

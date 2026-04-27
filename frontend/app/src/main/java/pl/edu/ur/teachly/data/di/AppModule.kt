@@ -16,6 +16,7 @@ import pl.edu.ur.teachly.data.repository.UserRepository
 import pl.edu.ur.teachly.ui.admin.viewmodels.AdminDashboardViewModel
 import pl.edu.ur.teachly.ui.admin.viewmodels.AdminHolidaysViewModel
 import pl.edu.ur.teachly.ui.admin.viewmodels.AdminLessonsViewModel
+import pl.edu.ur.teachly.ui.admin.viewmodels.AdminReviewsViewModel
 import pl.edu.ur.teachly.ui.admin.viewmodels.AdminSubjectsViewModel
 import pl.edu.ur.teachly.ui.admin.viewmodels.AdminTutorsViewModel
 import pl.edu.ur.teachly.ui.admin.viewmodels.AdminUsersViewModel
@@ -68,4 +69,5 @@ val appModule = module {
     viewModel { AdminHolidaysViewModel(get()) }
     viewModel { AdminSubjectsViewModel(get()) }
     viewModel { AdminTutorsViewModel(get()) }
+    viewModel { AdminReviewsViewModel(get()) }
 }

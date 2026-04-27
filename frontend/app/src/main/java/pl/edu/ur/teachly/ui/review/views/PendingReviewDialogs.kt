@@ -11,7 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowRight
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
@@ -232,7 +232,8 @@ fun PendingReviewsSummaryDialog(
                         reviews.forEachIndexed { index, info ->
                             val avatarIndex = (info.tutorId - 1) % AvatarColors.size
                             val initials = buildString {
-                                info.tutorFirstName.firstOrNull()?.let { append(it.uppercaseChar()) }
+                                info.tutorFirstName.firstOrNull()
+                                    ?.let { append(it.uppercaseChar()) }
                                 info.tutorLastName.firstOrNull()?.let { append(it.uppercaseChar()) }
                             }
 
@@ -264,7 +265,7 @@ fun PendingReviewsSummaryDialog(
                                     )
                                 }
                                 Icon(
-                                    imageVector = Icons.Default.KeyboardArrowRight,
+                                    imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                                     contentDescription = null,
                                     tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
                                 )

@@ -1,43 +1,24 @@
 package pl.edu.ur.teachly.ui.admin.views
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Category
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.KeyboardArrowUp
-import androidx.compose.material.icons.filled.School
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme.colorScheme
-import androidx.compose.material3.MaterialTheme.typography
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
@@ -53,7 +34,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import org.koin.androidx.compose.koinViewModel
 import pl.edu.ur.teachly.data.model.SubjectCategoryResponse
@@ -61,15 +41,19 @@ import pl.edu.ur.teachly.data.model.SubjectResponse
 import pl.edu.ur.teachly.ui.admin.viewmodels.AdminSubjectsViewModel
 import pl.edu.ur.teachly.ui.components.admin.AdminMessageSnackbars
 import pl.edu.ur.teachly.ui.components.admin.AdminScreenHeader
-import pl.edu.ur.teachly.ui.components.other.cards.CardInfoRow
+import pl.edu.ur.teachly.ui.components.other.cards.CategoryCard
+import pl.edu.ur.teachly.ui.components.other.cards.SubjectCard
+import pl.edu.ur.teachly.ui.components.other.dialog.CategoryDialog
+import pl.edu.ur.teachly.ui.components.other.dialog.SubjectDialog
 
 @Composable
 fun AdminSubjectsScreen(
     viewModel: AdminSubjectsViewModel = koinViewModel(),
     showHeader: Boolean = true,
+    initialSubjectTab: Int = 0,
 ) {
     val state by viewModel.state.collectAsState()
-    var selectedTab by remember { mutableIntStateOf(0) }
+    var selectedTab by remember { mutableIntStateOf(initialSubjectTab) }
 
     var showAddSubjectDialog by remember { mutableStateOf(false) }
     var showEditSubjectDialog by remember { mutableStateOf<SubjectResponse?>(null) }
@@ -266,221 +250,4 @@ fun AdminSubjectsScreen(
             }
         )
     }
-}
-
-@Composable
-private fun SubjectCard(subject: SubjectResponse, onEdit: () -> Unit, onDelete: () -> Unit) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = colorScheme.surface),
-        shape = RoundedCornerShape(20.dp),
-        border = BorderStroke(1.dp, colorScheme.outline),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-    ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Text(
-                    text = subject.subjectName,
-                    style = typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = colorScheme.onSurface,
-                )
-                Row {
-                    IconButton(onClick = onEdit) {
-                        Icon(
-                            Icons.Default.Edit,
-                            contentDescription = "Edytuj",
-                            tint = colorScheme.primary
-                        )
-                    }
-                    IconButton(onClick = onDelete) {
-                        Icon(
-                            Icons.Default.Delete,
-                            contentDescription = "Usuń",
-                            tint = colorScheme.error
-                        )
-                    }
-                }
-            }
-
-            Spacer(Modifier.height(8.dp))
-
-            CardInfoRow(
-                icon = {
-                    Icon(
-                        Icons.Default.Category,
-                        null,
-                        modifier = Modifier.size(16.dp),
-                        tint = colorScheme.primary
-                    )
-                },
-                text = "Kategoria: ${subject.categoryName}",
-            )
-        }
-    }
-}
-
-@Composable
-private fun CategoryCard(
-    category: SubjectCategoryResponse,
-    subjectCount: Int,
-    onEdit: () -> Unit,
-    onDelete: () -> Unit,
-) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = colorScheme.surface),
-        shape = RoundedCornerShape(20.dp),
-        border = BorderStroke(1.dp, colorScheme.outline),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-    ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Text(
-                    text = category.categoryName,
-                    style = typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = colorScheme.onSurface,
-                )
-                Row {
-                    IconButton(onClick = onEdit) {
-                        Icon(
-                            Icons.Default.Edit,
-                            contentDescription = "Edytuj",
-                            tint = colorScheme.primary
-                        )
-                    }
-                    IconButton(onClick = onDelete) {
-                        Icon(
-                            Icons.Default.Delete,
-                            contentDescription = "Usuń",
-                            tint = if (subjectCount == 0) colorScheme.error else colorScheme.onSurfaceVariant,
-                        )
-                    }
-                }
-            }
-
-            Spacer(Modifier.height(8.dp))
-
-            CardInfoRow(
-                icon = {
-                    Icon(
-                        Icons.Default.School,
-                        null,
-                        modifier = Modifier.size(16.dp),
-                        tint = colorScheme.primary
-                    )
-                },
-                text = "Przedmioty: $subjectCount",
-            )
-        }
-    }
-}
-
-@Composable
-private fun SubjectDialog(
-    title: String,
-    initialName: String,
-    initialCategoryId: Int,
-    categories: List<SubjectCategoryResponse>,
-    onDismiss: () -> Unit,
-    onSave: (String, Int) -> Unit,
-) {
-    var name by remember { mutableStateOf(initialName) }
-    var categoryId by remember { mutableIntStateOf(initialCategoryId) }
-    var expanded by remember { mutableStateOf(false) }
-    val selectedCategory = categories.find { it.id == categoryId }
-
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(title) },
-        text = {
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                OutlinedTextField(
-                    value = name,
-                    onValueChange = { if (it.length <= 100) name = it },
-                    label = { Text("Nazwa przedmiotu") },
-                    leadingIcon = { Icon(Icons.Default.School, null) },
-                    modifier = Modifier.fillMaxWidth(),
-                    singleLine = true,
-                )
-                Box(modifier = Modifier.fillMaxWidth()) {
-                    OutlinedTextField(
-                        value = selectedCategory?.categoryName ?: "Wybierz kategorię",
-                        onValueChange = {},
-                        readOnly = true,
-                        label = { Text("Kategoria") },
-                        leadingIcon = { Icon(Icons.Default.Category, null) },
-                        trailingIcon = {
-                            Icon(
-                                if (expanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
-                                contentDescription = null,
-                            )
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { expanded = true },
-                    )
-                    DropdownMenu(
-                        expanded = expanded,
-                        onDismissRequest = { expanded = false },
-                        modifier = Modifier.fillMaxWidth(),
-                    ) {
-                        categories.forEach { cat ->
-                            DropdownMenuItem(
-                                text = { Text(cat.categoryName) },
-                                onClick = { categoryId = cat.id; expanded = false },
-                            )
-                        }
-                    }
-                }
-            }
-        },
-        confirmButton = {
-            TextButton(
-                onClick = { onSave(name.trim(), categoryId) },
-                enabled = name.isNotBlank() && categoryId > 0,
-            ) { Text("Zapisz") }
-        },
-        dismissButton = { TextButton(onClick = onDismiss) { Text("Anuluj") } }
-    )
-}
-
-@Composable
-private fun CategoryDialog(
-    title: String,
-    initialName: String,
-    onDismiss: () -> Unit,
-    onSave: (String) -> Unit,
-) {
-    var name by remember { mutableStateOf(initialName) }
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(title) },
-        text = {
-            OutlinedTextField(
-                value = name,
-                onValueChange = { if (it.length <= 100) name = it },
-                label = { Text("Nazwa") },
-                leadingIcon = { Icon(Icons.Default.Edit, null) },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
-            )
-        },
-        confirmButton = {
-            TextButton(
-                onClick = { onSave(name.trim()) },
-                enabled = name.isNotBlank(),
-            ) { Text("Zapisz") }
-        },
-        dismissButton = { TextButton(onClick = onDismiss) { Text("Anuluj") } }
-    )
 }
