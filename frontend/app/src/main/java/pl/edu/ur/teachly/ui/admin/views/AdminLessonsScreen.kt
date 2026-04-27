@@ -86,46 +86,49 @@ fun AdminLessonsScreen(
         }
     }
 
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
             .background(colorScheme.background)
     ) {
-        AdminScreenHeader(title = "Lekcje") {
-            AdminSearchBar(
-                value = state.searchQuery,
-                onValueChange = { viewModel.onSearchChange(it) },
-                placeholder = "Szukaj po uczestniku, przedmiocie...",
-            )
-            Spacer(Modifier.height(8.dp))
-            FilterChips(
-                items = listOf("Wszystkie") + LessonStatus.entries.map { it.name },
-                activeItem = state.selectedStatus?.name ?: "Wszystkie",
-                onSelect = { label ->
-                    viewModel.onStatusFilterChange(
-                        if (label == "Wszystkie") null else LessonStatus.valueOf(label)
-                    )
-                },
-            )
-        }
-
-        AdminMessageSnackbars(successMessage = state.successMessage, errorMessage = state.error)
-
-        when {
-            state.isLoading -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator()
+        Column(modifier = Modifier.fillMaxSize()) {
+            AdminScreenHeader(title = "Lekcje") {
+                AdminSearchBar(
+                    value = state.searchQuery,
+                    onValueChange = { viewModel.onSearchChange(it) },
+                    placeholder = "Szukaj po uczestniku, przedmiocie...",
+                )
+                Spacer(Modifier.height(8.dp))
+                FilterChips(
+                    items = listOf("Wszystkie") + LessonStatus.entries.map { it.name },
+                    activeItem = state.selectedStatus?.name ?: "Wszystkie",
+                    onSelect = { label ->
+                        viewModel.onStatusFilterChange(
+                            if (label == "Wszystkie") null else LessonStatus.valueOf(label)
+                        )
+                    },
+                )
             }
-
-            else -> LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                items(state.filteredLessons) { lesson ->
-                    LessonAdminCard(lesson = lesson, onEdit = { showEditDialog = lesson })
+            when {
+                state.isLoading -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator()
+                }
+                else -> LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    items(state.filteredLessons) { lesson ->
+                        LessonAdminCard(lesson = lesson, onEdit = { showEditDialog = lesson })
+                    }
                 }
             }
         }
+        AdminMessageSnackbars(
+            successMessage = state.successMessage,
+            errorMessage = state.error,
+            modifier = Modifier.align(Alignment.BottomCenter),
+        )
     }
 
     // Edit dialog

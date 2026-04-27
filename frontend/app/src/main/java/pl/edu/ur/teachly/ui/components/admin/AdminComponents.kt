@@ -77,22 +77,18 @@ fun AdminScreenHeader(
 fun AdminMessageSnackbars(
     successMessage: String?,
     errorMessage: String?,
+    modifier: Modifier = Modifier,
 ) {
-    successMessage?.let {
-        Snackbar(
-            modifier = Modifier.padding(8.dp),
-            containerColor = colorScheme.primaryContainer,
-        ) {
-            Text(it, color = colorScheme.onPrimary)
-        }
-    }
-    errorMessage?.let {
-        Snackbar(
-            modifier = Modifier.padding(8.dp),
+    when {
+        errorMessage != null -> Snackbar(
+            modifier = modifier.padding(16.dp),
             containerColor = colorScheme.errorContainer,
-        ) {
-            Text(it, color = colorScheme.onErrorContainer)
-        }
+        ) { Text(errorMessage, color = colorScheme.onErrorContainer) }
+
+        successMessage != null -> Snackbar(
+            modifier = modifier.padding(16.dp),
+            containerColor = colorScheme.primaryContainer,
+        ) { Text(successMessage, color = colorScheme.onPrimaryContainer) }
     }
 }
 

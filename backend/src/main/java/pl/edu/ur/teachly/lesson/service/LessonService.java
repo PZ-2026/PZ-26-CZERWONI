@@ -64,6 +64,10 @@ public class LessonService {
             throw new IllegalArgumentException("Niepoprawny zakres czasu");
         }
 
+        if (LocalDateTime.of(request.lessonDate(), request.timeFrom()).isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("Nie można zarezerwować lekcji w przeszłości");
+        }
+
         List<TimetableDayResponse> available =
                 timetableService.getTimetable(
                         request.tutorId(), request.lessonDate(), request.lessonDate(), studentId);

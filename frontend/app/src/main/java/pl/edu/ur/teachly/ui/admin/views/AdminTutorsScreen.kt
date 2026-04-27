@@ -72,49 +72,52 @@ fun AdminTutorsScreen(
         }
     }
 
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
             .background(colorScheme.background)
     ) {
-        if (showHeader) {
-            AdminScreenHeader(title = "Korepetytorzy") {
-                AdminSearchBar(
-                    value = state.searchQuery,
-                    onValueChange = { viewModel.onSearchChange(it) },
-                    placeholder = "Szukaj po imieniu, nazwisku, email...",
-                )
-            }
-        } else {
-            Surface(color = colorScheme.surface, shadowElevation = 2.dp) {
-                Column(modifier = Modifier.padding(16.dp)) {
+        Column(modifier = Modifier.fillMaxSize()) {
+            if (showHeader) {
+                AdminScreenHeader(title = "Korepetytorzy") {
                     AdminSearchBar(
                         value = state.searchQuery,
                         onValueChange = { viewModel.onSearchChange(it) },
                         placeholder = "Szukaj po imieniu, nazwisku, email...",
                     )
                 }
+            } else {
+                Surface(color = colorScheme.surface, shadowElevation = 2.dp) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        AdminSearchBar(
+                            value = state.searchQuery,
+                            onValueChange = { viewModel.onSearchChange(it) },
+                            placeholder = "Szukaj po imieniu, nazwisku, email...",
+                        )
+                    }
+                }
             }
-        }
-
-        AdminMessageSnackbars(successMessage = state.successMessage, errorMessage = state.error)
-
-        when {
-            state.isLoading -> Box(
-                Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) { CircularProgressIndicator() }
-
-            else -> LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                items(state.filteredTutors) { tutor ->
-                    TutorAdminCard(tutor = tutor, onEdit = { showEditDialog = tutor })
+            when {
+                state.isLoading -> Box(
+                    Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) { CircularProgressIndicator() }
+                else -> LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    items(state.filteredTutors) { tutor ->
+                        TutorAdminCard(tutor = tutor, onEdit = { showEditDialog = tutor })
+                    }
                 }
             }
         }
+        AdminMessageSnackbars(
+            successMessage = state.successMessage,
+            errorMessage = state.error,
+            modifier = Modifier.align(Alignment.BottomCenter),
+        )
     }
 
     showEditDialog?.let { tutor ->

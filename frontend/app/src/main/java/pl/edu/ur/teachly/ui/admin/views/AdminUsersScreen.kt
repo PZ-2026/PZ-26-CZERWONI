@@ -75,50 +75,58 @@ fun AdminUsersScreen(
         }
     }
 
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
             .background(colorScheme.background)
     ) {
-        AdminScreenHeader(title = "Użytkownicy") {
-            AdminSearchBar(
-                value = state.searchQuery,
-                onValueChange = { viewModel.onSearchChange(it) },
-                placeholder = "Szukaj po imieniu, nazwisku, email...",
-            )
-            Spacer(Modifier.height(8.dp))
-            FilterChips(
-                items = listOf("Wszyscy") + UserRole.entries.map { it.name },
-                activeItem = state.selectedRole?.name ?: "Wszyscy",
-                onSelect = { label ->
-                    viewModel.onRoleFilterChange(
-                        if (label == "Wszyscy") null else UserRole.valueOf(label)
-                    )
-                },
-            )
-        }
-
-        AdminMessageSnackbars(successMessage = state.successMessage, errorMessage = state.error)
-
-        when {
-            state.isLoading -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator()
+        Column(modifier = Modifier.fillMaxSize()) {
+            AdminScreenHeader(title = "Użytkownicy") {
+                AdminSearchBar(
+                    value = state.searchQuery,
+                    onValueChange = { viewModel.onSearchChange(it) },
+                    placeholder = "Szukaj po imieniu, nazwisku, email...",
+                )
+                Spacer(Modifier.height(8.dp))
+                FilterChips(
+                    items = listOf("Wszyscy") + UserRole.entries.map { it.name },
+                    activeItem = state.selectedRole?.name ?: "Wszyscy",
+                    onSelect = { label ->
+                        viewModel.onRoleFilterChange(
+                            if (label == "Wszyscy") null else UserRole.valueOf(label)
+                        )
+                    },
+                )
             }
 
-            else -> LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                items(state.filteredUsers) { user ->
-                    UserAdminCard(
-                        user = user,
-                        onEdit = { showEditDialog = user },
-                        onBanToggle = { showBanDialog = user }
-                    )
+            when {
+                state.isLoading -> Box(
+                    Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+
+                else -> LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    items(state.filteredUsers) { user ->
+                        UserAdminCard(
+                            user = user,
+                            onEdit = { showEditDialog = user },
+                            onBanToggle = { showBanDialog = user }
+                        )
+                    }
                 }
             }
         }
+        AdminMessageSnackbars(
+            successMessage = state.successMessage,
+            errorMessage = state.error,
+            modifier = Modifier.align(Alignment.BottomCenter),
+        )
     }
 
     // Edit dialog

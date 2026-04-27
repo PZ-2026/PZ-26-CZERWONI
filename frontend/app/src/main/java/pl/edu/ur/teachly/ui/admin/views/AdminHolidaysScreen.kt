@@ -95,8 +95,6 @@ fun AdminHolidaysScreen(
                 }
             }
 
-            AdminMessageSnackbars(successMessage = state.successMessage, errorMessage = state.error)
-
             when {
                 state.isLoading -> Box(
                     Modifier.fillMaxSize(),
@@ -129,6 +127,11 @@ fun AdminHolidaysScreen(
         ) {
             Icon(Icons.Default.Add, contentDescription = "Dodaj")
         }
+        AdminMessageSnackbars(
+            successMessage = state.successMessage,
+            errorMessage = state.error,
+            modifier = Modifier.align(Alignment.BottomCenter),
+        )
     }
 
     if (showAddDialog) {
