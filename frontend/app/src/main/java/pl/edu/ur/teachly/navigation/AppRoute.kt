@@ -61,4 +61,38 @@ sealed interface AppRoute {
 
     @Serializable
     data class AllReviews(val tutorId: Int, val tutorName: String) : AppRoute
+
+    // Admin
+    @Serializable
+    data object AdminDashboard : AppRoute
+
+    @Serializable
+    data class AdminUsers(val roleFilter: String? = null) : AppRoute
+
+    @Serializable
+    data class AdminUserEdit(val userId: Int) : AppRoute
+
+    @Serializable
+    data class AdminLessons(val statusFilter: String? = null) : AppRoute
+
+    @Serializable
+    data class AdminLessonEdit(val lessonId: Int) : AppRoute
+
+    @Serializable
+    data class AdminData(val initialTab: Int = 0, val initialSubjectTab: Int = 0) : AppRoute
+
+    @Serializable
+    data object AdminHolidays : AppRoute
+
+    @Serializable
+    data object AdminSubjects : AppRoute
+
+    @Serializable
+    data object AdminTutors : AppRoute
+
+    @Serializable
+    data class AdminTutorEdit(val tutorId: Int) : AppRoute
+
+    @Serializable
+    data object AdminReviews : AppRoute
 }

@@ -22,8 +22,8 @@ import androidx.compose.ui.unit.dp
 import pl.edu.ur.teachly.data.model.LessonStatus
 import pl.edu.ur.teachly.data.model.PaymentStatus
 import pl.edu.ur.teachly.data.model.UserRole
-import pl.edu.ur.teachly.ui.components.other.ConfirmConfig
-import pl.edu.ur.teachly.ui.components.other.ConfirmDialog
+import pl.edu.ur.teachly.ui.components.other.dialog.ConfirmConfig
+import pl.edu.ur.teachly.ui.components.other.dialog.ConfirmDialog
 import pl.edu.ur.teachly.ui.models.LessonDetail
 
 @Composable

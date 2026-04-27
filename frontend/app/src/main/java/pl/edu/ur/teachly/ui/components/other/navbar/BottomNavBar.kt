@@ -1,4 +1,4 @@
-package pl.edu.ur.teachly.ui.components.other.bottomNavBar
+package pl.edu.ur.teachly.ui.components.other.navbar
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
@@ -22,6 +22,7 @@ import pl.edu.ur.teachly.navigation.AppRoute
 @Composable
 fun BottomNavBar(
     navController: NavController,
+    role: String?,
     modifier: Modifier = Modifier
 ) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -60,23 +61,25 @@ fun BottomNavBar(
             label = { Text(stringResource(R.string.nav_home)) },
             colors = navItemColors()
         )
-        NavigationBarItem(
-            selected = isSearch,
-            onClick = {
-                navController.navigate(AppRoute.Search) {
-                    popUpTo(AppRoute.Search) { inclusive = false }
-                    launchSingleTop = true
-                }
-            },
-            icon = {
-                Icon(
-                    Icons.Default.Search,
-                    contentDescription = stringResource(R.string.nav_search)
-                )
-            },
-            label = { Text(stringResource(R.string.nav_search)) },
-            colors = navItemColors()
-        )
+        if (role == "STUDENT") {
+            NavigationBarItem(
+                selected = isSearch,
+                onClick = {
+                    navController.navigate(AppRoute.Search) {
+                        popUpTo(AppRoute.Search) { inclusive = false }
+                        launchSingleTop = true
+                    }
+                },
+                icon = {
+                    Icon(
+                        Icons.Default.Search,
+                        contentDescription = stringResource(R.string.nav_search)
+                    )
+                },
+                label = { Text(stringResource(R.string.nav_search)) },
+                colors = navItemColors()
+            )
+        }
         NavigationBarItem(
             selected = isSchedule,
             onClick = {

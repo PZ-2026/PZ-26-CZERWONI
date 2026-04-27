@@ -29,7 +29,7 @@ import androidx.compose.ui.unit.dp
 import pl.edu.ur.teachly.data.model.LessonFormat
 import pl.edu.ur.teachly.data.model.PaymentStatus
 import pl.edu.ur.teachly.data.model.UserRole
-import pl.edu.ur.teachly.ui.components.other.LessonStatusBadge
+import pl.edu.ur.teachly.ui.components.other.badges.LessonStatusBadge
 import pl.edu.ur.teachly.ui.components.other.formatDate
 import pl.edu.ur.teachly.ui.models.LessonDetail
 

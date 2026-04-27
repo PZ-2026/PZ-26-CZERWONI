@@ -30,9 +30,9 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -55,6 +55,7 @@ import pl.edu.ur.teachly.data.model.ReviewResponse
 import pl.edu.ur.teachly.ui.components.other.PrimaryButton
 import pl.edu.ur.teachly.ui.components.other.cards.StatCard
 import pl.edu.ur.teachly.ui.components.other.formatDate
+import pl.edu.ur.teachly.ui.components.other.formatPhoneNumber
 import pl.edu.ur.teachly.ui.components.profile.ProfileDataCard
 import pl.edu.ur.teachly.ui.components.profile.ProfileDataDivider
 import pl.edu.ur.teachly.ui.components.profile.ProfileHeader
@@ -146,7 +147,7 @@ fun StudentProfileScreen(
                 onEditClick = onEditClick,
             )
 
-            TabRow(
+            PrimaryTabRow(
                 selectedTabIndex = selectedTab,
                 containerColor = colorScheme.surface,
                 contentColor = colorScheme.primary,
@@ -221,8 +222,8 @@ private fun ProfileTab(
                     value = profile.email,
                 )
             }
-            val phone = profile.phoneNumber
-            if (!phone.isNullOrBlank()) {
+            val phone = formatPhoneNumber(profile.phoneNumber.toString())
+            if (phone.isNotBlank()) {
                 ProfileDataDivider()
                 ProfileInfoRow(
                     icon = Icons.Default.Phone,

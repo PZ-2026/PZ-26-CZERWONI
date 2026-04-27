@@ -1,4 +1,4 @@
-package pl.edu.ur.teachly.ui.components.other
+package pl.edu.ur.teachly.ui.components.other.badges
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -10,15 +10,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import pl.edu.ur.teachly.data.model.LessonStatus
+import pl.edu.ur.teachly.data.model.PaymentStatus
 
 @Composable
-fun LessonStatusBadge(status: LessonStatus) {
+fun PaymentStatusBadge(status: PaymentStatus) {
     val (label, color) = when (status) {
-        LessonStatus.PENDING -> "Oczekująca" to colorScheme.tertiary
-        LessonStatus.CONFIRMED -> "Potwierdzona" to colorScheme.primary
-        LessonStatus.COMPLETED -> "Zakończona" to colorScheme.onSurfaceVariant
-        LessonStatus.CANCELLED -> "Anulowana" to colorScheme.error
+        PaymentStatus.PAID -> "Opłacone" to colorScheme.primary
+        PaymentStatus.PENDING -> "Nieopłacone" to colorScheme.tertiary
+        PaymentStatus.CANCELLED -> "Anulowane" to colorScheme.error
     }
     Surface(
         shape = RoundedCornerShape(8.dp),

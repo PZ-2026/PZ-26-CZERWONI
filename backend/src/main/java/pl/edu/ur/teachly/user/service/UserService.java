@@ -1,15 +1,17 @@
 package pl.edu.ur.teachly.user.service;
 
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.edu.ur.teachly.common.exception.ResourceNotFoundException;
+import pl.edu.ur.teachly.user.dto.request.AdminUserUpdateRequest;
 import pl.edu.ur.teachly.user.dto.request.UserUpdateRequest;
 import pl.edu.ur.teachly.user.dto.response.UserResponse;
 import pl.edu.ur.teachly.user.entity.User;
 import pl.edu.ur.teachly.user.mapper.UserMapper;
 import pl.edu.ur.teachly.user.repository.UserRepository;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -45,6 +47,41 @@ public class UserService {
 
         userMapper.updateFromRequest(request, user);
         return userMapper.toResponse(userRepository.save(user));
+    }
+
+    @Transactional
+    public UserResponse adminUpdateUser(Integer id, AdminUserUpdateRequest request) {
+        User user =
+                userRepository
+                        .findById(id)
+                        .orElseThrow(
+                                () ->
+                                        new ResourceNotFoundException(
+                                                "Nie znaleziono szukanego użytkownika"));
+        user.setFirstName(request.firstName());
+        user.setLastName(request.lastName());
+        user.setEmail(request.email());
+        user.setPhoneNumber(request.phoneNumber());
+        if (request.userRole() != null) {
+            user.setUserRole(request.userRole());
+        }
+        if (request.avatarUrl() != null) {
+            user.setAvatarUrl(request.avatarUrl());
+        }
+        return userMapper.toResponse(userRepository.save(user));
+    }
+
+    @Transactional
+    public void activateUser(Integer id) {
+        User user =
+                userRepository
+                        .findById(id)
+                        .orElseThrow(
+                                () ->
+                                        new ResourceNotFoundException(
+                                                "Nie znaleziono szukanego użytkownika"));
+        user.setIsActive(true);
+        userRepository.save(user);
     }
 
     @Transactional

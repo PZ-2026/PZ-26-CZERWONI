@@ -1,4 +1,4 @@
-package pl.edu.ur.teachly.ui.components.other
+package pl.edu.ur.teachly.ui.components.other.dialog
 
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button

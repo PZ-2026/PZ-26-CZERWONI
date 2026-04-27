@@ -18,12 +18,12 @@ import androidx.compose.material.icons.filled.AlternateEmail
 import androidx.compose.material.icons.filled.AttachMoney
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.Wifi
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -46,14 +46,15 @@ import pl.edu.ur.teachly.data.model.ReviewResponse
 import pl.edu.ur.teachly.data.model.UserRole
 import pl.edu.ur.teachly.ui.components.other.PrimaryButton
 import pl.edu.ur.teachly.ui.components.other.formatDate
+import pl.edu.ur.teachly.ui.components.other.formatPhoneNumber
 import pl.edu.ur.teachly.ui.components.profile.ProfileDataCard
 import pl.edu.ur.teachly.ui.components.profile.ProfileDataDivider
 import pl.edu.ur.teachly.ui.components.profile.ProfileHeader
 import pl.edu.ur.teachly.ui.components.profile.ProfileInfoRow
+import pl.edu.ur.teachly.ui.components.profile.TutorStatsSection
 import pl.edu.ur.teachly.ui.components.tutor.TutorDetailBody
 import pl.edu.ur.teachly.ui.profile.viewmodels.StudentProfile
 import pl.edu.ur.teachly.ui.profile.viewmodels.TutorProfileViewModel
-import pl.edu.ur.teachly.ui.profile.viewmodels.TutorStats
 import pl.edu.ur.teachly.ui.review.views.AddReviewDialog
 import pl.edu.ur.teachly.ui.review.views.ReviewCard
 import pl.edu.ur.teachly.ui.theme.AvatarColors
@@ -149,6 +150,15 @@ fun TutorProfileScreen(
                                     icon = Icons.Default.AlternateEmail,
                                     label = stringResource(R.string.email),
                                     value = state.email,
+                                )
+                                ProfileDataDivider()
+                            }
+                            val phone = state.phoneNumber?.let { formatPhoneNumber(it) }
+                            if (!phone.isNullOrBlank()) {
+                                ProfileInfoRow(
+                                    icon = Icons.Default.Phone,
+                                    label = stringResource(R.string.field_phone),
+                                    value = phone,
                                 )
                                 ProfileDataDivider()
                             }
@@ -301,78 +311,6 @@ private fun ReviewsSection(
             PrimaryButton(
                 text = stringResource(R.string.review_add_btn),
                 onClick = onAddReview,
-            )
-        }
-    }
-}
-
-
-@Composable
-fun TutorStatsSection(stats: TutorStats) {
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Text(
-            text = stringResource(R.string.profile_stats_title),
-            style = typography.titleMedium,
-            fontWeight = FontWeight.Bold,
-            color = colorScheme.onBackground,
-        )
-        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-            ) {
-                TutorStatCard(
-                    value = "${stats.completedLessons}",
-                    label = stringResource(R.string.tutor_lessons_count),
-                    modifier = Modifier.weight(1f),
-                )
-                TutorStatCard(
-                    value = if (stats.avgRating > 0.0) "%.1f".format(stats.avgRating) else "–",
-                    label = stringResource(R.string.avg_rating),
-                    modifier = Modifier.weight(1f),
-                )
-            }
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-            ) {
-                TutorStatCard(
-                    value = "${stats.reviewsCount}",
-                    label = stringResource(R.string.tutor_reviews_count),
-                    modifier = Modifier.weight(1f),
-                )
-                TutorStatCard(
-                    value = stringResource(R.string.total_earnings).format(stats.totalEarnings),
-                    label = stringResource(R.string.tutor_earnings),
-                    modifier = Modifier.weight(1f),
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun TutorStatCard(value: String, label: String, modifier: Modifier = Modifier) {
-    Surface(
-        modifier = modifier,
-        shape = RoundedCornerShape(16.dp),
-        color = colorScheme.surface,
-        shadowElevation = 2.dp,
-    ) {
-        Column(
-            modifier = Modifier.padding(12.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Text(
-                text = value,
-                style = typography.titleLarge,
-                fontWeight = FontWeight.Bold,
-                color = colorScheme.primary,
-            )
-            Text(
-                text = label,
-                style = typography.bodySmall,
-                color = colorScheme.onSurfaceVariant,
             )
         }
     }

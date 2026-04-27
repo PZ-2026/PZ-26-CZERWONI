@@ -17,8 +17,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import org.koin.androidx.compose.koinViewModel
+import pl.edu.ur.teachly.ui.components.other.FilterChips
 import pl.edu.ur.teachly.ui.components.search.SearchHeader
-import pl.edu.ur.teachly.ui.components.search.SubjectChips
 import pl.edu.ur.teachly.ui.components.search.TutorList
 import pl.edu.ur.teachly.ui.models.Tutor
 import pl.edu.ur.teachly.ui.search.viewmodels.SearchViewModel
@@ -42,9 +42,9 @@ fun SearchScreen(
             onClear = viewModel::clearQuery,
             onSearch = { focusManager.clearFocus() },
         )
-        SubjectChips(
-            subjects = uiState.subjects,
-            activeSubject = uiState.activeSubject,
+        FilterChips(
+            items = uiState.subjects,
+            activeItem = uiState.activeSubject,
             onSelect = viewModel::onSubjectSelect,
         )
 

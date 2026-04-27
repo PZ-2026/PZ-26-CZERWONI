@@ -1,14 +1,15 @@
 package pl.edu.ur.teachly.lesson.repository;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import pl.edu.ur.teachly.common.enums.LessonStatus;
 import pl.edu.ur.teachly.lesson.entity.Lesson;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
 
 @Repository
 public interface LessonRepository extends JpaRepository<Lesson, Integer> {
@@ -57,4 +58,6 @@ public interface LessonRepository extends JpaRepository<Lesson, Integer> {
             @Param("timeFrom") LocalTime timeFrom,
             @Param("timeTo") LocalTime timeTo,
             @Param("cancelledStatus") LessonStatus cancelledStatus);
+
+    int countByLessonStatus(LessonStatus lessonStatus);
 }

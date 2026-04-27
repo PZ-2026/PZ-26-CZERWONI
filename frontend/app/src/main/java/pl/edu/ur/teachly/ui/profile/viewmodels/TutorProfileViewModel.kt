@@ -17,19 +17,13 @@ import pl.edu.ur.teachly.data.repository.LessonRepository
 import pl.edu.ur.teachly.data.repository.ReviewRepository
 import pl.edu.ur.teachly.data.repository.TutorRepository
 import pl.edu.ur.teachly.ui.models.Tutor
+import pl.edu.ur.teachly.ui.models.TutorStats
 import pl.edu.ur.teachly.ui.models.toUiTutor
-
-data class TutorStats(
-    val totalLessons: Int = 0,
-    val completedLessons: Int = 0,
-    val reviewsCount: Int = 0,
-    val avgRating: Double = 0.0,
-    val totalEarnings: Double = 0.0,
-)
 
 data class TutorProfileState(
     val tutor: Tutor? = null,
     val email: String = "",
+    val phoneNumber: String? = "",
     val stats: TutorStats = TutorStats(),
     val reviews: List<ReviewResponse> = emptyList(),
     val canReview: Boolean = false,
@@ -125,6 +119,7 @@ class TutorProfileViewModel(
                         lessonCount = completedLessons,
                     ),
                     email = tutorResponse.email,
+                    phoneNumber = tutorResponse.phoneNumber,
                     stats = TutorStats(
                         completedLessons = completedLessons,
                         reviewsCount = reviewsCount,
@@ -145,7 +140,12 @@ class TutorProfileViewModel(
             _state.update { it.copy(isSubmittingReview = true, reviewError = null) }
             reviewRepository.addReview(studentId, ReviewRequest(tutorId, rating, comment)).fold(
                 onSuccess = {
-                    _state.update { it.copy(isSubmittingReview = false, reviewSubmitSuccess = true) }
+                    _state.update {
+                        it.copy(
+                            isSubmittingReview = false,
+                            reviewSubmitSuccess = true
+                        )
+                    }
                     loadProfile(tutorId.toString())
                 },
                 onFailure = { e ->

@@ -13,6 +13,7 @@ public interface TutorMapper {
     @Mapping(source = "user.firstName", target = "firstName")
     @Mapping(source = "user.lastName", target = "lastName")
     @Mapping(source = "user.email", target = "email")
+    @Mapping(source = "user.phoneNumber", target = "phoneNumber")
     @Mapping(source = "user.avatarUrl", target = "avatarUrl")
     TutorResponse toResponse(Tutor tutor);
 

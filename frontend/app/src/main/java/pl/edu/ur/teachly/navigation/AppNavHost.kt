@@ -7,15 +7,26 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 import pl.edu.ur.teachly.data.local.TokenManager
+import pl.edu.ur.teachly.ui.admin.views.AdminDashboardScreen
+import pl.edu.ur.teachly.ui.admin.views.AdminDataScreen
+import pl.edu.ur.teachly.ui.admin.views.AdminHolidaysScreen
+import pl.edu.ur.teachly.ui.admin.views.AdminLessonsScreen
+import pl.edu.ur.teachly.ui.admin.views.AdminReviewsScreen
+import pl.edu.ur.teachly.ui.admin.views.AdminSubjectsScreen
+import pl.edu.ur.teachly.ui.admin.views.AdminTutorsScreen
+import pl.edu.ur.teachly.ui.admin.views.AdminUsersScreen
 import pl.edu.ur.teachly.ui.auth.views.LoginScreen
 import pl.edu.ur.teachly.ui.auth.views.RegisterScreen
 import pl.edu.ur.teachly.ui.auth.views.SplashScreen
@@ -55,16 +66,32 @@ fun AppNavHost(
         }
 
         composable<AppRoute.Login> {
+            val tokenManager = koinInject<TokenManager>()
+            val scope = rememberCoroutineScope()
             LoginScreen(
                 onBack = { navController.popBackStack() },
-                onSuccess = { navController.navigateToHome() },
+                onSuccess = {
+                    scope.launch {
+                        val role = tokenManager.roleFlow.first()
+                        if (role == "ADMIN") navController.navigateToAdminDashboard()
+                        else navController.navigateToHome()
+                    }
+                },
             )
         }
 
         composable<AppRoute.Register> {
+            val tokenManager = koinInject<TokenManager>()
+            val scope = rememberCoroutineScope()
             RegisterScreen(
                 onBack = { navController.popBackStack() },
-                onSuccess = { navController.navigateToHome() },
+                onSuccess = {
+                    scope.launch {
+                        val role = tokenManager.roleFlow.first()
+                        if (role == "ADMIN") navController.navigateToAdminDashboard()
+                        else navController.navigateToHome()
+                    }
+                },
             )
         }
 
@@ -229,6 +256,52 @@ fun AppNavHost(
                 onBack = { navController.popBackStack() },
             )
         }
+
+        // Admin screens
+        composable<AppRoute.AdminDashboard> {
+            AdminDashboardScreen(
+                onNavigate = { route ->
+                    navController.navigate(route) {
+                        popUpTo(AppRoute.AdminDashboard) { inclusive = false }
+                        launchSingleTop = true
+                    }
+                }
+            )
+        }
+
+        composable<AppRoute.AdminUsers> { backStackEntry ->
+            val args = backStackEntry.toRoute<AppRoute.AdminUsers>()
+            AdminUsersScreen(initialRoleFilter = args.roleFilter)
+        }
+
+        composable<AppRoute.AdminLessons> { backStackEntry ->
+            val args = backStackEntry.toRoute<AppRoute.AdminLessons>()
+            AdminLessonsScreen(initialStatusFilter = args.statusFilter)
+        }
+
+        composable<AppRoute.AdminData> { backStackEntry ->
+            val args = backStackEntry.toRoute<AppRoute.AdminData>()
+            AdminDataScreen(
+                initialTab = args.initialTab,
+                initialSubjectTab = args.initialSubjectTab
+            )
+        }
+
+        composable<AppRoute.AdminHolidays> {
+            AdminHolidaysScreen()
+        }
+
+        composable<AppRoute.AdminSubjects> {
+            AdminSubjectsScreen()
+        }
+
+        composable<AppRoute.AdminTutors> {
+            AdminTutorsScreen()
+        }
+
+        composable<AppRoute.AdminReviews> {
+            AdminReviewsScreen()
+        }
     }
 }
 
@@ -243,6 +316,13 @@ private fun NavHostController.navigateToHome() {
 private fun NavHostController.navigateToSplash() {
     navigate(AppRoute.Splash) {
         popUpTo<AppRoute.Home> { inclusive = true }
+        launchSingleTop = true
+    }
+}
+
+private fun NavHostController.navigateToAdminDashboard() {
+    navigate(AppRoute.AdminDashboard) {
+        popUpTo<AppRoute.Splash> { inclusive = true }
         launchSingleTop = true
     }
 }
