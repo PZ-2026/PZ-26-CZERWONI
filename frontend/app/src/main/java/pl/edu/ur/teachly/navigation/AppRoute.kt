@@ -62,6 +62,9 @@ sealed interface AppRoute {
     @Serializable
     data class AllReviews(val tutorId: Int, val tutorName: String) : AppRoute
 
+    @Serializable
+    data class TutorAvailability(val tutorId: Int) : AppRoute
+
     // Admin
     @Serializable
     data object AdminDashboard : AppRoute
