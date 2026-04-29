@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import pl.edu.ur.teachly.R
+import pl.edu.ur.teachly.ui.components.other.EmptyListState
 import pl.edu.ur.teachly.ui.components.profile.SubjectsSection
 import pl.edu.ur.teachly.ui.models.Review
 import pl.edu.ur.teachly.ui.models.Tutor
@@ -43,8 +44,13 @@ fun TutorDetailBody(
             }
         }
 
-        if (reviews.isNotEmpty()) {
-            DetailSection(title = stringResource(R.string.tutor_section_reviews)) {
+        DetailSection(title = stringResource(R.string.tutor_section_reviews)) {
+            if (reviews.isEmpty()) {
+                EmptyListState(
+                    message = stringResource(R.string.reviews_empty),
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            } else {
                 Column(verticalArrangement = Arrangement.spacedBy(0.dp)) {
                     ReviewList(
                         reviews = reviews,
@@ -52,7 +58,6 @@ fun TutorDetailBody(
                         onEditReview = onEditReview,
                     )
 
-                    // "Zobacz więcej" sits directly below the review cards
                     if (onSeeAllReviews != null) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),

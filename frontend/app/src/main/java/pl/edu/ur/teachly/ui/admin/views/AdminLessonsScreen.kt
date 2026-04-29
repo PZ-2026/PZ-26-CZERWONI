@@ -26,10 +26,11 @@ import org.koin.androidx.compose.koinViewModel
 import pl.edu.ur.teachly.data.model.LessonResponse
 import pl.edu.ur.teachly.data.model.LessonStatus
 import pl.edu.ur.teachly.ui.admin.viewmodels.AdminLessonsViewModel
-import pl.edu.ur.teachly.ui.components.admin.AdminMessageSnackbars
 import pl.edu.ur.teachly.ui.components.admin.AdminScreenHeader
 import pl.edu.ur.teachly.ui.components.admin.AdminSearchBar
+import pl.edu.ur.teachly.ui.components.other.EmptyListState
 import pl.edu.ur.teachly.ui.components.other.FilterChips
+import pl.edu.ur.teachly.ui.components.other.MessageSnackbars
 import pl.edu.ur.teachly.ui.components.other.cards.LessonAdminCard
 import pl.edu.ur.teachly.ui.components.other.dialog.LessonEditDialog
 
@@ -86,6 +87,8 @@ fun AdminLessonsScreen(
                     CircularProgressIndicator()
                 }
 
+                state.filteredLessons.isEmpty() -> EmptyListState(message = "Brak lekcji")
+
                 else -> LazyColumn(
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(16.dp),
@@ -97,7 +100,7 @@ fun AdminLessonsScreen(
                 }
             }
         }
-        AdminMessageSnackbars(
+        MessageSnackbars(
             successMessage = state.successMessage,
             errorMessage = state.error,
             modifier = Modifier.align(Alignment.BottomCenter),

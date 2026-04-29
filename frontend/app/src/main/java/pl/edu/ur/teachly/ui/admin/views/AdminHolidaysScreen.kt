@@ -35,8 +35,9 @@ import androidx.compose.ui.unit.dp
 import org.koin.androidx.compose.koinViewModel
 import pl.edu.ur.teachly.data.model.HolidayResponse
 import pl.edu.ur.teachly.ui.admin.viewmodels.AdminHolidaysViewModel
-import pl.edu.ur.teachly.ui.components.admin.AdminMessageSnackbars
 import pl.edu.ur.teachly.ui.components.admin.AdminScreenHeader
+import pl.edu.ur.teachly.ui.components.other.EmptyListState
+import pl.edu.ur.teachly.ui.components.other.MessageSnackbars
 import pl.edu.ur.teachly.ui.components.other.cards.HolidayCard
 import pl.edu.ur.teachly.ui.components.other.dialog.HolidayDialog
 
@@ -82,6 +83,8 @@ fun AdminHolidaysScreen(
                     contentAlignment = Alignment.Center
                 ) { CircularProgressIndicator() }
 
+                state.holidays.isEmpty() -> EmptyListState(message = "Brak zdefiniowanych świąt")
+
                 else -> LazyColumn(
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(16.dp),
@@ -108,7 +111,7 @@ fun AdminHolidaysScreen(
         ) {
             Icon(Icons.Default.Add, contentDescription = "Dodaj")
         }
-        AdminMessageSnackbars(
+        MessageSnackbars(
             successMessage = state.successMessage,
             errorMessage = state.error,
             modifier = Modifier.align(Alignment.BottomCenter),

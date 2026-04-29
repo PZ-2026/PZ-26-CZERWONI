@@ -19,9 +19,6 @@ import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Snackbar
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -39,6 +36,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import org.koin.androidx.compose.koinViewModel
 import pl.edu.ur.teachly.R
+import pl.edu.ur.teachly.ui.components.other.FullScreenError
+import pl.edu.ur.teachly.ui.components.other.MessageSnackbars
 import pl.edu.ur.teachly.ui.components.other.PrimaryButton
 import pl.edu.ur.teachly.ui.components.profile.ProfileHeader
 import pl.edu.ur.teachly.ui.components.tutor.TutorDetailBody
@@ -61,15 +60,14 @@ fun TutorDetailScreen(
     val state by viewModel.state.collectAsState()
     var showAddDialog by rememberSaveable { mutableStateOf(false) }
     var editingReview by remember { mutableStateOf<Review?>(null) }
-    val snackbarHostState = remember { SnackbarHostState() }
     val successMessage = stringResource(R.string.review_submitted_success)
 
     LaunchedEffect(state.reviewSubmitSuccess) {
         if (state.reviewSubmitSuccess) {
             showAddDialog = false
             editingReview = null
-            snackbarHostState.showSnackbar(successMessage) // najpierw pokaż
-            viewModel.clearReviewSuccess()                 // potem wyczyść flagę
+            kotlinx.coroutines.delay(2500)
+            viewModel.clearReviewSuccess()
         }
     }
 
@@ -112,17 +110,7 @@ fun TutorDetailScreen(
                 contentAlignment = Alignment.Center,
             ) { CircularProgressIndicator() }
 
-            state.error != null -> Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center,
-            ) {
-                Text(
-                    text = state.error!!,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.error,
-                    modifier = Modifier.padding(24.dp),
-                )
-            }
+            state.error != null -> FullScreenError(message = state.error!!)
 
             state.tutor != null -> {
                 val t = state.tutor!!
@@ -177,19 +165,11 @@ fun TutorDetailScreen(
             }
         }
 
-        SnackbarHost(
-            hostState = snackbarHostState,
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .padding(bottom = 16.dp),
-        ) { data ->
-            Snackbar(
-                snackbarData = data,
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary,
-                shape = RoundedCornerShape(14.dp),
-            )
-        }
+        MessageSnackbars(
+            successMessage = if (state.reviewSubmitSuccess) successMessage else null,
+            errorMessage = null,
+            modifier = Modifier.align(Alignment.BottomCenter),
+        )
     }
 }
 

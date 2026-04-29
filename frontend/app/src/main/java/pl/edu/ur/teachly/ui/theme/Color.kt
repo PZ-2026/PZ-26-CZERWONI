@@ -132,8 +132,8 @@ val DarkColorScheme = darkColorScheme(
 
     error = ErrorRed,
     onError = Color.White,
-    errorContainer = ErrorContainerRed,
-    onErrorContainer = LightGreen200,
+    errorContainer = ErrorRed,
+    onErrorContainer = Color.White,
 
     inverseSurface = Neutral50,
     inverseOnSurface = Neutral900,

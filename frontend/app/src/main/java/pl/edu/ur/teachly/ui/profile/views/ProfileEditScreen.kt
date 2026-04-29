@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import org.koin.androidx.compose.koinViewModel
 import pl.edu.ur.teachly.R
 import pl.edu.ur.teachly.ui.components.auth.AuthTextField
+import pl.edu.ur.teachly.ui.components.other.ErrorBanner
 import pl.edu.ur.teachly.ui.components.other.InitialsAvatar
 import pl.edu.ur.teachly.ui.components.other.PrimaryButton
 import pl.edu.ur.teachly.ui.profile.viewmodels.ProfileViewModel
@@ -121,11 +122,7 @@ fun ProfileEditScreen(
             )
 
             if (editState.error != null) {
-                Text(
-                    text = editState.error!!,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.error,
-                )
+                ErrorBanner(message = editState.error!!)
             }
 
             Spacer(modifier = Modifier.weight(1f))
@@ -139,4 +136,3 @@ fun ProfileEditScreen(
         }
     }
 }
-

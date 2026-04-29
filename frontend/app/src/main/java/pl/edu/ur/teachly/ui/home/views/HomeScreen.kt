@@ -42,6 +42,7 @@ import org.koin.androidx.compose.koinViewModel
 import pl.edu.ur.teachly.R
 import pl.edu.ur.teachly.data.model.UserRole
 import pl.edu.ur.teachly.ui.components.other.AppHeader
+import pl.edu.ur.teachly.ui.components.other.FullScreenError
 import pl.edu.ur.teachly.ui.components.other.HeaderBackground
 import pl.edu.ur.teachly.ui.components.other.PrimaryButton
 import pl.edu.ur.teachly.ui.components.other.cards.StatCard
@@ -71,8 +72,8 @@ fun HomeScreen(
     // Show snackbar after pending review submitted
     LaunchedEffect(state.pendingReviewSubmitted) {
         if (state.pendingReviewSubmitted) {
-            snackbarHostState.showSnackbar(successMessage) // najpierw pokaż
-            viewModel.clearPendingReviewSubmitted()        // potem wyczyść flagę
+            snackbarHostState.showSnackbar(successMessage)
+            viewModel.clearPendingReviewSubmitted()
         }
     }
 
@@ -118,7 +119,7 @@ fun HomeScreen(
                     state.userName
                 ) else stringResource(R.string.hello),
                 subtitle =
-                    if (state.userRole == UserRole.STUDENT) // TODO: Handle admin
+                    if (state.userRole == UserRole.STUDENT)
                         stringResource(R.string.home_student_subtitle)
                     else stringResource(R.string.home_tutor_subtitle),
                 background = HeaderBackground.Diagonal(
@@ -132,17 +133,7 @@ fun HomeScreen(
                     contentAlignment = Alignment.Center,
                 ) { CircularProgressIndicator() }
 
-                state.error != null -> Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Text(
-                        text = state.error!!,
-                        style = typography.bodyMedium,
-                        color = colorScheme.error,
-                        modifier = Modifier.padding(24.dp),
-                    )
-                }
+                state.error != null -> FullScreenError(message = state.error!!)
 
                 else -> LazyColumn(
                     modifier = Modifier.fillMaxSize(),
@@ -170,7 +161,7 @@ fun HomeScreen(
                         }
                     }
 
-                    if (state.userRole == UserRole.STUDENT || state.userRole == UserRole.ADMIN) { // TODO: Handle admin
+                    if (state.userRole == UserRole.STUDENT) {
                         item {
                             PrimaryButton(
                                 text = stringResource(R.string.search_tutor),
@@ -184,7 +175,7 @@ fun HomeScreen(
                     item {
                         Text(
                             text =
-                                if (state.userRole == UserRole.STUDENT || state.userRole == UserRole.ADMIN) // TODO: Handle admin
+                                if (state.userRole == UserRole.STUDENT)
                                     stringResource(R.string.upcoming_lessons)
                                 else
                                     stringResource(R.string.upcoming_sessions),

@@ -17,7 +17,6 @@ import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.Snackbar
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -70,25 +69,6 @@ fun AdminScreenHeader(
                 content()
             }
         }
-    }
-}
-
-@Composable
-fun AdminMessageSnackbars(
-    successMessage: String?,
-    errorMessage: String?,
-    modifier: Modifier = Modifier,
-) {
-    when {
-        errorMessage != null -> Snackbar(
-            modifier = modifier.padding(16.dp),
-            containerColor = colorScheme.errorContainer,
-        ) { Text(errorMessage, color = colorScheme.onErrorContainer) }
-
-        successMessage != null -> Snackbar(
-            modifier = modifier.padding(16.dp),
-            containerColor = colorScheme.primaryContainer,
-        ) { Text(successMessage, color = colorScheme.onPrimaryContainer) }
     }
 }
 

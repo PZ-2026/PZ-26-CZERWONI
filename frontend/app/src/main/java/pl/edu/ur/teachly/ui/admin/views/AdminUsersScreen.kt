@@ -29,10 +29,11 @@ import org.koin.androidx.compose.koinViewModel
 import pl.edu.ur.teachly.data.model.UserResponse
 import pl.edu.ur.teachly.data.model.UserRole
 import pl.edu.ur.teachly.ui.admin.viewmodels.AdminUsersViewModel
-import pl.edu.ur.teachly.ui.components.admin.AdminMessageSnackbars
 import pl.edu.ur.teachly.ui.components.admin.AdminScreenHeader
 import pl.edu.ur.teachly.ui.components.admin.AdminSearchBar
+import pl.edu.ur.teachly.ui.components.other.EmptyListState
 import pl.edu.ur.teachly.ui.components.other.FilterChips
+import pl.edu.ur.teachly.ui.components.other.MessageSnackbars
 import pl.edu.ur.teachly.ui.components.other.cards.UserAdminCard
 import pl.edu.ur.teachly.ui.components.other.dialog.AdminUserEditDialog
 
@@ -91,6 +92,8 @@ fun AdminUsersScreen(
                     CircularProgressIndicator()
                 }
 
+                state.filteredUsers.isEmpty() -> EmptyListState(message = "Brak użytkowników")
+
                 else -> LazyColumn(
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(16.dp),
@@ -106,7 +109,7 @@ fun AdminUsersScreen(
                 }
             }
         }
-        AdminMessageSnackbars(
+        MessageSnackbars(
             successMessage = state.successMessage,
             errorMessage = state.error,
             modifier = Modifier.align(Alignment.BottomCenter),
