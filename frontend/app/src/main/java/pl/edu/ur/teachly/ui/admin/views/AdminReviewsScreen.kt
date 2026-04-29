@@ -19,7 +19,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme.colorScheme
-import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -35,9 +34,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.koin.androidx.compose.koinViewModel
 import pl.edu.ur.teachly.ui.admin.viewmodels.AdminReviewsViewModel
-import pl.edu.ur.teachly.ui.components.admin.AdminMessageSnackbars
 import pl.edu.ur.teachly.ui.components.admin.AdminScreenHeader
 import pl.edu.ur.teachly.ui.components.admin.AdminSearchBar
+import pl.edu.ur.teachly.ui.components.other.EmptyListState
+import pl.edu.ur.teachly.ui.components.other.MessageSnackbars
 import pl.edu.ur.teachly.ui.components.other.cards.ReviewAdminCard
 
 @Composable
@@ -119,16 +119,7 @@ fun AdminReviewsScreen(
                     contentAlignment = Alignment.Center
                 ) { CircularProgressIndicator() }
 
-                state.filteredReviews.isEmpty() -> Box(
-                    Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        "Brak opinii",
-                        style = typography.bodyMedium,
-                        color = colorScheme.onSurfaceVariant,
-                    )
-                }
+                state.filteredReviews.isEmpty() -> EmptyListState(message = "Brak opinii")
 
                 else -> LazyColumn(
                     modifier = Modifier.fillMaxSize(),
@@ -145,7 +136,7 @@ fun AdminReviewsScreen(
             }
         }
 
-        AdminMessageSnackbars(
+        MessageSnackbars(
             successMessage = state.successMessage,
             errorMessage = state.error,
             modifier = Modifier.align(Alignment.BottomCenter),

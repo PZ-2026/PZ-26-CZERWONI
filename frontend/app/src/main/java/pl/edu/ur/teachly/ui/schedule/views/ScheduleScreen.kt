@@ -27,6 +27,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import org.koin.androidx.compose.koinViewModel
 import pl.edu.ur.teachly.R
 import pl.edu.ur.teachly.ui.components.other.AppHeader
+import pl.edu.ur.teachly.ui.components.other.FullScreenError
 import pl.edu.ur.teachly.ui.components.other.HeaderBackground
 import pl.edu.ur.teachly.ui.components.other.section.SectionHeader
 import pl.edu.ur.teachly.ui.components.other.section.SectionItems
@@ -67,16 +68,7 @@ fun ScheduleScreen(
                 contentAlignment = Alignment.Center,
             ) { CircularProgressIndicator() }
 
-            state.error != null -> Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center,
-            ) {
-                Text(
-                    text = state.error!!,
-                    style = typography.bodyLarge,
-                    color = colorScheme.error,
-                )
-            }
+            state.error != null -> FullScreenError(message = state.error!!)
 
             state.confirmedClasses.isEmpty() &&
                     state.pendingClasses.isEmpty() &&

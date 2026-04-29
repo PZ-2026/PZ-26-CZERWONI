@@ -11,17 +11,16 @@ import kotlinx.coroutines.launch
 import pl.edu.ur.teachly.data.local.TokenManager
 import pl.edu.ur.teachly.data.model.LessonStatus
 import pl.edu.ur.teachly.data.model.ReviewRequest
+import pl.edu.ur.teachly.data.model.ReviewResponse
 import pl.edu.ur.teachly.data.repository.LessonRepository
 import pl.edu.ur.teachly.data.repository.ReviewRepository
 import pl.edu.ur.teachly.data.repository.TutorRepository
-import pl.edu.ur.teachly.ui.models.Review
 import pl.edu.ur.teachly.ui.models.Tutor
-import pl.edu.ur.teachly.ui.models.toUiReview
 import pl.edu.ur.teachly.ui.models.toUiTutor
 
 data class TutorDetailUiState(
     val tutor: Tutor? = null,
-    val reviews: List<Review> = emptyList(),
+    val reviews: List<ReviewResponse> = emptyList(),
     val currentStudentId: Int? = null,
     val canReview: Boolean = false,
     val isSubmittingReview: Boolean = false,
@@ -65,20 +64,18 @@ class TutorDetailViewModel(
             val currentUserId = tokenManager.userIdFlow.first()
             val currentRole = tokenManager.roleFlow.first()
 
-            var uiReviews = emptyList<Review>()
             reviewRepository.getTutorReviews(id).fold(
                 onSuccess = { reviews ->
                     try {
                         val avgRating = if (reviews.isEmpty()) 0.0
                         else reviews.sumOf { it.rating } / reviews.size
-                        uiReviews = reviews.map { r -> r.toUiReview() }
                         _state.update { s ->
                             s.copy(
                                 tutor = s.tutor?.copy(
                                     rating = avgRating,
                                     reviewCount = reviews.size,
                                 ),
-                                reviews = uiReviews,
+                                reviews = reviews,
                             )
                         }
 
@@ -96,7 +93,12 @@ class TutorDetailViewModel(
                                 )
                             }
                         }
-                        _state.update { it.copy(canReview = canReview, currentStudentId = currentUserId) }
+                        _state.update {
+                            it.copy(
+                                canReview = canReview,
+                                currentStudentId = currentUserId
+                            )
+                        }
                     } catch (_: Exception) {
                     }
                 },
@@ -112,7 +114,12 @@ class TutorDetailViewModel(
             _state.update { it.copy(isSubmittingReview = true, reviewError = null) }
             reviewRepository.updateReview(reviewId, ReviewRequest(tutorId, rating, comment)).fold(
                 onSuccess = {
-                    _state.update { it.copy(isSubmittingReview = false, reviewSubmitSuccess = true) }
+                    _state.update {
+                        it.copy(
+                            isSubmittingReview = false,
+                            reviewSubmitSuccess = true
+                        )
+                    }
                     loadTutor(tutorId.toString())
                 },
                 onFailure = { e ->
@@ -128,7 +135,12 @@ class TutorDetailViewModel(
             _state.update { it.copy(isSubmittingReview = true, reviewError = null) }
             reviewRepository.addReview(studentId, ReviewRequest(tutorId, rating, comment)).fold(
                 onSuccess = {
-                    _state.update { it.copy(isSubmittingReview = false, reviewSubmitSuccess = true) }
+                    _state.update {
+                        it.copy(
+                            isSubmittingReview = false,
+                            reviewSubmitSuccess = true
+                        )
+                    }
                     loadTutor(tutorId.toString())
                 },
                 onFailure = { e ->

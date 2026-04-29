@@ -39,8 +39,9 @@ import org.koin.androidx.compose.koinViewModel
 import pl.edu.ur.teachly.data.model.SubjectCategoryResponse
 import pl.edu.ur.teachly.data.model.SubjectResponse
 import pl.edu.ur.teachly.ui.admin.viewmodels.AdminSubjectsViewModel
-import pl.edu.ur.teachly.ui.components.admin.AdminMessageSnackbars
 import pl.edu.ur.teachly.ui.components.admin.AdminScreenHeader
+import pl.edu.ur.teachly.ui.components.other.EmptyListState
+import pl.edu.ur.teachly.ui.components.other.MessageSnackbars
 import pl.edu.ur.teachly.ui.components.other.cards.CategoryCard
 import pl.edu.ur.teachly.ui.components.other.cards.SubjectCard
 import pl.edu.ur.teachly.ui.components.other.dialog.CategoryDialog
@@ -114,6 +115,9 @@ fun AdminSubjectsScreen(
                     contentAlignment = Alignment.Center
                 ) { CircularProgressIndicator() }
 
+                selectedTab == 0 && state.subjects.isEmpty() ->
+                    EmptyListState(message = "Brak przedmiotów")
+
                 selectedTab == 0 -> LazyColumn(
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(16.dp),
@@ -127,6 +131,8 @@ fun AdminSubjectsScreen(
                         )
                     }
                 }
+
+                state.categories.isEmpty() -> EmptyListState(message = "Brak kategorii")
 
                 else -> LazyColumn(
                     modifier = Modifier.fillMaxSize(),
@@ -158,7 +164,7 @@ fun AdminSubjectsScreen(
         ) {
             Icon(Icons.Default.Add, contentDescription = "Dodaj")
         }
-        AdminMessageSnackbars(
+        MessageSnackbars(
             successMessage = state.successMessage,
             errorMessage = state.error,
             modifier = Modifier.align(Alignment.BottomCenter),

@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import org.koin.androidx.compose.koinViewModel
 import pl.edu.ur.teachly.R
 import pl.edu.ur.teachly.data.model.UserRole
+import pl.edu.ur.teachly.ui.components.other.FullScreenError
 import pl.edu.ur.teachly.ui.components.other.PrimaryButton
 import pl.edu.ur.teachly.ui.components.other.formatDate
 import pl.edu.ur.teachly.ui.components.other.formatPhoneNumber
@@ -52,6 +53,8 @@ fun AdminProfileScreen(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center,
         ) { CircularProgressIndicator() }
+
+        profile.error != null -> FullScreenError(message = profile.error!!)
 
         else -> Column(
             modifier = Modifier

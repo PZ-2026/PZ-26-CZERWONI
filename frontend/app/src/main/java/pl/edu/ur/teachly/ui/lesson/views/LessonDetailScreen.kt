@@ -9,26 +9,23 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme.colorScheme
-import androidx.compose.material3.MaterialTheme.typography
-import androidx.compose.material3.SnackbarDuration
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.delay
 import org.koin.androidx.compose.koinViewModel
 import pl.edu.ur.teachly.data.model.UserRole
 import pl.edu.ur.teachly.ui.components.lesson.ActionsSection
 import pl.edu.ur.teachly.ui.components.lesson.InfoCard
 import pl.edu.ur.teachly.ui.components.lesson.NotesSection
 import pl.edu.ur.teachly.ui.components.other.AppHeader
+import pl.edu.ur.teachly.ui.components.other.FullScreenError
 import pl.edu.ur.teachly.ui.components.other.HeaderBackground
+import pl.edu.ur.teachly.ui.components.other.MessageSnackbars
 import pl.edu.ur.teachly.ui.lesson.viewmodels.LessonDetailViewModel
 
 @Composable
@@ -40,14 +37,14 @@ fun LessonDetailScreen(
     viewModel: LessonDetailViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsState()
-    val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(lessonId) { viewModel.load(lessonId) }
 
     LaunchedEffect(state.actionSuccess, state.actionError) {
-        val msg = state.actionSuccess ?: state.actionError ?: return@LaunchedEffect
-        snackbarHostState.showSnackbar(msg, duration = SnackbarDuration.Short)
-        viewModel.clearMessages()
+        if (state.actionSuccess != null || state.actionError != null) {
+            delay(2500)
+            viewModel.clearMessages()
+        }
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -67,17 +64,7 @@ fun LessonDetailScreen(
                     contentAlignment = Alignment.Center,
                 ) { CircularProgressIndicator() }
 
-                state.error != null -> Box(
-                    Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Text(
-                        text = state.error!!,
-                        style = typography.bodyLarge,
-                        color = colorScheme.error,
-                        modifier = Modifier.padding(24.dp),
-                    )
-                }
+                state.error != null -> FullScreenError(message = state.error!!)
 
                 state.lesson != null -> {
                     val lesson = state.lesson!!
@@ -91,10 +78,8 @@ fun LessonDetailScreen(
                             .padding(horizontal = 16.dp, vertical = 20.dp),
                         verticalArrangement = Arrangement.spacedBy(16.dp),
                     ) {
-                        // Info card
                         InfoCard(lesson = lesson, userRole = userRole)
 
-                        // Notes
                         NotesSection(
                             lesson = lesson,
                             userRole = userRole,
@@ -107,7 +92,6 @@ fun LessonDetailScreen(
                             },
                         )
 
-                        // Actions
                         ActionsSection(
                             lesson = lesson,
                             userRole = userRole,
@@ -125,8 +109,9 @@ fun LessonDetailScreen(
             }
         }
 
-        SnackbarHost(
-            hostState = snackbarHostState,
+        MessageSnackbars(
+            successMessage = state.actionSuccess,
+            errorMessage = state.actionError,
             modifier = Modifier.align(Alignment.BottomCenter),
         )
     }

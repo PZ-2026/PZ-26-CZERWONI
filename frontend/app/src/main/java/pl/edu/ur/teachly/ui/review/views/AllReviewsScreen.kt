@@ -16,6 +16,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -119,7 +120,11 @@ fun AllReviewsScreen(
 }
 
 @Composable
-fun ReviewCard(review: ReviewResponse, modifier: Modifier = Modifier) {
+fun ReviewCard(
+    review: ReviewResponse,
+    modifier: Modifier = Modifier,
+    onEdit: (() -> Unit)? = null
+) {
     Surface(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
@@ -137,8 +142,21 @@ fun ReviewCard(review: ReviewResponse, modifier: Modifier = Modifier) {
                     style = typography.labelLarge,
                     fontWeight = FontWeight.SemiBold,
                     color = colorScheme.onSurface,
+                    modifier = Modifier.weight(1f),
                 )
-                StarRatingDisplay(rating = review.rating)
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    StarRatingDisplay(rating = review.rating)
+                    if (onEdit != null) {
+                        IconButton(onClick = onEdit, modifier = Modifier.size(28.dp)) {
+                            Icon(
+                                imageVector = Icons.Filled.Edit,
+                                contentDescription = "Edytuj opinię",
+                                modifier = Modifier.size(14.dp),
+                                tint = colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+                            )
+                        }
+                    }
+                }
             }
 
             if (!review.comment.isNullOrBlank()) {

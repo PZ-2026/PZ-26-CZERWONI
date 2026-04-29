@@ -52,6 +52,8 @@ import androidx.compose.ui.unit.dp
 import org.koin.androidx.compose.koinViewModel
 import pl.edu.ur.teachly.R
 import pl.edu.ur.teachly.data.model.ReviewResponse
+import pl.edu.ur.teachly.ui.components.other.EmptyListState
+import pl.edu.ur.teachly.ui.components.other.FullScreenError
 import pl.edu.ur.teachly.ui.components.other.PrimaryButton
 import pl.edu.ur.teachly.ui.components.other.cards.StatCard
 import pl.edu.ur.teachly.ui.components.other.formatDate
@@ -133,6 +135,8 @@ fun StudentProfileScreen(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center,
         ) { CircularProgressIndicator() }
+
+        profile.error != null -> FullScreenError(message = profile.error!!)
 
         else -> Column(
             modifier = Modifier
@@ -268,16 +272,7 @@ private fun MyReviewsTab(
             contentAlignment = Alignment.Center,
         ) { CircularProgressIndicator() }
 
-        reviews.isEmpty() -> Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center,
-        ) {
-            Text(
-                text = stringResource(R.string.my_reviews_empty),
-                style = typography.bodyMedium,
-                color = colorScheme.onSurfaceVariant,
-            )
-        }
+        reviews.isEmpty() -> EmptyListState(message = stringResource(R.string.my_reviews_empty))
 
         else -> Column(
             modifier = Modifier
