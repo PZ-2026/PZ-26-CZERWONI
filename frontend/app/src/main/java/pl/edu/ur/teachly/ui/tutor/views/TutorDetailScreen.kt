@@ -36,12 +36,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import org.koin.androidx.compose.koinViewModel
 import pl.edu.ur.teachly.R
+import pl.edu.ur.teachly.data.model.ReviewResponse
 import pl.edu.ur.teachly.ui.components.other.FullScreenError
 import pl.edu.ur.teachly.ui.components.other.MessageSnackbars
 import pl.edu.ur.teachly.ui.components.other.PrimaryButton
 import pl.edu.ur.teachly.ui.components.profile.ProfileHeader
 import pl.edu.ur.teachly.ui.components.tutor.TutorDetailBody
-import pl.edu.ur.teachly.ui.models.Review
 import pl.edu.ur.teachly.ui.profile.viewmodels.StudentProfile
 import pl.edu.ur.teachly.ui.review.views.AddReviewDialog
 import pl.edu.ur.teachly.ui.theme.AvatarColors
@@ -59,7 +59,7 @@ fun TutorDetailScreen(
 
     val state by viewModel.state.collectAsState()
     var showAddDialog by rememberSaveable { mutableStateOf(false) }
-    var editingReview by remember { mutableStateOf<Review?>(null) }
+    var editingReview by remember { mutableStateOf<ReviewResponse?>(null) }
     val successMessage = stringResource(R.string.review_submitted_success)
 
     LaunchedEffect(state.reviewSubmitSuccess) {
@@ -90,8 +90,8 @@ fun TutorDetailScreen(
         AddReviewDialog(
             isLoading = state.isSubmittingReview,
             error = state.reviewError,
-            initialRating = review.rating.toDouble(),
-            initialComment = review.text,
+            initialRating = review.rating,
+            initialComment = review.comment ?: "",
             onDismiss = {
                 editingReview = null
                 viewModel.clearReviewError()
@@ -146,6 +146,7 @@ fun TutorDetailScreen(
                             currentStudentId = state.currentStudentId,
                             onEditReview = { review -> editingReview = review },
                             onSeeAllReviews = if (state.reviews.isNotEmpty()) onSeeAllReviews else null,
+                            canReview = false,
                         )
 
                         if (state.canReview) {
