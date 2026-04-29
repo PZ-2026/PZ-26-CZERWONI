@@ -197,7 +197,7 @@
     <string name="pending_review_submit">Wyślij opinię</string>
     <string name="pending_reviews_title">Niewystawione opinie</string>
     <string name="pending_reviews_subtitle">Masz %d korepetytorów do ocenienia</string>
-    <string name="nav_search">Szukaj\n</string>
+    <string name="nav_search">Szukaj</string>
     <string name="dashboard">Dashboard</string>
     <string name="users">Użytkownicy</string>
     <string name="lessons">Lekcje</string>

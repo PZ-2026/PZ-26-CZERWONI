@@ -1,6 +1,10 @@
 package pl.edu.ur.teachly.data.repository;
 
 import pl.edu.ur.teachly.data.model.TimetableDayResponse
+import pl.edu.ur.teachly.data.model.TutorAvailabilityOverrideRequest
+import pl.edu.ur.teachly.data.model.TutorAvailabilityOverrideResponse
+import pl.edu.ur.teachly.data.model.TutorAvailabilityRecurringRequest
+import pl.edu.ur.teachly.data.model.TutorAvailabilityRecurringResponse
 import pl.edu.ur.teachly.data.model.TutorRequest
 import pl.edu.ur.teachly.data.model.TutorResponse
 import pl.edu.ur.teachly.data.model.TutorSubjectResponse
@@ -61,5 +65,67 @@ class TutorRepository(private val api: TutorApiService) {
             Result.failure(Exception("Brak połączenia z serwerem"))
         }
     }
+
+    // Recurring availability
+    suspend fun getRecurringAvailability(tutorId: Int): Result<List<TutorAvailabilityRecurringResponse>> =
+        try {
+            val r = api.getRecurringAvailability(tutorId)
+            if (r.isSuccessful) Result.success(r.body()!!)
+            else Result.failure(Exception("Błąd pobierania harmonogramu"))
+        } catch (e: Exception) {
+            Result.failure(Exception("Brak połączenia z serwerem"))
+        }
+
+    suspend fun addRecurringAvailability(
+        tutorId: Int,
+        request: TutorAvailabilityRecurringRequest,
+    ): Result<TutorAvailabilityRecurringResponse> =
+        try {
+            val r = api.addRecurringAvailability(tutorId, request)
+            if (r.isSuccessful) Result.success(r.body()!!)
+            else Result.failure(Exception("Błąd dodawania slotu"))
+        } catch (e: Exception) {
+            Result.failure(Exception("Brak połączenia z serwerem"))
+        }
+
+    suspend fun deleteRecurringAvailability(tutorId: Int, id: Int): Result<Unit> =
+        try {
+            val r = api.deleteRecurringAvailability(tutorId, id)
+            if (r.isSuccessful) Result.success(Unit)
+            else Result.failure(Exception("Błąd usuwania slotu"))
+        } catch (e: Exception) {
+            Result.failure(Exception("Brak połączenia z serwerem"))
+        }
+
+    // Overrides (specific-date unavailability)
+    suspend fun getOverrides(tutorId: Int): Result<List<TutorAvailabilityOverrideResponse>> =
+        try {
+            val r = api.getOverrides(tutorId)
+            if (r.isSuccessful) Result.success(r.body()!!)
+            else Result.failure(Exception("Błąd pobierania niedostępności"))
+        } catch (e: Exception) {
+            Result.failure(Exception("Brak połączenia z serwerem"))
+        }
+
+    suspend fun addOverride(
+        tutorId: Int,
+        request: TutorAvailabilityOverrideRequest,
+    ): Result<TutorAvailabilityOverrideResponse> =
+        try {
+            val r = api.addOverride(tutorId, request)
+            if (r.isSuccessful) Result.success(r.body()!!)
+            else Result.failure(Exception("Błąd dodawania niedostępności"))
+        } catch (e: Exception) {
+            Result.failure(Exception("Brak połączenia z serwerem"))
+        }
+
+    suspend fun deleteOverride(tutorId: Int, id: Int): Result<Unit> =
+        try {
+            val r = api.deleteOverride(tutorId, id)
+            if (r.isSuccessful) Result.success(Unit)
+            else Result.failure(Exception("Błąd usuwania niedostępności"))
+        } catch (e: Exception) {
+            Result.failure(Exception("Brak połączenia z serwerem"))
+        }
 }
 

@@ -73,7 +73,7 @@ fun BottomNavBar(
                 icon = {
                     Icon(
                         Icons.Default.Search,
-                        contentDescription = stringResource(R.string.nav_search)
+                        contentDescription = stringResource(R.string.nav_search),
                     )
                 },
                 label = { Text(stringResource(R.string.nav_search)) },

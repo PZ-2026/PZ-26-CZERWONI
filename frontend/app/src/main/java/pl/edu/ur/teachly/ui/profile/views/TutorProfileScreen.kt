@@ -61,6 +61,7 @@ fun TutorProfileScreen(
     onEditClick: () -> Unit,
     onLogout: () -> Unit,
     onSeeAllReviews: () -> Unit = {},
+    onAvailabilityClick: () -> Unit = {},
     viewModel: TutorProfileViewModel = koinViewModel(),
 ) {
     LaunchedEffect(tutorId) { viewModel.loadProfile(tutorId) }
@@ -117,6 +118,7 @@ fun TutorProfileScreen(
                     role = UserRole.TUTOR,
                     onBack = onBack,
                     onEditClick = if (isMyProfile) onEditClick else null,
+                    onCalendarClick = if (isMyProfile) onAvailabilityClick else null,
                 )
 
                 Column(
@@ -186,7 +188,7 @@ fun TutorProfileScreen(
                         PrimaryButton(
                             text = stringResource(R.string.profile_logout),
                             onClick = onLogout,
-                            modifier = Modifier.padding(bottom = 24.dp, top = 8.dp),
+                            modifier = Modifier.padding(bottom = 24.dp),
                         )
                     }
                 }
@@ -245,4 +247,3 @@ fun TutorProfileScreen(
         }
     }
 }
-

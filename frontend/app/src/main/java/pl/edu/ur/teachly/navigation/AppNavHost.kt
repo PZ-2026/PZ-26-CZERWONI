@@ -30,6 +30,7 @@ import pl.edu.ur.teachly.ui.admin.views.AdminUsersScreen
 import pl.edu.ur.teachly.ui.auth.views.LoginScreen
 import pl.edu.ur.teachly.ui.auth.views.RegisterScreen
 import pl.edu.ur.teachly.ui.auth.views.SplashScreen
+import pl.edu.ur.teachly.ui.availability.views.AvailabilityScreen
 import pl.edu.ur.teachly.ui.booking.views.BookingConfirmScreen
 import pl.edu.ur.teachly.ui.booking.views.BookingScreen
 import pl.edu.ur.teachly.ui.home.views.HomeScreen
@@ -204,6 +205,11 @@ fun AppNavHost(
                             navController.navigate(AppRoute.AllReviews(it, ""))
                         }
                     },
+                    onAvailabilityClick = {
+                        userId?.let {
+                            navController.navigate(AppRoute.TutorAvailability(it))
+                        }
+                    },
                     viewModel = tutorViewModel,
                 )
 
@@ -253,6 +259,14 @@ fun AppNavHost(
             AllReviewsScreen(
                 tutorId = args.tutorId,
                 tutorName = args.tutorName,
+                onBack = { navController.popBackStack() },
+            )
+        }
+
+        composable<AppRoute.TutorAvailability> { backStackEntry ->
+            val args = backStackEntry.toRoute<AppRoute.TutorAvailability>()
+            AvailabilityScreen(
+                tutorId = args.tutorId,
                 onBack = { navController.popBackStack() },
             )
         }

@@ -91,8 +91,8 @@ val LightColorScheme = lightColorScheme(
 
     error = ErrorRed,
     onError = Color.White,
-    errorContainer = LightGreen50,
-    onErrorContainer = LightGreen600,
+    errorContainer = ErrorRed,
+    onErrorContainer = Color.White,
 
     inverseSurface = Neutral900,
     inverseOnSurface = Neutral50,
