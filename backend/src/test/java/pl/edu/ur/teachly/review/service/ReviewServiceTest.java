@@ -1,5 +1,14 @@
 package pl.edu.ur.teachly.review.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,16 +30,6 @@ import pl.edu.ur.teachly.tutor.repository.TutorRepository;
 import pl.edu.ur.teachly.user.entity.User;
 import pl.edu.ur.teachly.user.repository.UserRepository;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-
 @ExtendWith(MockitoExtension.class)
 @DisplayName("ReviewService - testy jednostkowe")
 class ReviewServiceTest {
@@ -41,8 +40,7 @@ class ReviewServiceTest {
     @Mock private TutorRepository tutorRepository;
     @Mock private LessonRepository lessonRepository;
 
-    @InjectMocks
-    private ReviewService reviewService;
+    @InjectMocks private ReviewService reviewService;
 
     private User student;
     private Tutor tutor;
@@ -55,24 +53,33 @@ class ReviewServiceTest {
         student = User.builder().id(1).firstName("Student").lastName("Kowalski").build();
         User tutorUser = User.builder().id(2).firstName("Tutor").lastName("Nowak").build();
         tutor = Tutor.builder().userId(2).user(tutorUser).build();
-        
+
         reviewRequest = new ReviewRequest(2, BigDecimal.valueOf(4.5), "Super nauczyciel");
-        
-        review = Review.builder()
-                .id(1)
-                .student(student)
-                .tutor(tutor)
-                .rating(BigDecimal.valueOf(4.5))
-                .comment("Super nauczyciel")
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
-                .build();
-                
-        reviewResponse = new ReviewResponse(
-                1, 2, "Tutor", "Nowak", 1, "Student", "Kowalski",
-                BigDecimal.valueOf(4.5), "Super nauczyciel",
-                LocalDateTime.now(), LocalDateTime.now()
-        );
+
+        review =
+                Review.builder()
+                        .id(1)
+                        .student(student)
+                        .tutor(tutor)
+                        .rating(BigDecimal.valueOf(4.5))
+                        .comment("Super nauczyciel")
+                        .createdAt(LocalDateTime.now())
+                        .updatedAt(LocalDateTime.now())
+                        .build();
+
+        reviewResponse =
+                new ReviewResponse(
+                        1,
+                        2,
+                        "Tutor",
+                        "Nowak",
+                        1,
+                        "Student",
+                        "Kowalski",
+                        BigDecimal.valueOf(4.5),
+                        "Super nauczyciel",
+                        LocalDateTime.now(),
+                        LocalDateTime.now());
     }
 
     @Test
@@ -81,7 +88,8 @@ class ReviewServiceTest {
         when(userRepository.findById(1)).thenReturn(Optional.of(student));
         when(tutorRepository.findById(2)).thenReturn(Optional.of(tutor));
         when(reviewMapper.toEntity(reviewRequest)).thenReturn(new Review());
-        when(lessonRepository.existsByStudent_IdAndTutor_UserIdAndLessonStatus(1, 2, LessonStatus.COMPLETED))
+        when(lessonRepository.existsByStudent_IdAndTutor_UserIdAndLessonStatus(
+                        1, 2, LessonStatus.COMPLETED))
                 .thenReturn(true);
         when(reviewRepository.save(any(Review.class))).thenReturn(review);
         when(reviewMapper.toResponse(review)).thenReturn(reviewResponse);
@@ -98,7 +106,8 @@ class ReviewServiceTest {
         when(userRepository.findById(1)).thenReturn(Optional.of(student));
         when(tutorRepository.findById(2)).thenReturn(Optional.of(tutor));
         when(reviewMapper.toEntity(reviewRequest)).thenReturn(new Review());
-        when(lessonRepository.existsByStudent_IdAndTutor_UserIdAndLessonStatus(1, 2, LessonStatus.COMPLETED))
+        when(lessonRepository.existsByStudent_IdAndTutor_UserIdAndLessonStatus(
+                        1, 2, LessonStatus.COMPLETED))
                 .thenReturn(false);
 
         assertThatThrownBy(() -> reviewService.addReview(1, reviewRequest))
@@ -130,10 +139,12 @@ class ReviewServiceTest {
     @Test
     @DisplayName("updateReview - sukces: aktualizuje opinię")
     void updateReview_success() {
-        ReviewRequest updateRequest = new ReviewRequest(2, BigDecimal.valueOf(5.0), "Zmieniony komentarz");
+        ReviewRequest updateRequest =
+                new ReviewRequest(2, BigDecimal.valueOf(5.0), "Zmieniony komentarz");
         when(reviewRepository.findById(1)).thenReturn(Optional.of(review));
         when(reviewRepository.save(review)).thenReturn(review);
-        when(reviewMapper.toResponse(review)).thenReturn(reviewResponse); // ignorujemy zmienione wartosci dla uproszczenia
+        when(reviewMapper.toResponse(review))
+                .thenReturn(reviewResponse); // ignorujemy zmienione wartosci dla uproszczenia
 
         reviewService.updateReview(1, updateRequest);
 

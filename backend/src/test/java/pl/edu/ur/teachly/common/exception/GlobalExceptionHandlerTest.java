@@ -1,11 +1,11 @@
 package pl.edu.ur.teachly.common.exception;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("GlobalExceptionHandler – testy jednostkowe")
 class GlobalExceptionHandlerTest {

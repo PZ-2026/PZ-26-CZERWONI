@@ -1,5 +1,11 @@
 package pl.edu.ur.teachly.auth.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,43 +27,30 @@ import pl.edu.ur.teachly.user.entity.User;
 import pl.edu.ur.teachly.user.mapper.UserMapper;
 import pl.edu.ur.teachly.user.repository.UserRepository;
 
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-
 @ExtendWith(MockitoExtension.class)
 @DisplayName("AuthService – testy jednostkowe")
 class AuthServiceTest {
 
-    @Mock
-    private UserRepository userRepository;
-    @Mock
-    private UserMapper userMapper;
-    @Mock
-    private PasswordEncoder passwordEncoder;
-    @Mock
-    private JwtService jwtService;
-    @Mock
-    private AuthenticationManager authenticationManager;
+    @Mock private UserRepository userRepository;
+    @Mock private UserMapper userMapper;
+    @Mock private PasswordEncoder passwordEncoder;
+    @Mock private JwtService jwtService;
+    @Mock private AuthenticationManager authenticationManager;
 
-    @InjectMocks
-    private AuthService authService;
+    @InjectMocks private AuthService authService;
 
     private RegisterRequest registerRequest;
 
     @BeforeEach
     void setUp() {
-        registerRequest = new RegisterRequest(
-                UserRole.STUDENT,
-                "Jan",
-                "Kowalski",
-                "jan@example.com",
-                "123456789",
-                "haslo123"
-        );
+        registerRequest =
+                new RegisterRequest(
+                        UserRole.STUDENT,
+                        "Jan",
+                        "Kowalski",
+                        "jan@example.com",
+                        "123456789",
+                        "haslo123");
     }
 
     // ─── register ───────────────────────────────────────────────────────────
@@ -65,12 +58,13 @@ class AuthServiceTest {
     @Test
     @DisplayName("register – sukces: zwraca AuthResponse z tokenem i rolą")
     void register_success() {
-        User user = User.builder()
-                .id(1)
-                .email("jan@example.com")
-                .phoneNumber("123456789")
-                .userRole(UserRole.STUDENT)
-                .build();
+        User user =
+                User.builder()
+                        .id(1)
+                        .email("jan@example.com")
+                        .phoneNumber("123456789")
+                        .userRole(UserRole.STUDENT)
+                        .build();
 
         when(userRepository.findByEmailOrPhoneNumber(any(), any())).thenReturn(Optional.empty());
         when(userMapper.toEntity(registerRequest)).thenReturn(user);
@@ -89,10 +83,7 @@ class AuthServiceTest {
     @Test
     @DisplayName("register – błąd: email już zajęty")
     void register_emailAlreadyTaken_throwsBusinessValidationException() {
-        User existing = User.builder()
-                .email("jan@example.com")
-                .phoneNumber("999999999")
-                .build();
+        User existing = User.builder().email("jan@example.com").phoneNumber("999999999").build();
 
         when(userRepository.findByEmailOrPhoneNumber("jan@example.com", "123456789"))
                 .thenReturn(Optional.of(existing));
@@ -105,10 +96,7 @@ class AuthServiceTest {
     @Test
     @DisplayName("register – błąd: numer telefonu już zajęty")
     void register_phoneAlreadyTaken_throwsBusinessValidationException() {
-        User existing = User.builder()
-                .email("other@example.com")
-                .phoneNumber("123456789")
-                .build();
+        User existing = User.builder().email("other@example.com").phoneNumber("123456789").build();
 
         when(userRepository.findByEmailOrPhoneNumber("jan@example.com", "123456789"))
                 .thenReturn(Optional.of(existing));
@@ -121,12 +109,13 @@ class AuthServiceTest {
     @Test
     @DisplayName("register – hasło jest hashowane przed zapisem")
     void register_passwordIsHashed() {
-        User user = User.builder()
-                .id(1)
-                .email("jan@example.com")
-                .phoneNumber("123456789")
-                .userRole(UserRole.STUDENT)
-                .build();
+        User user =
+                User.builder()
+                        .id(1)
+                        .email("jan@example.com")
+                        .phoneNumber("123456789")
+                        .userRole(UserRole.STUDENT)
+                        .build();
 
         when(userRepository.findByEmailOrPhoneNumber(any(), any())).thenReturn(Optional.empty());
         when(userMapper.toEntity(registerRequest)).thenReturn(user);
@@ -145,11 +134,8 @@ class AuthServiceTest {
     @DisplayName("login – sukces: zwraca AuthResponse z tokenem")
     void login_success() {
         LoginRequest loginRequest = new LoginRequest("jan@example.com", "haslo123");
-        User user = User.builder()
-                .id(1)
-                .email("jan@example.com")
-                .userRole(UserRole.STUDENT)
-                .build();
+        User user =
+                User.builder().id(1).email("jan@example.com").userRole(UserRole.STUDENT).build();
 
         Authentication auth = mock(Authentication.class);
         when(auth.getPrincipal()).thenReturn(user);

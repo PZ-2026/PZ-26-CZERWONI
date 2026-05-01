@@ -1,5 +1,13 @@
 package pl.edu.ur.teachly.tutor.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.*;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,16 +27,6 @@ import pl.edu.ur.teachly.tutor.repository.TutorAvailabilityOverrideRepository;
 import pl.edu.ur.teachly.tutor.repository.TutorAvailabilityRecurringRepository;
 import pl.edu.ur.teachly.tutor.repository.TutorRepository;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-
 @ExtendWith(MockitoExtension.class)
 @DisplayName("TutorAvailabilityService - testy jednostkowe")
 class TutorAvailabilityServiceTest {
@@ -38,19 +36,20 @@ class TutorAvailabilityServiceTest {
     @Mock private TutorRepository tutorRepository;
     @Mock private TutorAvailabilityMapper mapper;
 
-    @InjectMocks
-    private TutorAvailabilityService availabilityService;
+    @InjectMocks private TutorAvailabilityService availabilityService;
 
     @Test
     @DisplayName("getRecurringByTutor - zwraca listę cyklicznej dostępności")
     void getRecurringByTutor_returnsList() {
         TutorAvailabilityRecurring entity = new TutorAvailabilityRecurring();
-        TutorAvailabilityRecurringResponse response = new TutorAvailabilityRecurringResponse(1, 1, 1, LocalTime.MIN, LocalTime.MAX, null);
+        TutorAvailabilityRecurringResponse response =
+                new TutorAvailabilityRecurringResponse(1, 1, 1, LocalTime.MIN, LocalTime.MAX, null);
 
         when(recurringRepository.findByTutor_UserId(1)).thenReturn(List.of(entity));
         when(mapper.toResponse(entity)).thenReturn(response);
 
-        List<TutorAvailabilityRecurringResponse> result = availabilityService.getRecurringByTutor(1);
+        List<TutorAvailabilityRecurringResponse> result =
+                availabilityService.getRecurringByTutor(1);
 
         assertThat(result).containsExactly(response);
     }
@@ -58,10 +57,12 @@ class TutorAvailabilityServiceTest {
     @Test
     @DisplayName("addRecurring - sukces")
     void addRecurring_success() {
-        TutorAvailabilityRecurringRequest req = new TutorAvailabilityRecurringRequest(1, LocalTime.MIN, LocalTime.MAX, null);
+        TutorAvailabilityRecurringRequest req =
+                new TutorAvailabilityRecurringRequest(1, LocalTime.MIN, LocalTime.MAX, null);
         Tutor tutor = new Tutor();
         TutorAvailabilityRecurring entity = new TutorAvailabilityRecurring();
-        TutorAvailabilityRecurringResponse response = new TutorAvailabilityRecurringResponse(1, 1, 1, LocalTime.MIN, LocalTime.MAX, null);
+        TutorAvailabilityRecurringResponse response =
+                new TutorAvailabilityRecurringResponse(1, 1, 1, LocalTime.MIN, LocalTime.MAX, null);
 
         when(tutorRepository.findById(1)).thenReturn(Optional.of(tutor));
         when(mapper.toEntity(req)).thenReturn(entity);
@@ -88,7 +89,9 @@ class TutorAvailabilityServiceTest {
     @DisplayName("getOverridesByTutor - zwraca listę nadpisań")
     void getOverridesByTutor_returnsList() {
         TutorAvailabilityOverride entity = new TutorAvailabilityOverride();
-        TutorAvailabilityOverrideResponse response = new TutorAvailabilityOverrideResponse(1, 1, LocalDate.now(), LocalTime.MIN, LocalTime.MAX);
+        TutorAvailabilityOverrideResponse response =
+                new TutorAvailabilityOverrideResponse(
+                        1, 1, LocalDate.now(), LocalTime.MIN, LocalTime.MAX);
 
         when(overrideRepository.findByTutor_UserId(1)).thenReturn(List.of(entity));
         when(mapper.toResponse(entity)).thenReturn(response);
@@ -101,10 +104,13 @@ class TutorAvailabilityServiceTest {
     @Test
     @DisplayName("addOverride - sukces")
     void addOverride_success() {
-        TutorAvailabilityOverrideRequest req = new TutorAvailabilityOverrideRequest(LocalDate.now(), LocalTime.MIN, LocalTime.MAX);
+        TutorAvailabilityOverrideRequest req =
+                new TutorAvailabilityOverrideRequest(LocalDate.now(), LocalTime.MIN, LocalTime.MAX);
         Tutor tutor = new Tutor();
         TutorAvailabilityOverride entity = new TutorAvailabilityOverride();
-        TutorAvailabilityOverrideResponse response = new TutorAvailabilityOverrideResponse(1, 1, LocalDate.now(), LocalTime.MIN, LocalTime.MAX);
+        TutorAvailabilityOverrideResponse response =
+                new TutorAvailabilityOverrideResponse(
+                        1, 1, LocalDate.now(), LocalTime.MIN, LocalTime.MAX);
 
         when(tutorRepository.findById(1)).thenReturn(Optional.of(tutor));
         when(mapper.toEntity(req)).thenReturn(entity);

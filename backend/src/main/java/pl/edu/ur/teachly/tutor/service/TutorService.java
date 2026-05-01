@@ -1,5 +1,6 @@
 package pl.edu.ur.teachly.tutor.service;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,8 +12,6 @@ import pl.edu.ur.teachly.tutor.mapper.TutorMapper;
 import pl.edu.ur.teachly.tutor.mapper.TutorSubjectMapper;
 import pl.edu.ur.teachly.tutor.repository.TutorRepository;
 import pl.edu.ur.teachly.tutor.repository.TutorSubjectRepository;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor

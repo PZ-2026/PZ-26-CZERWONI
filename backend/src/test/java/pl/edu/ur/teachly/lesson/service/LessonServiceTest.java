@@ -1,7 +1,17 @@
 package pl.edu.ur.teachly.lesson.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -34,18 +44,6 @@ import pl.edu.ur.teachly.tutor.service.TimetableService;
 import pl.edu.ur.teachly.user.entity.User;
 import pl.edu.ur.teachly.user.repository.UserRepository;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
-
 @ExtendWith(MockitoExtension.class)
 @DisplayName("LessonService – testy jednostkowe")
 class LessonServiceTest {
@@ -57,8 +55,7 @@ class LessonServiceTest {
     @Mock private SubjectRepository subjectRepository;
     @Mock private TimetableService timetableService;
 
-    @InjectMocks
-    private LessonService lessonService;
+    @InjectMocks private LessonService lessonService;
 
     @AfterEach
     void tearDown() {
@@ -97,8 +94,7 @@ class LessonServiceTest {
                 LessonFormat.ONLINE,
                 LessonStatus.PENDING,
                 null,
-                BigDecimal.valueOf(50)
-        );
+                BigDecimal.valueOf(50));
     }
 
     private TimetableDayResponse availableDay(LocalDate date, LocalTime from, LocalTime to) {
@@ -120,21 +116,43 @@ class LessonServiceTest {
             Subject sub = Subject.builder().id(1).subjectName("Matematyka").build();
             LessonRequest req = validRequest();
             Lesson lesson = new Lesson();
-            LessonResponse expectedResponse = new LessonResponse(
-                    10, 2, "Adam", "Nowak", 1, "Jan", "Kowalski",
-                    1, "Matematyka",
-                    req.lessonDate(), req.timeFrom(), req.timeTo(),
-                    LessonFormat.ONLINE, LessonStatus.PENDING,
-                    null, null, BigDecimal.valueOf(50), PaymentStatus.PENDING, null, null
-            );
+            LessonResponse expectedResponse =
+                    new LessonResponse(
+                            10,
+                            2,
+                            "Adam",
+                            "Nowak",
+                            1,
+                            "Jan",
+                            "Kowalski",
+                            1,
+                            "Matematyka",
+                            req.lessonDate(),
+                            req.timeFrom(),
+                            req.timeTo(),
+                            LessonFormat.ONLINE,
+                            LessonStatus.PENDING,
+                            null,
+                            null,
+                            BigDecimal.valueOf(50),
+                            PaymentStatus.PENDING,
+                            null,
+                            null);
 
             when(userRepository.findById(1)).thenReturn(Optional.of(s));
             when(tutorRepository.findById(2)).thenReturn(Optional.of(t));
             when(subjectRepository.findById(1)).thenReturn(Optional.of(sub));
             when(timetableService.getTimetable(eq(2), any(), any(), eq(1)))
-                    .thenReturn(List.of(availableDay(req.lessonDate(), LocalTime.of(8, 0), LocalTime.of(18, 0))));
-            when(lessonRepository.existsConflictingLesson(any(), any(), any(), any(), any())).thenReturn(false);
-            when(lessonRepository.existsConflictingStudentLesson(any(), any(), any(), any(), any())).thenReturn(false);
+                    .thenReturn(
+                            List.of(
+                                    availableDay(
+                                            req.lessonDate(),
+                                            LocalTime.of(8, 0),
+                                            LocalTime.of(18, 0))));
+            when(lessonRepository.existsConflictingLesson(any(), any(), any(), any(), any()))
+                    .thenReturn(false);
+            when(lessonRepository.existsConflictingStudentLesson(any(), any(), any(), any(), any()))
+                    .thenReturn(false);
             when(lessonMapper.toEntity(req)).thenReturn(lesson);
             when(lessonRepository.save(lesson)).thenReturn(lesson);
             when(lessonMapper.toResponse(lesson)).thenReturn(expectedResponse);
@@ -181,15 +199,22 @@ class LessonServiceTest {
         @Test
         @DisplayName("błąd: czas trwania nie jest wielokrotnością 30 minut")
         void createLesson_invalidDuration_notMultipleOf30() {
-            LessonRequest req = new LessonRequest(
-                    2, 1, LocalDate.of(2025, 6, 10),
-                    LocalTime.of(10, 0), LocalTime.of(10, 45),
-                    LessonFormat.ONLINE, LessonStatus.PENDING, null, BigDecimal.valueOf(50)
-            );
+            LessonRequest req =
+                    new LessonRequest(
+                            2,
+                            1,
+                            LocalDate.of(2025, 6, 10),
+                            LocalTime.of(10, 0),
+                            LocalTime.of(10, 45),
+                            LessonFormat.ONLINE,
+                            LessonStatus.PENDING,
+                            null,
+                            BigDecimal.valueOf(50));
 
             when(userRepository.findById(1)).thenReturn(Optional.of(student(1)));
             when(tutorRepository.findById(2)).thenReturn(Optional.of(tutor(2, tutorUser(2))));
-            when(subjectRepository.findById(1)).thenReturn(Optional.of(Subject.builder().id(1).build()));
+            when(subjectRepository.findById(1))
+                    .thenReturn(Optional.of(Subject.builder().id(1).build()));
 
             assertThatThrownBy(() -> lessonService.createLesson(1, req))
                     .isInstanceOf(IllegalArgumentException.class)
@@ -199,15 +224,22 @@ class LessonServiceTest {
         @Test
         @DisplayName("błąd: czas od = czas do (zerowy czas trwania)")
         void createLesson_zeroDuration_throws() {
-            LessonRequest req = new LessonRequest(
-                    2, 1, LocalDate.of(2025, 6, 10),
-                    LocalTime.of(10, 0), LocalTime.of(10, 0),
-                    LessonFormat.ONLINE, LessonStatus.PENDING, null, BigDecimal.valueOf(50)
-            );
+            LessonRequest req =
+                    new LessonRequest(
+                            2,
+                            1,
+                            LocalDate.of(2025, 6, 10),
+                            LocalTime.of(10, 0),
+                            LocalTime.of(10, 0),
+                            LessonFormat.ONLINE,
+                            LessonStatus.PENDING,
+                            null,
+                            BigDecimal.valueOf(50));
 
             when(userRepository.findById(1)).thenReturn(Optional.of(student(1)));
             when(tutorRepository.findById(2)).thenReturn(Optional.of(tutor(2, tutorUser(2))));
-            when(subjectRepository.findById(1)).thenReturn(Optional.of(Subject.builder().id(1).build()));
+            when(subjectRepository.findById(1))
+                    .thenReturn(Optional.of(Subject.builder().id(1).build()));
 
             assertThatThrownBy(() -> lessonService.createLesson(1, req))
                     .isInstanceOf(IllegalArgumentException.class);
@@ -220,7 +252,8 @@ class LessonServiceTest {
 
             when(userRepository.findById(1)).thenReturn(Optional.of(student(1)));
             when(tutorRepository.findById(2)).thenReturn(Optional.of(tutor(2, tutorUser(2))));
-            when(subjectRepository.findById(1)).thenReturn(Optional.of(Subject.builder().id(1).build()));
+            when(subjectRepository.findById(1))
+                    .thenReturn(Optional.of(Subject.builder().id(1).build()));
             when(timetableService.getTimetable(any(), any(), any(), any()))
                     .thenReturn(List.of(new TimetableDayResponse(req.lessonDate(), List.of())));
 
@@ -236,10 +269,17 @@ class LessonServiceTest {
 
             when(userRepository.findById(1)).thenReturn(Optional.of(student(1)));
             when(tutorRepository.findById(2)).thenReturn(Optional.of(tutor(2, tutorUser(2))));
-            when(subjectRepository.findById(1)).thenReturn(Optional.of(Subject.builder().id(1).build()));
+            when(subjectRepository.findById(1))
+                    .thenReturn(Optional.of(Subject.builder().id(1).build()));
             when(timetableService.getTimetable(any(), any(), any(), any()))
-                    .thenReturn(List.of(availableDay(req.lessonDate(), LocalTime.of(8, 0), LocalTime.of(18, 0))));
-            when(lessonRepository.existsConflictingLesson(any(), any(), any(), any(), any())).thenReturn(true);
+                    .thenReturn(
+                            List.of(
+                                    availableDay(
+                                            req.lessonDate(),
+                                            LocalTime.of(8, 0),
+                                            LocalTime.of(18, 0))));
+            when(lessonRepository.existsConflictingLesson(any(), any(), any(), any(), any()))
+                    .thenReturn(true);
 
             assertThatThrownBy(() -> lessonService.createLesson(1, req))
                     .isInstanceOf(SlotNotAvailableException.class)
@@ -253,11 +293,19 @@ class LessonServiceTest {
 
             when(userRepository.findById(1)).thenReturn(Optional.of(student(1)));
             when(tutorRepository.findById(2)).thenReturn(Optional.of(tutor(2, tutorUser(2))));
-            when(subjectRepository.findById(1)).thenReturn(Optional.of(Subject.builder().id(1).build()));
+            when(subjectRepository.findById(1))
+                    .thenReturn(Optional.of(Subject.builder().id(1).build()));
             when(timetableService.getTimetable(any(), any(), any(), any()))
-                    .thenReturn(List.of(availableDay(req.lessonDate(), LocalTime.of(8, 0), LocalTime.of(18, 0))));
-            when(lessonRepository.existsConflictingLesson(any(), any(), any(), any(), any())).thenReturn(false);
-            when(lessonRepository.existsConflictingStudentLesson(any(), any(), any(), any(), any())).thenReturn(true);
+                    .thenReturn(
+                            List.of(
+                                    availableDay(
+                                            req.lessonDate(),
+                                            LocalTime.of(8, 0),
+                                            LocalTime.of(18, 0))));
+            when(lessonRepository.existsConflictingLesson(any(), any(), any(), any(), any()))
+                    .thenReturn(false);
+            when(lessonRepository.existsConflictingStudentLesson(any(), any(), any(), any(), any()))
+                    .thenReturn(true);
 
             assertThatThrownBy(() -> lessonService.createLesson(1, req))
                     .isInstanceOf(SlotNotAvailableException.class)
@@ -440,7 +488,8 @@ class LessonServiceTest {
         @DisplayName("tutorNotes zostają zaktualizowane przy zmianie statusu")
         void changeLessonStatus_updatesTutorNotes() {
             Lesson lesson = buildLesson(LessonStatus.CONFIRMED);
-            LessonStatusRequest req = new LessonStatusRequest(LessonStatus.CANCELLED, "Notatka tutora");
+            LessonStatusRequest req =
+                    new LessonStatusRequest(LessonStatus.CANCELLED, "Notatka tutora");
             LessonResponse lr = mock(LessonResponse.class);
 
             when(lessonRepository.findById(1)).thenReturn(Optional.of(lesson));
@@ -486,7 +535,8 @@ class LessonServiceTest {
     @DisplayName("updateStudentNotes – sukces")
     void updateStudentNotes_success() {
         Lesson lesson = new Lesson();
-        pl.edu.ur.teachly.lesson.dto.request.StudentNotesRequest req = new pl.edu.ur.teachly.lesson.dto.request.StudentNotesRequest("Notatki ucznia");
+        pl.edu.ur.teachly.lesson.dto.request.StudentNotesRequest req =
+                new pl.edu.ur.teachly.lesson.dto.request.StudentNotesRequest("Notatki ucznia");
         LessonResponse response = mock(LessonResponse.class);
 
         when(lessonRepository.findById(1)).thenReturn(Optional.of(lesson));
@@ -503,7 +553,8 @@ class LessonServiceTest {
     @DisplayName("updateTutorNotes – sukces")
     void updateTutorNotes_success() {
         Lesson lesson = new Lesson();
-        pl.edu.ur.teachly.lesson.dto.request.TutorNotesRequest req = new pl.edu.ur.teachly.lesson.dto.request.TutorNotesRequest("Notatki tutora");
+        pl.edu.ur.teachly.lesson.dto.request.TutorNotesRequest req =
+                new pl.edu.ur.teachly.lesson.dto.request.TutorNotesRequest("Notatki tutora");
         LessonResponse response = mock(LessonResponse.class);
 
         when(lessonRepository.findById(1)).thenReturn(Optional.of(lesson));
@@ -520,7 +571,8 @@ class LessonServiceTest {
     @DisplayName("updatePaymentStatus – sukces")
     void updatePaymentStatus_success() {
         Lesson lesson = new Lesson();
-        pl.edu.ur.teachly.lesson.dto.request.PaymentStatusRequest req = new pl.edu.ur.teachly.lesson.dto.request.PaymentStatusRequest(PaymentStatus.PAID);
+        pl.edu.ur.teachly.lesson.dto.request.PaymentStatusRequest req =
+                new pl.edu.ur.teachly.lesson.dto.request.PaymentStatusRequest(PaymentStatus.PAID);
         LessonResponse response = mock(LessonResponse.class);
 
         when(lessonRepository.findById(1)).thenReturn(Optional.of(lesson));

@@ -1,6 +1,13 @@
 package pl.edu.ur.teachly.subject.controller;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,14 +24,6 @@ import pl.edu.ur.teachly.subject.dto.response.SubjectCategoryResponse;
 import pl.edu.ur.teachly.subject.dto.response.SubjectResponse;
 import pl.edu.ur.teachly.subject.service.SubjectService;
 
-import java.util.List;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 @ExtendWith(MockitoExtension.class)
 @DisplayName("SubjectController – testy jednostkowe")
 class SubjectControllerTest {
@@ -32,11 +31,9 @@ class SubjectControllerTest {
     private MockMvc mockMvc;
     private ObjectMapper objectMapper = new ObjectMapper();
 
-    @Mock
-    private SubjectService subjectService;
+    @Mock private SubjectService subjectService;
 
-    @InjectMocks
-    private SubjectController subjectController;
+    @InjectMocks private SubjectController subjectController;
 
     @BeforeEach
     void setUp() {
@@ -45,17 +42,20 @@ class SubjectControllerTest {
 
     @Test
     void getAllSubjects() throws Exception {
-        when(subjectService.getAllSubjects()).thenReturn(List.of(new SubjectResponse(1, "Matematyka", 1, "Nauki ścisłe")));
+        when(subjectService.getAllSubjects())
+                .thenReturn(List.of(new SubjectResponse(1, "Matematyka", 1, "Nauki ścisłe")));
         mockMvc.perform(get("/api/subjects")).andExpect(status().isOk());
     }
 
     @Test
     void addSubject() throws Exception {
         SubjectRequest req = new SubjectRequest("Fizyka", 1);
-        when(subjectService.addSubject(any())).thenReturn(new SubjectResponse(2, "Fizyka", 1, "Nauki ścisłe"));
-        mockMvc.perform(post("/api/subjects")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(req)))
+        when(subjectService.addSubject(any()))
+                .thenReturn(new SubjectResponse(2, "Fizyka", 1, "Nauki ścisłe"));
+        mockMvc.perform(
+                        post("/api/subjects")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(req)))
                 .andExpect(status().isCreated());
     }
 
@@ -67,17 +67,20 @@ class SubjectControllerTest {
 
     @Test
     void getAllCategories() throws Exception {
-        when(subjectService.getAllCategories()).thenReturn(List.of(new SubjectCategoryResponse(1, "N")));
+        when(subjectService.getAllCategories())
+                .thenReturn(List.of(new SubjectCategoryResponse(1, "N")));
         mockMvc.perform(get("/api/subjects/categories")).andExpect(status().isOk());
     }
 
     @Test
     void addSubjectCategory() throws Exception {
         SubjectCategoryRequest req = new SubjectCategoryRequest("Nowa");
-        when(subjectService.addSubjectCategory(any())).thenReturn(new SubjectCategoryResponse(2, "Nowa"));
-        mockMvc.perform(post("/api/subjects/categories")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(req)))
+        when(subjectService.addSubjectCategory(any()))
+                .thenReturn(new SubjectCategoryResponse(2, "Nowa"));
+        mockMvc.perform(
+                        post("/api/subjects/categories")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(req)))
                 .andExpect(status().isCreated());
     }
 

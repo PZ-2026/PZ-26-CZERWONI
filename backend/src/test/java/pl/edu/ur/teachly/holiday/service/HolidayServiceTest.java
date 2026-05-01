@@ -1,5 +1,12 @@
 package pl.edu.ur.teachly.holiday.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.*;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,15 +21,6 @@ import pl.edu.ur.teachly.holiday.entity.Holiday;
 import pl.edu.ur.teachly.holiday.mapper.HolidayMapper;
 import pl.edu.ur.teachly.holiday.repository.HolidayRepository;
 
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-
 @ExtendWith(MockitoExtension.class)
 @DisplayName("HolidayService - testy jednostkowe")
 class HolidayServiceTest {
@@ -30,15 +28,14 @@ class HolidayServiceTest {
     @Mock private HolidayRepository holidayRepository;
     @Mock private HolidayMapper holidayMapper;
 
-    @InjectMocks
-    private HolidayService holidayService;
+    @InjectMocks private HolidayService holidayService;
 
     @Test
     @DisplayName("getAllHolidays - zwraca listę świąt")
     void getAllHolidays_returnsList() {
         Holiday h1 = new Holiday();
         HolidayResponse r1 = new HolidayResponse(1, LocalDate.now(), "Boże Narodzenie");
-        
+
         when(holidayRepository.findAll()).thenReturn(List.of(h1));
         when(holidayMapper.toResponse(h1)).thenReturn(r1);
 
@@ -81,11 +78,12 @@ class HolidayServiceTest {
         HolidayRequest req = new HolidayRequest(LocalDate.now(), "Zmieniona nazwa");
         Holiday holiday = new Holiday();
         holiday.setHolidayDate(LocalDate.now().minusDays(1)); // stara data
-        
+
         when(holidayRepository.findById(1)).thenReturn(Optional.of(holiday));
         when(holidayRepository.existsByHolidayDate(req.holidayDate())).thenReturn(false);
         when(holidayRepository.save(holiday)).thenReturn(holiday);
-        when(holidayMapper.toResponse(holiday)).thenReturn(new HolidayResponse(1, LocalDate.now(), "Zmieniona nazwa"));
+        when(holidayMapper.toResponse(holiday))
+                .thenReturn(new HolidayResponse(1, LocalDate.now(), "Zmieniona nazwa"));
 
         holidayService.updateHoliday(1, req);
 

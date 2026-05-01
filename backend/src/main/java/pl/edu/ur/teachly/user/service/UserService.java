@@ -1,5 +1,6 @@
 package pl.edu.ur.teachly.user.service;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,8 +11,6 @@ import pl.edu.ur.teachly.user.dto.response.UserResponse;
 import pl.edu.ur.teachly.user.entity.User;
 import pl.edu.ur.teachly.user.mapper.UserMapper;
 import pl.edu.ur.teachly.user.repository.UserRepository;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor

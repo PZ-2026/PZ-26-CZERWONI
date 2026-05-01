@@ -1,5 +1,11 @@
 package pl.edu.ur.teachly.subject.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.*;
+
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,14 +25,6 @@ import pl.edu.ur.teachly.subject.mapper.SubjectMapper;
 import pl.edu.ur.teachly.subject.repository.SubjectCategoryRepository;
 import pl.edu.ur.teachly.subject.repository.SubjectRepository;
 
-import java.util.List;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-
 @ExtendWith(MockitoExtension.class)
 @DisplayName("SubjectService - testy jednostkowe")
 class SubjectServiceTest {
@@ -36,15 +34,14 @@ class SubjectServiceTest {
     @Mock private SubjectMapper subjectMapper;
     @Mock private SubjectCategoryMapper categoryMapper;
 
-    @InjectMocks
-    private SubjectService subjectService;
+    @InjectMocks private SubjectService subjectService;
 
     @Test
     @DisplayName("getAllSubjects - zwraca listę przedmiotów")
     void getAllSubjects_returnsList() {
         Subject s1 = new Subject();
         SubjectResponse r1 = new SubjectResponse(1, "Matematyka", 1, "Nauki ścisłe");
-        
+
         when(subjectRepository.findAll()).thenReturn(List.of(s1));
         when(subjectMapper.toResponse(s1)).thenReturn(r1);
 

@@ -2,7 +2,7 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '4.0.4'
     id 'io.spring.dependency-management' version '1.1.7'
-    id 'com.diffplug.spotless' version '6.25.0'
+    id 'com.diffplug.spotless' version '8.4.0'
     id 'checkstyle'
     id 'jacoco'
 }
@@ -63,9 +63,9 @@ jacocoTestReport {
 
 // Automatization when compiling
 // 1. Always format code (Spotless)
-// tasks.named('compileJava') {
-//     dependsOn 'spotlessApply'
-// }
+tasks.named('compileJava') {
+    dependsOn 'spotlessApply'
+}
 // 2. Always check code quality (Checkstyle)
 tasks.named('compileJava') {
     finalizedBy 'checkstyleMain'
@@ -75,7 +75,7 @@ tasks.named('compileJava') {
 spotless {
     java {
         // AOSP mode consistent with Java Coding Standards
-        googleJavaFormat('1.23.0').aosp()
+        googleJavaFormat('1.35.0').aosp()
         removeUnusedImports()
         trimTrailingWhitespace()
         endWithNewline()

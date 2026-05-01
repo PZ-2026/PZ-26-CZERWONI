@@ -1,5 +1,12 @@
 package pl.edu.ur.teachly.tutor.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,14 +23,6 @@ import pl.edu.ur.teachly.tutor.mapper.TutorSubjectMapper;
 import pl.edu.ur.teachly.tutor.repository.TutorRepository;
 import pl.edu.ur.teachly.tutor.repository.TutorSubjectRepository;
 
-import java.util.List;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 @ExtendWith(MockitoExtension.class)
 @DisplayName("TutorService - testy jednostkowe")
 class TutorServiceTest {
@@ -33,15 +32,25 @@ class TutorServiceTest {
     @Mock private TutorSubjectRepository tutorSubjectRepository;
     @Mock private TutorSubjectMapper tutorSubjectMapper;
 
-    @InjectMocks
-    private TutorService tutorService;
+    @InjectMocks private TutorService tutorService;
 
     @Test
     @DisplayName("getAllTutors - zwraca listę wszystkich korepetytorów")
     void getAllTutors_returnsList() {
         Tutor t1 = new Tutor();
-        TutorResponse r1 = new TutorResponse(1, "Test", "Test", "test@test.com", "123", "url", "Bio", java.math.BigDecimal.TEN, true, true);
-        
+        TutorResponse r1 =
+                new TutorResponse(
+                        1,
+                        "Test",
+                        "Test",
+                        "test@test.com",
+                        "123",
+                        "url",
+                        "Bio",
+                        java.math.BigDecimal.TEN,
+                        true,
+                        true);
+
         when(tutorRepository.findAll()).thenReturn(List.of(t1));
         when(tutorMapper.toResponse(t1)).thenReturn(r1);
 
@@ -54,7 +63,18 @@ class TutorServiceTest {
     @DisplayName("getTutorById - sukces: zwraca korepetytora")
     void getTutorById_found_returnsResponse() {
         Tutor t1 = new Tutor();
-        TutorResponse r1 = new TutorResponse(1, "Test", "Test", "test@test.com", "123", "url", "Bio", java.math.BigDecimal.TEN, true, true);
+        TutorResponse r1 =
+                new TutorResponse(
+                        1,
+                        "Test",
+                        "Test",
+                        "test@test.com",
+                        "123",
+                        "url",
+                        "Bio",
+                        java.math.BigDecimal.TEN,
+                        true,
+                        true);
 
         when(tutorRepository.findById(1)).thenReturn(Optional.of(t1));
         when(tutorMapper.toResponse(t1)).thenReturn(r1);
@@ -78,7 +98,9 @@ class TutorServiceTest {
     void getTutorSubjects_success() {
         Tutor t1 = new Tutor();
         TutorSubject ts = new TutorSubject();
-        TutorSubjectResponse r1 = new TutorSubjectResponse(1, 1, "Matematyka", "Kategoria", true, false, false, false, false);
+        TutorSubjectResponse r1 =
+                new TutorSubjectResponse(
+                        1, 1, "Matematyka", "Kategoria", true, false, false, false, false);
 
         when(tutorRepository.findById(1)).thenReturn(Optional.of(t1));
         when(tutorSubjectRepository.findByTutor_UserId(1)).thenReturn(List.of(ts));
@@ -102,8 +124,21 @@ class TutorServiceTest {
     @DisplayName("adminUpdateTutor - sukces")
     void adminUpdateTutor_success() {
         Tutor tutor = new Tutor();
-        pl.edu.ur.teachly.tutor.dto.request.TutorRequest req = new pl.edu.ur.teachly.tutor.dto.request.TutorRequest("Bio", java.math.BigDecimal.valueOf(100), true, true);
-        TutorResponse response = new TutorResponse(1, "A", "B", "a@b.com", "123", "url", "Bio", java.math.BigDecimal.valueOf(100), true, true);
+        pl.edu.ur.teachly.tutor.dto.request.TutorRequest req =
+                new pl.edu.ur.teachly.tutor.dto.request.TutorRequest(
+                        "Bio", java.math.BigDecimal.valueOf(100), true, true);
+        TutorResponse response =
+                new TutorResponse(
+                        1,
+                        "A",
+                        "B",
+                        "a@b.com",
+                        "123",
+                        "url",
+                        "Bio",
+                        java.math.BigDecimal.valueOf(100),
+                        true,
+                        true);
 
         when(tutorRepository.findById(1)).thenReturn(Optional.of(tutor));
         when(tutorRepository.save(tutor)).thenReturn(tutor);

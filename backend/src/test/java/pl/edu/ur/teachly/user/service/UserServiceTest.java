@@ -1,5 +1,11 @@
 package pl.edu.ur.teachly.user.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.*;
+
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,24 +21,14 @@ import pl.edu.ur.teachly.user.entity.User;
 import pl.edu.ur.teachly.user.mapper.UserMapper;
 import pl.edu.ur.teachly.user.repository.UserRepository;
 
-import java.util.List;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.*;
-
 @ExtendWith(MockitoExtension.class)
 @DisplayName("UserService – testy jednostkowe")
 class UserServiceTest {
 
-    @Mock
-    private UserRepository userRepository;
-    @Mock
-    private UserMapper userMapper;
+    @Mock private UserRepository userRepository;
+    @Mock private UserMapper userMapper;
 
-    @InjectMocks
-    private UserService userService;
+    @InjectMocks private UserService userService;
 
     // ─── getUserById ─────────────────────────────────────────────────────────
 
@@ -40,8 +36,18 @@ class UserServiceTest {
     @DisplayName("getUserById – sukces: zwraca UserResponse dla istniejącego użytkownika")
     void getUserById_found_returnsResponse() {
         User user = User.builder().id(1).email("a@b.com").userRole(UserRole.STUDENT).build();
-        UserResponse expected = new UserResponse(1, "Jan", "Kowalski", "a@b.com", "123456789",
-                null, UserRole.STUDENT, true, null, null);
+        UserResponse expected =
+                new UserResponse(
+                        1,
+                        "Jan",
+                        "Kowalski",
+                        "a@b.com",
+                        "123456789",
+                        null,
+                        UserRole.STUDENT,
+                        true,
+                        null,
+                        null);
 
         when(userRepository.findById(1)).thenReturn(Optional.of(user));
         when(userMapper.toResponse(user)).thenReturn(expected);
@@ -68,10 +74,30 @@ class UserServiceTest {
     void getAllUsers_returnsAllUsers() {
         User u1 = User.builder().id(1).build();
         User u2 = User.builder().id(2).build();
-        UserResponse r1 = new UserResponse(1, "A", "B", "a@b.com", "111111111",
-                null, UserRole.STUDENT, true, null, null);
-        UserResponse r2 = new UserResponse(2, "C", "D", "c@d.com", "222222222",
-                null, UserRole.TUTOR, true, null, null);
+        UserResponse r1 =
+                new UserResponse(
+                        1,
+                        "A",
+                        "B",
+                        "a@b.com",
+                        "111111111",
+                        null,
+                        UserRole.STUDENT,
+                        true,
+                        null,
+                        null);
+        UserResponse r2 =
+                new UserResponse(
+                        2,
+                        "C",
+                        "D",
+                        "c@d.com",
+                        "222222222",
+                        null,
+                        UserRole.TUTOR,
+                        true,
+                        null,
+                        null);
 
         when(userRepository.findAll()).thenReturn(List.of(u1, u2));
         when(userMapper.toResponse(u1)).thenReturn(r1);
@@ -134,7 +160,18 @@ class UserServiceTest {
     void updateUserProfile_success() {
         User user = User.builder().id(1).build();
         UserUpdateRequest req = new UserUpdateRequest("Nowe", "Imie", null);
-        UserResponse response = new UserResponse(1, "Nowe", "Imie", "a@b.com", "123", null, UserRole.STUDENT, true, null, null);
+        UserResponse response =
+                new UserResponse(
+                        1,
+                        "Nowe",
+                        "Imie",
+                        "a@b.com",
+                        "123",
+                        null,
+                        UserRole.STUDENT,
+                        true,
+                        null,
+                        null);
 
         when(userRepository.findById(1)).thenReturn(Optional.of(user));
         when(userRepository.save(user)).thenReturn(user);
@@ -153,8 +190,20 @@ class UserServiceTest {
     @DisplayName("adminUpdateUser – sukces")
     void adminUpdateUser_success() {
         User user = User.builder().id(1).build();
-        AdminUserUpdateRequest req = new AdminUserUpdateRequest("A", "B", "a@b.pl", "123456789", UserRole.TUTOR, "url");
-        UserResponse response = new UserResponse(1, "A", "B", "a@b.pl", "123456789", "url", UserRole.TUTOR, true, null, null);
+        AdminUserUpdateRequest req =
+                new AdminUserUpdateRequest("A", "B", "a@b.pl", "123456789", UserRole.TUTOR, "url");
+        UserResponse response =
+                new UserResponse(
+                        1,
+                        "A",
+                        "B",
+                        "a@b.pl",
+                        "123456789",
+                        "url",
+                        UserRole.TUTOR,
+                        true,
+                        null,
+                        null);
 
         when(userRepository.findById(1)).thenReturn(Optional.of(user));
         when(userRepository.save(user)).thenReturn(user);

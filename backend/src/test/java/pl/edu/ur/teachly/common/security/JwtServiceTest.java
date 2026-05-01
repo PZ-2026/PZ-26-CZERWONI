@@ -1,5 +1,8 @@
 package pl.edu.ur.teachly.common.security;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.Collections;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -7,15 +10,12 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import java.util.Collections;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
 @DisplayName("JwtService – testy jednostkowe")
 class JwtServiceTest {
 
     private JwtService jwtService;
-    private final String SECRET_KEY = "404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970"; // 512 bit key
+    private final String SECRET_KEY =
+            "404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970"; // 512 bit key
 
     @BeforeEach
     void setUp() {

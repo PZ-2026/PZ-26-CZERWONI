@@ -1,5 +1,13 @@
 package pl.edu.ur.teachly.tutor.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -21,17 +29,6 @@ import pl.edu.ur.teachly.tutor.repository.TutorAvailabilityOverrideRepository;
 import pl.edu.ur.teachly.tutor.repository.TutorAvailabilityRecurringRepository;
 import pl.edu.ur.teachly.user.entity.User;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 @ExtendWith(MockitoExtension.class)
 @DisplayName("TimetableService – testy jednostkowe")
 class TimetableServiceTest {
@@ -41,8 +38,7 @@ class TimetableServiceTest {
     @Mock private HolidayRepository holidayRepository;
     @Mock private LessonRepository lessonRepository;
 
-    @InjectMocks
-    private TimetableService timetableService;
+    @InjectMocks private TimetableService timetableService;
 
     // ─── helpers ─────────────────────────────────────────────────────────────
 
@@ -62,7 +58,8 @@ class TimetableServiceTest {
                 .build();
     }
 
-    private Lesson lessonOnDay(LocalDate date, LocalTime from, LocalTime to, LessonStatus status, Integer studentId) {
+    private Lesson lessonOnDay(
+            LocalDate date, LocalTime from, LocalTime to, LessonStatus status, Integer studentId) {
         User student = User.builder().id(studentId).build();
         Lesson l = new Lesson();
         l.setLessonDate(date);
@@ -86,11 +83,15 @@ class TimetableServiceTest {
             holiday.setHolidayDate(MONDAY);
 
             when(recurringRepository.findByTutor_UserId(TUTOR_ID)).thenReturn(List.of());
-            when(overrideRepository.findByTutor_UserIdAndOverrideDateBetween(any(), any(), any())).thenReturn(List.of());
-            when(holidayRepository.findByHolidayDateBetween(any(), any())).thenReturn(List.of(holiday));
-            when(lessonRepository.findByTutor_UserIdAndLessonDateBetween(any(), any(), any())).thenReturn(List.of());
+            when(overrideRepository.findByTutor_UserIdAndOverrideDateBetween(any(), any(), any()))
+                    .thenReturn(List.of());
+            when(holidayRepository.findByHolidayDateBetween(any(), any()))
+                    .thenReturn(List.of(holiday));
+            when(lessonRepository.findByTutor_UserIdAndLessonDateBetween(any(), any(), any()))
+                    .thenReturn(List.of());
 
-            List<TimetableDayResponse> result = timetableService.getTimetable(TUTOR_ID, MONDAY, MONDAY, STUDENT_ID);
+            List<TimetableDayResponse> result =
+                    timetableService.getTimetable(TUTOR_ID, MONDAY, MONDAY, STUDENT_ID);
 
             assertThat(result).hasSize(1);
             assertThat(result.get(0).getAvailableSlots()).isEmpty();
@@ -107,11 +108,14 @@ class TimetableServiceTest {
             // dayOfWeek=1 → poniedziałek (ISO)
             when(recurringRepository.findByTutor_UserId(TUTOR_ID))
                     .thenReturn(List.of(recurring(1, LocalTime.of(8, 0), LocalTime.of(18, 0))));
-            when(overrideRepository.findByTutor_UserIdAndOverrideDateBetween(any(), any(), any())).thenReturn(List.of());
+            when(overrideRepository.findByTutor_UserIdAndOverrideDateBetween(any(), any(), any()))
+                    .thenReturn(List.of());
             when(holidayRepository.findByHolidayDateBetween(any(), any())).thenReturn(List.of());
-            when(lessonRepository.findByTutor_UserIdAndLessonDateBetween(any(), any(), any())).thenReturn(List.of());
+            when(lessonRepository.findByTutor_UserIdAndLessonDateBetween(any(), any(), any()))
+                    .thenReturn(List.of());
 
-            List<TimetableDayResponse> result = timetableService.getTimetable(TUTOR_ID, MONDAY, MONDAY, STUDENT_ID);
+            List<TimetableDayResponse> result =
+                    timetableService.getTimetable(TUTOR_ID, MONDAY, MONDAY, STUDENT_ID);
 
             assertThat(result).hasSize(1);
             assertThat(result.get(0).getAvailableSlots())
@@ -124,11 +128,14 @@ class TimetableServiceTest {
             // dayOfWeek=2 = wtorek, a MONDAY = 1
             when(recurringRepository.findByTutor_UserId(TUTOR_ID))
                     .thenReturn(List.of(recurring(2, LocalTime.of(8, 0), LocalTime.of(18, 0))));
-            when(overrideRepository.findByTutor_UserIdAndOverrideDateBetween(any(), any(), any())).thenReturn(List.of());
+            when(overrideRepository.findByTutor_UserIdAndOverrideDateBetween(any(), any(), any()))
+                    .thenReturn(List.of());
             when(holidayRepository.findByHolidayDateBetween(any(), any())).thenReturn(List.of());
-            when(lessonRepository.findByTutor_UserIdAndLessonDateBetween(any(), any(), any())).thenReturn(List.of());
+            when(lessonRepository.findByTutor_UserIdAndLessonDateBetween(any(), any(), any()))
+                    .thenReturn(List.of());
 
-            List<TimetableDayResponse> result = timetableService.getTimetable(TUTOR_ID, MONDAY, MONDAY, STUDENT_ID);
+            List<TimetableDayResponse> result =
+                    timetableService.getTimetable(TUTOR_ID, MONDAY, MONDAY, STUDENT_ID);
 
             assertThat(result.get(0).getAvailableSlots()).isEmpty();
         }
@@ -138,19 +145,29 @@ class TimetableServiceTest {
         void recurring_withConfirmedLesson_splitSlot() {
             when(recurringRepository.findByTutor_UserId(TUTOR_ID))
                     .thenReturn(List.of(recurring(1, LocalTime.of(8, 0), LocalTime.of(18, 0))));
-            when(overrideRepository.findByTutor_UserIdAndOverrideDateBetween(any(), any(), any())).thenReturn(List.of());
+            when(overrideRepository.findByTutor_UserIdAndOverrideDateBetween(any(), any(), any()))
+                    .thenReturn(List.of());
             when(holidayRepository.findByHolidayDateBetween(any(), any())).thenReturn(List.of());
 
-            Lesson confirmed = lessonOnDay(MONDAY, LocalTime.of(10, 0), LocalTime.of(11, 0), LessonStatus.CONFIRMED, 99);
+            Lesson confirmed =
+                    lessonOnDay(
+                            MONDAY,
+                            LocalTime.of(10, 0),
+                            LocalTime.of(11, 0),
+                            LessonStatus.CONFIRMED,
+                            99);
             when(lessonRepository.findByTutor_UserIdAndLessonDateBetween(any(), any(), any()))
                     .thenReturn(List.of(confirmed));
 
-            List<TimetableDayResponse> result = timetableService.getTimetable(TUTOR_ID, MONDAY, MONDAY, STUDENT_ID);
+            List<TimetableDayResponse> result =
+                    timetableService.getTimetable(TUTOR_ID, MONDAY, MONDAY, STUDENT_ID);
 
             List<TimeSlot> slots = result.get(0).getAvailableSlots();
             assertThat(slots).hasSize(2);
-            assertThat(slots.get(0)).isEqualTo(new TimeSlot(LocalTime.of(8, 0), LocalTime.of(10, 0)));
-            assertThat(slots.get(1)).isEqualTo(new TimeSlot(LocalTime.of(11, 0), LocalTime.of(18, 0)));
+            assertThat(slots.get(0))
+                    .isEqualTo(new TimeSlot(LocalTime.of(8, 0), LocalTime.of(10, 0)));
+            assertThat(slots.get(1))
+                    .isEqualTo(new TimeSlot(LocalTime.of(11, 0), LocalTime.of(18, 0)));
         }
 
         @Test
@@ -158,15 +175,23 @@ class TimetableServiceTest {
         void recurring_ownPendingLesson_isSubtracted() {
             when(recurringRepository.findByTutor_UserId(TUTOR_ID))
                     .thenReturn(List.of(recurring(1, LocalTime.of(8, 0), LocalTime.of(18, 0))));
-            when(overrideRepository.findByTutor_UserIdAndOverrideDateBetween(any(), any(), any())).thenReturn(List.of());
+            when(overrideRepository.findByTutor_UserIdAndOverrideDateBetween(any(), any(), any()))
+                    .thenReturn(List.of());
             when(holidayRepository.findByHolidayDateBetween(any(), any())).thenReturn(List.of());
 
             // student_id = STUDENT_ID, status PENDING
-            Lesson ownPending = lessonOnDay(MONDAY, LocalTime.of(12, 0), LocalTime.of(13, 0), LessonStatus.PENDING, STUDENT_ID);
+            Lesson ownPending =
+                    lessonOnDay(
+                            MONDAY,
+                            LocalTime.of(12, 0),
+                            LocalTime.of(13, 0),
+                            LessonStatus.PENDING,
+                            STUDENT_ID);
             when(lessonRepository.findByTutor_UserIdAndLessonDateBetween(any(), any(), any()))
                     .thenReturn(List.of(ownPending));
 
-            List<TimetableDayResponse> result = timetableService.getTimetable(TUTOR_ID, MONDAY, MONDAY, STUDENT_ID);
+            List<TimetableDayResponse> result =
+                    timetableService.getTimetable(TUTOR_ID, MONDAY, MONDAY, STUDENT_ID);
 
             List<TimeSlot> slots = result.get(0).getAvailableSlots();
             // Slot 8-12 i 13-18 (własna PENDING lekcja usunięta)
@@ -178,15 +203,23 @@ class TimetableServiceTest {
         void recurring_otherStudentPendingLesson_isNotSubtracted() {
             when(recurringRepository.findByTutor_UserId(TUTOR_ID))
                     .thenReturn(List.of(recurring(1, LocalTime.of(8, 0), LocalTime.of(18, 0))));
-            when(overrideRepository.findByTutor_UserIdAndOverrideDateBetween(any(), any(), any())).thenReturn(List.of());
+            when(overrideRepository.findByTutor_UserIdAndOverrideDateBetween(any(), any(), any()))
+                    .thenReturn(List.of());
             when(holidayRepository.findByHolidayDateBetween(any(), any())).thenReturn(List.of());
 
             // Inny student (id=999), status PENDING
-            Lesson otherPending = lessonOnDay(MONDAY, LocalTime.of(12, 0), LocalTime.of(13, 0), LessonStatus.PENDING, 999);
+            Lesson otherPending =
+                    lessonOnDay(
+                            MONDAY,
+                            LocalTime.of(12, 0),
+                            LocalTime.of(13, 0),
+                            LessonStatus.PENDING,
+                            999);
             when(lessonRepository.findByTutor_UserIdAndLessonDateBetween(any(), any(), any()))
                     .thenReturn(List.of(otherPending));
 
-            List<TimetableDayResponse> result = timetableService.getTimetable(TUTOR_ID, MONDAY, MONDAY, STUDENT_ID);
+            List<TimetableDayResponse> result =
+                    timetableService.getTimetable(TUTOR_ID, MONDAY, MONDAY, STUDENT_ID);
 
             // Pełny slot, bo inna PENDING nie blokuje
             assertThat(result.get(0).getAvailableSlots())
@@ -199,11 +232,14 @@ class TimetableServiceTest {
             // Slot 10:00–10:20 – za krótki po odjęciu lekcji
             when(recurringRepository.findByTutor_UserId(TUTOR_ID))
                     .thenReturn(List.of(recurring(1, LocalTime.of(10, 0), LocalTime.of(10, 20))));
-            when(overrideRepository.findByTutor_UserIdAndOverrideDateBetween(any(), any(), any())).thenReturn(List.of());
+            when(overrideRepository.findByTutor_UserIdAndOverrideDateBetween(any(), any(), any()))
+                    .thenReturn(List.of());
             when(holidayRepository.findByHolidayDateBetween(any(), any())).thenReturn(List.of());
-            when(lessonRepository.findByTutor_UserIdAndLessonDateBetween(any(), any(), any())).thenReturn(List.of());
+            when(lessonRepository.findByTutor_UserIdAndLessonDateBetween(any(), any(), any()))
+                    .thenReturn(List.of());
 
-            List<TimetableDayResponse> result = timetableService.getTimetable(TUTOR_ID, MONDAY, MONDAY, STUDENT_ID);
+            List<TimetableDayResponse> result =
+                    timetableService.getTimetable(TUTOR_ID, MONDAY, MONDAY, STUDENT_ID);
 
             assertThat(result.get(0).getAvailableSlots()).isEmpty();
         }
@@ -219,17 +255,20 @@ class TimetableServiceTest {
             when(recurringRepository.findByTutor_UserId(TUTOR_ID))
                     .thenReturn(List.of(recurring(1, LocalTime.of(8, 0), LocalTime.of(18, 0))));
             when(holidayRepository.findByHolidayDateBetween(any(), any())).thenReturn(List.of());
-            when(lessonRepository.findByTutor_UserIdAndLessonDateBetween(any(), any(), any())).thenReturn(List.of());
+            when(lessonRepository.findByTutor_UserIdAndLessonDateBetween(any(), any(), any()))
+                    .thenReturn(List.of());
 
-            TutorAvailabilityOverride override = TutorAvailabilityOverride.builder()
-                    .overrideDate(MONDAY)
-                    .timeFrom(LocalTime.of(14, 0))
-                    .timeTo(LocalTime.of(16, 0))
-                    .build();
+            TutorAvailabilityOverride override =
+                    TutorAvailabilityOverride.builder()
+                            .overrideDate(MONDAY)
+                            .timeFrom(LocalTime.of(14, 0))
+                            .timeTo(LocalTime.of(16, 0))
+                            .build();
             when(overrideRepository.findByTutor_UserIdAndOverrideDateBetween(any(), any(), any()))
                     .thenReturn(List.of(override));
 
-            List<TimetableDayResponse> result = timetableService.getTimetable(TUTOR_ID, MONDAY, MONDAY, STUDENT_ID);
+            List<TimetableDayResponse> result =
+                    timetableService.getTimetable(TUTOR_ID, MONDAY, MONDAY, STUDENT_ID);
 
             assertThat(result.get(0).getAvailableSlots())
                     .containsExactly(new TimeSlot(LocalTime.of(14, 0), LocalTime.of(16, 0)));
@@ -241,17 +280,20 @@ class TimetableServiceTest {
             when(recurringRepository.findByTutor_UserId(TUTOR_ID))
                     .thenReturn(List.of(recurring(1, LocalTime.of(8, 0), LocalTime.of(18, 0))));
             when(holidayRepository.findByHolidayDateBetween(any(), any())).thenReturn(List.of());
-            when(lessonRepository.findByTutor_UserIdAndLessonDateBetween(any(), any(), any())).thenReturn(List.of());
+            when(lessonRepository.findByTutor_UserIdAndLessonDateBetween(any(), any(), any()))
+                    .thenReturn(List.of());
 
-            TutorAvailabilityOverride override = TutorAvailabilityOverride.builder()
-                    .overrideDate(MONDAY)
-                    .timeFrom(null)
-                    .timeTo(null)
-                    .build();
+            TutorAvailabilityOverride override =
+                    TutorAvailabilityOverride.builder()
+                            .overrideDate(MONDAY)
+                            .timeFrom(null)
+                            .timeTo(null)
+                            .build();
             when(overrideRepository.findByTutor_UserIdAndOverrideDateBetween(any(), any(), any()))
                     .thenReturn(List.of(override));
 
-            List<TimetableDayResponse> result = timetableService.getTimetable(TUTOR_ID, MONDAY, MONDAY, STUDENT_ID);
+            List<TimetableDayResponse> result =
+                    timetableService.getTimetable(TUTOR_ID, MONDAY, MONDAY, STUDENT_ID);
 
             assertThat(result.get(0).getAvailableSlots()).isEmpty();
         }
@@ -268,11 +310,14 @@ class TimetableServiceTest {
             LocalDate wednesday = MONDAY.plusDays(2);
 
             when(recurringRepository.findByTutor_UserId(TUTOR_ID)).thenReturn(List.of());
-            when(overrideRepository.findByTutor_UserIdAndOverrideDateBetween(any(), any(), any())).thenReturn(List.of());
+            when(overrideRepository.findByTutor_UserIdAndOverrideDateBetween(any(), any(), any()))
+                    .thenReturn(List.of());
             when(holidayRepository.findByHolidayDateBetween(any(), any())).thenReturn(List.of());
-            when(lessonRepository.findByTutor_UserIdAndLessonDateBetween(any(), any(), any())).thenReturn(List.of());
+            when(lessonRepository.findByTutor_UserIdAndLessonDateBetween(any(), any(), any()))
+                    .thenReturn(List.of());
 
-            List<TimetableDayResponse> result = timetableService.getTimetable(TUTOR_ID, MONDAY, wednesday, STUDENT_ID);
+            List<TimetableDayResponse> result =
+                    timetableService.getTimetable(TUTOR_ID, MONDAY, wednesday, STUDENT_ID);
 
             assertThat(result).hasSize(3);
             assertThat(result.get(0).getDate()).isEqualTo(MONDAY);

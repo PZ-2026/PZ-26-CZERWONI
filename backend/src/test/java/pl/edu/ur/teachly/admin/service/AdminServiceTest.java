@@ -1,5 +1,8 @@
 package pl.edu.ur.teachly.admin.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,9 +19,6 @@ import pl.edu.ur.teachly.subject.repository.SubjectCategoryRepository;
 import pl.edu.ur.teachly.subject.repository.SubjectRepository;
 import pl.edu.ur.teachly.user.repository.UserRepository;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
-
 @ExtendWith(MockitoExtension.class)
 @DisplayName("AdminService – testy jednostkowe")
 class AdminServiceTest {
@@ -30,8 +30,7 @@ class AdminServiceTest {
     @Mock private HolidayRepository holidayRepository;
     @Mock private ReviewRepository reviewRepository;
 
-    @InjectMocks
-    private AdminService adminService;
+    @InjectMocks private AdminService adminService;
 
     @Test
     @DisplayName("getStats – zwraca poprawne statystyki")
