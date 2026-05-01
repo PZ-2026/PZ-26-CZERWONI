@@ -8,12 +8,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import pl.edu.ur.teachly.R
-import pl.edu.ur.teachly.ui.components.Review
-import pl.edu.ur.teachly.ui.components.Tutor
+import pl.edu.ur.teachly.data.model.ReviewResponse
 import pl.edu.ur.teachly.ui.components.profile.SubjectsSection
+import pl.edu.ur.teachly.ui.models.Tutor
 
 @Composable
-fun TutorDetailBody(tutor: Tutor, reviews: List<Review> = emptyList()) {
+fun TutorDetailBody(
+    tutor: Tutor,
+    reviews: List<ReviewResponse> = emptyList(),
+    currentStudentId: Int? = null,
+    canReview: Boolean = false,
+    onAddReview: (() -> Unit)? = null,
+    onEditReview: ((ReviewResponse) -> Unit)? = null,
+    onSeeAllReviews: (() -> Unit)? = null,
+) {
     Column(
         modifier = Modifier.padding(vertical = 20.dp),
         verticalArrangement = Arrangement.spacedBy(24.dp)
@@ -28,10 +36,13 @@ fun TutorDetailBody(tutor: Tutor, reviews: List<Review> = emptyList()) {
             }
         }
 
-        if (reviews.isNotEmpty()) {
-            DetailSection(title = stringResource(R.string.tutor_section_reviews)) {
-                ReviewList(reviews = reviews)
-            }
-        }
+        ReviewsSection(
+            reviews = reviews,
+            currentStudentId = currentStudentId,
+            canReview = canReview,
+            onAddReview = onAddReview,
+            onSeeAll = onSeeAllReviews,
+            onEditReview = onEditReview,
+        )
     }
 }

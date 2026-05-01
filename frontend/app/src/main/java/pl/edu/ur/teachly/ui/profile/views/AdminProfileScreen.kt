@@ -4,41 +4,34 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AdminPanelSettings
 import androidx.compose.material.icons.filled.AlternateEmail
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.Phone
-import androidx.compose.material.icons.filled.Shield
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme.colorScheme
-import androidx.compose.material3.MaterialTheme.typography
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import org.koin.androidx.compose.koinViewModel
 import pl.edu.ur.teachly.R
 import pl.edu.ur.teachly.data.model.UserRole
+import pl.edu.ur.teachly.ui.components.other.FullScreenError
 import pl.edu.ur.teachly.ui.components.other.PrimaryButton
 import pl.edu.ur.teachly.ui.components.other.formatDate
+import pl.edu.ur.teachly.ui.components.other.formatPhoneNumber
+import pl.edu.ur.teachly.ui.components.profile.AdminBadge
 import pl.edu.ur.teachly.ui.components.profile.ProfileDataCard
 import pl.edu.ur.teachly.ui.components.profile.ProfileDataDivider
 import pl.edu.ur.teachly.ui.components.profile.ProfileHeader
@@ -60,6 +53,8 @@ fun AdminProfileScreen(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center,
         ) { CircularProgressIndicator() }
+
+        profile.error != null -> FullScreenError(message = profile.error!!)
 
         else -> Column(
             modifier = Modifier
@@ -93,8 +88,8 @@ fun AdminProfileScreen(
                             value = profile.email,
                         )
                     }
-                    val phone = profile.phoneNumber
-                    if (!phone.isNullOrBlank()) {
+                    val phone = formatPhoneNumber(profile.phoneNumber.toString())
+                    if (phone.isNotBlank()) {
                         ProfileDataDivider()
                         ProfileInfoRow(
                             icon = Icons.Default.Phone,
@@ -128,37 +123,3 @@ fun AdminProfileScreen(
     }
 }
 
-@Composable
-private fun AdminBadge() {
-    Surface(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
-        color = colorScheme.primaryContainer,
-    ) {
-        Row(
-            modifier = Modifier.padding(horizontal = 20.dp, vertical = 16.dp),
-            horizontalArrangement = Arrangement.spacedBy(14.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Icon(
-                imageVector = Icons.Default.Shield,
-                contentDescription = null,
-                tint = colorScheme.primary,
-                modifier = Modifier.size(32.dp),
-            )
-            Column {
-                Text(
-                    text = stringResource(R.string.full_permission),
-                    style = typography.titleSmall,
-                    fontWeight = FontWeight.Bold,
-                    color = colorScheme.primary,
-                )
-                Text(
-                    text = stringResource(R.string.admin_permissions),
-                    style = typography.bodySmall,
-                    color = colorScheme.onPrimaryContainer,
-                )
-            }
-        }
-    }
-}

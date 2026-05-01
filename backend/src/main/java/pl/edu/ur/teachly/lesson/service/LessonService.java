@@ -1,6 +1,7 @@
 package pl.edu.ur.teachly.lesson.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.edu.ur.teachly.common.enums.LessonStatus;
@@ -8,8 +9,7 @@ import pl.edu.ur.teachly.common.enums.PaymentStatus;
 import pl.edu.ur.teachly.common.enums.UserRole;
 import pl.edu.ur.teachly.common.exception.ResourceNotFoundException;
 import pl.edu.ur.teachly.common.exception.SlotNotAvailableException;
-import pl.edu.ur.teachly.lesson.dto.request.LessonRequest;
-import pl.edu.ur.teachly.lesson.dto.request.LessonStatusRequest;
+import pl.edu.ur.teachly.lesson.dto.request.*;
 import pl.edu.ur.teachly.lesson.dto.response.LessonResponse;
 import pl.edu.ur.teachly.lesson.entity.Lesson;
 import pl.edu.ur.teachly.lesson.mapper.LessonMapper;
@@ -38,12 +38,25 @@ public class LessonService {
 
     @Transactional
     public LessonResponse createLesson(Integer studentId, LessonRequest request) {
-        var student = userRepository.findById(studentId)
-                .orElseThrow(() -> new ResourceNotFoundException("Nie znaleziono wybranego ucznia"));
-        var tutor = tutorRepository.findById(request.tutorId())
-                .orElseThrow(() -> new ResourceNotFoundException("Nie znaleziono takiego korepetytora"));
-        var subject = subjectRepository.findById(request.subjectId())
-                .orElseThrow(() -> new ResourceNotFoundException("Nie znaleziono przedmiotu"));
+        var student =
+                userRepository
+                        .findById(studentId)
+                        .orElseThrow(
+                                () ->
+                                        new ResourceNotFoundException(
+                                                "Nie znaleziono wybranego ucznia"));
+        var tutor =
+                tutorRepository
+                        .findById(request.tutorId())
+                        .orElseThrow(
+                                () ->
+                                        new ResourceNotFoundException(
+                                                "Nie znaleziono takiego korepetytora"));
+        var subject =
+                subjectRepository
+                        .findById(request.subjectId())
+                        .orElseThrow(
+                                () -> new ResourceNotFoundException("Nie znaleziono przedmiotu"));
 
         long duration = Duration.between(request.timeFrom(), request.timeTo()).toMinutes();
 
@@ -51,41 +64,48 @@ public class LessonService {
             throw new IllegalArgumentException("Niepoprawny zakres czasu");
         }
 
-        List<TimetableDayResponse> available = timetableService.getTimetable(
-                request.tutorId(),
-                request.lessonDate(),
-                request.lessonDate(),
-                studentId
-        );
+        if (LocalDateTime.of(request.lessonDate(), request.timeFrom()).isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("Nie można zarezerwować lekcji w przeszłości");
+        }
 
-        boolean allAvailable = available.stream()
-                .flatMap(day -> day.getAvailableSlots() == null
-                        ? Stream.empty()
-                        : day.getAvailableSlots().stream())
-                .anyMatch(slot -> !slot.getTimeFrom().isAfter(request.timeFrom())
-                        && !slot.getTimeTo().isBefore(request.timeTo()));
+        List<TimetableDayResponse> available =
+                timetableService.getTimetable(
+                        request.tutorId(), request.lessonDate(), request.lessonDate(), studentId);
+
+        boolean allAvailable =
+                available.stream()
+                        .flatMap(
+                                day ->
+                                        day.getAvailableSlots() == null
+                                                ? Stream.empty()
+                                                : day.getAvailableSlots().stream())
+                        .anyMatch(
+                                slot ->
+                                        !slot.getTimeFrom().isAfter(request.timeFrom())
+                                                && !slot.getTimeTo().isBefore(request.timeTo()));
         if (!allAvailable) {
             throw new SlotNotAvailableException("Wybrany termin jest niedostępny");
         }
 
-        boolean tutorConflict = lessonRepository.existsConflictingLesson(
-                request.tutorId(),
-                request.lessonDate(),
-                request.timeFrom(),
-                request.timeTo(),
-                LessonStatus.CONFIRMED
-        );
+        boolean tutorConflict =
+                lessonRepository.existsConflictingLesson(
+                        request.tutorId(),
+                        request.lessonDate(),
+                        request.timeFrom(),
+                        request.timeTo(),
+                        LessonStatus.CONFIRMED);
         if (tutorConflict) {
-            throw new SlotNotAvailableException("Korepetytor ma już zarezerwowaną lekcję w tym czasie");
+            throw new SlotNotAvailableException(
+                    "Korepetytor ma już zarezerwowaną lekcję w tym czasie");
         }
 
-        boolean studentConflict = lessonRepository.existsConflictingStudentLesson(
-                studentId,
-                request.lessonDate(),
-                request.timeFrom(),
-                request.timeTo(),
-                LessonStatus.CANCELLED
-        );
+        boolean studentConflict =
+                lessonRepository.existsConflictingStudentLesson(
+                        studentId,
+                        request.lessonDate(),
+                        request.timeFrom(),
+                        request.timeTo(),
+                        LessonStatus.CANCELLED);
         if (studentConflict) {
             throw new SlotNotAvailableException("Masz już zarezerwowaną lekcję w tym czasie");
         }
@@ -101,33 +121,72 @@ public class LessonService {
     }
 
     @Transactional(readOnly = true)
+    public LessonResponse getLesson(Integer lessonId) {
+        return lessonRepository
+                .findById(lessonId)
+                .map(lessonMapper::toResponse)
+                .orElseThrow(() -> new ResourceNotFoundException("Nie znaleziono szukanej lekcji"));
+    }
+
+    @Transactional(readOnly = true)
+    public List<LessonResponse> getAllLessons() {
+        return lessonRepository.findAll().stream().map(lessonMapper::toResponse).toList();
+    }
+
+    @Transactional
+    public LessonResponse adminUpdateLesson(Integer lessonId, AdminLessonUpdateRequest request) {
+        Lesson lesson =
+                lessonRepository
+                        .findById(lessonId)
+                        .orElseThrow(
+                                () ->
+                                        new ResourceNotFoundException(
+                                                "Nie znaleziono szukanej lekcji"));
+        lesson.setLessonDate(request.lessonDate());
+        lesson.setTimeFrom(request.timeFrom());
+        lesson.setTimeTo(request.timeTo());
+        lesson.setFormat(request.format());
+        lesson.setLessonStatus(request.lessonStatus());
+        lesson.setPaymentStatus(request.paymentStatus());
+        lesson.setAmount(request.amount());
+        lesson.setStudentNotes(request.studentNotes());
+        lesson.setTutorNotes(request.tutorNotes());
+        return lessonMapper.toResponse(lessonRepository.save(lesson));
+    }
+
+    @Transactional(readOnly = true)
     public List<LessonResponse> getStudentLessons(Integer studentId) {
-        return lessonRepository.findByStudent_Id(studentId)
-                .stream()
+        return lessonRepository.findByStudent_Id(studentId).stream()
                 .map(lessonMapper::toResponse)
                 .toList();
     }
 
     @Transactional(readOnly = true)
     public List<LessonResponse> getTutorLessons(Integer tutorId) {
-        return lessonRepository.findByTutor_UserId(tutorId)
-                .stream()
+        return lessonRepository.findByTutor_UserId(tutorId).stream()
                 .map(lessonMapper::toResponse)
                 .toList();
     }
 
     @Transactional
-    public LessonResponse changeLessonStatus(Integer lessonId, LessonStatusRequest request, User currentUser) {
-        Lesson lesson = lessonRepository.findById(lessonId)
-                .orElseThrow(() -> new ResourceNotFoundException("Nie znaleziono szukanej lekcji"));
+    public LessonResponse changeLessonStatus(Integer lessonId, LessonStatusRequest request) {
+        Lesson lesson =
+                lessonRepository
+                        .findById(lessonId)
+                        .orElseThrow(
+                                () ->
+                                        new ResourceNotFoundException(
+                                                "Nie znaleziono szukanej lekcji"));
 
         LessonStatus newStatus = request.lessonStatus();
         LessonStatus currentStatus = lesson.getLessonStatus();
+        UserRole currentUserRole = getCurrentUserRole();
 
-        if (currentUser.getUserRole() != UserRole.ADMIN) {
-            LocalDateTime lessonStart = LocalDateTime.of(lesson.getLessonDate(), lesson.getTimeFrom());
+        if (currentUserRole != UserRole.ADMIN) {
+            LocalDateTime lessonStart =
+                    LocalDateTime.of(lesson.getLessonDate(), lesson.getTimeFrom());
 
-            if (!isValidTransition(currentStatus, newStatus, currentUser.getUserRole(), lessonStart)) {
+            if (!isValidTransition(currentStatus, newStatus, currentUserRole, lessonStart)) {
                 throw new IllegalStateException("Nie można zmienić statusu lekcji na wybrany");
             }
         }
@@ -139,21 +198,74 @@ public class LessonService {
         return lessonMapper.toResponse(lessonRepository.save(lesson));
     }
 
-    private boolean isValidTransition(LessonStatus current, LessonStatus next, UserRole userRole, LocalDateTime lessonStart) {
-        if (current == next)
-            return false;
+    @Transactional
+    public LessonResponse updateStudentNotes(Integer lessonId, StudentNotesRequest request) {
+        Lesson lesson =
+                lessonRepository
+                        .findById(lessonId)
+                        .orElseThrow(
+                                () ->
+                                        new ResourceNotFoundException(
+                                                "Nie znaleziono szukanej lekcji"));
+        lesson.setStudentNotes(request.studentNotes());
+        return lessonMapper.toResponse(lessonRepository.save(lesson));
+    }
 
-        if (next == LessonStatus.COMPLETED && userRole != UserRole.TUTOR)
-            return false;
+    @Transactional
+    public LessonResponse updateTutorNotes(Integer lessonId, TutorNotesRequest request) {
+        Lesson lesson =
+                lessonRepository
+                        .findById(lessonId)
+                        .orElseThrow(
+                                () ->
+                                        new ResourceNotFoundException(
+                                                "Nie znaleziono szukanej lekcji"));
+        lesson.setTutorNotes(request.tutorNotes());
+        return lessonMapper.toResponse(lessonRepository.save(lesson));
+    }
 
-        if (next == LessonStatus.COMPLETED && LocalDateTime.now().isBefore(lessonStart.plusMinutes(30))) {
-            throw new IllegalStateException(
-                    "Lekcja może zostać oznaczona jako zakończona dopiero po upływie 30 minut od rozpoczęcia"
-            );
+    @Transactional
+    public LessonResponse updatePaymentStatus(Integer lessonId, PaymentStatusRequest request) {
+        Lesson lesson =
+                lessonRepository
+                        .findById(lessonId)
+                        .orElseThrow(
+                                () ->
+                                        new ResourceNotFoundException(
+                                                "Nie znaleziono szukanej lekcji"));
+        lesson.setPaymentStatus(request.paymentStatus());
+        return lessonMapper.toResponse(lessonRepository.save(lesson));
+    }
+
+    private UserRole getCurrentUserRole() {
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !(auth.getPrincipal() instanceof User user)) {
+            throw new IllegalStateException("Brak uwierzytelnienia");
+        }
+        return user.getUserRole();
+    }
+
+    private boolean isValidTransition(
+            LessonStatus current, LessonStatus next, UserRole userRole, LocalDateTime lessonStart) {
+        if (current == next) {
+            return false;
         }
 
-        if (current == LessonStatus.PENDING && next == LessonStatus.CONFIRMED && userRole != UserRole.TUTOR)
+        if (next == LessonStatus.COMPLETED && userRole != UserRole.TUTOR) {
             return false;
+        }
+
+        if (next == LessonStatus.COMPLETED
+                && LocalDateTime.now().isBefore(lessonStart.plusMinutes(30))) {
+            throw new IllegalStateException(
+                    "Lekcja może zostać oznaczona jako zakończona dopiero po upływie 30 minut od rozpoczęcia");
+        }
+
+        if (current == LessonStatus.PENDING
+                && next == LessonStatus.CONFIRMED
+                && userRole != UserRole.TUTOR) {
+            return false;
+        }
 
         return switch (current) {
             case PENDING -> next == LessonStatus.CONFIRMED || next == LessonStatus.CANCELLED;

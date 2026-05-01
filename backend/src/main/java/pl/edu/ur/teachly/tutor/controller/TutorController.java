@@ -1,10 +1,10 @@
 package pl.edu.ur.teachly.tutor.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+import pl.edu.ur.teachly.tutor.dto.request.TutorRequest;
 import pl.edu.ur.teachly.tutor.dto.response.TutorResponse;
 import pl.edu.ur.teachly.tutor.dto.response.TutorSubjectResponse;
 import pl.edu.ur.teachly.tutor.service.TutorService;
@@ -30,5 +30,12 @@ public class TutorController {
     @GetMapping("/{id}/subjects")
     public List<TutorSubjectResponse> getTutorSubjects(@PathVariable Integer id) {
         return tutorService.getTutorSubjects(id);
+    }
+
+    @PutMapping("/{id}/admin")
+    @PreAuthorize("hasRole('ADMIN')")
+    public TutorResponse adminUpdateTutor(
+            @PathVariable Integer id, @Valid @RequestBody TutorRequest request) {
+        return tutorService.adminUpdateTutor(id, request);
     }
 }

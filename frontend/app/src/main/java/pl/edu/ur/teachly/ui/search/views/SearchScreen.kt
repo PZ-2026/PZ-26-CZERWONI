@@ -4,25 +4,20 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme.colorScheme
-import androidx.compose.material3.MaterialTheme.typography
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.unit.dp
 import org.koin.androidx.compose.koinViewModel
-import pl.edu.ur.teachly.ui.components.Tutor
-import pl.edu.ur.teachly.ui.components.search.HomeHeader
-import pl.edu.ur.teachly.ui.components.search.StatsRow
-import pl.edu.ur.teachly.ui.components.search.SubjectChips
+import pl.edu.ur.teachly.ui.components.other.FilterChips
+import pl.edu.ur.teachly.ui.components.other.FullScreenError
+import pl.edu.ur.teachly.ui.components.search.SearchHeader
 import pl.edu.ur.teachly.ui.components.search.TutorList
+import pl.edu.ur.teachly.ui.models.Tutor
 import pl.edu.ur.teachly.ui.search.viewmodels.SearchViewModel
 
 @Composable
@@ -38,18 +33,17 @@ fun SearchScreen(
             .fillMaxSize()
             .background(colorScheme.background)
     ) {
-        HomeHeader(
+        SearchHeader(
             query = uiState.query,
             onQueryChange = viewModel::onQueryChange,
             onClear = viewModel::clearQuery,
             onSearch = { focusManager.clearFocus() },
         )
-        SubjectChips(
-            subjects = uiState.subjects,
-            activeSubject = uiState.activeSubject,
+        FilterChips(
+            items = uiState.subjects,
+            activeItem = uiState.activeSubject,
             onSelect = viewModel::onSubjectSelect,
         )
-        HorizontalDivider(color = colorScheme.outline)
 
         when {
             uiState.isLoading -> Box(
@@ -57,20 +51,9 @@ fun SearchScreen(
                 contentAlignment = Alignment.Center,
             ) { CircularProgressIndicator() }
 
-            uiState.error != null -> Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center,
-            ) {
-                Text(
-                    text = uiState.error!!,
-                    style = typography.bodyMedium,
-                    color = colorScheme.error,
-                    modifier = Modifier.padding(24.dp),
-                )
-            }
+            uiState.error != null -> FullScreenError(message = uiState.error!!)
 
             else -> {
-                StatsRow(tutorCount = uiState.tutors.size)
                 TutorList(tutors = uiState.tutors, onTutorClick = onTutorClick)
             }
         }

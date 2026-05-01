@@ -28,17 +28,41 @@ public class SubjectService {
 
     @Transactional(readOnly = true)
     public List<SubjectResponse> getAllSubjects() {
-        return subjectRepository.findAll().stream()
-                .map(subjectMapper::toResponse)
-                .toList();
+        return subjectRepository.findAll().stream().map(subjectMapper::toResponse).toList();
     }
 
     @Transactional
     public SubjectResponse addSubject(SubjectRequest request) {
-        SubjectCategory category = categoryRepository.findById(request.categoryId())
-                .orElseThrow(() -> new ResourceNotFoundException("Nie znaleziono szukanej kategorii"));
+        SubjectCategory category =
+                categoryRepository
+                        .findById(request.categoryId())
+                        .orElseThrow(
+                                () ->
+                                        new ResourceNotFoundException(
+                                                "Nie znaleziono szukanej kategorii"));
 
         Subject subject = subjectMapper.toEntity(request);
+        subject.setCategory(category);
+        return subjectMapper.toResponse(subjectRepository.save(subject));
+    }
+
+    @Transactional
+    public SubjectResponse updateSubject(Integer id, SubjectRequest request) {
+        Subject subject =
+                subjectRepository
+                        .findById(id)
+                        .orElseThrow(
+                                () ->
+                                        new ResourceNotFoundException(
+                                                "Nie znaleziono przedmiotu do edycji"));
+        SubjectCategory category =
+                categoryRepository
+                        .findById(request.categoryId())
+                        .orElseThrow(
+                                () ->
+                                        new ResourceNotFoundException(
+                                                "Nie znaleziono szukanej kategorii"));
+        subject.setSubjectName(request.subjectName());
         subject.setCategory(category);
         return subjectMapper.toResponse(subjectRepository.save(subject));
     }
@@ -53,9 +77,7 @@ public class SubjectService {
 
     @Transactional(readOnly = true)
     public List<SubjectCategoryResponse> getAllCategories() {
-        return categoryRepository.findAll().stream()
-                .map(categoryMapper::toResponse)
-                .toList();
+        return categoryRepository.findAll().stream().map(categoryMapper::toResponse).toList();
     }
 
     @Transactional
@@ -65,14 +87,27 @@ public class SubjectService {
     }
 
     @Transactional
+    public SubjectCategoryResponse updateSubjectCategory(Integer id, SubjectCategoryRequest request) {
+        SubjectCategory category =
+                categoryRepository
+                        .findById(id)
+                        .orElseThrow(
+                                () ->
+                                        new ResourceNotFoundException(
+                                                "Nie znaleziono kategorii do edycji"));
+        category.setCategoryName(request.categoryName());
+        return categoryMapper.toResponse(categoryRepository.save(category));
+    }
+
+    @Transactional
     public void deleteSubjectCategory(Integer id) {
         if (!categoryRepository.existsById(id)) {
             throw new ResourceNotFoundException("Nie znaleziono kategorii do usunięcia");
         }
         if (!subjectRepository.findByCategory_Id(id).isEmpty()) {
-            throw new BusinessValidationException("Nie można usunąć kategorii, ponieważ przypisane są do niej przedmioty");
+            throw new BusinessValidationException(
+                    "Nie można usunąć kategorii, ponieważ przypisane są do niej przedmioty");
         }
         categoryRepository.deleteById(id);
     }
 }
-

@@ -7,11 +7,10 @@ public record UserUpdateRequest(
         @NotBlank(message = "Imię nie może być puste")
         @Size(max = 50)
         String firstName,
-
+        
         @NotBlank(message = "Nazwisko nie może być puste")
         @Size(max = 50)
         String lastName,
 
-        String avatarUrl
-) {
+        String avatarUrl) {
 }

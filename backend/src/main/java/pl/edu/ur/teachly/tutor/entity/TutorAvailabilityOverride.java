@@ -1,10 +1,9 @@
 package pl.edu.ur.teachly.tutor.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
-
 import java.time.LocalDate;
 import java.time.LocalTime;
+import lombok.*;
 
 @Entity
 @Table(name = "tutor_availability_override")

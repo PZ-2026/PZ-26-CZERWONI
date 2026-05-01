@@ -1,24 +1,28 @@
 package pl.edu.ur.teachly.ui.components.tutor
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.MaterialTheme.typography
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import pl.edu.ur.teachly.ui.components.Review
-import pl.edu.ur.teachly.ui.components.Tutor
+import pl.edu.ur.teachly.R
+import pl.edu.ur.teachly.data.model.ReviewResponse
+import pl.edu.ur.teachly.ui.components.other.PrimaryButton
+import pl.edu.ur.teachly.ui.models.Tutor
+import pl.edu.ur.teachly.ui.review.views.ReviewCard
 
 @Composable
 fun TutorBioSection(tutor: Tutor) {
@@ -53,43 +57,70 @@ fun DetailSection(title: String, content: @Composable () -> Unit) {
 }
 
 @Composable
-fun ReviewList(reviews: List<Review>) {
-    Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-        reviews.forEach { review ->
-            Surface(
-                shape = RoundedCornerShape(14.dp),
-                color = colorScheme.surfaceVariant,
-                border = BorderStroke(1.dp, colorScheme.outline),
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(14.dp)
-                ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                    ) {
-                        Text(
-                            review.authorName,
-                            style = typography.labelMedium,
-                            color = colorScheme.onSurface
-                        )
-                        Text(
-                            "★".repeat(review.rating),
-                            style = typography.labelSmall,
-                            color = Color(0xFFD97706)
-                        )
-                    }
-                    Spacer(Modifier.height(6.dp))
+fun ReviewsSection(
+    reviews: List<ReviewResponse>,
+    currentStudentId: Int? = null,
+    canReview: Boolean = false,
+    onAddReview: (() -> Unit)? = null,
+    onSeeAll: (() -> Unit)? = null,
+    onEditReview: ((ReviewResponse) -> Unit)? = null,
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = stringResource(R.string.reviews_section_title),
+                style = typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = colorScheme.onBackground,
+            )
+            if (reviews.size > 3 && onSeeAll != null) {
+                TextButton(onClick = onSeeAll) {
                     Text(
-                        review.text,
-                        style = typography.bodySmall,
-                        color = colorScheme.onSurfaceVariant
+                        text = stringResource(R.string.reviews_see_all_btn),
+                        style = typography.labelMedium,
+                        color = colorScheme.primary,
                     )
                 }
             }
         }
+
+        if (reviews.isEmpty()) {
+            Text(
+                text = stringResource(R.string.reviews_empty),
+                style = typography.bodyMedium,
+                color = colorScheme.onSurfaceVariant,
+            )
+        } else {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                reviews.take(3).forEach { review ->
+                    ReviewCard(
+                        review = review,
+                        onEdit = if (onEditReview != null && review.studentId == currentStudentId) {
+                            { onEditReview(review) }
+                        } else null,
+                    )
+                }
+            }
+            if (reviews.size > 3 && onSeeAll != null) {
+                OutlinedButton(
+                    onClick = onSeeAll,
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp),
+                ) {
+                    Text(stringResource(R.string.reviews_see_all_btn))
+                }
+            }
+        }
+
+        if (canReview && onAddReview != null) {
+            PrimaryButton(
+                text = stringResource(R.string.review_add_btn),
+                onClick = onAddReview,
+            )
+        }
     }
 }
-

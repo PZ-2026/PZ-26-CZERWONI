@@ -3,12 +3,11 @@ package pl.edu.ur.teachly.lesson.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import pl.edu.ur.teachly.lesson.dto.request.LessonRequest;
-import pl.edu.ur.teachly.lesson.dto.request.LessonStatusRequest;
+import pl.edu.ur.teachly.lesson.dto.request.*;
 import pl.edu.ur.teachly.lesson.dto.response.LessonResponse;
 import pl.edu.ur.teachly.lesson.service.LessonService;
-import pl.edu.ur.teachly.user.entity.User;
 
 import java.util.List;
 
@@ -18,9 +17,16 @@ import java.util.List;
 public class LessonController {
     private final LessonService lessonService;
 
+    @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
+    public List<LessonResponse> getAllLessons() {
+        return lessonService.getAllLessons();
+    }
+
     @PostMapping("/student/{studentId}")
     @ResponseStatus(HttpStatus.CREATED)
-    public LessonResponse createLesson(@PathVariable Integer studentId, @Valid @RequestBody LessonRequest request) {
+    public LessonResponse createLesson(
+            @PathVariable Integer studentId, @Valid @RequestBody LessonRequest request) {
         return lessonService.createLesson(studentId, request);
     }
 
@@ -34,8 +40,39 @@ public class LessonController {
         return lessonService.getTutorLessons(tutorId);
     }
 
+    @GetMapping("/{lessonId}")
+    public LessonResponse getLesson(@PathVariable Integer lessonId) {
+        return lessonService.getLesson(lessonId);
+    }
+
+    @PutMapping("/{lessonId}/admin")
+    @PreAuthorize("hasRole('ADMIN')")
+    public LessonResponse adminUpdateLesson(
+            @PathVariable Integer lessonId, @Valid @RequestBody AdminLessonUpdateRequest request) {
+        return lessonService.adminUpdateLesson(lessonId, request);
+    }
+
     @PatchMapping("/{lessonId}/status")
-    public LessonResponse changeLessonStatus(@PathVariable Integer lessonId, @Valid @RequestBody LessonStatusRequest request, User currentUser) {
-        return lessonService.changeLessonStatus(lessonId, request, currentUser);
+    public LessonResponse changeLessonStatus(
+            @PathVariable Integer lessonId, @Valid @RequestBody LessonStatusRequest request) {
+        return lessonService.changeLessonStatus(lessonId, request);
+    }
+
+    @PatchMapping("/{lessonId}/student-notes")
+    public LessonResponse updateStudentNotes(
+            @PathVariable Integer lessonId, @Valid @RequestBody StudentNotesRequest request) {
+        return lessonService.updateStudentNotes(lessonId, request);
+    }
+
+    @PatchMapping("/{lessonId}/tutor-notes")
+    public LessonResponse updateTutorNotes(
+            @PathVariable Integer lessonId, @Valid @RequestBody TutorNotesRequest request) {
+        return lessonService.updateTutorNotes(lessonId, request);
+    }
+
+    @PatchMapping("/{lessonId}/payment")
+    public LessonResponse updatePaymentStatus(
+            @PathVariable Integer lessonId, @Valid @RequestBody PaymentStatusRequest request) {
+        return lessonService.updatePaymentStatus(lessonId, request);
     }
 }

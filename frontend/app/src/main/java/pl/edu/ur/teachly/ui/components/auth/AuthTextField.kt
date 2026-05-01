@@ -17,6 +17,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import pl.edu.ur.teachly.ui.components.other.authTextFieldColors
 
@@ -31,6 +32,7 @@ fun AuthTextField(
     keyboardActions: KeyboardActions = KeyboardActions.Default,
     isError: Boolean = false,
     capitalize: Boolean = false,
+    visualTransformation: VisualTransformation = VisualTransformation.None,
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(
@@ -73,6 +75,7 @@ fun AuthTextField(
             keyboardActions = keyboardActions,
             shape = RoundedCornerShape(14.dp),
             colors = authTextFieldColors(),
+            visualTransformation = visualTransformation,
         )
         Spacer(Modifier.height(16.dp))
     }

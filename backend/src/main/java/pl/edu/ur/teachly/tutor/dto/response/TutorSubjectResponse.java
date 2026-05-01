@@ -9,6 +9,4 @@ public record TutorSubjectResponse(
         Boolean levelHighSchool,
         Boolean levelUniversity,
         Boolean levelExamPrep,
-        Boolean levelProfessional
-) {
-}
+        Boolean levelProfessional) {}

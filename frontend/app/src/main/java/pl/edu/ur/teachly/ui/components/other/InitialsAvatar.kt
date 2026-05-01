@@ -9,9 +9,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import pl.edu.ur.teachly.ui.theme.AvatarColor
 
 @Composable
@@ -21,6 +24,9 @@ fun InitialsAvatar(
     size: Dp = 72.dp,
     cornerRadius: Dp = 24.dp,
 ) {
+    // Scale font size proportionally to avatar size so initials always fit in one line
+    val fontSize = (size.value * 0.38f).sp
+
     Box(
         modifier = Modifier
             .size(size)
@@ -29,8 +35,15 @@ fun InitialsAvatar(
     ) {
         Text(
             text = initials,
-            style = typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
-            color = avatarColor.foreground
+            style = TextStyle(
+                fontSize = fontSize,
+                fontWeight = FontWeight.Bold,
+                letterSpacing = 0.5.sp,
+            ),
+            color = avatarColor.foreground,
+            maxLines = 1,
+            softWrap = false,
+            overflow = TextOverflow.Clip,
         )
     }
 }

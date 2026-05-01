@@ -1,9 +1,8 @@
 package pl.edu.ur.teachly.holiday.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
-
 import java.time.LocalDate;
+import lombok.*;
 
 @Entity
 @Table(name = "holidays")

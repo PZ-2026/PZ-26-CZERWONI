@@ -25,12 +25,17 @@ class LoginViewModel(private val repository: AuthRepository) : ViewModel() {
     val uiState: StateFlow<LoginUiState> = _uiState.asStateFlow()
 
     fun onEmailChange(value: String) {
-        _uiState.value = _uiState.value.copy(email = value, errorMessage = null, errorText = null)
+        if (value.length <= 100) {
+            _uiState.value =
+                _uiState.value.copy(email = value, errorMessage = null, errorText = null)
+        }
     }
 
     fun onPasswordChange(value: String) {
-        _uiState.value =
-            _uiState.value.copy(password = value, errorMessage = null, errorText = null)
+        if (value.length <= 100) {
+            _uiState.value =
+                _uiState.value.copy(password = value, errorMessage = null, errorText = null)
+        }
     }
 
     fun login() {
@@ -45,7 +50,7 @@ class LoginViewModel(private val repository: AuthRepository) : ViewModel() {
             else -> viewModelScope.launch {
                 _uiState.value = state.copy(isLoading = true, errorMessage = null, errorText = null)
 
-                val result = repository.login(state.email, state.password)
+                val result = repository.login(state.email.trim().lowercase(), state.password)
 
                 _uiState.value = result.fold(
                     onSuccess = {

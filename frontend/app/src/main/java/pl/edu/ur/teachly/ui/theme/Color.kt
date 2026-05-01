@@ -45,7 +45,7 @@ val Neutral50 = Color(0xFFF8FBF8)
 val ErrorRed = Color(0xFFEF4444)
 val ErrorContainerRed = Color(0xFF5B1C1C)
 val SuccessGreen = Color(0xFF22C55E)
-val GoogleBlue = Color(0xFF4285F4)
+val WarningYellow = Color(0xFFF59E0B)
 
 data class AvatarColor(val background: Color, val foreground: Color)
 
@@ -72,7 +72,7 @@ val LightColorScheme = lightColorScheme(
     secondaryContainer = Mint50,
     onSecondaryContainer = Mint700,
 
-    tertiary = LightGreen500,
+    tertiary = WarningYellow,
     onTertiary = Color.Black,
     tertiaryContainer = LightGreen50,
     onTertiaryContainer = LightGreen600,
@@ -91,8 +91,8 @@ val LightColorScheme = lightColorScheme(
 
     error = ErrorRed,
     onError = Color.White,
-    errorContainer = LightGreen50,
-    onErrorContainer = LightGreen600,
+    errorContainer = ErrorRed,
+    onErrorContainer = Color.White,
 
     inverseSurface = Neutral900,
     inverseOnSurface = Neutral50,
@@ -113,7 +113,7 @@ val DarkColorScheme = darkColorScheme(
     secondaryContainer = Mint700,
     onSecondaryContainer = Mint200,
 
-    tertiary = LightGreen500,
+    tertiary = WarningYellow,
     onTertiary = Color.White,
     tertiaryContainer = LightGreen600,
     onTertiaryContainer = LightGreen200,
@@ -132,8 +132,8 @@ val DarkColorScheme = darkColorScheme(
 
     error = ErrorRed,
     onError = Color.White,
-    errorContainer = ErrorContainerRed,
-    onErrorContainer = LightGreen200,
+    errorContainer = ErrorRed,
+    onErrorContainer = Color.White,
 
     inverseSurface = Neutral50,
     inverseOnSurface = Neutral900,

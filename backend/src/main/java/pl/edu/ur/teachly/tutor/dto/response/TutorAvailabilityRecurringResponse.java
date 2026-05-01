@@ -9,6 +9,4 @@ public record TutorAvailabilityRecurringResponse(
         int dayOfWeek,
         LocalTime timeFrom,
         LocalTime timeTo,
-        LocalDate dateTo
-) {
-}
+        LocalDate dateTo) {}

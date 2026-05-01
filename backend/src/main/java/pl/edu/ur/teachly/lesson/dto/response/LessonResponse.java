@@ -1,13 +1,12 @@
 package pl.edu.ur.teachly.lesson.dto.response;
 
-import pl.edu.ur.teachly.common.enums.LessonFormat;
-import pl.edu.ur.teachly.common.enums.LessonStatus;
-import pl.edu.ur.teachly.common.enums.PaymentStatus;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import pl.edu.ur.teachly.common.enums.LessonFormat;
+import pl.edu.ur.teachly.common.enums.LessonStatus;
+import pl.edu.ur.teachly.common.enums.PaymentStatus;
 
 public record LessonResponse(
         Integer id,
@@ -40,8 +39,5 @@ public record LessonResponse(
         // Payment
         BigDecimal amount,
         PaymentStatus paymentStatus,
-
         LocalDateTime createdAt,
-        LocalDateTime updatedAt
-) {
-}
+        LocalDateTime updatedAt) {}

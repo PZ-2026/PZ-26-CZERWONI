@@ -37,6 +37,7 @@ import pl.edu.ur.teachly.ui.auth.viewmodels.RegisterUiState
 import pl.edu.ur.teachly.ui.auth.viewmodels.RegisterViewModel
 import pl.edu.ur.teachly.ui.components.other.ErrorBanner
 import pl.edu.ur.teachly.ui.components.other.PasswordTextField
+import pl.edu.ur.teachly.ui.components.other.PhoneVisualTransformation
 import pl.edu.ur.teachly.ui.components.other.PrimaryButton
 
 @Composable
@@ -93,6 +94,7 @@ fun StepTwoContent(
                 imeAction = ImeAction.Next
             ),
             keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) }),
+            visualTransformation = PhoneVisualTransformation(),
         )
         PasswordTextField(
             value = uiState.password,

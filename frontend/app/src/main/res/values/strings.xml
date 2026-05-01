@@ -162,12 +162,162 @@
     <string name="first_name_placeholder">Jan</string>
     <string name="last_name_placeholder">Kowalski</string>
     <string name="email_placeholder">jan@example.com</string>
-    <string name="phone_number_placeholder">123456789</string>
+    <string name="phone_number_placeholder">123 456 789</string>
     <string name="tutor_name">%1$s %2$s</string>
     <string name="price_value">%1$s zł</string>
-    <string name="booking_summary_time">%1$s %2$s / %3$s / %4$s min</string>
+    <string name="booking_summary_time">%1$s %2$s | %3$s | %4$s min</string>
     <string name="activity">Aktywność</string>
     <string name="hourly_rate_value">%1$s zł / h</string>
     <string name="total_earnings">%.0f zł</string>
     <string name="avg_rating">Średnia ocena</string>
+    <string name="cancelled">Anulowane</string>
+    <string name="no_cancelled_lessons">Brak anulowanych lekcji</string>
+
+    <!-- Reviews -->
+    <string name="reviews_section_title">Opinie</string>
+    <string name="review_add_btn">Wystaw recenzję</string>
+    <string name="reviews_see_all_btn">Zobacz więcej</string>
+    <string name="review_dialog_title">Wystaw recenzję</string>
+    <string name="review_dialog_rating_label">Twoja ocena</string>
+    <string name="review_dialog_comment_hint">Komentarz (opcjonalnie)</string>
+    <string name="review_dialog_submit">Wyślij</string>
+    <string name="reviews_empty">Brak opinii</string>
+    <string name="all_reviews_title">Wszystkie opinie</string>
+    <string name="my_reviews_title">Moje opinie</string>
+    <string name="my_reviews_empty">Nie wystawiłeś jeszcze żadnej opinii</string>
+    <string name="review_edit_dialog_title">Edytuj recenzję</string>
+    <string name="review_about_tutor">Korepetytor: %1$s %2$s</string>
+
+    <string name="review_submitted_success">Opinia została wysłana!</string>
+
+    <!-- Pending reviews popup -->
+    <string name="pending_review_question">Jak oceniasz zajęcia z tym korepetytorem?</string>
+    <string name="pending_review_skip">Pomiń</string>
+    <string name="pending_review_skip_all">Pomiń wszystkie</string>
+    <string name="pending_review_submit">Wyślij opinię</string>
+    <string name="pending_reviews_title">Niewystawione opinie</string>
+    <string name="pending_reviews_subtitle">Masz %d korepetytorów do ocenienia</string>
+    <string name="nav_search">Szukaj</string>
+    <string name="dashboard">Dashboard</string>
+    <string name="users">Użytkownicy</string>
+    <string name="lessons">Lekcje</string>
+    <string name="data">Dane</string>
+
+    <!-- Admin navigation -->
+    <string name="nav_admin_dashboard">Dashboard</string>
+    <string name="nav_admin_users">Użytkownicy</string>
+    <string name="nav_admin_lessons">Lekcje</string>
+    <string name="nav_admin_data">Dane</string>
+    <string name="nav_admin_settings">Ustawienia</string>
+
+    <!-- Admin Dashboard -->
+    <string name="admin_dashboard_title">Panel Admina</string>
+    <string name="admin_dashboard_subtitle">Przegląd platformy</string>
+    <string name="admin_stats_users">Użytkownicy</string>
+    <string name="admin_stats_students">Uczniów</string>
+    <string name="admin_stats_tutors">Korepetytorów</string>
+    <string name="admin_stats_admins">Administratorów</string>
+    <string name="admin_stats_lessons">Lekcje</string>
+    <string name="admin_stats_lessons_total">Łącznie</string>
+    <string name="admin_stats_pending">Oczekujące</string>
+    <string name="admin_stats_confirmed">Potwierdzone</string>
+    <string name="admin_stats_completed">Zakończone</string>
+    <string name="admin_stats_cancelled">Anulowane</string>
+    <string name="admin_stats_platform">Platforma</string>
+    <string name="admin_stats_subjects">Przedmiotów</string>
+    <string name="admin_stats_categories">Kategorii</string>
+    <string name="admin_stats_holidays">Świąt</string>
+    <string name="admin_stats_reviews">Opinii</string>
+    <string name="admin_loading">Ładowanie danych…</string>
+
+    <!-- Admin Users -->
+    <string name="admin_users_title">Zarządzanie użytkownikami</string>
+    <string name="admin_users_search">Szukaj użytkownika…</string>
+    <string name="admin_users_all_roles">Wszyscy</string>
+    <string name="admin_users_ban">Zablokuj konto</string>
+    <string name="admin_users_unban">Odblokuj konto</string>
+    <string name="admin_users_ban_confirm_title">Zablokować konto?</string>
+    <string name="admin_users_ban_confirm_body">Użytkownik %1$s %2$s straci dostęp do platformy.</string>
+    <string name="admin_users_unban_confirm_title">Odblokować konto?</string>
+    <string name="admin_users_unban_confirm_body">Użytkownik %1$s %2$s odzyska dostęp do platformy.</string>
+    <string name="admin_users_edit_title">Edytuj użytkownika</string>
+    <string name="admin_users_status_active">Aktywne</string>
+    <string name="admin_users_status_banned">Zablokowane</string>
+    <string name="admin_users_empty">Brak użytkowników</string>
+    <string name="save">Zapisz</string>
+    <string name="cancel">Anuluj</string>
+    <string name="delete">Usuń</string>
+    <string name="edit">Edytuj</string>
+    <string name="confirm">Potwierdź</string>
+
+    <!-- Admin Lessons -->
+    <string name="admin_lessons_title">Zarządzanie lekcjami</string>
+    <string name="admin_lessons_search">Szukaj lekcji…</string>
+    <string name="admin_lessons_all_statuses">Wszystkie</string>
+    <string name="admin_lessons_edit_title">Edytuj lekcję</string>
+    <string name="admin_lessons_empty">Brak lekcji</string>
+    <string name="admin_lessons_field_date">Data lekcji</string>
+    <string name="admin_lessons_field_time_from">Czas od</string>
+    <string name="admin_lessons_field_time_to">Czas do</string>
+    <string name="admin_lessons_field_amount">Kwota (zł)</string>
+    <string name="admin_lessons_field_student_notes">Notatki ucznia</string>
+    <string name="admin_lessons_field_tutor_notes">Notatki korepetytora</string>
+    <string name="admin_lessons_status_label">Status lekcji</string>
+    <string name="admin_lessons_payment_label">Status płatności</string>
+    <string name="admin_lessons_format_label">Format</string>
+
+    <!-- Admin Holidays -->
+    <string name="admin_holidays_title">Zarządzanie świętami</string>
+    <string name="admin_holidays_add">Dodaj święto</string>
+    <string name="admin_holidays_edit">Edytuj święto</string>
+    <string name="admin_holidays_delete_title">Usunąć święto?</string>
+    <string name="admin_holidays_delete_body">Święto \"%1$s\" zostanie trwale usunięte.</string>
+    <string name="admin_holidays_empty">Brak zdefiniowanych świąt</string>
+    <string name="admin_holidays_field_name">Nazwa święta</string>
+    <string name="admin_holidays_field_date">Data (RRRR-MM-DD)</string>
+
+    <!-- Admin Subjects -->
+    <string name="admin_subjects_title">Zarządzanie danymi</string>
+    <string name="admin_subjects_tab_subjects">Przedmioty</string>
+    <string name="admin_subjects_tab_categories">Kategorie</string>
+    <string name="admin_subjects_add">Dodaj przedmiot</string>
+    <string name="admin_subjects_edit">Edytuj przedmiot</string>
+    <string name="admin_subjects_delete_title">Usunąć przedmiot?</string>
+    <string name="admin_subjects_delete_body">Przedmiot \"%1$s\" zostanie trwale usunięty.</string>
+    <string name="admin_categories_add">Dodaj kategorię</string>
+    <string name="admin_categories_edit">Edytuj kategorię</string>
+    <string name="admin_categories_delete_title">Usunąć kategorię?</string>
+    <string name="admin_categories_delete_body">Kategoria \"%1$s\" zostanie trwale usunięta.</string>
+    <string name="admin_subjects_empty">Brak przedmiotów</string>
+    <string name="admin_categories_empty">Brak kategorii</string>
+    <string name="admin_subjects_field_name">Nazwa przedmiotu</string>
+    <string name="admin_subjects_field_category">Kategoria</string>
+    <string name="admin_categories_field_name">Nazwa kategorii</string>
+
+    <!-- Admin Tutors -->
+    <string name="admin_tutors_title">Zarządzanie korepetytorami</string>
+    <string name="admin_tutors_search">Szukaj korepetytora…</string>
+    <string name="admin_tutors_edit_title">Edytuj korepetytora</string>
+    <string name="admin_tutors_empty">Brak korepetytorów</string>
+    <string name="admin_tutors_field_bio">Bio</string>
+    <string name="admin_tutors_field_rate">Stawka (zł/h)</string>
+    <string name="admin_tutors_field_experience">Doświadczenie (lata)</string>
+    <string name="admin_tutors_field_online">Zajęcia online</string>
+    <string name="admin_tutors_field_in_person">Zajęcia stacjonarne</string>
+
+    <!-- Admin Reviews -->
+    <string name="admin_reviews_title">Opinie</string>
+    <string name="admin_reviews_stub">Zarządzanie opiniami będzie dostępne wkrótce.</string>
+
+    <string name="admin_users_subtitle">Zarządzaj użytkownikami systemu</string>
+    <string name="admin_lessons_subtitle">Wszystkie lekcje w systemie</string>
+    <string name="filter_all_users">Wszyscy</string>
+    <string name="filter_students">Uczniowie</string>
+    <string name="filter_tutors">Korepetytorzy</string>
+    <string name="filter_all_lessons">Wszystkie</string>
+    <string name="no_users">Brak użytkowników</string>
+    <string name="user_active">Aktywny</string>
+    <string name="user_inactive">Nieaktywny</string>
+    <string name="admin_users_count">%1$d użytkowników</string>
+    <string name="admin_lessons_count">%1$d lekcji</string>
 </resources>

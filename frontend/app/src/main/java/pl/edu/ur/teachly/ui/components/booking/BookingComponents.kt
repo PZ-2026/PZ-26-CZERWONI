@@ -3,6 +3,7 @@ package pl.edu.ur.teachly.ui.components.booking
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -13,6 +14,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -36,31 +39,39 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import pl.edu.ur.teachly.R
 import pl.edu.ur.teachly.data.model.LessonFormat
-import pl.edu.ur.teachly.ui.components.CalendarDay
-import pl.edu.ur.teachly.ui.components.DURATION_OPTIONS
-import pl.edu.ur.teachly.ui.components.other.SectionLabel
+import pl.edu.ur.teachly.ui.booking.viewmodels.TimeSlotUI
+import pl.edu.ur.teachly.ui.components.other.section.SectionLabel
+import pl.edu.ur.teachly.ui.models.CalendarDay
+import pl.edu.ur.teachly.ui.models.DURATION_OPTIONS
 
 @Composable
 fun DayPicker(
     days: List<CalendarDay>,
     selectedIndex: Int,
+    availabilityColors: List<Color>,
     onSelect: (Int) -> Unit,
 ) {
     SectionLabel(text = stringResource(R.string.booking_section_day))
     Spacer(Modifier.height(10.dp))
-    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .horizontalScroll(rememberScrollState()),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
         days.forEachIndexed { index, day ->
             val isSelected = selectedIndex == index
+            val indicatorColor = availabilityColors.getOrElse(index) { Color.Transparent }
             Column(
                 modifier = Modifier
-                    .weight(1f)
+                    .width(56.dp)
                     .clip(RoundedCornerShape(12.dp))
                     .background(if (isSelected) colorScheme.primary else colorScheme.surfaceVariant)
                     .clickable(
                         interactionSource = remember { MutableInteractionSource() },
                         indication = null,
                     ) { onSelect(index) }
-                    .padding(vertical = 8.dp),
+                    .padding(vertical = 10.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Text(
@@ -69,12 +80,20 @@ fun DayPicker(
                     color = if (isSelected) colorScheme.onPrimary.copy(alpha = 0.7f)
                     else colorScheme.onSurfaceVariant,
                 )
-                Spacer(Modifier.height(2.dp))
+                Spacer(Modifier.height(4.dp))
                 Text(
                     text = day.dayNumber,
                     style = typography.labelMedium,
                     color = if (isSelected) colorScheme.onPrimary
                     else colorScheme.onSurface,
+                )
+                Spacer(Modifier.height(6.dp))
+                // Availability indicator bar
+                Box(
+                    modifier = Modifier
+                        .size(width = 20.dp, height = 4.dp)
+                        .clip(RoundedCornerShape(2.dp))
+                        .background(indicatorColor)
                 )
             }
         }
@@ -82,21 +101,27 @@ fun DayPicker(
 }
 
 @Composable
-fun DurationPicker(selected: Int, onSelect: (Int) -> Unit) {
+fun DurationPicker(selected: Int, isDurationAvailable: (Int) -> Boolean, onSelect: (Int) -> Unit) {
     SectionLabel(text = stringResource(R.string.booking_section_duration))
     Spacer(Modifier.height(10.dp))
     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
         DURATION_OPTIONS.forEach { duration ->
             val isSelected = selected == duration
+            val isAvailable = isDurationAvailable(duration)
             Surface(
                 modifier = Modifier
                     .weight(1f)
                     .clickable(
+                        enabled = isAvailable,
                         interactionSource = remember { MutableInteractionSource() },
                         indication = null,
                     ) { onSelect(duration) },
                 shape = RoundedCornerShape(14.dp),
-                color = if (isSelected) colorScheme.primary else colorScheme.surfaceVariant,
+                color = when {
+                    isSelected -> colorScheme.primary
+                    isAvailable -> colorScheme.surfaceVariant
+                    else -> colorScheme.surfaceVariant.copy(alpha = 0.4f)
+                },
                 border = if (isSelected) BorderStroke(
                     2.dp,
                     colorScheme.primary
@@ -111,7 +136,11 @@ fun DurationPicker(selected: Int, onSelect: (Int) -> Unit) {
                     Text(
                         text = "$duration min",
                         style = typography.labelMedium,
-                        color = if (isSelected) colorScheme.onPrimary else colorScheme.onSurfaceVariant,
+                        color = when {
+                            isSelected -> colorScheme.onPrimary
+                            isAvailable -> colorScheme.onSurfaceVariant
+                            else -> colorScheme.onSurfaceVariant.copy(alpha = 0.3f)
+                        },
                     )
                 }
             }
@@ -183,7 +212,7 @@ fun SlotLegendItem(color: Color, label: String) {
 
 @Composable
 fun TimeSlotGrid(
-    availableSlots: List<String>,
+    availableSlots: List<TimeSlotUI>,
     selectedSlot: String?,
     onSelect: (String) -> Unit,
 ) {
@@ -212,6 +241,10 @@ fun TimeSlotGrid(
             color = colorScheme.surface,
             label = stringResource(R.string.legend_free)
         )
+        SlotLegendItem(
+            color = colorScheme.surfaceVariant.copy(alpha = 0.5f),
+            label = "Zajęte"
+        )
     }
 
     val columns = 4
@@ -223,23 +256,35 @@ fun TimeSlotGrid(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             rowSlots.forEach { slot ->
-                val isSelected = slot == selectedSlot
+                val isSelected = slot.time == selectedSlot
+                val isAvailable = slot.isAvailable
                 Box(
                     modifier = Modifier
                         .weight(1f)
                         .clip(RoundedCornerShape(14.dp))
-                        .background(if (isSelected) colorScheme.primary else colorScheme.surface)
+                        .background(
+                            when {
+                                isSelected -> colorScheme.primary
+                                isAvailable -> colorScheme.surface
+                                else -> colorScheme.surfaceVariant.copy(alpha = 0.5f)
+                            }
+                        )
                         .clickable(
+                            enabled = isAvailable,
                             interactionSource = remember { MutableInteractionSource() },
                             indication = null,
-                        ) { onSelect(slot) }
+                        ) { onSelect(slot.time) }
                         .padding(vertical = 12.dp),
                     contentAlignment = Alignment.Center,
                 ) {
                     Text(
-                        text = slot,
+                        text = slot.time,
                         style = typography.labelMedium,
-                        color = if (isSelected) colorScheme.onPrimary else colorScheme.onSurface,
+                        color = when {
+                            isSelected -> colorScheme.onPrimary
+                            isAvailable -> colorScheme.onSurface
+                            else -> colorScheme.onSurface.copy(alpha = 0.3f)
+                        },
                     )
                 }
             }
