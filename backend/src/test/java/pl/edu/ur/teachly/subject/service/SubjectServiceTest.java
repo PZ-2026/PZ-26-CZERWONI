@@ -153,4 +153,42 @@ class SubjectServiceTest {
                 .isInstanceOf(BusinessValidationException.class)
                 .hasMessageContaining("przypisane są do niej przedmioty");
     }
+
+    @Test
+    @DisplayName("updateSubject - sukces")
+    void updateSubject_success() {
+        SubjectRequest req = new SubjectRequest("Fizyka", 1);
+        Subject subject = new Subject();
+        SubjectCategory category = new SubjectCategory();
+        SubjectResponse response = new SubjectResponse(1, "Fizyka", 1, "Nauki ścisłe");
+
+        when(subjectRepository.findById(1)).thenReturn(Optional.of(subject));
+        when(categoryRepository.findById(1)).thenReturn(Optional.of(category));
+        when(subjectRepository.save(subject)).thenReturn(subject);
+        when(subjectMapper.toResponse(subject)).thenReturn(response);
+
+        SubjectResponse result = subjectService.updateSubject(1, req);
+
+        assertThat(result).isEqualTo(response);
+        assertThat(subject.getSubjectName()).isEqualTo("Fizyka");
+        verify(subjectRepository).save(subject);
+    }
+
+    @Test
+    @DisplayName("updateSubjectCategory - sukces")
+    void updateSubjectCategory_success() {
+        SubjectCategoryRequest req = new SubjectCategoryRequest("Języki obce");
+        SubjectCategory category = new SubjectCategory();
+        SubjectCategoryResponse response = new SubjectCategoryResponse(1, "Języki obce");
+
+        when(categoryRepository.findById(1)).thenReturn(Optional.of(category));
+        when(categoryRepository.save(category)).thenReturn(category);
+        when(categoryMapper.toResponse(category)).thenReturn(response);
+
+        SubjectCategoryResponse result = subjectService.updateSubjectCategory(1, req);
+
+        assertThat(result).isEqualTo(response);
+        assertThat(category.getCategoryName()).isEqualTo("Języki obce");
+        verify(categoryRepository).save(category);
+    }
 }

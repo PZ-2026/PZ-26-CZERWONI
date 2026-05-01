@@ -8,6 +8,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import pl.edu.ur.teachly.common.enums.UserRole;
 import pl.edu.ur.teachly.common.exception.ResourceNotFoundException;
+import pl.edu.ur.teachly.user.dto.request.AdminUserUpdateRequest;
+import pl.edu.ur.teachly.user.dto.request.UserUpdateRequest;
 import pl.edu.ur.teachly.user.dto.response.UserResponse;
 import pl.edu.ur.teachly.user.entity.User;
 import pl.edu.ur.teachly.user.mapper.UserMapper;
@@ -109,5 +111,62 @@ class UserServiceTest {
 
         assertThatThrownBy(() -> userService.deactivateUser(99))
                 .isInstanceOf(ResourceNotFoundException.class);
+    }
+
+    // ─── activateUser ─────────────────────────────────────────────────────────
+
+    @Test
+    @DisplayName("activateUser – sukces: ustawia isActive = true")
+    void activateUser_success() {
+        User user = User.builder().id(1).isActive(false).build();
+        when(userRepository.findById(1)).thenReturn(Optional.of(user));
+
+        userService.activateUser(1);
+
+        assertThat(user.getIsActive()).isTrue();
+        verify(userRepository).save(user);
+    }
+
+    // ─── updateUserProfile ────────────────────────────────────────────────────
+
+    @Test
+    @DisplayName("updateUserProfile – sukces")
+    void updateUserProfile_success() {
+        User user = User.builder().id(1).build();
+        UserUpdateRequest req = new UserUpdateRequest("Nowe", "Imie", null);
+        UserResponse response = new UserResponse(1, "Nowe", "Imie", "a@b.com", "123", null, UserRole.STUDENT, true, null, null);
+
+        when(userRepository.findById(1)).thenReturn(Optional.of(user));
+        when(userRepository.save(user)).thenReturn(user);
+        when(userMapper.toResponse(user)).thenReturn(response);
+
+        UserResponse result = userService.updateUserProfile(1, req);
+
+        assertThat(result).isEqualTo(response);
+        verify(userMapper).updateFromRequest(req, user);
+        verify(userRepository).save(user);
+    }
+
+    // ─── adminUpdateUser ──────────────────────────────────────────────────────
+
+    @Test
+    @DisplayName("adminUpdateUser – sukces")
+    void adminUpdateUser_success() {
+        User user = User.builder().id(1).build();
+        AdminUserUpdateRequest req = new AdminUserUpdateRequest("A", "B", "a@b.pl", "123456789", UserRole.TUTOR, "url");
+        UserResponse response = new UserResponse(1, "A", "B", "a@b.pl", "123456789", "url", UserRole.TUTOR, true, null, null);
+
+        when(userRepository.findById(1)).thenReturn(Optional.of(user));
+        when(userRepository.save(user)).thenReturn(user);
+        when(userMapper.toResponse(user)).thenReturn(response);
+
+        UserResponse result = userService.adminUpdateUser(1, req);
+
+        assertThat(result).isEqualTo(response);
+        assertThat(user.getFirstName()).isEqualTo("A");
+        assertThat(user.getLastName()).isEqualTo("B");
+        assertThat(user.getEmail()).isEqualTo("a@b.pl");
+        assertThat(user.getUserRole()).isEqualTo(UserRole.TUTOR);
+        verify(userRepository).save(user);
     }
 }

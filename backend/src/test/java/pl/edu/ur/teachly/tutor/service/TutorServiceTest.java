@@ -21,6 +21,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -39,7 +40,7 @@ class TutorServiceTest {
     @DisplayName("getAllTutors - zwraca listę wszystkich korepetytorów")
     void getAllTutors_returnsList() {
         Tutor t1 = new Tutor();
-        TutorResponse r1 = new TutorResponse(1, "Test", "Test", "test@test.com", null, null, null, true, true);
+        TutorResponse r1 = new TutorResponse(1, "Test", "Test", "test@test.com", "123", "url", "Bio", java.math.BigDecimal.TEN, true, true);
         
         when(tutorRepository.findAll()).thenReturn(List.of(t1));
         when(tutorMapper.toResponse(t1)).thenReturn(r1);
@@ -53,7 +54,7 @@ class TutorServiceTest {
     @DisplayName("getTutorById - sukces: zwraca korepetytora")
     void getTutorById_found_returnsResponse() {
         Tutor t1 = new Tutor();
-        TutorResponse r1 = new TutorResponse(1, "Test", "Test", "test@test.com", null, null, null, true, true);
+        TutorResponse r1 = new TutorResponse(1, "Test", "Test", "test@test.com", "123", "url", "Bio", java.math.BigDecimal.TEN, true, true);
 
         when(tutorRepository.findById(1)).thenReturn(Optional.of(t1));
         when(tutorMapper.toResponse(t1)).thenReturn(r1);
@@ -95,5 +96,23 @@ class TutorServiceTest {
 
         assertThatThrownBy(() -> tutorService.getTutorSubjects(99))
                 .isInstanceOf(ResourceNotFoundException.class);
+    }
+
+    @Test
+    @DisplayName("adminUpdateTutor - sukces")
+    void adminUpdateTutor_success() {
+        Tutor tutor = new Tutor();
+        pl.edu.ur.teachly.tutor.dto.request.TutorRequest req = new pl.edu.ur.teachly.tutor.dto.request.TutorRequest("Bio", java.math.BigDecimal.valueOf(100), true, true);
+        TutorResponse response = new TutorResponse(1, "A", "B", "a@b.com", "123", "url", "Bio", java.math.BigDecimal.valueOf(100), true, true);
+
+        when(tutorRepository.findById(1)).thenReturn(Optional.of(tutor));
+        when(tutorRepository.save(tutor)).thenReturn(tutor);
+        when(tutorMapper.toResponse(tutor)).thenReturn(response);
+
+        TutorResponse result = tutorService.adminUpdateTutor(1, req);
+
+        assertThat(result).isEqualTo(response);
+        verify(tutorMapper).updateFromRequest(req, tutor);
+        verify(tutorRepository).save(tutor);
     }
 }

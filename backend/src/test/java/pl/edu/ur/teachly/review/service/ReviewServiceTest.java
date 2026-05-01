@@ -182,4 +182,26 @@ class ReviewServiceTest {
 
         assertThat(result).containsExactly(reviewResponse);
     }
+
+    @Test
+    @DisplayName("getStudentReviews - zwraca listę opinii studenta")
+    void getStudentReviews_returnsList() {
+        when(reviewRepository.findByStudent_Id(1)).thenReturn(List.of(review));
+        when(reviewMapper.toResponse(review)).thenReturn(reviewResponse);
+
+        List<ReviewResponse> result = reviewService.getStudentReviews(1);
+
+        assertThat(result).containsExactly(reviewResponse);
+    }
+
+    @Test
+    @DisplayName("getAllReviews - zwraca wszystkie opinie")
+    void getAllReviews_returnsList() {
+        when(reviewRepository.findAll()).thenReturn(List.of(review));
+        when(reviewMapper.toResponse(review)).thenReturn(reviewResponse);
+
+        List<ReviewResponse> result = reviewService.getAllReviews();
+
+        assertThat(result).containsExactly(reviewResponse);
+    }
 }

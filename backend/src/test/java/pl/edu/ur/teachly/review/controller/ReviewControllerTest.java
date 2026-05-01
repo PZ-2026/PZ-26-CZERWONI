@@ -50,8 +50,8 @@ class ReviewControllerTest {
 
     @Test
     void addReview() throws Exception {
-        ReviewRequest req = new ReviewRequest(1, (short) 5, "Super");
-        when(reviewService.addReview(eq(1), any())).thenReturn(new ReviewResponse(1, 1, 1, "A B", "Super", (short) 5, null));
+        ReviewRequest req = new ReviewRequest(1, java.math.BigDecimal.valueOf(5), "Super");
+        when(reviewService.addReview(eq(1), any())).thenReturn(new ReviewResponse(1, 1, "A", "B", 1, "C", "D", java.math.BigDecimal.valueOf(5), "Super", null, null));
         
         mockMvc.perform(post("/api/reviews/student/1")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -61,8 +61,8 @@ class ReviewControllerTest {
 
     @Test
     void updateReview() throws Exception {
-        ReviewRequest req = new ReviewRequest(1, (short) 4, "OK");
-        when(reviewService.updateReview(eq(1), any())).thenReturn(new ReviewResponse(1, 1, 1, "A B", "OK", (short) 4, null));
+        ReviewRequest req = new ReviewRequest(1, java.math.BigDecimal.valueOf(4), "OK");
+        when(reviewService.updateReview(eq(1), any())).thenReturn(new ReviewResponse(1, 1, "A", "B", 1, "C", "D", java.math.BigDecimal.valueOf(4), "OK", null, null));
         
         mockMvc.perform(put("/api/reviews/1")
                         .contentType(MediaType.APPLICATION_JSON)

@@ -1,5 +1,6 @@
 package pl.edu.ur.teachly.lesson.service;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -8,6 +9,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import pl.edu.ur.teachly.common.enums.LessonFormat;
 import pl.edu.ur.teachly.common.enums.LessonStatus;
 import pl.edu.ur.teachly.common.enums.PaymentStatus;
@@ -56,6 +60,19 @@ class LessonServiceTest {
     @InjectMocks
     private LessonService lessonService;
 
+    @AfterEach
+    void tearDown() {
+        SecurityContextHolder.clearContext();
+    }
+
+    private void mockSecurityContext(User user) {
+        SecurityContext securityContext = mock(SecurityContext.class);
+        Authentication authentication = mock(Authentication.class);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getPrincipal()).thenReturn(user);
+        SecurityContextHolder.setContext(securityContext);
+    }
+
     // ─── helpers ─────────────────────────────────────────────────────────────
 
     private User student(int id) {
@@ -74,7 +91,7 @@ class LessonServiceTest {
         return new LessonRequest(
                 2,
                 1,
-                LocalDate.of(2025, 6, 10),
+                LocalDate.of(2027, 6, 10),
                 LocalTime.of(10, 0),
                 LocalTime.of(11, 0),
                 LessonFormat.ONLINE,
@@ -315,7 +332,8 @@ class LessonServiceTest {
             when(lessonRepository.save(lesson)).thenReturn(lesson);
             when(lessonMapper.toResponse(lesson)).thenReturn(lr);
 
-            LessonResponse result = lessonService.changeLessonStatus(1, req, tutorUserRole());
+            mockSecurityContext(tutorUserRole());
+            LessonResponse result = lessonService.changeLessonStatus(1, req);
 
             assertThat(lesson.getLessonStatus()).isEqualTo(LessonStatus.CONFIRMED);
             assertThat(result).isEqualTo(lr);
@@ -329,7 +347,8 @@ class LessonServiceTest {
 
             when(lessonRepository.findById(1)).thenReturn(Optional.of(lesson));
 
-            assertThatThrownBy(() -> lessonService.changeLessonStatus(1, req, studentUserRole()))
+            mockSecurityContext(studentUserRole());
+            assertThatThrownBy(() -> lessonService.changeLessonStatus(1, req))
                     .isInstanceOf(IllegalStateException.class);
         }
 
@@ -344,7 +363,8 @@ class LessonServiceTest {
             when(lessonRepository.save(lesson)).thenReturn(lesson);
             when(lessonMapper.toResponse(lesson)).thenReturn(lr);
 
-            lessonService.changeLessonStatus(1, req, studentUserRole());
+            mockSecurityContext(studentUserRole());
+            lessonService.changeLessonStatus(1, req);
 
             assertThat(lesson.getLessonStatus()).isEqualTo(LessonStatus.CANCELLED);
         }
@@ -357,7 +377,8 @@ class LessonServiceTest {
 
             when(lessonRepository.findById(1)).thenReturn(Optional.of(lesson));
 
-            assertThatThrownBy(() -> lessonService.changeLessonStatus(1, req, tutorUserRole()))
+            mockSecurityContext(tutorUserRole());
+            assertThatThrownBy(() -> lessonService.changeLessonStatus(1, req))
                     .isInstanceOf(IllegalStateException.class);
         }
 
@@ -369,7 +390,8 @@ class LessonServiceTest {
 
             when(lessonRepository.findById(1)).thenReturn(Optional.of(lesson));
 
-            assertThatThrownBy(() -> lessonService.changeLessonStatus(1, req, tutorUserRole()))
+            mockSecurityContext(tutorUserRole());
+            assertThatThrownBy(() -> lessonService.changeLessonStatus(1, req))
                     .isInstanceOf(IllegalStateException.class);
         }
 
@@ -381,7 +403,8 @@ class LessonServiceTest {
 
             when(lessonRepository.findById(1)).thenReturn(Optional.of(lesson));
 
-            assertThatThrownBy(() -> lessonService.changeLessonStatus(1, req, tutorUserRole()))
+            mockSecurityContext(tutorUserRole());
+            assertThatThrownBy(() -> lessonService.changeLessonStatus(1, req))
                     .isInstanceOf(IllegalStateException.class);
         }
 
@@ -396,7 +419,8 @@ class LessonServiceTest {
             when(lessonRepository.save(lesson)).thenReturn(lesson);
             when(lessonMapper.toResponse(lesson)).thenReturn(lr);
 
-            lessonService.changeLessonStatus(1, req, adminUserRole());
+            mockSecurityContext(adminUserRole());
+            lessonService.changeLessonStatus(1, req);
 
             assertThat(lesson.getLessonStatus()).isEqualTo(LessonStatus.CONFIRMED);
         }
@@ -407,7 +431,8 @@ class LessonServiceTest {
             LessonStatusRequest req = new LessonStatusRequest(LessonStatus.CONFIRMED, null);
             when(lessonRepository.findById(99)).thenReturn(Optional.empty());
 
-            assertThatThrownBy(() -> lessonService.changeLessonStatus(99, req, tutorUserRole()))
+            mockSecurityContext(tutorUserRole());
+            assertThatThrownBy(() -> lessonService.changeLessonStatus(99, req))
                     .isInstanceOf(ResourceNotFoundException.class);
         }
 
@@ -422,9 +447,89 @@ class LessonServiceTest {
             when(lessonRepository.save(lesson)).thenReturn(lesson);
             when(lessonMapper.toResponse(lesson)).thenReturn(lr);
 
-            lessonService.changeLessonStatus(1, req, tutorUserRole());
+            mockSecurityContext(tutorUserRole());
+            lessonService.changeLessonStatus(1, req);
 
             assertThat(lesson.getTutorNotes()).isEqualTo("Notatka tutora");
         }
+    }
+
+    // ─── inne metody ──────────────────────────────────────────────────────────
+
+    @Test
+    @DisplayName("getLesson – zwraca lekcję")
+    void getLesson_success() {
+        Lesson lesson = new Lesson();
+        LessonResponse response = mock(LessonResponse.class);
+        when(lessonRepository.findById(1)).thenReturn(Optional.of(lesson));
+        when(lessonMapper.toResponse(lesson)).thenReturn(response);
+
+        LessonResponse result = lessonService.getLesson(1);
+
+        assertThat(result).isEqualTo(response);
+    }
+
+    @Test
+    @DisplayName("getAllLessons – zwraca wszystkie lekcje")
+    void getAllLessons_success() {
+        Lesson lesson = new Lesson();
+        LessonResponse response = mock(LessonResponse.class);
+        when(lessonRepository.findAll()).thenReturn(List.of(lesson));
+        when(lessonMapper.toResponse(lesson)).thenReturn(response);
+
+        List<LessonResponse> result = lessonService.getAllLessons();
+
+        assertThat(result).containsExactly(response);
+    }
+
+    @Test
+    @DisplayName("updateStudentNotes – sukces")
+    void updateStudentNotes_success() {
+        Lesson lesson = new Lesson();
+        pl.edu.ur.teachly.lesson.dto.request.StudentNotesRequest req = new pl.edu.ur.teachly.lesson.dto.request.StudentNotesRequest("Notatki ucznia");
+        LessonResponse response = mock(LessonResponse.class);
+
+        when(lessonRepository.findById(1)).thenReturn(Optional.of(lesson));
+        when(lessonRepository.save(lesson)).thenReturn(lesson);
+        when(lessonMapper.toResponse(lesson)).thenReturn(response);
+
+        lessonService.updateStudentNotes(1, req);
+
+        assertThat(lesson.getStudentNotes()).isEqualTo("Notatki ucznia");
+        verify(lessonRepository).save(lesson);
+    }
+
+    @Test
+    @DisplayName("updateTutorNotes – sukces")
+    void updateTutorNotes_success() {
+        Lesson lesson = new Lesson();
+        pl.edu.ur.teachly.lesson.dto.request.TutorNotesRequest req = new pl.edu.ur.teachly.lesson.dto.request.TutorNotesRequest("Notatki tutora");
+        LessonResponse response = mock(LessonResponse.class);
+
+        when(lessonRepository.findById(1)).thenReturn(Optional.of(lesson));
+        when(lessonRepository.save(lesson)).thenReturn(lesson);
+        when(lessonMapper.toResponse(lesson)).thenReturn(response);
+
+        lessonService.updateTutorNotes(1, req);
+
+        assertThat(lesson.getTutorNotes()).isEqualTo("Notatki tutora");
+        verify(lessonRepository).save(lesson);
+    }
+
+    @Test
+    @DisplayName("updatePaymentStatus – sukces")
+    void updatePaymentStatus_success() {
+        Lesson lesson = new Lesson();
+        pl.edu.ur.teachly.lesson.dto.request.PaymentStatusRequest req = new pl.edu.ur.teachly.lesson.dto.request.PaymentStatusRequest(PaymentStatus.PAID);
+        LessonResponse response = mock(LessonResponse.class);
+
+        when(lessonRepository.findById(1)).thenReturn(Optional.of(lesson));
+        when(lessonRepository.save(lesson)).thenReturn(lesson);
+        when(lessonMapper.toResponse(lesson)).thenReturn(response);
+
+        lessonService.updatePaymentStatus(1, req);
+
+        assertThat(lesson.getPaymentStatus()).isEqualTo(PaymentStatus.PAID);
+        verify(lessonRepository).save(lesson);
     }
 }

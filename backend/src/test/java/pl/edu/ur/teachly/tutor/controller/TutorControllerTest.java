@@ -40,7 +40,7 @@ class TutorControllerTest {
     @Test
     @DisplayName("GET /api/tutors - zwraca listę")
     void getAllTutors() throws Exception {
-        when(tutorService.getAllTutors()).thenReturn(List.of(new TutorResponse(1, "A", "B", "C", null, null, null, true, true)));
+        when(tutorService.getAllTutors()).thenReturn(List.of(new TutorResponse(1, "A", "B", "C", "123", "url", "Bio", java.math.BigDecimal.TEN, true, true)));
 
         mockMvc.perform(get("/api/tutors"))
                 .andExpect(status().isOk());
@@ -51,7 +51,7 @@ class TutorControllerTest {
     @Test
     @DisplayName("GET /api/tutors/{id} - zwraca pojedynczego tutora")
     void getTutorById() throws Exception {
-        when(tutorService.getTutorById(1)).thenReturn(new TutorResponse(1, "A", "B", "C", null, null, null, true, true));
+        when(tutorService.getTutorById(1)).thenReturn(new TutorResponse(1, "A", "B", "C", "123", "url", "Bio", java.math.BigDecimal.TEN, true, true));
 
         mockMvc.perform(get("/api/tutors/1"))
                 .andExpect(status().isOk());

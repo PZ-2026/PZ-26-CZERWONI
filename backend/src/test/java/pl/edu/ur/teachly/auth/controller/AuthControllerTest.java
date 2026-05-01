@@ -42,7 +42,7 @@ class AuthControllerTest {
 
     @Test
     void register() throws Exception {
-        RegisterRequest req = new RegisterRequest("Student", "B", "email@test.com", "pass", "123456789", UserRole.STUDENT);
+        RegisterRequest req = new RegisterRequest(UserRole.STUDENT, "Student", "B", "email@test.com", "123456789", "password123");
         when(authService.register(any())).thenReturn(new AuthResponse("token", UserRole.STUDENT, 1));
         
         mockMvc.perform(post("/api/auth/register")

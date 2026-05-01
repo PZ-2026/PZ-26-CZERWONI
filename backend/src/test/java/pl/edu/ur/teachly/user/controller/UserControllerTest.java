@@ -11,6 +11,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import pl.edu.ur.teachly.common.enums.UserRole;
 import pl.edu.ur.teachly.user.dto.request.UserUpdateRequest;
 import pl.edu.ur.teachly.user.dto.response.UserResponse;
 import pl.edu.ur.teachly.user.service.UserService;
@@ -50,14 +51,14 @@ class UserControllerTest {
 
     @Test
     void getUserById() throws Exception {
-        when(userService.getUserById(1)).thenReturn(new UserResponse(1, null, "A", "B", "C", "D", true, null));
+        when(userService.getUserById(1)).thenReturn(new UserResponse(1, "A", "B", "C", "D", "E", UserRole.STUDENT, true, null, null));
         mockMvc.perform(get("/api/users/1")).andExpect(status().isOk());
     }
 
     @Test
     void updateUserProfile() throws Exception {
         UserUpdateRequest req = new UserUpdateRequest("A", "B", "C");
-        when(userService.updateUserProfile(eq(1), any())).thenReturn(new UserResponse(1, null, "A", "B", "C", "D", true, null));
+        when(userService.updateUserProfile(eq(1), any())).thenReturn(new UserResponse(1, "A", "B", "C", "D", "E", UserRole.STUDENT, true, null, null));
         
         mockMvc.perform(put("/api/users/1")
                         .contentType(MediaType.APPLICATION_JSON)

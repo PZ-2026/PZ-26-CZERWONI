@@ -45,14 +45,14 @@ class SubjectControllerTest {
 
     @Test
     void getAllSubjects() throws Exception {
-        when(subjectService.getAllSubjects()).thenReturn(List.of(new SubjectResponse(1, 1, "Mat", "Kat")));
+        when(subjectService.getAllSubjects()).thenReturn(List.of(new SubjectResponse(1, "Matematyka", 1, "Nauki ścisłe")));
         mockMvc.perform(get("/api/subjects")).andExpect(status().isOk());
     }
 
     @Test
     void addSubject() throws Exception {
         SubjectRequest req = new SubjectRequest("Fizyka", 1);
-        when(subjectService.addSubject(any())).thenReturn(new SubjectResponse(2, 1, "Fizyka", "Kat"));
+        when(subjectService.addSubject(any())).thenReturn(new SubjectResponse(2, "Fizyka", 1, "Nauki ścisłe"));
         mockMvc.perform(post("/api/subjects")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(req)))
@@ -73,7 +73,7 @@ class SubjectControllerTest {
 
     @Test
     void addSubjectCategory() throws Exception {
-        SubjectCategoryRequest req = new SubjectCategoryRequest("Nowa", "Opis");
+        SubjectCategoryRequest req = new SubjectCategoryRequest("Nowa");
         when(subjectService.addSubjectCategory(any())).thenReturn(new SubjectCategoryResponse(2, "Nowa"));
         mockMvc.perform(post("/api/subjects/categories")
                         .contentType(MediaType.APPLICATION_JSON)

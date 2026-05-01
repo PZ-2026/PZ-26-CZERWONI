@@ -25,6 +25,7 @@ import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -73,7 +74,7 @@ class LessonControllerTest {
 
     @Test
     void changeLessonStatus() throws Exception {
-        when(lessonService.changeLessonStatus(eq(1), any(), any())).thenReturn(mock(LessonResponse.class));
+        when(lessonService.changeLessonStatus(eq(1), any())).thenReturn(mock(LessonResponse.class));
         
         mockMvc.perform(patch("/api/lessons/1/status")
                         .contentType(MediaType.APPLICATION_JSON)
