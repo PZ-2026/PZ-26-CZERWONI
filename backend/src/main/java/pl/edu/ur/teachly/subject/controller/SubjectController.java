@@ -1,6 +1,7 @@
 package pl.edu.ur.teachly.subject.controller;
 
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -10,8 +11,6 @@ import pl.edu.ur.teachly.subject.dto.request.SubjectRequest;
 import pl.edu.ur.teachly.subject.dto.response.SubjectCategoryResponse;
 import pl.edu.ur.teachly.subject.dto.response.SubjectResponse;
 import pl.edu.ur.teachly.subject.service.SubjectService;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/subjects")

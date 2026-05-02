@@ -1,6 +1,7 @@
 package pl.edu.ur.teachly.tutor.controller;
 
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -8,8 +9,6 @@ import pl.edu.ur.teachly.tutor.dto.request.TutorRequest;
 import pl.edu.ur.teachly.tutor.dto.response.TutorResponse;
 import pl.edu.ur.teachly.tutor.dto.response.TutorSubjectResponse;
 import pl.edu.ur.teachly.tutor.service.TutorService;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/tutors")

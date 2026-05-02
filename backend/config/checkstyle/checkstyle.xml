@@ -42,7 +42,7 @@
         <!-- Allow wildcard imports only for verbose annotation-heavy packages -->
         <module name="AvoidStarImport">
             <property name="excludes"
-                      value="lombok,jakarta.persistence,org.springframework.web.bind.annotation,pl.edu.ur.teachly.lesson.dto.request"/>
+                      value="lombok,jakarta.persistence,org.springframework.web.bind.annotation"/>
             <property name="allowStaticMemberImports" value="true"/>
         </module>
         <module name="UnusedImports"/>

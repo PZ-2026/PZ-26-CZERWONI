@@ -1,5 +1,6 @@
 package pl.edu.ur.teachly.review.service;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,8 +15,6 @@ import pl.edu.ur.teachly.review.mapper.ReviewMapper;
 import pl.edu.ur.teachly.review.repository.ReviewRepository;
 import pl.edu.ur.teachly.tutor.repository.TutorRepository;
 import pl.edu.ur.teachly.user.repository.UserRepository;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -94,8 +93,6 @@ public class ReviewService {
 
     @Transactional(readOnly = true)
     public List<ReviewResponse> getAllReviews() {
-        return reviewRepository.findAll().stream()
-                .map(reviewMapper::toResponse)
-                .toList();
+        return reviewRepository.findAll().stream().map(reviewMapper::toResponse).toList();
     }
 }
