@@ -1,6 +1,8 @@
 package pl.edu.ur.teachly.user.service;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.edu.ur.teachly.common.exception.ResourceNotFoundException;
@@ -11,13 +13,12 @@ import pl.edu.ur.teachly.user.entity.User;
 import pl.edu.ur.teachly.user.mapper.UserMapper;
 import pl.edu.ur.teachly.user.repository.UserRepository;
 
-import java.util.List;
-
 @Service
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional(readOnly = true)
     public UserResponse getUserById(Integer id) {
@@ -46,6 +47,11 @@ public class UserService {
                                                 "Nie znaleziono szukanego użytkownika"));
 
         userMapper.updateFromRequest(request, user);
+
+        if (request.password() != null && !request.password().isBlank()) {
+            user.setPasswordHash(passwordEncoder.encode(request.password()));
+        }
+
         return userMapper.toResponse(userRepository.save(user));
     }
 
