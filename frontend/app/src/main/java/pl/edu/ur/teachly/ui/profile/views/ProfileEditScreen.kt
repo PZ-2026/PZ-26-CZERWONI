@@ -33,7 +33,7 @@ import pl.edu.ur.teachly.ui.theme.AvatarColors
 @Composable
 fun ProfileEditScreen(
     onBack: () -> Unit,
-    onSave: () -> Unit,
+    onSave: (Boolean) -> Unit,
     viewModel: ProfileViewModel = koinViewModel(),
 ) {
     val editState by viewModel.editState.collectAsState()
@@ -41,7 +41,10 @@ fun ProfileEditScreen(
     LaunchedEffect(Unit) { viewModel.startEditing() }
 
     LaunchedEffect(editState.isSaved) {
-        if (editState.isSaved) onSave()
+        if (editState.isSaved) {
+            onSave(editState.requiresRelogin)
+            viewModel.resetEditState()
+        }
     }
 
     Column(
@@ -93,7 +96,28 @@ fun ProfileEditScreen(
                 placeholder = stringResource(R.string.last_name_placeholder),
                 capitalize = true,
             )
-
+            AuthTextField(
+                label = stringResource(R.string.email),
+                value = editState.email,
+                onValueChange = viewModel::onEmailChange,
+                placeholder = "twój@email.com"
+            )
+            AuthTextField(
+                label = stringResource(R.string.phone),
+                value = editState.phoneNumber,
+                onValueChange = viewModel::onPhoneNumberChange,
+                placeholder = "123 456 789",
+                visualTransformation = pl.edu.ur.teachly.ui.components.other.PhoneVisualTransformation(),
+                keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
+                    keyboardType = androidx.compose.ui.text.input.KeyboardType.Number
+                )
+            )
+            pl.edu.ur.teachly.ui.components.other.PasswordTextField(
+                label = "Nowe hasło (opcjonalnie)",
+                value = editState.password,
+                onValueChange = viewModel::onPasswordChange,
+                placeholder = "Pozostaw puste by nie zmieniać",
+            )
             if (editState.error != null) {
                 ErrorBanner(message = editState.error!!)
             }
