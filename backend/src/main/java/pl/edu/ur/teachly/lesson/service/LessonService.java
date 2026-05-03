@@ -1,5 +1,9 @@
 package pl.edu.ur.teachly.lesson.service;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -20,11 +24,6 @@ import pl.edu.ur.teachly.tutor.repository.TutorRepository;
 import pl.edu.ur.teachly.tutor.service.TimetableService;
 import pl.edu.ur.teachly.user.entity.User;
 import pl.edu.ur.teachly.user.repository.UserRepository;
-
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -64,7 +63,8 @@ public class LessonService {
             throw new IllegalArgumentException("Niepoprawny zakres czasu");
         }
 
-        if (LocalDateTime.of(request.lessonDate(), request.timeFrom()).isBefore(LocalDateTime.now())) {
+        if (LocalDateTime.of(request.lessonDate(), request.timeFrom())
+                .isBefore(LocalDateTime.now())) {
             throw new IllegalArgumentException("Nie można zarezerwować lekcji w przeszłości");
         }
 

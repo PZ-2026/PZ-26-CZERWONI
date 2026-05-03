@@ -9,7 +9,7 @@ public record TutorSubjectRequest(
         @NotNull(message = "Poziom licealny musi być określony") Boolean levelHighSchool,
         @NotNull(message = "Poziom akademicki musi być określony") Boolean levelUniversity,
         @NotNull(message = "Poziom przygotowania do egzaminów musi być określony")
-        Boolean levelExamPrep,
+                Boolean levelExamPrep,
         @NotNull(message = "Poziom zawodowy musi być określony") Boolean levelProfessional) {
 
     @AssertTrue(message = "Należy wybrać co najmniej jeden poziom nauczania")

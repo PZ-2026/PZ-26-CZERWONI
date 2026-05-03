@@ -1,5 +1,10 @@
 package pl.edu.ur.teachly.tutor.service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.*;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import pl.edu.ur.teachly.common.enums.LessonStatus;
@@ -13,12 +18,6 @@ import pl.edu.ur.teachly.tutor.entity.TutorAvailabilityOverride;
 import pl.edu.ur.teachly.tutor.entity.TutorAvailabilityRecurring;
 import pl.edu.ur.teachly.tutor.repository.TutorAvailabilityOverrideRepository;
 import pl.edu.ur.teachly.tutor.repository.TutorAvailabilityRecurringRepository;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -92,22 +91,23 @@ public class TimetableService {
                                     l ->
                                             l.getLessonDate().equals(currentDate)
                                                     && (l.getLessonStatus()
-                                                    == LessonStatus.CONFIRMED
-                                                    || (l.getLessonStatus()
-                                                    == LessonStatus.PENDING
-                                                    && l.getStudent()
-                                                    .getId()
-                                                    .equals(
-                                                            currentStudentId))))
+                                                                    == LessonStatus.CONFIRMED
+                                                            || (l.getLessonStatus()
+                                                                            == LessonStatus.PENDING
+                                                                    && l.getStudent()
+                                                                            .getId()
+                                                                            .equals(
+                                                                                    currentStudentId))))
                             .toList();
 
             for (Lesson lesson : dayLessons) {
                 freeBlocks = subtractLesson(freeBlocks, lesson.getTimeFrom(), lesson.getTimeTo());
             }
 
-            final LocalTime minTime = currentDate.equals(LocalDate.now())
-                    ? LocalDateTime.now().toLocalTime()
-                    : LocalTime.MIDNIGHT;
+            final LocalTime minTime =
+                    currentDate.equals(LocalDate.now())
+                            ? LocalDateTime.now().toLocalTime()
+                            : LocalTime.MIDNIGHT;
 
             freeBlocks =
                     freeBlocks.stream()
@@ -115,8 +115,8 @@ public class TimetableService {
                             .filter(
                                     b ->
                                             java.time.Duration.between(
-                                                            b.getTimeFrom(), b.getTimeTo())
-                                                    .toMinutes()
+                                                                    b.getTimeFrom(), b.getTimeTo())
+                                                            .toMinutes()
                                                     >= 30)
                             .sorted(Comparator.comparing(TimeSlot::getTimeFrom))
                             .collect(Collectors.toList());

@@ -1,5 +1,6 @@
 package pl.edu.ur.teachly.subject.service;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,8 +16,6 @@ import pl.edu.ur.teachly.subject.mapper.SubjectCategoryMapper;
 import pl.edu.ur.teachly.subject.mapper.SubjectMapper;
 import pl.edu.ur.teachly.subject.repository.SubjectCategoryRepository;
 import pl.edu.ur.teachly.subject.repository.SubjectRepository;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -87,7 +86,8 @@ public class SubjectService {
     }
 
     @Transactional
-    public SubjectCategoryResponse updateSubjectCategory(Integer id, SubjectCategoryRequest request) {
+    public SubjectCategoryResponse updateSubjectCategory(
+            Integer id, SubjectCategoryRequest request) {
         SubjectCategory category =
                 categoryRepository
                         .findById(id)
