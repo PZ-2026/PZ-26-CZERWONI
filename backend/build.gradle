@@ -73,6 +73,7 @@ tasks.named('compileJava') {
 // 2. Always check code quality (Checkstyle)
 tasks.named('compileJava') {
     finalizedBy 'checkstyleMain'
+    finalizedBy 'checkstyleTest'
 }
 
 // Spotless

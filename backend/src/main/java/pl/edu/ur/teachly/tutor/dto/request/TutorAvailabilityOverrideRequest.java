@@ -11,7 +11,9 @@ public record TutorAvailabilityOverrideRequest(
         LocalTime timeTo) {
     @AssertTrue(message = "Godzina zakończenia musi być późniejsza niż godzina rozpoczęcia")
     public boolean isTimeValid() {
-        if (timeFrom == null || timeTo == null) return true;
+        if (timeFrom == null || timeTo == null) {
+            return true;
+        }
         return timeTo.isAfter(timeFrom);
     }
 }
