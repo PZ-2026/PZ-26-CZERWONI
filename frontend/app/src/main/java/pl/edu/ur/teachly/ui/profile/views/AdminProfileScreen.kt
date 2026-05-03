@@ -44,8 +44,21 @@ import java.time.LocalDate
 fun AdminProfileScreen(
     onBack: () -> Unit,
     onLogout: () -> Unit,
+    onEditClick: () -> Unit,
     viewModel: ProfileViewModel = koinViewModel(),
 ) {
+    val lifecycleOwner = androidx.compose.ui.platform.LocalLifecycleOwner.current
+    androidx.compose.runtime.DisposableEffect(lifecycleOwner) {
+        val observer = androidx.lifecycle.LifecycleEventObserver { _, event ->
+            if (event == androidx.lifecycle.Lifecycle.Event.ON_RESUME) {
+                viewModel.loadProfile()
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
     val profile by viewModel.profile.collectAsState()
 
     when {
@@ -66,7 +79,7 @@ fun AdminProfileScreen(
                 avatarColor = AvatarColors[0],
                 role = UserRole.ADMIN,
                 onBack = onBack,
-                onEditClick = null,
+                onEditClick = onEditClick,
             )
 
             Column(

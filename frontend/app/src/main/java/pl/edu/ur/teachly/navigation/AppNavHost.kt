@@ -216,6 +216,7 @@ fun AppNavHost(
                 "ADMIN" -> AdminProfileScreen(
                     onBack = { navController.popBackStack() },
                     onLogout = { navController.navigateToSplash() },
+                    onEditClick = { navController.navigate(AppRoute.ProfileEdit) },
                     viewModel = profileViewModel,
                 )
 
@@ -235,7 +236,13 @@ fun AppNavHost(
                 koinViewModel(viewModelStoreOwner = profileEntry)
             ProfileEditScreen(
                 onBack = { navController.popBackStack() },
-                onSave = { navController.popBackStack() },
+                onSave = { requiresRelogin ->
+                    if (requiresRelogin) {
+                        navController.navigateToSplash()
+                    } else {
+                        navController.popBackStack()
+                    }
+                },
                 viewModel = profileViewModel,
             )
         }
