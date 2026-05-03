@@ -1,5 +1,6 @@
 package pl.edu.ur.teachly.admin.controller;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -8,8 +9,6 @@ import pl.edu.ur.teachly.admin.dto.response.AdminStatsResponse;
 import pl.edu.ur.teachly.admin.service.AdminService;
 import pl.edu.ur.teachly.review.dto.response.ReviewResponse;
 import pl.edu.ur.teachly.review.service.ReviewService;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/admin")

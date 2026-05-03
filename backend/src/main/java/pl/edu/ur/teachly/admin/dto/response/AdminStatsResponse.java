@@ -13,5 +13,4 @@ public record AdminStatsResponse(
         int totalSubjects,
         int totalCategories,
         int totalHolidays,
-        int totalReviews) {
-}
+        int totalReviews) {}
