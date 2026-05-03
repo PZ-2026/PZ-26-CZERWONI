@@ -44,7 +44,8 @@ class LessonControllerTest {
         mockMvc.perform(
                         post("/api/lessons/student/1")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content("{\"subjectId\":1,\"date\":\"2025-01-01\"}"))
+                                .content(
+                                        "{\"tutorId\":2,\"subjectId\":1,\"lessonDate\":\"2025-01-01\",\"timeFrom\":\"10:00\",\"timeTo\":\"11:00\",\"format\":\"ONLINE\",\"lessonStatus\":\"PENDING\",\"amount\":50.0}"))
                 .andExpect(status().isCreated());
     }
 
@@ -69,7 +70,7 @@ class LessonControllerTest {
         mockMvc.perform(
                         patch("/api/lessons/1/status")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content("{\"status\":\"CONFIRMED\"}"))
+                                .content("{\"lessonStatus\":\"CONFIRMED\"}"))
                 .andExpect(status().isOk());
     }
 }

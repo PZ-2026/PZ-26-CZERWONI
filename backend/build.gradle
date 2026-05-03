@@ -7,6 +7,10 @@ plugins {
     id 'jacoco'
 }
 
+jacoco {
+    toolVersion = "0.8.12"
+}
+
 group = 'pl.edu.ur'
 version = '0.0.1-SNAPSHOT'
 

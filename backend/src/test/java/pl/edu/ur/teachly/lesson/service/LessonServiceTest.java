@@ -479,7 +479,6 @@ class LessonServiceTest {
             LessonStatusRequest req = new LessonStatusRequest(LessonStatus.CONFIRMED, null);
             when(lessonRepository.findById(99)).thenReturn(Optional.empty());
 
-            mockSecurityContext(tutorUserRole());
             assertThatThrownBy(() -> lessonService.changeLessonStatus(99, req))
                     .isInstanceOf(ResourceNotFoundException.class);
         }
