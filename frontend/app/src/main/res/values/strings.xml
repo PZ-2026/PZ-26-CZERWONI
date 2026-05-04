@@ -42,7 +42,7 @@
     <!-- Home -->
     <string name="home_find">Znajdź</string>
     <string name="home_tutor">korepetytora</string>
-    <string name="home_search_placeholder">Szukaj korepetytora lub przedmiotu…</string>
+    <string name="home_search_placeholder">Szukaj korepetytora…</string>
     <string name="home_no_results">Brak wyników</string>
     <string name="home_no_results_hint">Spróbuj innej frazy lub przedmiotu</string>
     <plurals name="home_tutors_count">

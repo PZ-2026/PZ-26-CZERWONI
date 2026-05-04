@@ -98,7 +98,7 @@ fun ProfileDataDivider() {
 
 // Subjects section
 @Composable
-fun SubjectsSection(subjects: List<String>, student: Boolean = true) {
+fun SubjectsSection(subjects: List<String>) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         FlowRow(
             horizontalArrangement = Arrangement.spacedBy(8.dp),

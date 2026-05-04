@@ -159,7 +159,7 @@ class UserServiceTest {
     @DisplayName("updateUserProfile – sukces")
     void updateUserProfile_success() {
         User user = User.builder().id(1).build();
-        UserUpdateRequest req = new UserUpdateRequest("Nowe", "Imie", null);
+        UserUpdateRequest req = new UserUpdateRequest("Nowe", "Imie", null, null, null, null);
         UserResponse response =
                 new UserResponse(
                         1,

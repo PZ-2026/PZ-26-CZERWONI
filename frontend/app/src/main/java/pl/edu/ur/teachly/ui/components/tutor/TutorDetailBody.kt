@@ -32,7 +32,7 @@ fun TutorDetailBody(
 
         if (tutor.subjects.isNotEmpty()) {
             DetailSection(title = stringResource(R.string.tutor_profile_subjects_title)) {
-                SubjectsSection(subjects = tutor.subjects, student = false)
+                SubjectsSection(subjects = tutor.subjects)
             }
         }
 

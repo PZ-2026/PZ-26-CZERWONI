@@ -72,7 +72,8 @@ fun ScheduleScreen(
 
             state.confirmedClasses.isEmpty() &&
                     state.pendingClasses.isEmpty() &&
-                    state.completedClasses.isEmpty() -> Box(
+                    state.completedClasses.isEmpty() &&
+                    state.cancelledClasses.isEmpty() -> Box(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center,
             ) {
