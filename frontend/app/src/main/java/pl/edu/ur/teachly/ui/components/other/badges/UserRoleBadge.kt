@@ -15,8 +15,8 @@ import pl.edu.ur.teachly.data.model.UserRole
 fun UserRoleBadge(role: UserRole?) {
     val (label, color) = when (role) {
         UserRole.ADMIN -> "ADMIN" to colorScheme.error
-        UserRole.TUTOR -> "TUTOR" to colorScheme.tertiary
-        else -> "STUDENT" to colorScheme.primary
+        UserRole.TUTOR -> "Korepetytor" to colorScheme.tertiary
+        else -> "Uczeń" to colorScheme.primary
     }
     Surface(color = color.copy(alpha = 0.15f), shape = RoundedCornerShape(4.dp)) {
         Text(

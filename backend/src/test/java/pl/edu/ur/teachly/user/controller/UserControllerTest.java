@@ -57,7 +57,7 @@ class UserControllerTest {
 
     @Test
     void updateUserProfile() throws Exception {
-        UserUpdateRequest req = new UserUpdateRequest("A", "B", "C");
+        UserUpdateRequest req = new UserUpdateRequest("A", "B", "a@b.com", null, null, null);
         when(userService.updateUserProfile(eq(1), any()))
                 .thenReturn(
                         new UserResponse(

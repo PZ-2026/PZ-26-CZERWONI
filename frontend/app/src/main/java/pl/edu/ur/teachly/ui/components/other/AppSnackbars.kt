@@ -43,7 +43,7 @@ fun MessageSnackbars(
     ) {
         Snackbar(
             modifier = Modifier.padding(16.dp),
-            containerColor = colorScheme.primaryContainer,
-        ) { Text(successMessage.orEmpty(), color = colorScheme.onPrimaryContainer) }
+            containerColor = colorScheme.primary,
+        ) { Text(successMessage.orEmpty(), color = colorScheme.onPrimary) }
     }
 }

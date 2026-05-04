@@ -42,8 +42,7 @@ fun UserAdminCard(
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
-            containerColor = if (user.isActive) colorScheme.surface
-            else colorScheme.errorContainer.copy(alpha = 0.3f)
+            containerColor = colorScheme.surface
         ),
         shape = RoundedCornerShape(20.dp),
         border = BorderStroke(
@@ -69,16 +68,6 @@ fun UserAdminCard(
                         color = colorScheme.onSurface,
                     )
                     UserRoleBadge(user.role)
-                    if (!user.isActive) {
-                        Surface(color = colorScheme.error, shape = RoundedCornerShape(4.dp)) {
-                            Text(
-                                "ZABLOKOWANY",
-                                style = typography.labelSmall,
-                                color = colorScheme.onError,
-                                modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp)
-                            )
-                        }
-                    }
                 }
                 Row {
                     IconButton(onClick = onEdit) {
@@ -97,8 +86,21 @@ fun UserAdminCard(
                     }
                 }
             }
+            if (!user.isActive) {
+                Surface(
+                    color = colorScheme.error,
+                    shape = RoundedCornerShape(4.dp),
+                ) {
+                    Text(
+                        if (user.firstName.endsWith('a')) "ZABLOKOWANA" else "ZABLOKOWANY",
+                        style = typography.labelSmall,
+                        color = colorScheme.onError,
+                        modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp)
+                    )
+                }
+                Spacer(Modifier.height(12.dp))
+            }
 
-            Spacer(Modifier.height(8.dp))
 
             CardInfoRow(
                 icon = {
