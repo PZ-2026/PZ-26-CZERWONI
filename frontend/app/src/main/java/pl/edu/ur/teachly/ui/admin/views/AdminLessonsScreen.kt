@@ -70,11 +70,11 @@ fun AdminLessonsScreen(
                 )
                 Spacer(Modifier.height(8.dp))
                 FilterChips(
-                    items = listOf("Wszystkie") + LessonStatus.entries.map { it.name },
-                    activeItem = state.selectedStatus?.name ?: "Wszystkie",
+                    items = listOf("Wszystkie") + LessonStatus.entries.map { it.label },
+                    activeItem = state.selectedStatus?.label ?: "Wszystkie",
                     onSelect = { label ->
                         viewModel.onStatusFilterChange(
-                            if (label == "Wszystkie") null else LessonStatus.valueOf(label)
+                            if (label == "Wszystkie") null else LessonStatus.entries.first { it.label == label }
                         )
                     },
                 )

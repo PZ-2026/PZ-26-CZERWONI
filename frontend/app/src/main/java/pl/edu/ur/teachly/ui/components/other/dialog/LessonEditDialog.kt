@@ -219,21 +219,21 @@ fun LessonEditDialog(
                     entries = LessonFormat.entries,
                     selected = format,
                     onSelect = { format = it },
-                    label = { it.name },
+                    label = { it.label },
                 )
                 DialogSectionLabel("Status lekcji")
                 DialogChipRow(
                     entries = LessonStatus.entries,
                     selected = lessonStatus,
                     onSelect = { lessonStatus = it },
-                    label = { it.name },
+                    label = { it.label },
                 )
                 DialogSectionLabel("Status płatności")
                 DialogChipRow(
                     entries = PaymentStatus.entries,
                     selected = paymentStatus,
                     onSelect = { paymentStatus = it },
-                    label = { it.name },
+                    label = { it.label },
                 )
                 OutlinedTextField(
                     value = studentNotes,

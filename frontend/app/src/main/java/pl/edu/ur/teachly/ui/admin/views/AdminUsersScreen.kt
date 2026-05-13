@@ -74,11 +74,11 @@ fun AdminUsersScreen(
                 )
                 Spacer(Modifier.height(8.dp))
                 FilterChips(
-                    items = listOf("Wszyscy") + UserRole.entries.map { it.name },
-                    activeItem = state.selectedRole?.name ?: "Wszyscy",
+                    items = listOf("Wszyscy") + UserRole.entries.map { it.label },
+                    activeItem = state.selectedRole?.label ?: "Wszyscy",
                     onSelect = { label ->
                         viewModel.onRoleFilterChange(
-                            if (label == "Wszyscy") null else UserRole.valueOf(label)
+                            if (label == "Wszyscy") null else UserRole.entries.first { it.label == label }
                         )
                     },
                 )
