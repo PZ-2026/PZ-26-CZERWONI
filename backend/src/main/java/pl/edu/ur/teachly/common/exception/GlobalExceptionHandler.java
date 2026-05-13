@@ -84,11 +84,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ProblemDetail handleGlobalException(Exception ex) {
         log.error("Unexpected server error: {}", ex.getMessage(), ex);
-        ProblemDetail problemDetail =
-                ProblemDetail.forStatusAndDetail(
-                        HttpStatus.INTERNAL_SERVER_ERROR, "Wystąpił nieoczekiwany błąd serwera");
-        problemDetail.setProperty(
-                "errorCause", ex.getClass().getSimpleName() + ": " + ex.getMessage());
-        return problemDetail;
+        return ProblemDetail.forStatusAndDetail(
+                HttpStatus.INTERNAL_SERVER_ERROR, "Wystąpił nieoczekiwany błąd serwera");
     }
 }

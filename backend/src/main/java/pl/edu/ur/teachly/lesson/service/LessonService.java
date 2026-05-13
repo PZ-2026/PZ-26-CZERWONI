@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -199,7 +200,8 @@ public class LessonService {
     }
 
     @Transactional
-    public LessonResponse updateStudentNotes(Integer lessonId, StudentNotesRequest request) {
+    public LessonResponse updateStudentNotes(
+            Integer lessonId, StudentNotesRequest request, Integer callerId) {
         Lesson lesson =
                 lessonRepository
                         .findById(lessonId)
@@ -207,6 +209,9 @@ public class LessonService {
                                 () ->
                                         new ResourceNotFoundException(
                                                 "Nie znaleziono szukanej lekcji"));
+        if (!lesson.getStudent().getId().equals(callerId)) {
+            throw new AccessDeniedException("Brak uprawnień do edycji notatek tej lekcji");
+        }
         lesson.setStudentNotes(request.studentNotes());
         return lessonMapper.toResponse(lessonRepository.save(lesson));
     }

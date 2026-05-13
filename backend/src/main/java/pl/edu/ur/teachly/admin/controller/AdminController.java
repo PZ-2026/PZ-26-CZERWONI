@@ -31,6 +31,6 @@ public class AdminController {
     @DeleteMapping("/reviews/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteReview(@PathVariable Integer id) {
-        reviewService.deleteReview(id);
+        reviewService.deleteReviewAdmin(id);
     }
 }

@@ -55,6 +55,6 @@ class AdminControllerTest {
     @Test
     void deleteReview() throws Exception {
         mockMvc.perform(delete("/api/admin/reviews/1")).andExpect(status().isNoContent());
-        verify(reviewService).deleteReview(1);
+        verify(reviewService).deleteReviewAdmin(1);
     }
 }

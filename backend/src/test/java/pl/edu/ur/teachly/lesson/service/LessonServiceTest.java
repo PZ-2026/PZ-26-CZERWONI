@@ -533,7 +533,9 @@ class LessonServiceTest {
     @Test
     @DisplayName("updateStudentNotes – sukces")
     void updateStudentNotes_success() {
+        User student = User.builder().id(1).build();
         Lesson lesson = new Lesson();
+        lesson.setStudent(student);
         pl.edu.ur.teachly.lesson.dto.request.StudentNotesRequest req =
                 new pl.edu.ur.teachly.lesson.dto.request.StudentNotesRequest("Notatki ucznia");
         LessonResponse response = mock(LessonResponse.class);
@@ -542,7 +544,7 @@ class LessonServiceTest {
         when(lessonRepository.save(lesson)).thenReturn(lesson);
         when(lessonMapper.toResponse(lesson)).thenReturn(response);
 
-        lessonService.updateStudentNotes(1, req);
+        lessonService.updateStudentNotes(1, req, 1);
 
         assertThat(lesson.getStudentNotes()).isEqualTo("Notatki ucznia");
         verify(lessonRepository).save(lesson);
