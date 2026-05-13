@@ -1,11 +1,5 @@
 package pl.edu.ur.teachly.lesson.service;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -27,6 +21,13 @@ import pl.edu.ur.teachly.tutor.repository.TutorRepository;
 import pl.edu.ur.teachly.tutor.service.TimetableService;
 import pl.edu.ur.teachly.user.entity.User;
 import pl.edu.ur.teachly.user.repository.UserRepository;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -131,10 +132,25 @@ public class LessonService {
 
     @Transactional(readOnly = true)
     public LessonResponse getLesson(Integer lessonId) {
-        return lessonRepository
-                .findById(lessonId)
-                .map(lessonMapper::toResponse)
-                .orElseThrow(() -> new ResourceNotFoundException("Nie znaleziono szukanej lekcji"));
+        Lesson lesson =
+                lessonRepository
+                        .findById(lessonId)
+                        .orElseThrow(
+                                () ->
+                                        new ResourceNotFoundException(
+                                                "Nie znaleziono szukanej lekcji"));
+        User caller = getCurrentUser();
+        if (caller.getUserRole() != UserRole.ADMIN) {
+            boolean isParticipant =
+                    (lesson.getStudent() != null
+                            && lesson.getStudent().getId().equals(caller.getId()))
+                            || (lesson.getTutor() != null
+                            && lesson.getTutor().getUserId().equals(caller.getId()));
+            if (!isParticipant) {
+                throw new AccessDeniedException("Brak dostępu do tej lekcji");
+            }
+        }
+        return lessonMapper.toResponse(lesson);
     }
 
     @Transactional(readOnly = true)
@@ -189,9 +205,19 @@ public class LessonService {
 
         LessonStatus newStatus = request.lessonStatus();
         LessonStatus currentStatus = lesson.getLessonStatus();
-        UserRole currentUserRole = getCurrentUserRole();
+        User currentUser = getCurrentUser();
+        UserRole currentUserRole = currentUser.getUserRole();
 
         if (currentUserRole != UserRole.ADMIN) {
+            boolean isParticipant =
+                    (lesson.getStudent() != null
+                            && lesson.getStudent().getId().equals(currentUser.getId()))
+                            || (lesson.getTutor() != null
+                            && lesson.getTutor().getUserId().equals(currentUser.getId()));
+            if (!isParticipant) {
+                throw new AccessDeniedException("Brak dostępu do tej lekcji");
+            }
+
             LocalDateTime lessonStart =
                     LocalDateTime.of(lesson.getLessonDate(), lesson.getTimeFrom());
 
@@ -225,7 +251,8 @@ public class LessonService {
     }
 
     @Transactional
-    public LessonResponse updateTutorNotes(Integer lessonId, TutorNotesRequest request) {
+    public LessonResponse updateTutorNotes(
+            Integer lessonId, TutorNotesRequest request, Integer callerId) {
         Lesson lesson =
                 lessonRepository
                         .findById(lessonId)
@@ -233,6 +260,9 @@ public class LessonService {
                                 () ->
                                         new ResourceNotFoundException(
                                                 "Nie znaleziono szukanej lekcji"));
+        if (!lesson.getTutor().getUserId().equals(callerId)) {
+            throw new AccessDeniedException("Brak uprawnień do edycji notatek tej lekcji");
+        }
         lesson.setTutorNotes(request.tutorNotes());
         return lessonMapper.toResponse(lessonRepository.save(lesson));
     }
@@ -250,12 +280,12 @@ public class LessonService {
         return lessonMapper.toResponse(lessonRepository.save(lesson));
     }
 
-    private UserRole getCurrentUserRole() {
+    private User getCurrentUser() {
         var auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth == null || !(auth.getPrincipal() instanceof User user)) {
             throw new IllegalStateException("Brak uwierzytelnienia");
         }
-        return user.getUserRole();
+        return user;
     }
 
     private boolean isValidTransition(

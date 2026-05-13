@@ -27,7 +27,8 @@ public class LessonController {
 
     @PostMapping("/student/{studentId}")
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasRole('ADMIN') or (hasRole('STUDENT') and authentication.principal.id == #studentId)")
+    @PreAuthorize(
+            "hasRole('ADMIN') or (hasRole('STUDENT') and authentication.principal.id == #studentId)")
     public LessonResponse createLesson(
             @PathVariable Integer studentId, @Valid @RequestBody LessonRequest request) {
         return lessonService.createLesson(studentId, request);
@@ -40,6 +41,7 @@ public class LessonController {
     }
 
     @GetMapping("/tutor/{tutorId}")
+    @PreAuthorize("hasRole('ADMIN') or authentication.principal.id == #tutorId")
     public List<LessonResponse> getTutorLessons(@PathVariable Integer tutorId) {
         return lessonService.getTutorLessons(tutorId);
     }
@@ -71,12 +73,16 @@ public class LessonController {
     }
 
     @PatchMapping("/{lessonId}/tutor-notes")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TUTOR')")
     public LessonResponse updateTutorNotes(
-            @PathVariable Integer lessonId, @Valid @RequestBody TutorNotesRequest request) {
-        return lessonService.updateTutorNotes(lessonId, request);
+            @PathVariable Integer lessonId,
+            @Valid @RequestBody TutorNotesRequest request,
+            @AuthenticationPrincipal User currentUser) {
+        return lessonService.updateTutorNotes(lessonId, request, currentUser.getId());
     }
 
     @PatchMapping("/{lessonId}/payment")
+    @PreAuthorize("hasRole('ADMIN')")
     public LessonResponse updatePaymentStatus(
             @PathVariable Integer lessonId, @Valid @RequestBody PaymentStatusRequest request) {
         return lessonService.updatePaymentStatus(lessonId, request);
