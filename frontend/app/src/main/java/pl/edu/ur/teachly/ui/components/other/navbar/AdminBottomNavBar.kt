@@ -15,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import pl.edu.ur.teachly.R
@@ -55,7 +56,13 @@ fun AdminBottomNavBar(
                 }
             },
             icon = { Icon(Icons.Default.Dashboard, contentDescription = "Dashboard") },
-            label = { Text("Dashboard") },
+            label = {
+                Text(
+                    "Dashboard",
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            },
             colors = navItemColors()
         )
         NavigationBarItem(
@@ -67,7 +74,13 @@ fun AdminBottomNavBar(
                 }
             },
             icon = { Icon(Icons.Default.People, contentDescription = "Użytkownicy") },
-            label = { Text("Użytkownicy") },
+            label = {
+                Text(
+                    "Użytkownicy",
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            },
             colors = navItemColors()
         )
         NavigationBarItem(
@@ -79,7 +92,13 @@ fun AdminBottomNavBar(
                 }
             },
             icon = { Icon(Icons.Default.CalendarMonth, contentDescription = "Lekcje") },
-            label = { Text("Lekcje") },
+            label = {
+                Text(
+                    "Lekcje",
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            },
             colors = navItemColors()
         )
         NavigationBarItem(
@@ -91,7 +110,13 @@ fun AdminBottomNavBar(
                 }
             },
             icon = { Icon(Icons.AutoMirrored.Filled.MenuBook, contentDescription = "Dane") },
-            label = { Text("Dane") },
+            label = {
+                Text(
+                    "Dane",
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            },
             colors = navItemColors()
         )
         NavigationBarItem(
@@ -108,10 +133,14 @@ fun AdminBottomNavBar(
                     contentDescription = stringResource(R.string.nav_profile)
                 )
             },
-            label = { Text(stringResource(R.string.nav_profile)) },
+            label = {
+                Text(
+                    stringResource(R.string.nav_profile),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            },
             colors = navItemColors()
         )
     }
 }
-
-

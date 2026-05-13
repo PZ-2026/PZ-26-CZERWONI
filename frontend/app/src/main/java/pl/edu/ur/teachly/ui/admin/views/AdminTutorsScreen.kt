@@ -36,6 +36,7 @@ import pl.edu.ur.teachly.ui.components.other.dialog.TutorEditDialog
 fun AdminTutorsScreen(
     viewModel: AdminTutorsViewModel = koinViewModel(),
     showHeader: Boolean = true,
+    onSchedule: ((tutorId: Int) -> Unit)? = null,
 ) {
     val state by viewModel.state.collectAsState()
     var showEditDialog by remember { mutableStateOf<TutorResponse?>(null) }
@@ -86,7 +87,11 @@ fun AdminTutorsScreen(
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     items(state.filteredTutors) { tutor ->
-                        TutorAdminCard(tutor = tutor, onEdit = { showEditDialog = tutor })
+                        TutorAdminCard(
+                            tutor = tutor,
+                            onEdit = { showEditDialog = tutor },
+                            onSchedule = { onSchedule?.invoke(tutor.id) },
+                        )
                     }
                 }
             }

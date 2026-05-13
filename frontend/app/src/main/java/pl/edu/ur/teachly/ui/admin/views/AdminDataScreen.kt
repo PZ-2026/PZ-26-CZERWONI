@@ -20,7 +20,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun AdminDataScreen(initialTab: Int = 0, initialSubjectTab: Int = 0) {
+fun AdminDataScreen(
+    initialTab: Int = 0,
+    initialSubjectTab: Int = 0,
+    onTutorSchedule: ((tutorId: Int) -> Unit)? = null,
+) {
     val tabs = listOf("Przedmioty", "Święta", "Korepetytorzy", "Opinie")
     var selectedTab by remember { mutableIntStateOf(initialTab) }
 
@@ -55,7 +59,7 @@ fun AdminDataScreen(initialTab: Int = 0, initialSubjectTab: Int = 0) {
         when (selectedTab) {
             0 -> AdminSubjectsScreen(showHeader = false, initialSubjectTab = initialSubjectTab)
             1 -> AdminHolidaysScreen(showHeader = false)
-            2 -> AdminTutorsScreen(showHeader = false)
+            2 -> AdminTutorsScreen(showHeader = false, onSchedule = onTutorSchedule)
             else -> AdminReviewsScreen(showHeader = false)
         }
     }

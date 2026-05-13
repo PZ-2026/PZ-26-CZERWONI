@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Info
@@ -31,7 +32,7 @@ import androidx.compose.ui.unit.dp
 import pl.edu.ur.teachly.data.model.TutorResponse
 
 @Composable
-fun TutorAdminCard(tutor: TutorResponse, onEdit: () -> Unit) {
+fun TutorAdminCard(tutor: TutorResponse, onEdit: () -> Unit, onSchedule: () -> Unit) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = colorScheme.surface),
@@ -51,12 +52,21 @@ fun TutorAdminCard(tutor: TutorResponse, onEdit: () -> Unit) {
                     fontWeight = FontWeight.Bold,
                     color = colorScheme.onSurface,
                 )
-                IconButton(onClick = onEdit) {
-                    Icon(
-                        Icons.Default.Edit,
-                        contentDescription = "Edytuj",
-                        tint = colorScheme.primary
-                    )
+                Row {
+                    IconButton(onClick = onSchedule) {
+                        Icon(
+                            Icons.Default.CalendarMonth,
+                            contentDescription = "Harmonogram",
+                            tint = colorScheme.primary
+                        )
+                    }
+                    IconButton(onClick = onEdit) {
+                        Icon(
+                            Icons.Default.Edit,
+                            contentDescription = "Edytuj",
+                            tint = colorScheme.primary
+                        )
+                    }
                 }
             }
 

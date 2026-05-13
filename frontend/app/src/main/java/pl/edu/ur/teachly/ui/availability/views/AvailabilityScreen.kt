@@ -70,7 +70,7 @@ fun AvailabilityScreen(
         Column(modifier = Modifier.fillMaxSize()) {
             AppHeader(
                 title = "Harmonogram dostępności",
-                subtitle = "Dostosuj swoje godziny pracy",
+                subtitle = state.tutorName ?: "Dostosuj swoje godziny pracy",
                 background = HeaderBackground.Diagonal(
                     listOf(colorScheme.onPrimaryContainer, colorScheme.primary)
                 ),
