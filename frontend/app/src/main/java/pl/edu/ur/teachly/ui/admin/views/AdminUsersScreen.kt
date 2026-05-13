@@ -5,9 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.AlertDialog
@@ -32,6 +30,7 @@ import pl.edu.ur.teachly.ui.admin.viewmodels.AdminUsersViewModel
 import pl.edu.ur.teachly.ui.components.admin.AdminScreenHeader
 import pl.edu.ur.teachly.ui.components.admin.AdminSearchBar
 import pl.edu.ur.teachly.ui.components.other.EmptyListState
+import pl.edu.ur.teachly.ui.components.other.ExpandableFilterSection
 import pl.edu.ur.teachly.ui.components.other.FilterChips
 import pl.edu.ur.teachly.ui.components.other.MessageSnackbars
 import pl.edu.ur.teachly.ui.components.other.cards.UserAdminCard
@@ -72,13 +71,38 @@ fun AdminUsersScreen(
                     onValueChange = { viewModel.onSearchChange(it) },
                     placeholder = "Szukaj po imieniu, nazwisku, email...",
                 )
-                Spacer(Modifier.height(8.dp))
+            }
+            ExpandableFilterSection(
+                activeFilterCount = listOf(
+                    state.selectedRole,
+                    state.activeFilter
+                ).count { it != null },
+            ) {
                 FilterChips(
+                    label = "Rola",
                     items = listOf("Wszyscy") + UserRole.entries.map { it.label },
                     activeItem = state.selectedRole?.label ?: "Wszyscy",
                     onSelect = { label ->
                         viewModel.onRoleFilterChange(
                             if (label == "Wszyscy") null else UserRole.entries.first { it.label == label }
+                        )
+                    },
+                )
+                FilterChips(
+                    label = "Status konta",
+                    items = listOf("Wszyscy", "Aktywni", "Zablokowani"),
+                    activeItem = when (state.activeFilter) {
+                        true -> "Aktywni"
+                        false -> "Zablokowani"
+                        else -> "Wszyscy"
+                    },
+                    onSelect = { label ->
+                        viewModel.onActiveFilterChange(
+                            when (label) {
+                                "Aktywni" -> true
+                                "Zablokowani" -> false
+                                else -> null
+                            }
                         )
                     },
                 )

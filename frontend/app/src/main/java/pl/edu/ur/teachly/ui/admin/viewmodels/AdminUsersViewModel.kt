@@ -17,6 +17,7 @@ data class AdminUsersState(
     val filteredUsers: List<UserResponse> = emptyList(),
     val searchQuery: String = "",
     val selectedRole: UserRole? = null,
+    val activeFilter: Boolean? = null,
     val isLoading: Boolean = true,
     val error: String? = null,
     val successMessage: String? = null
@@ -56,16 +57,23 @@ class AdminUsersViewModel(
         applyFilters()
     }
 
+    fun onActiveFilterChange(activeFilter: Boolean?) {
+        _state.update { it.copy(activeFilter = activeFilter) }
+        applyFilters()
+    }
+
     private fun applyFilters() {
         val query = _state.value.searchQuery.lowercase()
         val role = _state.value.selectedRole
+        val activeFilter = _state.value.activeFilter
         val filtered = _state.value.users.filter { user ->
             val matchesSearch = query.isEmpty() ||
                     user.firstName.lowercase().contains(query) ||
                     user.lastName.lowercase().contains(query) ||
                     user.email.lowercase().contains(query)
             val matchesRole = role == null || user.role == role
-            matchesSearch && matchesRole
+            val matchesActive = activeFilter == null || user.isActive == activeFilter
+            matchesSearch && matchesRole && matchesActive
         }
         _state.update { it.copy(filteredUsers = filtered) }
     }
