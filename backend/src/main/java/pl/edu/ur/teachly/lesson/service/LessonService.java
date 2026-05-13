@@ -1,5 +1,7 @@
 package pl.edu.ur.teachly.lesson.service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -111,12 +113,18 @@ public class LessonService {
             throw new SlotNotAvailableException("Masz już zarezerwowaną lekcję w tym czasie");
         }
 
+        BigDecimal amount =
+                tutor.getHourlyRate()
+                        .multiply(BigDecimal.valueOf(duration))
+                        .divide(BigDecimal.valueOf(60), 2, RoundingMode.HALF_UP);
+
         Lesson lesson = lessonMapper.toEntity(request);
         lesson.setStudent(student);
         lesson.setTutor(tutor);
         lesson.setSubject(subject);
         lesson.setLessonStatus(LessonStatus.PENDING);
         lesson.setPaymentStatus(PaymentStatus.PENDING);
+        lesson.setAmount(amount);
 
         return lessonMapper.toResponse(lessonRepository.save(lesson));
     }

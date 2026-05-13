@@ -92,9 +92,7 @@ class LessonServiceTest {
                 LocalTime.of(10, 0),
                 LocalTime.of(11, 0),
                 LessonFormat.ONLINE,
-                LessonStatus.PENDING,
-                null,
-                BigDecimal.valueOf(50));
+                null);
     }
 
     private TimetableDayResponse availableDay(LocalDate date, LocalTime from, LocalTime to) {
@@ -207,9 +205,7 @@ class LessonServiceTest {
                             LocalTime.of(10, 0),
                             LocalTime.of(10, 45),
                             LessonFormat.ONLINE,
-                            LessonStatus.PENDING,
-                            null,
-                            BigDecimal.valueOf(50));
+                            null);
 
             when(userRepository.findById(1)).thenReturn(Optional.of(student(1)));
             when(tutorRepository.findById(2)).thenReturn(Optional.of(tutor(2, tutorUser(2))));
@@ -232,9 +228,7 @@ class LessonServiceTest {
                             LocalTime.of(10, 0),
                             LocalTime.of(10, 0),
                             LessonFormat.ONLINE,
-                            LessonStatus.PENDING,
-                            null,
-                            BigDecimal.valueOf(50));
+                            null);
 
             when(userRepository.findById(1)).thenReturn(Optional.of(student(1)));
             when(tutorRepository.findById(2)).thenReturn(Optional.of(tutor(2, tutorUser(2))));

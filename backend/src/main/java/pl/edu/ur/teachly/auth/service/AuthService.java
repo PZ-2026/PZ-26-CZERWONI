@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import pl.edu.ur.teachly.auth.dto.request.LoginRequest;
 import pl.edu.ur.teachly.auth.dto.request.RegisterRequest;
 import pl.edu.ur.teachly.auth.dto.response.AuthResponse;
+import pl.edu.ur.teachly.common.enums.UserRole;
 import pl.edu.ur.teachly.common.exception.BusinessValidationException;
 import pl.edu.ur.teachly.common.security.JwtService;
 import pl.edu.ur.teachly.user.entity.User;
@@ -27,6 +28,10 @@ public class AuthService {
 
     @Transactional
     public AuthResponse register(RegisterRequest request) {
+
+        if (request.userRole() == UserRole.ADMIN) {
+            throw new BusinessValidationException("Nie można zarejestrować się jako administrator");
+        }
 
         userRepository
                 .findByEmailOrPhoneNumber(request.email(), request.phoneNumber())
