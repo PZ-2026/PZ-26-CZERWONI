@@ -65,6 +65,7 @@ public class LessonController {
     }
 
     @PatchMapping("/{lessonId}/student-notes")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('STUDENT')")
     public LessonResponse updateStudentNotes(
             @PathVariable Integer lessonId,
             @Valid @RequestBody StudentNotesRequest request,
