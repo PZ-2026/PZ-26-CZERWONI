@@ -20,7 +20,7 @@ FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
 
 # Non-root user for security
-RUN addgroup -S teachly && adduser -S teachly -G teachly
+RUN addgroup -S teachly && adduser -S teachly -G teachly && mkdir -p /app/logs && chown teachly:teachly /app/logs
 USER teachly
 
 COPY --from=builder /app/build/libs/*.jar app.jar
