@@ -45,6 +45,7 @@ class ProfileViewModel(
     private val userRepository: UserRepository,
     private val lessonRepository: LessonRepository,
     private val tokenManager: TokenManager,
+    private val reportRepository: pl.edu.ur.teachly.data.repository.ReportRepository,
 ) : ViewModel() {
 
     private val _profile = MutableStateFlow(StudentProfile())
@@ -174,6 +175,20 @@ class ProfileViewModel(
                     _editState.update { it.copy(isLoading = false, error = e.message) }
                 },
             )
+        }
+    }
+
+    fun downloadReport(startDate: String, endDate: String, onResult: (Result<java.io.File>) -> Unit) {
+        viewModelScope.launch {
+            _profile.update { it.copy(isLoading = true, error = null) }
+            val result = reportRepository.downloadReport(startDate, endDate)
+            result.onFailure { e ->
+                _profile.update { it.copy(isLoading = false, error = e.message) }
+            }
+            result.onSuccess {
+                _profile.update { it.copy(isLoading = false) }
+            }
+            onResult(result)
         }
     }
 }

@@ -48,6 +48,7 @@ val appModule = module {
     single { SubjectRepository(get()) }
     single { HolidayRepository(get()) }
     single { AdminRepository(get()) }
+    single { pl.edu.ur.teachly.data.repository.ReportRepository(get(), androidContext()) }
 
     // ViewModels
     viewModel { AvailabilityViewModel(get()) }
@@ -59,7 +60,7 @@ val appModule = module {
     viewModel { ScheduleViewModel(get(), get()) }
     viewModel { TutorDetailViewModel(get(), get(), get(), get()) }
     viewModel { LessonDetailViewModel(get(), get()) }
-    viewModel { ProfileViewModel(get(), get(), get()) }
+    viewModel { ProfileViewModel(get(), get(), get(), get()) }
     viewModel { TutorProfileViewModel(get(), get(), get(), get()) }
     viewModel { AllReviewsViewModel(get(), get()) }
     viewModel { MyReviewsViewModel(get(), get()) }

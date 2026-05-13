@@ -19,6 +19,10 @@ FROM eclipse-temurin:21-jre-alpine
 
 WORKDIR /app
 
+# Install DejaVu fonts for full Unicode/Polish characters support in PDF generation
+# font-dejavu is the correct package name in Alpine 3.16+
+RUN apk add --no-cache font-dejavu || apk add --no-cache ttf-dejavu || true
+
 # Non-root user for security
 RUN addgroup -S teachly && adduser -S teachly -G teachly && mkdir -p /app/logs && chown teachly:teachly /app/logs
 USER teachly

@@ -51,7 +51,9 @@ public interface LessonRepository extends JpaRepository<Lesson, Integer> {
     @Query(
             """
                     SELECT l FROM Lesson l
-                    JOIN l.tutor t
+                    JOIN FETCH l.student
+                    JOIN FETCH l.subject
+                    JOIN FETCH l.tutor t
                     WHERE t.userId = :tutorId
                       AND l.lessonDate BETWEEN :startDate AND :endDate
                     """)
@@ -59,6 +61,33 @@ public interface LessonRepository extends JpaRepository<Lesson, Integer> {
             @Param("tutorId") Integer tutorId,
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate);
+
+    // Lesson JOIN User (student)
+    @Query(
+            """
+                    SELECT l FROM Lesson l
+                    JOIN FETCH l.tutor t
+                    JOIN FETCH l.subject
+                    JOIN FETCH l.student s
+                    WHERE s.id = :studentId
+                      AND l.lessonDate BETWEEN :startDate AND :endDate
+                    """)
+    List<Lesson> findByStudent_IdAndLessonDateBetween(
+            @Param("studentId") Integer studentId,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate);
+
+    // Lesson for Admin
+    @Query(
+            """
+                    SELECT l FROM Lesson l
+                    JOIN FETCH l.tutor t
+                    JOIN FETCH l.student
+                    JOIN FETCH l.subject
+                    WHERE l.lessonDate BETWEEN :startDate AND :endDate
+                    """)
+    List<Lesson> findByLessonDateBetween(
+            @Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
 
     @Query(
             """

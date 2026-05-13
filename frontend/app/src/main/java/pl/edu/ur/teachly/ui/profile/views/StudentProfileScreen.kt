@@ -164,6 +164,7 @@ fun StudentProfileScreen(
             when (selectedTab) {
                 0 -> ProfileTab(
                     profile = profile,
+                    viewModel = viewModel,
                     onLogout = onLogout,
                 )
 
@@ -181,6 +182,7 @@ fun StudentProfileScreen(
 @Composable
 private fun ProfileTab(
     profile: pl.edu.ur.teachly.ui.profile.viewmodels.StudentProfile,
+    viewModel: ProfileViewModel,
     onLogout: () -> Unit,
 ) {
     Column(
@@ -243,6 +245,8 @@ private fun ProfileTab(
                 value = stringResource(R.string.student),
             )
         }
+
+        ReportDownloadSection(viewModel = viewModel)
 
         PrimaryButton(
             text = stringResource(R.string.logout),
