@@ -1,6 +1,7 @@
 /src/main/resources/application-dev.properties
 
 HELP.md
+logs/
 .gradle
 build/
 !gradle/wrapper/gradle-wrapper.jar
