@@ -2,7 +2,8 @@ package pl.edu.ur.teachly.tutor.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -78,11 +79,24 @@ class TutorAvailabilityServiceTest {
     @Test
     @DisplayName("deleteRecurring - sukces")
     void deleteRecurring_success() {
-        when(recurringRepository.existsById(1)).thenReturn(true);
+        Tutor tutor = new Tutor();
+        tutor.setUserId(1);
+        TutorAvailabilityRecurring entity = new TutorAvailabilityRecurring();
+        entity.setTutor(tutor);
+        when(recurringRepository.findById(1)).thenReturn(Optional.of(entity));
 
-        availabilityService.deleteRecurring(1);
+        availabilityService.deleteRecurring(1, 1);
 
         verify(recurringRepository).deleteById(1);
+    }
+
+    @Test
+    @DisplayName("deleteRecurring - błąd: nie istnieje")
+    void deleteRecurring_notFound_throwsException() {
+        when(recurringRepository.findById(99)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> availabilityService.deleteRecurring(99, 1))
+                .isInstanceOf(ResourceNotFoundException.class);
     }
 
     @Test
@@ -126,9 +140,13 @@ class TutorAvailabilityServiceTest {
     @Test
     @DisplayName("deleteOverride - sukces")
     void deleteOverride_success() {
-        when(overrideRepository.existsById(1)).thenReturn(true);
+        Tutor tutor = new Tutor();
+        tutor.setUserId(1);
+        TutorAvailabilityOverride entity = new TutorAvailabilityOverride();
+        entity.setTutor(tutor);
+        when(overrideRepository.findById(1)).thenReturn(Optional.of(entity));
 
-        availabilityService.deleteOverride(1);
+        availabilityService.deleteOverride(1, 1);
 
         verify(overrideRepository).deleteById(1);
     }
@@ -136,9 +154,9 @@ class TutorAvailabilityServiceTest {
     @Test
     @DisplayName("deleteOverride - błąd: nie istnieje")
     void deleteOverride_notFound_throwsException() {
-        when(overrideRepository.existsById(99)).thenReturn(false);
+        when(overrideRepository.findById(99)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> availabilityService.deleteOverride(99))
+        assertThatThrownBy(() -> availabilityService.deleteOverride(99, 1))
                 .isInstanceOf(ResourceNotFoundException.class);
     }
 }

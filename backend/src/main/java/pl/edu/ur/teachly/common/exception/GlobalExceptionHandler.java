@@ -3,6 +3,7 @@ package pl.edu.ur.teachly.common.exception;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.validation.FieldError;
@@ -81,14 +82,25 @@ public class GlobalExceptionHandler {
         return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ProblemDetail handleDataIntegrityViolation(DataIntegrityViolationException ex) {
+        log.warn("Data integrity violation: {}", ex.getMessage());
+        String message = "Podane dane są już zajęte";
+        String cause = ex.getMostSpecificCause().getMessage();
+        if (cause != null) {
+            if (cause.contains("email")) {
+                message = "Email jest już zajęty";
+            } else if (cause.contains("phone_number")) {
+                message = "Numer telefonu jest już zajęty";
+            }
+        }
+        return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, message);
+    }
+
     @ExceptionHandler(Exception.class)
     public ProblemDetail handleGlobalException(Exception ex) {
         log.error("Unexpected server error: {}", ex.getMessage(), ex);
-        ProblemDetail problemDetail =
-                ProblemDetail.forStatusAndDetail(
-                        HttpStatus.INTERNAL_SERVER_ERROR, "Wystąpił nieoczekiwany błąd serwera");
-        problemDetail.setProperty(
-                "errorCause", ex.getClass().getSimpleName() + ": " + ex.getMessage());
-        return problemDetail;
+        return ProblemDetail.forStatusAndDetail(
+                HttpStatus.INTERNAL_SERVER_ERROR, "Wystąpił nieoczekiwany błąd serwera");
     }
 }

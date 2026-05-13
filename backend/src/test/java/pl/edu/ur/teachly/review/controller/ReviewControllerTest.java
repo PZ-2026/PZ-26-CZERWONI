@@ -9,6 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,11 +18,16 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.method.annotation.AuthenticationPrincipalArgumentResolver;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import pl.edu.ur.teachly.common.enums.UserRole;
 import pl.edu.ur.teachly.review.dto.request.ReviewRequest;
 import pl.edu.ur.teachly.review.dto.response.ReviewResponse;
 import pl.edu.ur.teachly.review.service.ReviewService;
+import pl.edu.ur.teachly.user.entity.User;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("ReviewController – testy jednostkowe")
@@ -34,9 +40,30 @@ class ReviewControllerTest {
 
     @InjectMocks private ReviewController reviewController;
 
+    private User mockUser;
+
     @BeforeEach
     void setUp() {
-        mockMvc = MockMvcBuilders.standaloneSetup(reviewController).build();
+        mockUser =
+                User.builder()
+                        .id(1)
+                        .firstName("Test")
+                        .lastName("User")
+                        .userRole(UserRole.STUDENT)
+                        .isActive(true)
+                        .build();
+        UsernamePasswordAuthenticationToken auth =
+                new UsernamePasswordAuthenticationToken(mockUser, null, mockUser.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(auth);
+        mockMvc =
+                MockMvcBuilders.standaloneSetup(reviewController)
+                        .setCustomArgumentResolvers(new AuthenticationPrincipalArgumentResolver())
+                        .build();
+    }
+
+    @AfterEach
+    void tearDown() {
+        SecurityContextHolder.clearContext();
     }
 
     @Test
@@ -73,7 +100,7 @@ class ReviewControllerTest {
     @Test
     void updateReview() throws Exception {
         ReviewRequest req = new ReviewRequest(1, java.math.BigDecimal.valueOf(4), "OK");
-        when(reviewService.updateReview(eq(1), any()))
+        when(reviewService.updateReview(eq(1), any(), eq(1)))
                 .thenReturn(
                         new ReviewResponse(
                                 1,
@@ -98,6 +125,6 @@ class ReviewControllerTest {
     @Test
     void deleteReview() throws Exception {
         mockMvc.perform(delete("/api/reviews/1")).andExpect(status().isNoContent());
-        verify(reviewService).deleteReview(1);
+        verify(reviewService).deleteReview(eq(1), eq(1));
     }
 }

@@ -10,11 +10,11 @@ import java.time.LocalTime;
 public record TutorAvailabilityRecurringRequest(
         @NotNull(message = "Dzień tygodnia jest wymagany")
                 @Min(
-                        value = 0,
-                        message = "Dzień tygodnia musi być od 0 (poniedziałek) do 6 (niedziela)")
+                        value = 1,
+                        message = "Dzień tygodnia musi być od 1 (poniedziałek) do 7 (niedziela)")
                 @Max(
-                        value = 6,
-                        message = "Dzień tygodnia musi być od 0 (poniedziałek) do 6 (niedziela)")
+                        value = 7,
+                        message = "Dzień tygodnia musi być od 1 (poniedziałek) do 7 (niedziela)")
                 Integer dayOfWeek,
         @NotNull(message = "Godzina rozpoczęcia jest wymagana") LocalTime timeFrom,
         @NotNull(message = "Godzina zakończenia jest wymagana") LocalTime timeTo,

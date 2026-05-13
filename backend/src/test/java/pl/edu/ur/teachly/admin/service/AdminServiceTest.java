@@ -3,6 +3,7 @@ package pl.edu.ur.teachly.admin.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -35,14 +36,20 @@ class AdminServiceTest {
     @Test
     @DisplayName("getStats – zwraca poprawne statystyki")
     void getStats_returnsCorrectStats() {
-        when(userRepository.countByUserRole(UserRole.STUDENT)).thenReturn(10);
-        when(userRepository.countByUserRole(UserRole.TUTOR)).thenReturn(5);
-        when(userRepository.countByUserRole(UserRole.ADMIN)).thenReturn(1);
+        when(userRepository.countGroupedByRole())
+                .thenReturn(
+                        List.of(
+                                new Object[] {UserRole.STUDENT, 10L},
+                                new Object[] {UserRole.TUTOR, 5L},
+                                new Object[] {UserRole.ADMIN, 1L}));
 
-        when(lessonRepository.countByLessonStatus(LessonStatus.PENDING)).thenReturn(2);
-        when(lessonRepository.countByLessonStatus(LessonStatus.CONFIRMED)).thenReturn(3);
-        when(lessonRepository.countByLessonStatus(LessonStatus.COMPLETED)).thenReturn(4);
-        when(lessonRepository.countByLessonStatus(LessonStatus.CANCELLED)).thenReturn(1);
+        when(lessonRepository.countGroupedByStatus())
+                .thenReturn(
+                        List.of(
+                                new Object[] {LessonStatus.PENDING, 2L},
+                                new Object[] {LessonStatus.CONFIRMED, 3L},
+                                new Object[] {LessonStatus.COMPLETED, 4L},
+                                new Object[] {LessonStatus.CANCELLED, 1L}));
 
         when(subjectRepository.count()).thenReturn(20L);
         when(categoryRepository.count()).thenReturn(5L);

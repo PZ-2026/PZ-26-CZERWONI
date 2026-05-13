@@ -2,6 +2,7 @@ package pl.edu.ur.teachly.review.service;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.edu.ur.teachly.common.enums.LessonStatus;
@@ -37,9 +38,9 @@ public class ReviewService {
                         .orElseThrow(
                                 () -> new ResourceNotFoundException("Nie znaleziono korepetytora"));
 
-        Review review = reviewMapper.toEntity(request);
-        review.setStudent(student);
-        review.setTutor(tutor);
+        if (reviewRepository.existsByStudentAndTutor(studentId, request.tutorId())) {
+            throw new BusinessValidationException("Już wystawiłeś opinię temu korepetytorowi");
+        }
 
         // Validation if user has a completed lesson with this tutor
         boolean hasCompletedLesson =
@@ -51,11 +52,14 @@ public class ReviewService {
                     "Nie możesz dodać opinii, ponieważ nie odbyłeś jeszcze żadnej lekcji z tym korepetytorem");
         }
 
+        Review review = reviewMapper.toEntity(request);
+        review.setStudent(student);
+        review.setTutor(tutor);
         return reviewMapper.toResponse(reviewRepository.save(review));
     }
 
     @Transactional
-    public ReviewResponse updateReview(Integer reviewId, ReviewRequest request) {
+    public ReviewResponse updateReview(Integer reviewId, ReviewRequest request, Integer callerId) {
         Review review =
                 reviewRepository
                         .findById(reviewId)
@@ -63,14 +67,31 @@ public class ReviewService {
                                 () ->
                                         new ResourceNotFoundException(
                                                 "Nie znaleziono szukanej opinii"));
-
+        if (!review.getStudent().getId().equals(callerId)) {
+            throw new AccessDeniedException("Brak uprawnień do edycji tej opinii");
+        }
         review.setRating(request.rating());
         review.setComment(request.comment());
         return reviewMapper.toResponse(reviewRepository.save(review));
     }
 
     @Transactional
-    public void deleteReview(Integer reviewId) {
+    public void deleteReview(Integer reviewId, Integer callerId) {
+        Review review =
+                reviewRepository
+                        .findById(reviewId)
+                        .orElseThrow(
+                                () ->
+                                        new ResourceNotFoundException(
+                                                "Nie znaleziono szukanej opinii"));
+        if (!review.getStudent().getId().equals(callerId)) {
+            throw new AccessDeniedException("Brak uprawnień do usunięcia tej opinii");
+        }
+        reviewRepository.deleteById(reviewId);
+    }
+
+    @Transactional
+    public void deleteReviewAdmin(Integer reviewId) {
         if (!reviewRepository.existsById(reviewId)) {
             throw new ResourceNotFoundException("Nie znaleziono szukanej opinii");
         }

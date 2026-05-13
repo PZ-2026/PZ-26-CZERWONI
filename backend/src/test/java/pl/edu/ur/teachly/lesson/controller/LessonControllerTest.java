@@ -2,9 +2,7 @@ package pl.edu.ur.teachly.lesson.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -45,7 +43,7 @@ class LessonControllerTest {
                         post("/api/lessons/student/1")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(
-                                        "{\"tutorId\":2,\"subjectId\":1,\"lessonDate\":\"2025-01-01\",\"timeFrom\":\"10:00\",\"timeTo\":\"11:00\",\"format\":\"ONLINE\",\"lessonStatus\":\"PENDING\",\"amount\":50.0}"))
+                                        "{\"tutorId\":2,\"subjectId\":1,\"lessonDate\":\"2025-01-01\",\"timeFrom\":\"10:00\",\"timeTo\":\"11:00\",\"format\":\"ONLINE\"}"))
                 .andExpect(status().isCreated());
     }
 

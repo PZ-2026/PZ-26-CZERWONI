@@ -21,4 +21,9 @@ public interface ReviewRepository extends JpaRepository<Review, Integer> {
     // Review JOIN Tutor
     @Query("SELECT AVG(r.rating) FROM Review r JOIN r.tutor t WHERE t.userId = :tutorId")
     java.math.BigDecimal findAverageRatingByTutorId(@Param("tutorId") Integer tutorId);
+
+    @Query(
+            "SELECT CASE WHEN COUNT(r) > 0 THEN true ELSE false END FROM Review r JOIN r.student s JOIN r.tutor t WHERE s.id = :studentId AND t.userId = :tutorUserId")
+    boolean existsByStudentAndTutor(
+            @Param("studentId") Integer studentId, @Param("tutorUserId") Integer tutorUserId);
 }

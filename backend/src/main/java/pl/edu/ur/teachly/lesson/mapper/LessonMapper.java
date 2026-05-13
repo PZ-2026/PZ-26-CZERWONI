@@ -24,6 +24,7 @@ public interface LessonMapper {
     @Mapping(target = "subject", ignore = true)
     @Mapping(target = "lessonStatus", ignore = true)
     @Mapping(target = "paymentStatus", ignore = true)
+    @Mapping(target = "amount", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "tutorNotes", ignore = true)

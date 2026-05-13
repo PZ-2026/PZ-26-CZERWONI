@@ -81,6 +81,23 @@ class AuthServiceTest {
     }
 
     @Test
+    @DisplayName("register – błąd: próba rejestracji jako ADMIN")
+    void register_adminRole_throwsBusinessValidationException() {
+        RegisterRequest adminRequest =
+                new RegisterRequest(
+                        UserRole.ADMIN,
+                        "Admin",
+                        "Admin",
+                        "admin@example.com",
+                        "000000000",
+                        "haslo123");
+
+        assertThatThrownBy(() -> authService.register(adminRequest))
+                .isInstanceOf(BusinessValidationException.class)
+                .hasMessageContaining("administrator");
+    }
+
+    @Test
     @DisplayName("register – błąd: email już zajęty")
     void register_emailAlreadyTaken_throwsBusinessValidationException() {
         User existing = User.builder().email("jan@example.com").phoneNumber("999999999").build();
