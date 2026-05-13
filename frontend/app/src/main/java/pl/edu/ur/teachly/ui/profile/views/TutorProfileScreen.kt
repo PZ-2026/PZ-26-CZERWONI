@@ -49,6 +49,7 @@ import pl.edu.ur.teachly.ui.components.profile.TutorStatsSection
 import pl.edu.ur.teachly.ui.components.tutor.TutorDetailBody
 import pl.edu.ur.teachly.ui.profile.viewmodels.StudentProfile
 import pl.edu.ur.teachly.ui.profile.viewmodels.TutorProfileViewModel
+import pl.edu.ur.teachly.ui.profile.viewmodels.ProfileViewModel
 import pl.edu.ur.teachly.ui.review.views.AddReviewDialog
 import pl.edu.ur.teachly.ui.theme.AvatarColors
 import java.time.LocalDate
@@ -63,6 +64,7 @@ fun TutorProfileScreen(
     onSeeAllReviews: () -> Unit = {},
     onAvailabilityClick: () -> Unit = {},
     viewModel: TutorProfileViewModel = koinViewModel(),
+    profileViewModel: ProfileViewModel = koinViewModel(),
 ) {
     val lifecycleOwner = androidx.compose.ui.platform.LocalLifecycleOwner.current
     androidx.compose.runtime.DisposableEffect(lifecycleOwner) {
@@ -195,6 +197,8 @@ fun TutorProfileScreen(
                     }
 
                     if (isMyProfile) {
+                        ReportDownloadSection(viewModel = profileViewModel)
+
                         PrimaryButton(
                             text = stringResource(R.string.profile_logout),
                             onClick = onLogout,

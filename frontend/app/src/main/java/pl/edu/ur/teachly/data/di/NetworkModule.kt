@@ -51,4 +51,5 @@ val networkModule = module {
     single { get<Retrofit>().create(UserApiService::class.java) }
     single { get<Retrofit>().create(HolidayApiService::class.java) }
     single { get<Retrofit>().create(AdminApiService::class.java) }
+    single { get<Retrofit>().create(pl.edu.ur.teachly.data.remote.ReportApiService::class.java) }
 }

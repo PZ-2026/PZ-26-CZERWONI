@@ -125,6 +125,8 @@ fun AdminProfileScreen(
                         value = stringResource(R.string.admin),
                     )
                 }
+                
+                ReportDownloadSection(viewModel = viewModel)
 
                 PrimaryButton(
                     text = stringResource(R.string.logout),
