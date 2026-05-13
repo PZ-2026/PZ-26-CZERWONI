@@ -304,7 +304,14 @@ fun AppNavHost(
             val args = backStackEntry.toRoute<AppRoute.AdminData>()
             AdminDataScreen(
                 initialTab = args.initialTab,
-                initialSubjectTab = args.initialSubjectTab
+                initialSubjectTab = args.initialSubjectTab,
+                onTutorSchedule = { tutorId ->
+                    navController.navigate(
+                        AppRoute.TutorAvailability(
+                            tutorId
+                        )
+                    )
+                },
             )
         }
 
@@ -317,7 +324,9 @@ fun AppNavHost(
         }
 
         composable<AppRoute.AdminTutors> {
-            AdminTutorsScreen()
+            AdminTutorsScreen(
+                onSchedule = { tutorId -> navController.navigate(AppRoute.TutorAvailability(tutorId)) },
+            )
         }
 
         composable<AppRoute.AdminReviews> {

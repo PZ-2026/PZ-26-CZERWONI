@@ -37,6 +37,8 @@ import pl.edu.ur.teachly.data.model.HolidayResponse
 import pl.edu.ur.teachly.ui.admin.viewmodels.AdminHolidaysViewModel
 import pl.edu.ur.teachly.ui.components.admin.AdminScreenHeader
 import pl.edu.ur.teachly.ui.components.other.EmptyListState
+import pl.edu.ur.teachly.ui.components.other.ExpandableFilterSection
+import pl.edu.ur.teachly.ui.components.other.FilterChips
 import pl.edu.ur.teachly.ui.components.other.MessageSnackbars
 import pl.edu.ur.teachly.ui.components.other.cards.HolidayCard
 import pl.edu.ur.teachly.ui.components.other.dialog.HolidayDialog
@@ -77,6 +79,21 @@ fun AdminHolidaysScreen(
                 }
             }
 
+            if (state.availableYears.isNotEmpty()) {
+                ExpandableFilterSection(
+                    activeFilterCount = if (state.selectedYear != null) 1 else 0,
+                ) {
+                    FilterChips(
+                        label = "Rok",
+                        items = listOf("Wszystkie") + state.availableYears.map { it.toString() },
+                        activeItem = state.selectedYear?.toString() ?: "Wszystkie",
+                        onSelect = { label ->
+                            viewModel.onYearFilterChange(if (label == "Wszystkie") null else label.toIntOrNull())
+                        },
+                    )
+                }
+            }
+
             when {
                 state.isLoading -> Box(
                     Modifier.fillMaxSize(),
@@ -85,12 +102,14 @@ fun AdminHolidaysScreen(
 
                 state.holidays.isEmpty() -> EmptyListState(message = "Brak zdefiniowanych świąt")
 
+                state.filteredHolidays.isEmpty() -> EmptyListState(message = "Brak świąt w ${state.selectedYear}")
+
                 else -> LazyColumn(
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(16.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    items(state.holidays) { holiday ->
+                    items(state.filteredHolidays) { holiday ->
                         HolidayCard(
                             holiday = holiday,
                             onEdit = { showEditDialog = holiday },

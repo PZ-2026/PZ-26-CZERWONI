@@ -26,6 +26,7 @@ data class TutorProfileState(
     val phoneNumber: String? = "",
     val stats: TutorStats = TutorStats(),
     val reviews: List<ReviewResponse> = emptyList(),
+    val currentStudentId: Int? = null,
     val canReview: Boolean = false,
     val isSubmittingReview: Boolean = false,
     val reviewError: String? = null,
@@ -127,6 +128,7 @@ class TutorProfileViewModel(
                         totalEarnings = totalEarnings,
                     ),
                     reviews = reviews,
+                    currentStudentId = currentUserId,
                     canReview = canReview,
                     isLoading = false,
                 )
@@ -147,6 +149,26 @@ class TutorProfileViewModel(
                         )
                     }
                     loadProfile(tutorId.toString())
+                },
+                onFailure = { e ->
+                    _state.update { it.copy(isSubmittingReview = false, reviewError = e.message) }
+                },
+            )
+        }
+    }
+
+    fun updateReview(reviewId: Int, tutorId: Int, rating: Double, comment: String?) {
+        viewModelScope.launch {
+            _state.update { it.copy(isSubmittingReview = true, reviewError = null) }
+            reviewRepository.updateReview(reviewId, ReviewRequest(tutorId, rating, comment)).fold(
+                onSuccess = { updated ->
+                    _state.update { s ->
+                        s.copy(
+                            reviews = s.reviews.map { if (it.id == reviewId) updated else it },
+                            isSubmittingReview = false,
+                            reviewSubmitSuccess = true,
+                        )
+                    }
                 },
                 onFailure = { e ->
                     _state.update { it.copy(isSubmittingReview = false, reviewError = e.message) }
