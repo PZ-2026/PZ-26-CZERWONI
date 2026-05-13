@@ -98,4 +98,7 @@ public interface LessonRepository extends JpaRepository<Lesson, Integer> {
 
     @Query("SELECT COUNT(l) FROM Lesson l WHERE l.lessonStatus = :lessonStatus")
     int countByLessonStatus(@Param("lessonStatus") LessonStatus lessonStatus);
+
+    @Query("SELECT l.lessonStatus, COUNT(l) FROM Lesson l GROUP BY l.lessonStatus")
+    List<Object[]> countGroupedByStatus();
 }

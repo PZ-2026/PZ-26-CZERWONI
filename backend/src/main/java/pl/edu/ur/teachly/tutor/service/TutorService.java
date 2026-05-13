@@ -39,12 +39,9 @@ public class TutorService {
 
     @Transactional(readOnly = true)
     public List<TutorSubjectResponse> getTutorSubjects(Integer tutorId) {
-        tutorRepository
-                .findById(tutorId)
-                .orElseThrow(
-                        () ->
-                                new ResourceNotFoundException(
-                                        "Nie znaleziono szukanego korepetytora"));
+        if (!tutorRepository.existsById(tutorId)) {
+            throw new ResourceNotFoundException("Nie znaleziono szukanego korepetytora");
+        }
         return tutorSubjectRepository.findByTutor_UserId(tutorId).stream()
                 .map(tutorSubjectMapper::toResponse)
                 .toList();

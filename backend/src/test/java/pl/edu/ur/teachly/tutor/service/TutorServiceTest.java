@@ -102,7 +102,7 @@ class TutorServiceTest {
                 new TutorSubjectResponse(
                         1, 1, "Matematyka", "Kategoria", true, false, false, false, false);
 
-        when(tutorRepository.findById(1)).thenReturn(Optional.of(t1));
+        when(tutorRepository.existsById(1)).thenReturn(true);
         when(tutorSubjectRepository.findByTutor_UserId(1)).thenReturn(List.of(ts));
         when(tutorSubjectMapper.toResponse(ts)).thenReturn(r1);
 
@@ -114,7 +114,7 @@ class TutorServiceTest {
     @Test
     @DisplayName("getTutorSubjects - błąd: tutor nie istnieje")
     void getTutorSubjects_tutorNotFound_throwsException() {
-        when(tutorRepository.findById(99)).thenReturn(Optional.empty());
+        when(tutorRepository.existsById(99)).thenReturn(false);
 
         assertThatThrownBy(() -> tutorService.getTutorSubjects(99))
                 .isInstanceOf(ResourceNotFoundException.class);

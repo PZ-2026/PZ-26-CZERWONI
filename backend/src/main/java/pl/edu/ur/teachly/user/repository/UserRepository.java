@@ -1,5 +1,6 @@
 package pl.edu.ur.teachly.user.repository;
 
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -29,4 +30,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     @Query("SELECT COUNT(u) FROM User u WHERE u.userRole = :role")
     int countByUserRole(@Param("role") UserRole role);
+
+    @Query("SELECT u.userRole, COUNT(u) FROM User u GROUP BY u.userRole")
+    List<Object[]> countGroupedByRole();
 }
