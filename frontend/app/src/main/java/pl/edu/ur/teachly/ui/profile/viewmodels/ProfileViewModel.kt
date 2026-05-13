@@ -65,8 +65,6 @@ class ProfileViewModel(
                 _profile.update { it.copy(isLoading = false) }
                 return@launch
             }
-            tokenManager.roleFlow.first()
-
             userRepository.getUserById(userId).fold(
                 onSuccess = { user ->
                     _profile.update {
@@ -99,7 +97,7 @@ class ProfileViewModel(
         viewModelScope.launch {
             val p = _profile.first { !it.isLoading }
             _editState.value = ProfileEditState(
-                firstName = p.firstName, 
+                firstName = p.firstName,
                 lastName = p.lastName,
                 email = p.email,
                 phoneNumber = p.phoneNumber ?: ""
@@ -114,7 +112,7 @@ class ProfileViewModel(
     fun onLastNameChange(value: String) {
         if (value.length <= 50) _editState.update { it.copy(lastName = value) }
     }
-    
+
     fun onEmailChange(value: String) {
         _editState.update { it.copy(email = value) }
     }
@@ -147,7 +145,8 @@ class ProfileViewModel(
                 avatarUrl = null,
             )
 
-            val requiresRelogin = state.email.trim() != profile.value.email || !state.password.isNullOrBlank()
+            val requiresRelogin =
+                state.email.trim() != profile.value.email || !state.password.isNullOrBlank()
 
             userRepository.updateUser(userId, request).fold(
                 onSuccess = { user ->
@@ -163,7 +162,13 @@ class ProfileViewModel(
                             )
                         }
                     }
-                    _editState.update { it.copy(isLoading = false, isSaved = true, requiresRelogin = requiresRelogin) }
+                    _editState.update {
+                        it.copy(
+                            isLoading = false,
+                            isSaved = true,
+                            requiresRelogin = requiresRelogin
+                        )
+                    }
                 },
                 onFailure = { e ->
                     _editState.update { it.copy(isLoading = false, error = e.message) }

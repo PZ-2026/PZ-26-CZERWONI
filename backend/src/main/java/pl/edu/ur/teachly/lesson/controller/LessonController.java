@@ -1,7 +1,6 @@
 package pl.edu.ur.teachly.lesson.controller;
 
 import jakarta.validation.Valid;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -11,6 +10,8 @@ import pl.edu.ur.teachly.lesson.dto.request.*;
 import pl.edu.ur.teachly.lesson.dto.response.LessonResponse;
 import pl.edu.ur.teachly.lesson.service.LessonService;
 import pl.edu.ur.teachly.user.entity.User;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/lessons")
@@ -26,7 +27,7 @@ public class LessonController {
 
     @PostMapping("/student/{studentId}")
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("authentication.principal.id == #studentId")
+    @PreAuthorize("hasRole('ADMIN') or (hasRole('STUDENT') and authentication.principal.id == #studentId)")
     public LessonResponse createLesson(
             @PathVariable Integer studentId, @Valid @RequestBody LessonRequest request) {
         return lessonService.createLesson(studentId, request);
