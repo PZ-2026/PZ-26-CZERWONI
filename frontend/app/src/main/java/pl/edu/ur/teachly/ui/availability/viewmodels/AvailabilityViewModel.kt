@@ -14,6 +14,7 @@ import pl.edu.ur.teachly.data.model.TutorAvailabilityRecurringResponse
 import pl.edu.ur.teachly.data.repository.TutorRepository
 
 data class AvailabilityUiState(
+    val tutorName: String? = null,
     val recurring: List<TutorAvailabilityRecurringResponse> = emptyList(),
     val overrides: List<TutorAvailabilityOverrideResponse> = emptyList(),
     val isLoading: Boolean = true,
@@ -32,6 +33,7 @@ class AvailabilityViewModel(
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, error = null) }
 
+            val tutor = tutorRepository.getTutorById(tutorId).getOrNull()
             val recurring = tutorRepository.getRecurringAvailability(tutorId).getOrElse { e ->
                 _state.update { it.copy(isLoading = false, error = e.message) }
                 return@launch
@@ -40,6 +42,7 @@ class AvailabilityViewModel(
 
             _state.update {
                 it.copy(
+                    tutorName = tutor?.let { t -> "${t.firstName} ${t.lastName}" },
                     recurring = recurring,
                     overrides = overrides,
                     isLoading = false

@@ -13,6 +13,9 @@ import pl.edu.ur.teachly.data.repository.HolidayRepository
 
 data class AdminHolidaysState(
     val holidays: List<HolidayResponse> = emptyList(),
+    val filteredHolidays: List<HolidayResponse> = emptyList(),
+    val availableYears: List<Int> = emptyList(),
+    val selectedYear: Int? = null,
     val isLoading: Boolean = true,
     val error: String? = null,
     val successMessage: String? = null
@@ -33,22 +36,52 @@ class AdminHolidaysViewModel(
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, error = null) }
             holidayRepository.getAllHolidays().fold(
-                onSuccess = { holidays -> _state.update { it.copy(holidays = holidays.sortedBy { h -> h.holidayDate }, isLoading = false) } },
+                onSuccess = { holidays ->
+                    val sorted = holidays.sortedBy { it.holidayDate }
+                    val years =
+                        sorted.map { it.holidayDate.take(4).toIntOrNull() ?: 0 }.distinct().sorted()
+                    _state.update {
+                        it.copy(
+                            holidays = sorted,
+                            availableYears = years,
+                            isLoading = false
+                        )
+                    }
+                    applyFilters()
+                },
                 onFailure = { e -> _state.update { it.copy(isLoading = false, error = e.message) } }
             )
         }
+    }
+
+    fun onYearFilterChange(year: Int?) {
+        _state.update { it.copy(selectedYear = year) }
+        applyFilters()
+    }
+
+    private fun applyFilters() {
+        val year = _state.value.selectedYear
+        val filtered = _state.value.holidays.filter { holiday ->
+            year == null || holiday.holidayDate.take(4).toIntOrNull() == year
+        }
+        _state.update { it.copy(filteredHolidays = filtered) }
     }
 
     fun addHoliday(date: String, description: String?) {
         viewModelScope.launch {
             holidayRepository.addHoliday(HolidayRequest(date, description)).fold(
                 onSuccess = { holiday ->
-                    _state.update { s ->
-                        s.copy(
-                            holidays = (s.holidays + holiday).sortedBy { it.holidayDate },
+                    val updated = (_state.value.holidays + holiday).sortedBy { it.holidayDate }
+                    val years = updated.map { it.holidayDate.take(4).toIntOrNull() ?: 0 }.distinct()
+                        .sorted()
+                    _state.update {
+                        it.copy(
+                            holidays = updated,
+                            availableYears = years,
                             successMessage = "Święto zostało dodane"
                         )
                     }
+                    applyFilters()
                 },
                 onFailure = { e -> _state.update { it.copy(error = e.message) } }
             )
@@ -59,12 +92,15 @@ class AdminHolidaysViewModel(
         viewModelScope.launch {
             holidayRepository.updateHoliday(id, HolidayRequest(date, description)).fold(
                 onSuccess = { updated ->
-                    _state.update { s ->
-                        s.copy(
-                            holidays = s.holidays.map { if (it.id == id) updated else it }.sortedBy { it.holidayDate },
+                    val holidays = _state.value.holidays.map { if (it.id == id) updated else it }
+                        .sortedBy { it.holidayDate }
+                    _state.update {
+                        it.copy(
+                            holidays = holidays,
                             successMessage = "Święto zostało zaktualizowane"
                         )
                     }
+                    applyFilters()
                 },
                 onFailure = { e -> _state.update { it.copy(error = e.message) } }
             )
@@ -75,12 +111,18 @@ class AdminHolidaysViewModel(
         viewModelScope.launch {
             holidayRepository.deleteHoliday(id).fold(
                 onSuccess = {
-                    _state.update { s ->
-                        s.copy(
-                            holidays = s.holidays.filter { it.id != id },
+                    val holidays = _state.value.holidays.filter { it.id != id }
+                    val years =
+                        holidays.map { it.holidayDate.take(4).toIntOrNull() ?: 0 }.distinct()
+                            .sorted()
+                    _state.update {
+                        it.copy(
+                            holidays = holidays,
+                            availableYears = years,
                             successMessage = "Święto zostało usunięte"
                         )
                     }
+                    applyFilters()
                 },
                 onFailure = { e -> _state.update { it.copy(error = e.message) } }
             )

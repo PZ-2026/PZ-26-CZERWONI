@@ -1,16 +1,5 @@
 package pl.edu.ur.teachly.lesson.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
-
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
-import java.util.Optional;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -44,18 +33,37 @@ import pl.edu.ur.teachly.tutor.service.TimetableService;
 import pl.edu.ur.teachly.user.entity.User;
 import pl.edu.ur.teachly.user.repository.UserRepository;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
+
 @ExtendWith(MockitoExtension.class)
 @DisplayName("LessonService – testy jednostkowe")
 class LessonServiceTest {
 
-    @Mock private LessonRepository lessonRepository;
-    @Mock private LessonMapper lessonMapper;
-    @Mock private UserRepository userRepository;
-    @Mock private TutorRepository tutorRepository;
-    @Mock private SubjectRepository subjectRepository;
-    @Mock private TimetableService timetableService;
+    @Mock
+    private LessonRepository lessonRepository;
+    @Mock
+    private LessonMapper lessonMapper;
+    @Mock
+    private UserRepository userRepository;
+    @Mock
+    private TutorRepository tutorRepository;
+    @Mock
+    private SubjectRepository subjectRepository;
+    @Mock
+    private TimetableService timetableService;
 
-    @InjectMocks private LessonService lessonService;
+    @InjectMocks
+    private LessonService lessonService;
 
     @AfterEach
     void tearDown() {
@@ -92,9 +100,7 @@ class LessonServiceTest {
                 LocalTime.of(10, 0),
                 LocalTime.of(11, 0),
                 LessonFormat.ONLINE,
-                LessonStatus.PENDING,
-                null,
-                BigDecimal.valueOf(50));
+                null);
     }
 
     private TimetableDayResponse availableDay(LocalDate date, LocalTime from, LocalTime to) {
@@ -207,9 +213,7 @@ class LessonServiceTest {
                             LocalTime.of(10, 0),
                             LocalTime.of(10, 45),
                             LessonFormat.ONLINE,
-                            LessonStatus.PENDING,
-                            null,
-                            BigDecimal.valueOf(50));
+                            null);
 
             when(userRepository.findById(1)).thenReturn(Optional.of(student(1)));
             when(tutorRepository.findById(2)).thenReturn(Optional.of(tutor(2, tutorUser(2))));
@@ -232,9 +236,7 @@ class LessonServiceTest {
                             LocalTime.of(10, 0),
                             LocalTime.of(10, 0),
                             LessonFormat.ONLINE,
-                            LessonStatus.PENDING,
-                            null,
-                            BigDecimal.valueOf(50));
+                            null);
 
             when(userRepository.findById(1)).thenReturn(Optional.of(student(1)));
             when(tutorRepository.findById(2)).thenReturn(Optional.of(tutor(2, tutorUser(2))));
@@ -354,6 +356,11 @@ class LessonServiceTest {
             lesson.setTimeFrom(LocalTime.of(10, 0));
             lesson.setTimeTo(LocalTime.of(11, 0));
             lesson.setLessonStatus(status);
+            User tutorUsr = User.builder().id(10).userRole(UserRole.TUTOR).isActive(true).build();
+            User studentUsr =
+                    User.builder().id(20).userRole(UserRole.STUDENT).isActive(true).build();
+            lesson.setTutor(tutor(10, tutorUsr));
+            lesson.setStudent(studentUsr);
             return lesson;
         }
 
@@ -512,6 +519,7 @@ class LessonServiceTest {
         when(lessonRepository.findById(1)).thenReturn(Optional.of(lesson));
         when(lessonMapper.toResponse(lesson)).thenReturn(response);
 
+        mockSecurityContext(User.builder().id(99).userRole(UserRole.ADMIN).isActive(true).build());
         LessonResponse result = lessonService.getLesson(1);
 
         assertThat(result).isEqualTo(response);
@@ -533,7 +541,9 @@ class LessonServiceTest {
     @Test
     @DisplayName("updateStudentNotes – sukces")
     void updateStudentNotes_success() {
+        User student = User.builder().id(1).build();
         Lesson lesson = new Lesson();
+        lesson.setStudent(student);
         pl.edu.ur.teachly.lesson.dto.request.StudentNotesRequest req =
                 new pl.edu.ur.teachly.lesson.dto.request.StudentNotesRequest("Notatki ucznia");
         LessonResponse response = mock(LessonResponse.class);
@@ -542,7 +552,7 @@ class LessonServiceTest {
         when(lessonRepository.save(lesson)).thenReturn(lesson);
         when(lessonMapper.toResponse(lesson)).thenReturn(response);
 
-        lessonService.updateStudentNotes(1, req);
+        lessonService.updateStudentNotes(1, req, 1);
 
         assertThat(lesson.getStudentNotes()).isEqualTo("Notatki ucznia");
         verify(lessonRepository).save(lesson);
@@ -551,7 +561,9 @@ class LessonServiceTest {
     @Test
     @DisplayName("updateTutorNotes – sukces")
     void updateTutorNotes_success() {
+        User tutorUsr = User.builder().id(1).userRole(UserRole.TUTOR).isActive(true).build();
         Lesson lesson = new Lesson();
+        lesson.setTutor(tutor(1, tutorUsr));
         pl.edu.ur.teachly.lesson.dto.request.TutorNotesRequest req =
                 new pl.edu.ur.teachly.lesson.dto.request.TutorNotesRequest("Notatki tutora");
         LessonResponse response = mock(LessonResponse.class);
@@ -560,7 +572,7 @@ class LessonServiceTest {
         when(lessonRepository.save(lesson)).thenReturn(lesson);
         when(lessonMapper.toResponse(lesson)).thenReturn(response);
 
-        lessonService.updateTutorNotes(1, req);
+        lessonService.updateTutorNotes(1, req, 1);
 
         assertThat(lesson.getTutorNotes()).isEqualTo("Notatki tutora");
         verify(lessonRepository).save(lesson);

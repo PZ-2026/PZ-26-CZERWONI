@@ -175,9 +175,9 @@
 
     <!-- Reviews -->
     <string name="reviews_section_title">Opinie</string>
-    <string name="review_add_btn">Wystaw recenzję</string>
+    <string name="review_add_btn">Wystaw opinię</string>
     <string name="reviews_see_all_btn">Zobacz więcej</string>
-    <string name="review_dialog_title">Wystaw recenzję</string>
+    <string name="review_dialog_title">Wystaw opinię</string>
     <string name="review_dialog_rating_label">Twoja ocena</string>
     <string name="review_dialog_comment_hint">Komentarz (opcjonalnie)</string>
     <string name="review_dialog_submit">Wyślij</string>
@@ -185,7 +185,7 @@
     <string name="all_reviews_title">Wszystkie opinie</string>
     <string name="my_reviews_title">Moje opinie</string>
     <string name="my_reviews_empty">Nie wystawiłeś jeszcze żadnej opinii</string>
-    <string name="review_edit_dialog_title">Edytuj recenzję</string>
+    <string name="review_edit_dialog_title">Edytuj opinię</string>
     <string name="review_about_tutor">Korepetytor: %1$s %2$s</string>
 
     <string name="review_submitted_success">Opinia została wysłana!</string>

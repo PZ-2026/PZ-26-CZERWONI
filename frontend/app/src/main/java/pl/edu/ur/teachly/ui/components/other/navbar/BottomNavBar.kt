@@ -14,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import pl.edu.ur.teachly.R
@@ -58,7 +59,13 @@ fun BottomNavBar(
                     contentDescription = stringResource(R.string.nav_home)
                 )
             },
-            label = { Text(stringResource(R.string.nav_home)) },
+            label = {
+                Text(
+                    stringResource(R.string.nav_home),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            },
             colors = navItemColors()
         )
         if (role == "STUDENT") {
@@ -76,7 +83,13 @@ fun BottomNavBar(
                         contentDescription = stringResource(R.string.nav_search),
                     )
                 },
-                label = { Text(stringResource(R.string.nav_search)) },
+                label = {
+                    Text(
+                        stringResource(R.string.nav_search),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                },
                 colors = navItemColors()
             )
         }
@@ -94,7 +107,13 @@ fun BottomNavBar(
                     contentDescription = stringResource(R.string.nav_schedule)
                 )
             },
-            label = { Text(stringResource(R.string.nav_schedule)) },
+            label = {
+                Text(
+                    stringResource(R.string.nav_schedule),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            },
             colors = navItemColors()
         )
         NavigationBarItem(
@@ -111,7 +130,13 @@ fun BottomNavBar(
                     contentDescription = stringResource(R.string.nav_profile)
                 )
             },
-            label = { Text(stringResource(R.string.nav_profile)) },
+            label = {
+                Text(
+                    stringResource(R.string.nav_profile),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            },
             colors = navItemColors()
         )
 

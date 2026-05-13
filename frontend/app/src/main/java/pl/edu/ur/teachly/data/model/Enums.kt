@@ -1,25 +1,25 @@
 package pl.edu.ur.teachly.data.model
 
-enum class UserRole {
-    STUDENT,
-    TUTOR,
-    ADMIN
+enum class UserRole(val label: String) {
+    STUDENT("Uczeń"),
+    TUTOR("Korepetytor"),
+    ADMIN("Administrator"),
 }
 
-enum class LessonStatus {
-    PENDING,
-    CONFIRMED,
-    COMPLETED,
-    CANCELLED
+enum class LessonStatus(val label: String) {
+    PENDING("Oczekująca"),
+    CONFIRMED("Potwierdzona"),
+    COMPLETED("Zakończona"),
+    CANCELLED("Anulowana"),
 }
 
-enum class LessonFormat {
-    ONLINE,
-    IN_PERSON
+enum class LessonFormat(val label: String) {
+    ONLINE("Online"),
+    IN_PERSON("Stacjonarnie"),
 }
 
-enum class PaymentStatus {
-    PENDING,
-    PAID,
-    CANCELLED
+enum class PaymentStatus(val label: String) {
+    PENDING("Oczekująca"),
+    PAID("Opłacona"),
+    CANCELLED("Anulowana"),
 }

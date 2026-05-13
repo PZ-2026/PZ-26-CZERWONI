@@ -87,7 +87,7 @@ fun AdminUserEditDialog(
                     entries = UserRole.entries,
                     selected = role,
                     onSelect = { role = it },
-                    label = { it.name },
+                    label = { it.label },
                 )
             }
         },

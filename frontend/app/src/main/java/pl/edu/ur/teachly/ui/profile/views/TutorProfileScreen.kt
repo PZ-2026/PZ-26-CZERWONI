@@ -37,6 +37,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import org.koin.androidx.compose.koinViewModel
 import pl.edu.ur.teachly.R
+import pl.edu.ur.teachly.data.model.ReviewResponse
 import pl.edu.ur.teachly.data.model.UserRole
 import pl.edu.ur.teachly.ui.components.other.PrimaryButton
 import pl.edu.ur.teachly.ui.components.other.formatDate
@@ -80,10 +81,12 @@ fun TutorProfileScreen(
     }
     val state by viewModel.state.collectAsState()
     var showReviewDialog by rememberSaveable { mutableStateOf(false) }
+    var showEditReviewDialog by remember { mutableStateOf<ReviewResponse?>(null) }
 
     LaunchedEffect(state.reviewSubmitSuccess) {
         if (state.reviewSubmitSuccess) {
             showReviewDialog = false
+            showEditReviewDialog = null
             viewModel.clearReviewSuccess()
         }
     }
@@ -99,6 +102,22 @@ fun TutorProfileScreen(
             onSubmit = { rating, comment ->
                 val id = tutorId.toIntOrNull() ?: return@AddReviewDialog
                 viewModel.submitReview(id, rating, comment)
+            },
+        )
+    }
+
+    showEditReviewDialog?.let { review ->
+        AddReviewDialog(
+            isLoading = state.isSubmittingReview,
+            error = state.reviewError,
+            initialRating = review.rating,
+            initialComment = review.comment ?: "",
+            onDismiss = {
+                showEditReviewDialog = null
+                viewModel.clearReviewError()
+            },
+            onSubmit = { rating, comment ->
+                viewModel.updateReview(review.id, review.tutorId, rating, comment)
             },
         )
     }
@@ -144,8 +163,10 @@ fun TutorProfileScreen(
                     TutorDetailBody(
                         tutor = t,
                         reviews = state.reviews,
+                        currentStudentId = state.currentStudentId,
                         canReview = state.canReview && !isMyProfile,
                         onAddReview = { showReviewDialog = true },
+                        onEditReview = { review -> showEditReviewDialog = review },
                         onSeeAllReviews = onSeeAllReviews,
                     )
 

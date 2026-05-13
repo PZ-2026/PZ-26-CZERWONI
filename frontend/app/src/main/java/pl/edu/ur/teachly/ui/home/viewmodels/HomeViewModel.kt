@@ -86,7 +86,7 @@ class HomeViewModel(
             val lessonsResult = when (role) {
                 UserRole.STUDENT -> lessonRepository.getStudentLessons(userId)
                 UserRole.TUTOR -> lessonRepository.getTutorLessons(userId)
-                UserRole.ADMIN -> lessonRepository.getStudentLessons(userId) // TODO: Handle admin
+                UserRole.ADMIN -> Result.success(emptyList())
             }
 
             lessonsResult.fold(
@@ -114,9 +114,11 @@ class HomeViewModel(
 
                         // Load pending reviews only for students
                         if (role == UserRole.STUDENT) {
-                            val completedLessons = lessons.filter { it.lessonStatus == LessonStatus.COMPLETED }
+                            val completedLessons =
+                                lessons.filter { it.lessonStatus == LessonStatus.COMPLETED }
                             if (completedLessons.isNotEmpty()) {
-                                val permanentlyDismissed = reviewPreferencesManager.dismissedTutorIdsFlow.first()
+                                val permanentlyDismissed =
+                                    reviewPreferencesManager.dismissedTutorIdsFlow.first()
                                 reviewRepository.getStudentReviews(userId).fold(
                                     onSuccess = { reviews ->
                                         val reviewedTutorIds = reviews.map { it.tutorId }.toSet()
@@ -160,7 +162,7 @@ class HomeViewModel(
     fun toggleConfirmed() = _state.update { it.copy(confirmedExpanded = !it.confirmedExpanded) }
     fun togglePending() = _state.update { it.copy(pendingExpanded = !it.pendingExpanded) }
 
-    // ── Pending reviews ──────────────────────────────────────────────────────
+    // Pending reviews
 
     fun selectPendingReview(info: PendingReviewInfo) {
         _state.update { it.copy(selectedPendingReview = info, pendingReviewError = null) }
@@ -194,23 +196,30 @@ class HomeViewModel(
         viewModelScope.launch {
             val studentId = tokenManager.userIdFlow.first() ?: return@launch
             _state.update { it.copy(isSubmittingPendingReview = true, pendingReviewError = null) }
-            reviewRepository.addReview(studentId, ReviewRequest(review.tutorId, rating, comment)).fold(
-                onSuccess = {
-                    val remaining = _state.value.pendingReviews.filter { it.tutorId != review.tutorId }
-                    _state.update {
-                        it.copy(
-                            isSubmittingPendingReview = false,
-                            selectedPendingReview = null,
-                            pendingReviews = remaining,
-                            pendingReviewError = null,
-                            pendingReviewSubmitted = true,
-                        )
-                    }
-                },
-                onFailure = { e ->
-                    _state.update { it.copy(isSubmittingPendingReview = false, pendingReviewError = e.message) }
-                },
-            )
+            reviewRepository.addReview(studentId, ReviewRequest(review.tutorId, rating, comment))
+                .fold(
+                    onSuccess = {
+                        val remaining =
+                            _state.value.pendingReviews.filter { it.tutorId != review.tutorId }
+                        _state.update {
+                            it.copy(
+                                isSubmittingPendingReview = false,
+                                selectedPendingReview = null,
+                                pendingReviews = remaining,
+                                pendingReviewError = null,
+                                pendingReviewSubmitted = true,
+                            )
+                        }
+                    },
+                    onFailure = { e ->
+                        _state.update {
+                            it.copy(
+                                isSubmittingPendingReview = false,
+                                pendingReviewError = e.message
+                            )
+                        }
+                    },
+                )
         }
     }
 

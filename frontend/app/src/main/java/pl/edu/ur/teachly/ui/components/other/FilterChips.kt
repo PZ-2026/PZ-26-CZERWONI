@@ -2,6 +2,7 @@ package pl.edu.ur.teachly.ui.components.other
 
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -22,36 +23,47 @@ fun FilterChips(
     activeItem: String,
     onSelect: (String) -> Unit,
     modifier: Modifier = Modifier,
+    label: String? = null,
 ) {
     Surface(color = colorScheme.surface, modifier = modifier) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .horizontalScroll(rememberScrollState())
-                .padding(horizontal = 24.dp, vertical = 12.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            items.forEach { item ->
-                val isActive = activeItem == item
-                FilterChip(
-                    selected = isActive,
-                    onClick = { onSelect(item) },
-                    label = { Text(item, style = typography.labelMedium) },
-                    colors = FilterChipDefaults.filterChipColors(
-                        selectedContainerColor = colorScheme.primary,
-                        selectedLabelColor = colorScheme.onPrimary,
-                        containerColor = colorScheme.surfaceVariant,
-                        labelColor = colorScheme.onSurfaceVariant,
-                    ),
-                    border = FilterChipDefaults.filterChipBorder(
-                        enabled = true,
-                        selected = isActive,
-                        selectedBorderColor = colorScheme.primary,
-                        borderColor = colorScheme.outline,
-                        selectedBorderWidth = 1.5.dp,
-                        borderWidth = 1.5.dp,
-                    ),
+        Column {
+            if (label != null) {
+                Text(
+                    text = label,
+                    style = typography.labelSmall,
+                    color = colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(start = 24.dp, top = 10.dp),
                 )
+            }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .horizontalScroll(rememberScrollState())
+                    .padding(horizontal = 24.dp, vertical = 8.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                items.forEach { item ->
+                    val isActive = activeItem == item
+                    FilterChip(
+                        selected = isActive,
+                        onClick = { onSelect(item) },
+                        label = { Text(item, style = typography.labelMedium) },
+                        colors = FilterChipDefaults.filterChipColors(
+                            selectedContainerColor = colorScheme.primary,
+                            selectedLabelColor = colorScheme.onPrimary,
+                            containerColor = colorScheme.surfaceVariant,
+                            labelColor = colorScheme.onSurfaceVariant,
+                        ),
+                        border = FilterChipDefaults.filterChipBorder(
+                            enabled = true,
+                            selected = isActive,
+                            selectedBorderColor = colorScheme.primary,
+                            borderColor = colorScheme.outline,
+                            selectedBorderWidth = 1.5.dp,
+                            borderWidth = 1.5.dp,
+                        ),
+                    )
+                }
             }
         }
     }

@@ -48,10 +48,14 @@ fun ActionsSection(
 
         if (userRole == UserRole.STUDENT || userRole == UserRole.ADMIN) {
             // Go to tutor profile (always)
-            OutlinedButton(
+            Button(
                 onClick = onGoToTutor,
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(14.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = colorScheme.onSecondaryFixedVariant,
+                    contentColor = colorScheme.onSecondary,
+                ),
             ) {
                 Text("Profil korepetytora")
             }
@@ -69,7 +73,7 @@ fun ActionsSection(
 
             // Cancel (if pending or confirmed)
             if (status == LessonStatus.PENDING || status == LessonStatus.CONFIRMED) {
-                OutlinedButton(
+                Button(
                     onClick = {
                         pendingConfirm = ConfirmConfig(
                             title = "Anuluj lekcję",
@@ -82,8 +86,10 @@ fun ActionsSection(
                     enabled = !isSaving,
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(14.dp),
-                    colors = ButtonDefaults.outlinedButtonColors(contentColor = colorScheme.error),
-                    border = BorderStroke(1.dp, colorScheme.error.copy(alpha = 0.5f)),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = colorScheme.error,
+                        contentColor = colorScheme.onError,
+                    ),
                 ) {
                     Text("Anuluj lekcję")
                 }
@@ -133,7 +139,7 @@ fun ActionsSection(
 
             // Cancel (if confirmed)
             if (status == LessonStatus.CONFIRMED) {
-                OutlinedButton(
+                Button(
                     onClick = {
                         pendingConfirm = ConfirmConfig(
                             title = "Anuluj lekcję",
@@ -146,8 +152,10 @@ fun ActionsSection(
                     enabled = !isSaving,
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(14.dp),
-                    colors = ButtonDefaults.outlinedButtonColors(contentColor = colorScheme.error),
-                    border = BorderStroke(1.dp, colorScheme.error.copy(alpha = 0.5f)),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = colorScheme.error,
+                        contentColor = colorScheme.onError,
+                    ),
                 ) {
                     Text("Anuluj lekcję")
                 }

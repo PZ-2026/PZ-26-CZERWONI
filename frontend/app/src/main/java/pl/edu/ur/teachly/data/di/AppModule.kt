@@ -62,7 +62,7 @@ val appModule = module {
     viewModel { LessonDetailViewModel(get(), get()) }
     viewModel { ProfileViewModel(get(), get(), get(), get()) }
     viewModel { TutorProfileViewModel(get(), get(), get(), get()) }
-    viewModel { AllReviewsViewModel(get()) }
+    viewModel { AllReviewsViewModel(get(), get()) }
     viewModel { MyReviewsViewModel(get(), get()) }
 
     // Admin ViewModels

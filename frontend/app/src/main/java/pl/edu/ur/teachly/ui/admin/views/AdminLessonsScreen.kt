@@ -5,9 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
@@ -23,12 +21,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.koin.androidx.compose.koinViewModel
+import pl.edu.ur.teachly.data.model.LessonFormat
 import pl.edu.ur.teachly.data.model.LessonResponse
 import pl.edu.ur.teachly.data.model.LessonStatus
+import pl.edu.ur.teachly.data.model.PaymentStatus
 import pl.edu.ur.teachly.ui.admin.viewmodels.AdminLessonsViewModel
 import pl.edu.ur.teachly.ui.components.admin.AdminScreenHeader
 import pl.edu.ur.teachly.ui.components.admin.AdminSearchBar
 import pl.edu.ur.teachly.ui.components.other.EmptyListState
+import pl.edu.ur.teachly.ui.components.other.ExpandableFilterSection
 import pl.edu.ur.teachly.ui.components.other.FilterChips
 import pl.edu.ur.teachly.ui.components.other.MessageSnackbars
 import pl.edu.ur.teachly.ui.components.other.cards.LessonAdminCard
@@ -68,17 +69,65 @@ fun AdminLessonsScreen(
                     onValueChange = { viewModel.onSearchChange(it) },
                     placeholder = "Szukaj po uczestniku, przedmiocie...",
                 )
-                Spacer(Modifier.height(8.dp))
+            }
+            ExpandableFilterSection(
+                activeFilterCount = listOf(
+                    state.selectedStatus,
+                    state.selectedPaymentStatus,
+                    state.selectedFormat,
+                    state.showOnlyUpcoming,
+                ).count { it != null },
+            ) {
                 FilterChips(
-                    items = listOf("Wszystkie") + LessonStatus.entries.map { it.name },
-                    activeItem = state.selectedStatus?.name ?: "Wszystkie",
+                    label = "Status lekcji",
+                    items = listOf("Wszystkie") + LessonStatus.entries.map { it.label },
+                    activeItem = state.selectedStatus?.label ?: "Wszystkie",
                     onSelect = { label ->
                         viewModel.onStatusFilterChange(
-                            if (label == "Wszystkie") null else LessonStatus.valueOf(label)
+                            if (label == "Wszystkie") null else LessonStatus.entries.first { it.label == label }
+                        )
+                    },
+                )
+                FilterChips(
+                    label = "Płatność",
+                    items = listOf("Wszystkie") + PaymentStatus.entries.map { it.label },
+                    activeItem = state.selectedPaymentStatus?.label ?: "Wszystkie",
+                    onSelect = { label ->
+                        viewModel.onPaymentStatusFilterChange(
+                            if (label == "Wszystkie") null else PaymentStatus.entries.first { it.label == label }
+                        )
+                    },
+                )
+                FilterChips(
+                    label = "Format",
+                    items = listOf("Wszystkie") + LessonFormat.entries.map { it.label },
+                    activeItem = state.selectedFormat?.label ?: "Wszystkie",
+                    onSelect = { label ->
+                        viewModel.onFormatFilterChange(
+                            if (label == "Wszystkie") null else LessonFormat.entries.first { it.label == label }
+                        )
+                    },
+                )
+                FilterChips(
+                    label = "Termin",
+                    items = listOf("Wszystkie", "Przyszłe", "Przeszłe"),
+                    activeItem = when (state.showOnlyUpcoming) {
+                        true -> "Przyszłe"
+                        false -> "Przeszłe"
+                        else -> "Wszystkie"
+                    },
+                    onSelect = { label ->
+                        viewModel.onUpcomingFilterChange(
+                            when (label) {
+                                "Przyszłe" -> true
+                                "Przeszłe" -> false
+                                else -> null
+                            }
                         )
                     },
                 )
             }
+
             when {
                 state.isLoading -> Box(
                     Modifier.fillMaxSize(),

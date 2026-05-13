@@ -3,7 +3,8 @@ package pl.edu.ur.teachly.review.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -105,7 +106,6 @@ class ReviewServiceTest {
     void addReview_noCompletedLesson_throwsBusinessValidationException() {
         when(userRepository.findById(1)).thenReturn(Optional.of(student));
         when(tutorRepository.findById(2)).thenReturn(Optional.of(tutor));
-        when(reviewMapper.toEntity(reviewRequest)).thenReturn(new Review());
         when(lessonRepository.existsByStudent_IdAndTutor_UserIdAndLessonStatus(
                         1, 2, LessonStatus.COMPLETED))
                 .thenReturn(false);
@@ -146,7 +146,7 @@ class ReviewServiceTest {
         when(reviewMapper.toResponse(review))
                 .thenReturn(reviewResponse); // ignorujemy zmienione wartosci dla uproszczenia
 
-        reviewService.updateReview(1, updateRequest);
+        reviewService.updateReview(1, updateRequest, 1);
 
         assertThat(review.getRating()).isEqualTo(BigDecimal.valueOf(5.0));
         assertThat(review.getComment()).isEqualTo("Zmieniony komentarz");
@@ -158,7 +158,7 @@ class ReviewServiceTest {
     void updateReview_notFound_throwsResourceNotFoundException() {
         when(reviewRepository.findById(99)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> reviewService.updateReview(99, reviewRequest))
+        assertThatThrownBy(() -> reviewService.updateReview(99, reviewRequest, 1))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining("opinii");
     }
@@ -166,9 +166,9 @@ class ReviewServiceTest {
     @Test
     @DisplayName("deleteReview - sukces: usuwa opinię")
     void deleteReview_success() {
-        when(reviewRepository.existsById(1)).thenReturn(true);
+        when(reviewRepository.findById(1)).thenReturn(Optional.of(review));
 
-        reviewService.deleteReview(1);
+        reviewService.deleteReview(1, 1);
 
         verify(reviewRepository).deleteById(1);
     }
@@ -176,9 +176,9 @@ class ReviewServiceTest {
     @Test
     @DisplayName("deleteReview - błąd: opinia nie istnieje")
     void deleteReview_notFound_throwsResourceNotFoundException() {
-        when(reviewRepository.existsById(99)).thenReturn(false);
+        when(reviewRepository.findById(99)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> reviewService.deleteReview(99))
+        assertThatThrownBy(() -> reviewService.deleteReview(99, 1))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining("opinii");
     }

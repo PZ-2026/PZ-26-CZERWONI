@@ -88,10 +88,10 @@ fun BookingScreen(
                         val slotsCount =
                             state.timetableByDate[date.toString()]?.count { it.isAvailable } ?: 0
                         when {
-                            slotsCount >= 6 -> colorScheme.primary
+                            slotsCount >= 6 -> colorScheme.secondary
                             slotsCount in 3..5 -> colorScheme.tertiary
                             slotsCount in 1..2 -> colorScheme.error
-                            else -> colorScheme.outlineVariant
+                            else -> colorScheme.inverseSurface
                         }
                     }
 

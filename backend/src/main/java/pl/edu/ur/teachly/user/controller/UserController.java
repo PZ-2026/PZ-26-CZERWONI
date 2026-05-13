@@ -24,11 +24,13 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN') or authentication.principal.id == #id")
     public UserResponse getUserById(@PathVariable Integer id) {
         return userService.getUserById(id);
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN') or authentication.principal.id == #id")
     public UserResponse updateUserProfile(
             @PathVariable Integer id, @Valid @RequestBody UserUpdateRequest request) {
         return userService.updateUserProfile(id, request);

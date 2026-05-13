@@ -2,6 +2,7 @@ package pl.edu.ur.teachly.tutor.service;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.edu.ur.teachly.common.exception.ResourceNotFoundException;
@@ -48,9 +49,16 @@ public class TutorAvailabilityService {
     }
 
     @Transactional
-    public void deleteRecurring(Integer id) {
-        if (!recurringRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Nie znaleziono wpisu cyklicznego");
+    public void deleteRecurring(Integer id, Integer tutorId) {
+        TutorAvailabilityRecurring slot =
+                recurringRepository
+                        .findById(id)
+                        .orElseThrow(
+                                () ->
+                                        new ResourceNotFoundException(
+                                                "Nie znaleziono wpisu cyklicznego"));
+        if (!slot.getTutor().getUserId().equals(tutorId)) {
+            throw new AccessDeniedException("Brak dostępu do tego zasobu");
         }
         recurringRepository.deleteById(id);
     }
@@ -78,9 +86,16 @@ public class TutorAvailabilityService {
     }
 
     @Transactional
-    public void deleteOverride(Integer id) {
-        if (!overrideRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Nie znaleziono nadpisania dostępności");
+    public void deleteOverride(Integer id, Integer tutorId) {
+        TutorAvailabilityOverride slot =
+                overrideRepository
+                        .findById(id)
+                        .orElseThrow(
+                                () ->
+                                        new ResourceNotFoundException(
+                                                "Nie znaleziono nadpisania dostępności"));
+        if (!slot.getTutor().getUserId().equals(tutorId)) {
+            throw new AccessDeniedException("Brak dostępu do tego zasobu");
         }
         overrideRepository.deleteById(id);
     }
