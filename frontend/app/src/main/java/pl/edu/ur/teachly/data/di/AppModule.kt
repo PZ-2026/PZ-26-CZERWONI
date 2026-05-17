@@ -28,6 +28,7 @@ import pl.edu.ur.teachly.ui.home.viewmodels.HomeViewModel
 import pl.edu.ur.teachly.ui.lesson.viewmodels.LessonDetailViewModel
 import pl.edu.ur.teachly.ui.profile.viewmodels.ProfileViewModel
 import pl.edu.ur.teachly.ui.profile.viewmodels.TutorProfileViewModel
+import pl.edu.ur.teachly.ui.profile.viewmodels.TutorSetupViewModel
 import pl.edu.ur.teachly.ui.review.viewmodels.AllReviewsViewModel
 import pl.edu.ur.teachly.ui.review.viewmodels.MyReviewsViewModel
 import pl.edu.ur.teachly.ui.schedule.viewmodels.ScheduleViewModel
@@ -62,6 +63,7 @@ val appModule = module {
     viewModel { LessonDetailViewModel(get(), get()) }
     viewModel { ProfileViewModel(get(), get(), get(), get()) }
     viewModel { TutorProfileViewModel(get(), get(), get(), get()) }
+    viewModel { TutorSetupViewModel(get(), get()) }
     viewModel { AllReviewsViewModel(get(), get()) }
     viewModel { MyReviewsViewModel(get(), get()) }
 

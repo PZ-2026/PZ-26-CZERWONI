@@ -7,6 +7,8 @@ import pl.edu.ur.teachly.data.model.TutorAvailabilityRecurringRequest
 import pl.edu.ur.teachly.data.model.TutorAvailabilityRecurringResponse
 import pl.edu.ur.teachly.data.model.TutorRequest
 import pl.edu.ur.teachly.data.model.TutorResponse
+import pl.edu.ur.teachly.data.model.TutorSelfProfileRequest
+import pl.edu.ur.teachly.data.model.TutorSubjectRequest
 import pl.edu.ur.teachly.data.model.TutorSubjectResponse
 import pl.edu.ur.teachly.data.remote.TutorApiService
 
@@ -55,6 +57,33 @@ class TutorRepository(private val api: TutorApiService) {
             Result.failure(Exception("Brak połączenia z serwerem"))
         }
     }
+
+    suspend fun updateMyProfile(request: TutorSelfProfileRequest): Result<TutorResponse> =
+        try {
+            val r = api.updateMyProfile(request)
+            if (r.isSuccessful) Result.success(r.body()!!)
+            else Result.failure(Exception("Błąd zapisywania profilu"))
+        } catch (e: Exception) {
+            Result.failure(Exception("Brak połączenia z serwerem"))
+        }
+
+    suspend fun addMySubject(request: TutorSubjectRequest): Result<TutorSubjectResponse> =
+        try {
+            val r = api.addMySubject(request)
+            if (r.isSuccessful) Result.success(r.body()!!)
+            else Result.failure(Exception("Błąd dodawania przedmiotu"))
+        } catch (e: Exception) {
+            Result.failure(Exception("Brak połączenia z serwerem"))
+        }
+
+    suspend fun removeMySubject(id: Int): Result<Unit> =
+        try {
+            val r = api.removeMySubject(id)
+            if (r.isSuccessful) Result.success(Unit)
+            else Result.failure(Exception("Błąd usuwania przedmiotu"))
+        } catch (e: Exception) {
+            Result.failure(Exception("Brak połączenia z serwerem"))
+        }
 
     suspend fun adminUpdateTutor(id: Int, request: TutorRequest): Result<TutorResponse> {
         return try {
