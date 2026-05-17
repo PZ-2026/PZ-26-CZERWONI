@@ -45,6 +45,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import org.koin.androidx.compose.koinViewModel
 import pl.edu.ur.teachly.data.model.SubjectResponse
@@ -66,6 +67,7 @@ fun TutorSetupScreen(
 ) {
     val state by viewModel.state.collectAsState()
     var showAddSubjectDialog by rememberSaveable { mutableStateOf(false) }
+    val isFormValid = state.hourlyRate.toDoubleOrNull()?.let { it > 0 } == true
 
     LaunchedEffect(tutorId) { viewModel.load(tutorId) }
 
@@ -116,13 +118,20 @@ fun TutorSetupScreen(
 
             OutlinedTextField(
                 value = state.bio,
-                onValueChange = viewModel::onBioChange,
+                onValueChange = { if (it.length <= 2000) viewModel.onBioChange(it) },
                 label = { Text("Opis (bio)") },
                 placeholder = { Text("Napisz coś o sobie, swoim doświadczeniu...") },
                 leadingIcon = { Icon(Icons.Default.Info, contentDescription = null) },
                 modifier = Modifier.fillMaxWidth(),
                 minLines = 3,
                 maxLines = 6,
+                supportingText = {
+                    Text(
+                        text = "${state.bio.length}/2000",
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.End,
+                    )
+                },
             )
 
             OutlinedTextField(
@@ -134,7 +143,10 @@ fun TutorSetupScreen(
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
-                isError = state.hourlyRate.isNotBlank() && state.hourlyRate.toDoubleOrNull()?.let { it <= 0 } != false,
+                isError = state.hourlyRate.isNotBlank() && (state.hourlyRate.toDoubleOrNull() == null || state.hourlyRate.toDoubleOrNull()!! <= 0),
+                supportingText = if (state.hourlyRate.isNotBlank() && !isFormValid) {
+                    { Text("Podaj prawidłową stawkę większą niż 0") }
+                } else null,
             )
 
             // --- Forma zajęć ---
@@ -200,6 +212,7 @@ fun TutorSetupScreen(
                 text = "Zapisz profil",
                 onClick = { viewModel.saveProfile() },
                 isLoading = state.isSaving,
+                enabled = isFormValid,
                 modifier = Modifier.padding(bottom = 32.dp, top = 8.dp),
             )
         }

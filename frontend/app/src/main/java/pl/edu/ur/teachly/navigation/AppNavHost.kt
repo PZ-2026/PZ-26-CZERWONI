@@ -101,13 +101,16 @@ fun AppNavHost(
             )
         }
 
-        // Tutor onboarding
+        // Tutor onboarding / edit
         composable<AppRoute.TutorSetup> { backStackEntry ->
             val args = backStackEntry.toRoute<AppRoute.TutorSetup>()
             TutorSetupScreen(
                 tutorId = args.tutorId,
-                onBack = null,
-                onDone = { navController.navigateToHome() },
+                onBack = if (args.returnToProfile) ({ navController.popBackStack() }) else null,
+                onDone = {
+                    if (args.returnToProfile) navController.popBackStack()
+                    else navController.navigateToHome()
+                },
             )
         }
 
@@ -214,6 +217,11 @@ fun AppNavHost(
                     isMyProfile = true,
                     onBack = { navController.popBackStack() },
                     onEditClick = { navController.navigate(AppRoute.ProfileEdit) },
+                    onTutorSetupClick = {
+                        userId?.let {
+                            navController.navigate(AppRoute.TutorSetup(it, returnToProfile = true))
+                        }
+                    },
                     onLogout = { navController.navigateToSplash() },
                     onSeeAllReviews = {
                         userId?.let {

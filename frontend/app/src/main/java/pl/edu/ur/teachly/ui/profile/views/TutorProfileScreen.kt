@@ -61,6 +61,7 @@ fun TutorProfileScreen(
     isMyProfile: Boolean = false,
     onBack: () -> Unit,
     onEditClick: () -> Unit,
+    onTutorSetupClick: () -> Unit = {},
     onLogout: () -> Unit,
     onSeeAllReviews: () -> Unit = {},
     onAvailabilityClick: () -> Unit = {},
@@ -221,6 +222,12 @@ fun TutorProfileScreen(
                         ReportDownloadSection(viewModel = profileViewModel)
 
                         PrimaryButton(
+                            text = "Edytuj profil korepetytora",
+                            onClick = onTutorSetupClick,
+                            modifier = Modifier.padding(bottom = 8.dp),
+                        )
+
+                        PrimaryButton(
                             text = stringResource(R.string.profile_logout),
                             onClick = onLogout,
                             modifier = Modifier.padding(bottom = 24.dp),
@@ -257,7 +264,7 @@ fun TutorProfileScreen(
                     )
                     PrimaryButton(
                         text = "Uzupełnij dane korepetytora",
-                        onClick = { /* TODO: Handle tutor data change */ },
+                        onClick = onTutorSetupClick,
                         modifier = Modifier.padding(horizontal = 32.dp)
                     )
                     Spacer(Modifier.height(16.dp))
