@@ -1,5 +1,6 @@
 package pl.edu.ur.teachly.auth.service;
 
+import java.math.BigDecimal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -13,6 +14,8 @@ import pl.edu.ur.teachly.auth.dto.response.AuthResponse;
 import pl.edu.ur.teachly.common.enums.UserRole;
 import pl.edu.ur.teachly.common.exception.BusinessValidationException;
 import pl.edu.ur.teachly.common.security.JwtService;
+import pl.edu.ur.teachly.tutor.entity.Tutor;
+import pl.edu.ur.teachly.tutor.repository.TutorRepository;
 import pl.edu.ur.teachly.user.entity.User;
 import pl.edu.ur.teachly.user.mapper.UserMapper;
 import pl.edu.ur.teachly.user.repository.UserRepository;
@@ -25,6 +28,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+    private final TutorRepository tutorRepository;
 
     @Transactional
     public AuthResponse register(RegisterRequest request) {
@@ -49,6 +53,16 @@ public class AuthService {
         User user = userMapper.toEntity(request);
         user.setPasswordHash(passwordEncoder.encode(request.password()));
         userRepository.save(user);
+
+        if (user.getUserRole() == UserRole.TUTOR) {
+            Tutor tutor = Tutor.builder()
+                    .user(user)
+                    .hourlyRate(BigDecimal.ZERO)
+                    .offersOnline(false)
+                    .offersInPerson(false)
+                    .build();
+            tutorRepository.save(tutor);
+        }
 
         String jwtToken = jwtService.generateToken(user);
 

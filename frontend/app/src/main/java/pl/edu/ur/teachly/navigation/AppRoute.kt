@@ -49,6 +49,10 @@ sealed interface AppRoute {
     @Serializable
     data object Schedule : AppRoute
 
+    // Tutor onboarding / edit
+    @Serializable
+    data class TutorSetup(val tutorId: Int, val returnToProfile: Boolean = false) : AppRoute
+
     // Profile
     @Serializable
     data object Profile : AppRoute

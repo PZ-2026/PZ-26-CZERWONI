@@ -41,6 +41,7 @@ import pl.edu.ur.teachly.ui.profile.views.AdminProfileScreen
 import pl.edu.ur.teachly.ui.profile.views.ProfileEditScreen
 import pl.edu.ur.teachly.ui.profile.views.StudentProfileScreen
 import pl.edu.ur.teachly.ui.profile.views.TutorProfileScreen
+import pl.edu.ur.teachly.ui.profile.views.TutorSetupScreen
 import pl.edu.ur.teachly.ui.review.views.AllReviewsScreen
 import pl.edu.ur.teachly.ui.schedule.views.ScheduleScreen
 import pl.edu.ur.teachly.ui.search.views.SearchScreen
@@ -89,9 +90,26 @@ fun AppNavHost(
                 onSuccess = {
                     scope.launch {
                         val role = tokenManager.roleFlow.first()
-                        if (role == "ADMIN") navController.navigateToAdminDashboard()
-                        else navController.navigateToHome()
+                        val userId = tokenManager.userIdFlow.first()
+                        when {
+                            role == "ADMIN" -> navController.navigateToAdminDashboard()
+                            role == "TUTOR" && userId != null -> navController.navigateToTutorSetup(userId)
+                            else -> navController.navigateToHome()
+                        }
                     }
+                },
+            )
+        }
+
+        // Tutor onboarding / edit
+        composable<AppRoute.TutorSetup> { backStackEntry ->
+            val args = backStackEntry.toRoute<AppRoute.TutorSetup>()
+            TutorSetupScreen(
+                tutorId = args.tutorId,
+                onBack = if (args.returnToProfile) ({ navController.popBackStack() }) else null,
+                onDone = {
+                    if (args.returnToProfile) navController.popBackStack()
+                    else navController.navigateToHome()
                 },
             )
         }
@@ -199,6 +217,11 @@ fun AppNavHost(
                     isMyProfile = true,
                     onBack = { navController.popBackStack() },
                     onEditClick = { navController.navigate(AppRoute.ProfileEdit) },
+                    onTutorSetupClick = {
+                        userId?.let {
+                            navController.navigate(AppRoute.TutorSetup(it, returnToProfile = true))
+                        }
+                    },
                     onLogout = { navController.navigateToSplash() },
                     onSeeAllReviews = {
                         userId?.let {
@@ -336,6 +359,13 @@ fun AppNavHost(
 }
 
 // Helpers
+private fun NavHostController.navigateToTutorSetup(tutorId: Int) {
+    navigate(AppRoute.TutorSetup(tutorId)) {
+        popUpTo<AppRoute.Splash> { inclusive = true }
+        launchSingleTop = true
+    }
+}
+
 private fun NavHostController.navigateToHome() {
     navigate(AppRoute.Home) {
         popUpTo<AppRoute.Splash> { inclusive = true }

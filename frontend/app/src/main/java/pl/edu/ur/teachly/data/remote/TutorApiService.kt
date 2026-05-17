@@ -7,6 +7,8 @@ import pl.edu.ur.teachly.data.model.TutorAvailabilityRecurringRequest
 import pl.edu.ur.teachly.data.model.TutorAvailabilityRecurringResponse
 import pl.edu.ur.teachly.data.model.TutorRequest
 import pl.edu.ur.teachly.data.model.TutorResponse
+import pl.edu.ur.teachly.data.model.TutorSelfProfileRequest
+import pl.edu.ur.teachly.data.model.TutorSubjectRequest
 import pl.edu.ur.teachly.data.model.TutorSubjectResponse
 import retrofit2.Response
 import retrofit2.http.Body
@@ -70,6 +72,21 @@ interface TutorApiService {
     @DELETE("api/tutors/{tutorId}/availability/override/{id}")
     suspend fun deleteOverride(
         @Path("tutorId") tutorId: Int,
+        @Path("id") id: Int
+    ): Response<Unit>
+
+    @PUT("api/tutors/me")
+    suspend fun updateMyProfile(
+        @Body request: TutorSelfProfileRequest
+    ): Response<TutorResponse>
+
+    @POST("api/tutors/me/subjects")
+    suspend fun addMySubject(
+        @Body request: TutorSubjectRequest
+    ): Response<TutorSubjectResponse>
+
+    @DELETE("api/tutors/me/subjects/{id}")
+    suspend fun removeMySubject(
         @Path("id") id: Int
     ): Response<Unit>
 
