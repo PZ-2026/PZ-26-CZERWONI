@@ -69,6 +69,18 @@ fun StudentProfileScreen(
     viewModel: ProfileViewModel = koinViewModel(),
     myReviewsViewModel: MyReviewsViewModel = koinViewModel(),
 ) {
+    val lifecycleOwner = androidx.compose.ui.platform.LocalLifecycleOwner.current
+    androidx.compose.runtime.DisposableEffect(lifecycleOwner) {
+        val observer = androidx.lifecycle.LifecycleEventObserver { _, event ->
+            if (event == androidx.lifecycle.Lifecycle.Event.ON_RESUME) {
+                viewModel.loadProfile()
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
     val profile by viewModel.profile.collectAsState()
     val reviewsState by myReviewsViewModel.state.collectAsState()
 
@@ -230,12 +242,22 @@ private fun ProfileTab(
                     value = phone,
                 )
             }
-            if (profile.createdAt.isNotBlank()) {
+            val formattedDate = remember(profile.createdAt) {
+                try {
+                    val datePart = profile.createdAt.take(10)
+                    if (datePart.isNotBlank() && datePart != "null") {
+                        formatDate(LocalDate.parse(datePart))
+                    } else ""
+                } catch (e: Exception) {
+                    ""
+                }
+            }
+            if (formattedDate.isNotBlank()) {
                 ProfileDataDivider()
                 ProfileInfoRow(
                     icon = Icons.Default.CalendarToday,
                     label = stringResource(R.string.account_active_since),
-                    value = formatDate(LocalDate.parse(profile.createdAt.take(10))),
+                    value = formattedDate,
                 )
             }
             ProfileDataDivider()

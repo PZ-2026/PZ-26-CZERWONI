@@ -11,6 +11,9 @@ import pl.edu.ur.teachly.data.model.AdminUserUpdateRequest
 import pl.edu.ur.teachly.data.model.UserResponse
 import pl.edu.ur.teachly.data.model.UserRole
 import pl.edu.ur.teachly.data.repository.UserRepository
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
 
 data class AdminUsersState(
     val users: List<UserResponse> = emptyList(),
@@ -112,19 +115,51 @@ class AdminUsersViewModel(
         }
     }
 
-    fun updateUser(userId: Int, request: AdminUserUpdateRequest) {
+    fun updateUser(userId: Int, request: AdminUserUpdateRequest, pendingAvatarFile: java.io.File?, pendingDeleteAvatar: Boolean) {
         viewModelScope.launch {
+            _state.update { it.copy(isLoading = true, error = null) }
+            
+            // 1. Obsługa ewentualnego usuwania lub wgrywania awatara przez Admina przed aktualizacją danych profilowych
+            if (pendingDeleteAvatar) {
+                userRepository.deleteAvatar(userId).fold(
+                    onSuccess = { user -> },
+                    onFailure = { e ->
+                        _state.update { it.copy(isLoading = false, error = "Błąd podczas usuwania zdjęcia: ${e.message}") }
+                        return@launch
+                    }
+                )
+            } else if (pendingAvatarFile != null) {
+                val file = pendingAvatarFile
+                val mimeType = when (file.extension.lowercase()) {
+                    "png" -> "image/png"
+                    "gif" -> "image/gif"
+                    "jpg", "jpeg" -> "image/jpeg"
+                    else -> "image/jpeg"
+                }
+                val requestFile = file.asRequestBody(mimeType.toMediaTypeOrNull())
+                val body = MultipartBody.Part.createFormData("file", file.name, requestFile)
+                userRepository.uploadAvatar(userId, body).fold(
+                    onSuccess = { user -> },
+                    onFailure = { e ->
+                        _state.update { it.copy(isLoading = false, error = "Błąd podczas zapisywania zdjęcia: ${e.message}") }
+                        return@launch
+                    }
+                )
+            }
+
+            // 2. Aktualizacja pozostałych danych
             userRepository.adminUpdateUser(userId, request).fold(
                 onSuccess = { updated ->
                     _state.update { s ->
                         s.copy(
                             users = s.users.map { if (it.id == userId) updated else it },
+                            isLoading = false,
                             successMessage = "Dane użytkownika zostały zaktualizowane"
                         )
                     }
                     applyFilters()
                 },
-                onFailure = { e -> _state.update { it.copy(error = e.message) } }
+                onFailure = { e -> _state.update { it.copy(isLoading = false, error = e.message) } }
             )
         }
     }

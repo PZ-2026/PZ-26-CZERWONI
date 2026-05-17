@@ -13,7 +13,7 @@ public class PdfTableBuilder {
     static final Color COLOR_COMPLETED = new Color(198, 239, 206); // green
     static final Color COLOR_CANCELLED = new Color(255, 199, 206); // red
     static final Color COLOR_CONFIRMED = new Color(189, 215, 238); // blue
-    static final Color COLOR_PENDING = new Color(255, 255, 220);   // light yellow
+    static final Color COLOR_PENDING = new Color(255, 255, 220); // light yellow
     static final Color COLOR_ROW_ALT = new Color(245, 245, 245);
     static final Color COLOR_ROW = Color.WHITE;
     static final Color COLOR_HEADER = new Color(68, 114, 196); // header blue

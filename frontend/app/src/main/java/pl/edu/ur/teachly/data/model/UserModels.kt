@@ -14,8 +14,7 @@ data class AdminUserUpdateRequest(
     val lastName: String,
     val email: String,
     val phoneNumber: String,
-    val userRole: UserRole,
-    val avatarUrl: String?
+    val userRole: UserRole
 )
 
 data class PasswordChangeRequest(

@@ -1,6 +1,10 @@
 package pl.edu.ur.teachly.auth.dto.request;
 
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import pl.edu.ur.teachly.common.enums.UserRole;
 
 public record RegisterRequest(

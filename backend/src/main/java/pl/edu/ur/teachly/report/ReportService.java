@@ -38,8 +38,9 @@ public class ReportService {
         }
 
         // Sort by date (oldest first) and then by time
-        lessons.sort(java.util.Comparator.comparing(Lesson::getLessonDate)
-                .thenComparing(Lesson::getTimeFrom));
+        lessons.sort(
+                java.util.Comparator.comparing(Lesson::getLessonDate)
+                        .thenComparing(Lesson::getTimeFrom));
 
         if (user.getUserRole() == UserRole.ADMIN) {
             return buildAdminReport(lessons, startDate, endDate);
@@ -127,7 +128,8 @@ public class ReportService {
         docBuilder.addParagraph(" ");
 
         PdfTableBuilder tableBuilder = new PdfTableBuilder(new float[] {2, 2, 3, 3, 2, 2, 2});
-        tableBuilder.addHeaders("Data", "Czas", "Korepetytor", "Ucze\u0144", "Przedmiot", "Status", "Kwota");
+        tableBuilder.addHeaders(
+                "Data", "Czas", "Korepetytor", "Ucze\u0144", "Przedmiot", "Status", "Kwota");
 
         for (Lesson l : lessons) {
             tableBuilder.addRowWithStatus(
@@ -194,7 +196,8 @@ public class ReportService {
         docBuilder.addParagraph(
                 "Anulowanych: " + cancelled.size(),
                 coloredFont(11, PdfTableBuilder.COLOR_TEXT_CANCELLED));
-        docBuilder.addParagraph("Potwierdzonych: " + confirmed.size(),
+        docBuilder.addParagraph(
+                "Potwierdzonych: " + confirmed.size(),
                 coloredFont(11, PdfTableBuilder.COLOR_TEXT_CONFIRMED));
         docBuilder.addParagraph(
                 "Oczekuj\u0105cych: " + pending.size(),
@@ -269,7 +272,8 @@ public class ReportService {
         docBuilder.addParagraph(
                 "Anulowanych: " + cancelled.size(),
                 coloredFont(11, PdfTableBuilder.COLOR_TEXT_CANCELLED));
-        docBuilder.addParagraph("Potwierdzonych: " + confirmed.size(),
+        docBuilder.addParagraph(
+                "Potwierdzonych: " + confirmed.size(),
                 coloredFont(11, PdfTableBuilder.COLOR_TEXT_CONFIRMED));
         docBuilder.addParagraph(
                 "Oczekuj\u0105cych: " + pending.size(),

@@ -1,17 +1,21 @@
 package pl.edu.ur.teachly.lesson.controller;
 
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import pl.edu.ur.teachly.lesson.dto.request.*;
+import pl.edu.ur.teachly.lesson.dto.request.AdminLessonUpdateRequest;
+import pl.edu.ur.teachly.lesson.dto.request.LessonRequest;
+import pl.edu.ur.teachly.lesson.dto.request.LessonStatusRequest;
+import pl.edu.ur.teachly.lesson.dto.request.PaymentStatusRequest;
+import pl.edu.ur.teachly.lesson.dto.request.StudentNotesRequest;
+import pl.edu.ur.teachly.lesson.dto.request.TutorNotesRequest;
 import pl.edu.ur.teachly.lesson.dto.response.LessonResponse;
 import pl.edu.ur.teachly.lesson.service.LessonService;
 import pl.edu.ur.teachly.user.entity.User;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/lessons")

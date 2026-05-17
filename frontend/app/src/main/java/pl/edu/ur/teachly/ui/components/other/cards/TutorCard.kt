@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import pl.edu.ur.teachly.R
 import pl.edu.ur.teachly.ui.models.Tutor
 import pl.edu.ur.teachly.ui.theme.AvatarColor
+import pl.edu.ur.teachly.ui.components.other.InitialsAvatar
 
 @Composable
 fun TutorCard(
@@ -55,7 +56,13 @@ fun TutorCard(
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                TutorAvatar(initials = tutor.initials, bg = avatarBg, fg = avatarFg, size = 48)
+                InitialsAvatar(
+                    initials = tutor.initials,
+                    avatarColor = colors,
+                    avatarUrl = tutor.avatarUrl,
+                    size = 48.dp,
+                    cornerRadius = 16.dp
+                )
                 TutorCardInfo(tutor = tutor)
             }
         }

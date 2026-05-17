@@ -1,10 +1,16 @@
 package pl.edu.ur.teachly.user.service;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import pl.edu.ur.teachly.common.exception.ResourceNotFoundException;
 import pl.edu.ur.teachly.user.dto.request.AdminUserUpdateRequest;
 import pl.edu.ur.teachly.user.dto.request.UserUpdateRequest;
@@ -71,9 +77,6 @@ public class UserService {
         if (request.userRole() != null) {
             user.setUserRole(request.userRole());
         }
-        if (request.avatarUrl() != null) {
-            user.setAvatarUrl(request.avatarUrl());
-        }
         return userMapper.toResponse(userRepository.save(user));
     }
 
@@ -101,5 +104,71 @@ public class UserService {
                                                 "Nie znaleziono szukanego użytkownika"));
         user.setIsActive(false);
         userRepository.save(user);
+    }
+
+    @Transactional
+    public UserResponse uploadAvatar(Integer id, MultipartFile file) {
+        if (file.isEmpty()) {
+            throw new IllegalArgumentException("Plik jest pusty");
+        }
+
+        long maxFileSize = 5 * 1024 * 1024; // 5 MB
+        if (file.getSize() > maxFileSize) {
+            throw new IllegalArgumentException("Plik jest za duży. Maksymalny rozmiar to 5 MB.");
+        }
+
+        String contentType = file.getContentType();
+        if (contentType == null
+                || (!contentType.equals("image/jpeg")
+                        && !contentType.equals("image/png")
+                        && !contentType.equals("image/jpg"))) {
+            throw new IllegalArgumentException(
+                    "Niedozwolony format pliku. Dozwolone są tylko JPG i PNG.");
+        }
+
+        User user =
+                userRepository
+                        .findById(id)
+                        .orElseThrow(
+                                () ->
+                                        new ResourceNotFoundException(
+                                                "Nie znaleziono szukanego użytkownika"));
+
+        try {
+            String originalFilename = file.getOriginalFilename();
+            String extension = "";
+            if (originalFilename != null && originalFilename.contains(".")) {
+                extension = originalFilename.substring(originalFilename.lastIndexOf("."));
+            }
+
+            String newFilename = UUID.randomUUID().toString() + extension;
+            Path uploadPath = Paths.get("uploads/avatars");
+
+            if (!Files.exists(uploadPath)) {
+                Files.createDirectories(uploadPath);
+            }
+
+            Path filePath = uploadPath.resolve(newFilename);
+            Files.copy(file.getInputStream(), filePath);
+
+            String avatarUrl = "/uploads/avatars/" + newFilename;
+            user.setAvatarUrl(avatarUrl);
+            return userMapper.toResponse(userRepository.save(user));
+        } catch (IOException e) {
+            throw new RuntimeException("Błąd podczas zapisywania awatara", e);
+        }
+    }
+
+    @Transactional
+    public UserResponse deleteAvatar(Integer id) {
+        User user =
+                userRepository
+                        .findById(id)
+                        .orElseThrow(
+                                () -> new ResourceNotFoundException("Nie znaleziono użytkownika"));
+
+        user.setAvatarUrl(null);
+        User updatedUser = userRepository.save(user);
+        return userMapper.toResponse(updatedUser);
     }
 }

@@ -191,7 +191,7 @@ class UserServiceTest {
     void adminUpdateUser_success() {
         User user = User.builder().id(1).build();
         AdminUserUpdateRequest req =
-                new AdminUserUpdateRequest("A", "B", "a@b.pl", "123456789", UserRole.TUTOR, "url");
+                new AdminUserUpdateRequest("A", "B", "a@b.pl", "123456789", UserRole.TUTOR);
         UserResponse response =
                 new UserResponse(
                         1,

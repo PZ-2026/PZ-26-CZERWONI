@@ -1,5 +1,16 @@
 package pl.edu.ur.teachly.lesson.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -33,37 +44,18 @@ import pl.edu.ur.teachly.tutor.service.TimetableService;
 import pl.edu.ur.teachly.user.entity.User;
 import pl.edu.ur.teachly.user.repository.UserRepository;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
-
 @ExtendWith(MockitoExtension.class)
 @DisplayName("LessonService – testy jednostkowe")
 class LessonServiceTest {
 
-    @Mock
-    private LessonRepository lessonRepository;
-    @Mock
-    private LessonMapper lessonMapper;
-    @Mock
-    private UserRepository userRepository;
-    @Mock
-    private TutorRepository tutorRepository;
-    @Mock
-    private SubjectRepository subjectRepository;
-    @Mock
-    private TimetableService timetableService;
+    @Mock private LessonRepository lessonRepository;
+    @Mock private LessonMapper lessonMapper;
+    @Mock private UserRepository userRepository;
+    @Mock private TutorRepository tutorRepository;
+    @Mock private SubjectRepository subjectRepository;
+    @Mock private TimetableService timetableService;
 
-    @InjectMocks
-    private LessonService lessonService;
+    @InjectMocks private LessonService lessonService;
 
     @AfterEach
     void tearDown() {
@@ -128,9 +120,11 @@ class LessonServiceTest {
                             2,
                             "Adam",
                             "Nowak",
+                            null,
                             1,
                             "Jan",
                             "Kowalski",
+                            null,
                             1,
                             "Matematyka",
                             req.lessonDate(),

@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import pl.edu.ur.teachly.user.dto.request.AdminUserUpdateRequest;
 import pl.edu.ur.teachly.user.dto.request.UserUpdateRequest;
 import pl.edu.ur.teachly.user.dto.response.UserResponse;
@@ -55,5 +56,18 @@ public class UserController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deactivateUser(@PathVariable Integer id) {
         userService.deactivateUser(id);
+    }
+
+    @PostMapping(value = "/{id}/avatar", consumes = "multipart/form-data")
+    @PreAuthorize("hasRole('ADMIN') or authentication.principal.id == #id")
+    public UserResponse uploadAvatar(
+            @PathVariable Integer id, @RequestParam("file") MultipartFile file) {
+        return userService.uploadAvatar(id, file);
+    }
+
+    @DeleteMapping("/{id}/avatar")
+    @PreAuthorize("hasRole('ADMIN') or authentication.principal.id == #id")
+    public UserResponse deleteAvatar(@PathVariable Integer id) {
+        return userService.deleteAvatar(id);
     }
 }

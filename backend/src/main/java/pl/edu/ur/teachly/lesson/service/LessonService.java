@@ -1,5 +1,11 @@
 package pl.edu.ur.teachly.lesson.service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -10,7 +16,12 @@ import pl.edu.ur.teachly.common.enums.PaymentStatus;
 import pl.edu.ur.teachly.common.enums.UserRole;
 import pl.edu.ur.teachly.common.exception.ResourceNotFoundException;
 import pl.edu.ur.teachly.common.exception.SlotNotAvailableException;
-import pl.edu.ur.teachly.lesson.dto.request.*;
+import pl.edu.ur.teachly.lesson.dto.request.AdminLessonUpdateRequest;
+import pl.edu.ur.teachly.lesson.dto.request.LessonRequest;
+import pl.edu.ur.teachly.lesson.dto.request.LessonStatusRequest;
+import pl.edu.ur.teachly.lesson.dto.request.PaymentStatusRequest;
+import pl.edu.ur.teachly.lesson.dto.request.StudentNotesRequest;
+import pl.edu.ur.teachly.lesson.dto.request.TutorNotesRequest;
 import pl.edu.ur.teachly.lesson.dto.response.LessonResponse;
 import pl.edu.ur.teachly.lesson.entity.Lesson;
 import pl.edu.ur.teachly.lesson.mapper.LessonMapper;
@@ -21,13 +32,6 @@ import pl.edu.ur.teachly.tutor.repository.TutorRepository;
 import pl.edu.ur.teachly.tutor.service.TimetableService;
 import pl.edu.ur.teachly.user.entity.User;
 import pl.edu.ur.teachly.user.repository.UserRepository;
-
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -143,9 +147,9 @@ public class LessonService {
         if (caller.getUserRole() != UserRole.ADMIN) {
             boolean isParticipant =
                     (lesson.getStudent() != null
-                            && lesson.getStudent().getId().equals(caller.getId()))
+                                    && lesson.getStudent().getId().equals(caller.getId()))
                             || (lesson.getTutor() != null
-                            && lesson.getTutor().getUserId().equals(caller.getId()));
+                                    && lesson.getTutor().getUserId().equals(caller.getId()));
             if (!isParticipant) {
                 throw new AccessDeniedException("Brak dostępu do tej lekcji");
             }
@@ -211,9 +215,9 @@ public class LessonService {
         if (currentUserRole != UserRole.ADMIN) {
             boolean isParticipant =
                     (lesson.getStudent() != null
-                            && lesson.getStudent().getId().equals(currentUser.getId()))
+                                    && lesson.getStudent().getId().equals(currentUser.getId()))
                             || (lesson.getTutor() != null
-                            && lesson.getTutor().getUserId().equals(currentUser.getId()));
+                                    && lesson.getTutor().getUserId().equals(currentUser.getId()));
             if (!isParticipant) {
                 throw new AccessDeniedException("Brak dostępu do tej lekcji");
             }

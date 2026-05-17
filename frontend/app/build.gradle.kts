@@ -74,6 +74,10 @@ dependencies {
     implementation(libs.koin.android)
     implementation(libs.koin.androidx.compose)
 
+    // Avatar image loading & cropping
+    implementation("io.coil-kt:coil-compose:2.7.0")
+    implementation("com.vanniktech:android-image-cropper:4.6.0")
+
     // Tests & debug
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

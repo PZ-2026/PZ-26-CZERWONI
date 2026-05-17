@@ -10,6 +10,8 @@ data class ScheduledClass(
     val subject: String,
     val tutorName: String,
     val studentName: String,
+    val tutorAvatarUrl: String? = null,
+    val studentAvatarUrl: String? = null,
     val day: LocalDate,
     val time: String,
     val durationMinutes: Int,

@@ -134,6 +134,7 @@ fun ProfileHeader(
                 InitialsAvatar(
                     initials = profile.initials,
                     avatarColor = avatarColor,
+                    avatarUrl = profile.avatarUrl,
                 )
 
                 Column(modifier = Modifier.weight(1f)) {

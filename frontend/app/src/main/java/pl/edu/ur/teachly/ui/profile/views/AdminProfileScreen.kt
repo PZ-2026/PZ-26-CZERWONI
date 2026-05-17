@@ -20,6 +20,7 @@ import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -110,12 +111,22 @@ fun AdminProfileScreen(
                             value = phone,
                         )
                     }
-                    if (profile.createdAt.isNotBlank()) {
+                    val formattedDate = remember(profile.createdAt) {
+                        try {
+                            val datePart = profile.createdAt.take(10)
+                            if (datePart.isNotBlank() && datePart != "null") {
+                                formatDate(LocalDate.parse(datePart))
+                            } else ""
+                        } catch (e: Exception) {
+                            ""
+                        }
+                    }
+                    if (formattedDate.isNotBlank()) {
                         ProfileDataDivider()
                         ProfileInfoRow(
                             icon = Icons.Default.CalendarToday,
                             label = stringResource(R.string.account_active_since),
-                            value = formatDate(LocalDate.parse(profile.createdAt.take(10))),
+                            value = formattedDate,
                         )
                     }
                     ProfileDataDivider()

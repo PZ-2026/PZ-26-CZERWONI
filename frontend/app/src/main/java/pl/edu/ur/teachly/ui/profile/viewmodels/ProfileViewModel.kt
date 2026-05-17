@@ -13,6 +13,10 @@ import pl.edu.ur.teachly.data.model.UserRole
 import pl.edu.ur.teachly.data.model.UserUpdateRequest
 import pl.edu.ur.teachly.data.repository.LessonRepository
 import pl.edu.ur.teachly.data.repository.UserRepository
+import java.io.File
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
 
 data class StudentProfile(
     val firstName: String = "",
@@ -22,6 +26,7 @@ data class StudentProfile(
     val role: UserRole = UserRole.STUDENT,
     val createdAt: String = "",
     val lessonsCount: Int = 0,
+    val avatarUrl: String? = null,
     val isLoading: Boolean = true,
     val error: String? = null,
 ) {
@@ -39,6 +44,9 @@ data class ProfileEditState(
     val error: String? = null,
     val isSaved: Boolean = false,
     val requiresRelogin: Boolean = false,
+    val pendingAvatarFile: File? = null,
+    val pendingDeleteAvatar: Boolean = false,
+    val localAvatarUrl: String? = null,
 )
 
 class ProfileViewModel(
@@ -76,6 +84,7 @@ class ProfileViewModel(
                             phoneNumber = user.phoneNumber,
                             role = user.role ?: UserRole.STUDENT,
                             createdAt = user.createdAt,
+                            avatarUrl = user.avatarUrl?.takeIf { it.isNotBlank() && !it.equals("null", ignoreCase = true) },
                         )
                     }
                 },
@@ -101,7 +110,7 @@ class ProfileViewModel(
                 firstName = p.firstName,
                 lastName = p.lastName,
                 email = p.email,
-                phoneNumber = p.phoneNumber ?: ""
+                phoneNumber = p.phoneNumber?.filter { it.isDigit() } ?: ""
             )
         }
     }
@@ -131,19 +140,88 @@ class ProfileViewModel(
         _editState.update { it.copy(isSaved = false, requiresRelogin = false) }
     }
 
+    fun setPendingAvatar(file: File) {
+        _editState.update {
+            it.copy(
+                pendingAvatarFile = file,
+                pendingDeleteAvatar = false,
+                localAvatarUrl = file.absolutePath
+            )
+        }
+    }
+
+    fun setPendingDeleteAvatar() {
+        _editState.update {
+            it.copy(
+                pendingAvatarFile = null,
+                pendingDeleteAvatar = true,
+                localAvatarUrl = null
+            )
+        }
+    }
+
     fun saveProfile() {
         viewModelScope.launch {
             val userId = tokenManager.userIdFlow.first() ?: return@launch
             _editState.update { it.copy(isLoading = true, error = null) }
 
             val state = _editState.value
+
+            if (state.firstName.trim().isBlank()) {
+                _editState.update { it.copy(isLoading = false, error = "Imię nie może być puste") }
+                return@launch
+            }
+            if (state.lastName.trim().isBlank()) {
+                _editState.update { it.copy(isLoading = false, error = "Nazwisko nie może być puste") }
+                return@launch
+            }
+            if (state.email.trim().isBlank() || !android.util.Patterns.EMAIL_ADDRESS.matcher(state.email.trim()).matches()) {
+                _editState.update { it.copy(isLoading = false, error = "Niepoprawny format adresu email") }
+                return@launch
+            }
+            val digitsPhone = state.phoneNumber.filter { it.isDigit() }
+            if (digitsPhone.length != 9) {
+                _editState.update { it.copy(isLoading = false, error = "Numer telefonu musi składać się z 9 cyfr") }
+                return@launch
+            }
+
+            // 1. Obsługa ewentualnego usuwania lub wgrywania awatara przed aktualizacją profilu
+            var updatedAvatarUrl: String? = profile.value.avatarUrl
+            if (state.pendingDeleteAvatar) {
+                userRepository.deleteAvatar(userId).fold(
+                    onSuccess = { user -> updatedAvatarUrl = null },
+                    onFailure = { e ->
+                        _editState.update { it.copy(isLoading = false, error = "Błąd usuwania zdjęcia: ${e.message}") }
+                        return@launch
+                    }
+                )
+            } else if (state.pendingAvatarFile != null) {
+                val file = state.pendingAvatarFile
+                val mimeType = when (file.extension.lowercase()) {
+                    "png" -> "image/png"
+                    "gif" -> "image/gif"
+                    "jpg", "jpeg" -> "image/jpeg"
+                    else -> "image/jpeg"
+                }
+                val requestFile = file.asRequestBody(mimeType.toMediaTypeOrNull())
+                val body = MultipartBody.Part.createFormData("file", file.name, requestFile)
+                userRepository.uploadAvatar(userId, body).fold(
+                    onSuccess = { user -> updatedAvatarUrl = user.avatarUrl },
+                    onFailure = { e ->
+                        _editState.update { it.copy(isLoading = false, error = "Błąd zapisywania zdjęcia: ${e.message}") }
+                        return@launch
+                    }
+                )
+            }
+
+            // 2. Aktualizacja pozostałych danych profilu
             val request = UserUpdateRequest(
                 firstName = state.firstName.trim(),
                 lastName = state.lastName.trim(),
                 email = state.email.trim(),
-                phoneNumber = state.phoneNumber.trim().takeIf { it.isNotBlank() },
+                phoneNumber = digitsPhone,
                 password = state.password.takeIf { it.isNotBlank() },
-                avatarUrl = null,
+                avatarUrl = updatedAvatarUrl,
             )
 
             val requiresRelogin =
@@ -159,7 +237,8 @@ class ProfileViewModel(
                                 firstName = user.firstName,
                                 lastName = user.lastName,
                                 email = user.email,
-                                phoneNumber = user.phoneNumber
+                                phoneNumber = user.phoneNumber,
+                                avatarUrl = user.avatarUrl?.takeIf { it != "null" }
                             )
                         }
                     }
@@ -167,7 +246,10 @@ class ProfileViewModel(
                         it.copy(
                             isLoading = false,
                             isSaved = true,
-                            requiresRelogin = requiresRelogin
+                            requiresRelogin = requiresRelogin,
+                            pendingAvatarFile = null,
+                            pendingDeleteAvatar = false,
+                            localAvatarUrl = null
                         )
                     }
                 },
@@ -189,6 +271,59 @@ class ProfileViewModel(
                 _profile.update { it.copy(isLoading = false) }
             }
             onResult(result)
+        }
+    }
+
+    fun uploadAvatar(file: File, onResult: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            _profile.update { it.copy(isLoading = true, error = null) }
+            val userId = tokenManager.userIdFlow.first() ?: return@launch
+            val mimeType = when (file.extension.lowercase()) {
+                "png" -> "image/png"
+                "gif" -> "image/gif"
+                "jpg", "jpeg" -> "image/jpeg"
+                else -> "image/jpeg"
+            }
+            val requestFile = file.asRequestBody(mimeType.toMediaTypeOrNull())
+            val body = MultipartBody.Part.createFormData("file", file.name, requestFile)
+
+            userRepository.uploadAvatar(userId, body).fold(
+                onSuccess = { user ->
+                    _profile.update {
+                        it.copy(
+                            avatarUrl = user.avatarUrl?.takeIf { url -> url != "null" },
+                            isLoading = false
+                        )
+                    }
+                    onResult(true)
+                },
+                onFailure = {
+                    _profile.update { it.copy(isLoading = false) }
+                    onResult(false)
+                },
+            )
+        }
+    }
+
+    fun deleteAvatar(onResult: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            _profile.update { it.copy(isLoading = true, error = null) }
+            val userId = tokenManager.userIdFlow.first() ?: return@launch
+            userRepository.deleteAvatar(userId).fold(
+                onSuccess = { user ->
+                    _profile.update {
+                        it.copy(
+                            avatarUrl = null,
+                            isLoading = false
+                        )
+                    }
+                    onResult(true)
+                },
+                onFailure = {
+                    _profile.update { it.copy(isLoading = false) }
+                    onResult(false)
+                }
+            )
         }
     }
 }

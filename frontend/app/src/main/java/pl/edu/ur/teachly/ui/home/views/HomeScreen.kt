@@ -125,6 +125,7 @@ fun HomeScreen(
                 background = HeaderBackground.Diagonal(
                     listOf(colorScheme.onPrimaryContainer, colorScheme.primary)
                 ),
+                showLogo = true,
             )
 
             when {

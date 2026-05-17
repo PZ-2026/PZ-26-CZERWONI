@@ -35,6 +35,7 @@ public class AdminService {
                 case STUDENT -> totalStudents = count;
                 case TUTOR -> totalTutors = count;
                 case ADMIN -> totalAdmins = count;
+                default -> {}
             }
         }
 
@@ -50,6 +51,7 @@ public class AdminService {
                 case CONFIRMED -> confirmedLessons = count;
                 case COMPLETED -> completedLessons = count;
                 case CANCELLED -> cancelledLessons = count;
+                default -> {}
             }
         }
 

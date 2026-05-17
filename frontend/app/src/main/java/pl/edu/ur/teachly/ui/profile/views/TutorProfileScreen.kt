@@ -135,6 +135,7 @@ fun TutorProfileScreen(
                 StudentProfile(
                     firstName = t.name.substringBefore(" "),
                     lastName = t.name.substringAfter(" "),
+                    avatarUrl = t.avatarUrl,
                 )
             }
 
@@ -200,12 +201,22 @@ fun TutorProfileScreen(
                                 label = stringResource(R.string.lesson_format),
                                 value = t.tags.joinToString(" / "),
                             )
-                            if (profile.createdAt.isNotBlank()) {
+                            val formattedDate = remember(profile.createdAt) {
+                                try {
+                                    val datePart = profile.createdAt.take(10)
+                                    if (datePart.isNotBlank() && datePart != "null") {
+                                        formatDate(LocalDate.parse(datePart))
+                                    } else ""
+                                } catch (e: Exception) {
+                                    ""
+                                }
+                            }
+                            if (formattedDate.isNotBlank()) {
                                 ProfileDataDivider()
                                 ProfileInfoRow(
                                     icon = Icons.Default.CalendarToday,
                                     label = stringResource(R.string.account_active_since),
-                                    value = formatDate(LocalDate.parse(profile.createdAt.take(10))),
+                                    value = formattedDate,
                                 )
                             }
                             ProfileDataDivider()
