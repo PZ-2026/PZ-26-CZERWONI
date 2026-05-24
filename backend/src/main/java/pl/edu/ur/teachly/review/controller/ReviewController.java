@@ -1,6 +1,7 @@
 package pl.edu.ur.teachly.review.controller;
 
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -10,8 +11,6 @@ import pl.edu.ur.teachly.review.dto.request.ReviewRequest;
 import pl.edu.ur.teachly.review.dto.response.ReviewResponse;
 import pl.edu.ur.teachly.review.service.ReviewService;
 import pl.edu.ur.teachly.user.entity.User;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/reviews")

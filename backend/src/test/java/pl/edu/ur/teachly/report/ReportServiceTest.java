@@ -22,7 +22,7 @@ public class ReportServiceTest {
         LocalDate endDate = LocalDate.now();
         LocalDate startDate = endDate.minusYears(1);
         try {
-            reportService.generateReport(tutor, startDate, endDate);
+            reportService.generateReport(tutor, startDate, endDate, "LESSONS", null);
             System.out.println("TUTOR REPORT SUCCESS");
         } catch (Exception e) {
             e.printStackTrace();

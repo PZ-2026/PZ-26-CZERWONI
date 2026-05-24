@@ -1,4 +1,4 @@
-package pl.edu.ur.teachly.report.pdf;
+package pl.edu.ur.teachly.report.library.pdf;
 
 import com.lowagie.text.Font;
 import com.lowagie.text.Phrase;
@@ -9,47 +9,48 @@ import java.awt.Color;
 public class PdfTableBuilder {
     private final PdfPTable table;
 
-    // Status colours (rows)
-    static final Color COLOR_COMPLETED = new Color(198, 239, 206); // green
-    static final Color COLOR_CANCELLED = new Color(255, 199, 206); // red
-    static final Color COLOR_CONFIRMED = new Color(189, 215, 238); // blue
-    static final Color COLOR_PENDING = new Color(255, 255, 220);   // light yellow
-    static final Color COLOR_ROW_ALT = new Color(245, 245, 245);
+    // Status colors (rows)
+    static final Color COLOR_COMPLETED = new Color(220, 252, 231); // light green
+    static final Color COLOR_CANCELLED = new Color(254, 226, 226); // light red
+    static final Color COLOR_CONFIRMED = new Color(219, 234, 254); // light blue
+    static final Color COLOR_PENDING = new Color(254, 249, 195);   // light yellow
+    static final Color COLOR_ROW_ALT = new Color(248, 250, 252);   // slate-50
     static final Color COLOR_ROW = Color.WHITE;
-    static final Color COLOR_HEADER = new Color(68, 114, 196); // header blue
+    static final Color COLOR_HEADER = new Color(79, 70, 229);      // Indigo-600
 
-    // Stat colours (text)
-    public static final Color COLOR_TEXT_COMPLETED = new Color(0, 128, 0); // dark green
-    public static final Color COLOR_TEXT_CANCELLED = new Color(192, 0, 0); // dark red
-    public static final Color COLOR_TEXT_CONFIRMED = new Color(0, 70, 180); // dark blue
-    public static final Color COLOR_TEXT_PENDING = new Color(153, 102, 0); // dark yellow
+    public static final Color COLOR_TEXT_COMPLETED = new Color(22, 101, 52); // dark green
+    public static final Color COLOR_TEXT_CANCELLED = new Color(153, 27, 27); // dark red
+    public static final Color COLOR_TEXT_CONFIRMED = new Color(30, 64, 175); // dark blue
+    public static final Color COLOR_TEXT_PENDING = new Color(133, 77, 14);   // dark yellow
 
     private static final Font HEADER_FONT =
-            new Font(PdfDocumentBuilder.BASE_FONT_BOLD, 10, Font.BOLD, Color.WHITE);
-    private static final Font ROW_FONT = new Font(PdfDocumentBuilder.BASE_FONT, 9, Font.NORMAL);
+            new Font(PdfDocumentBuilder.BASE_FONT_BOLD, 9, Font.BOLD, Color.WHITE);
+    private static final Font ROW_FONT = new Font(PdfDocumentBuilder.BASE_FONT, 8, Font.NORMAL, new Color(51, 65, 85));
 
     private int rowIndex = 0;
 
     public PdfTableBuilder(int numColumns) {
         this.table = new PdfPTable(numColumns);
         this.table.setWidthPercentage(100);
-        this.table.setSpacingBefore(10f);
-        this.table.setSpacingAfter(10f);
+        this.table.setSpacingBefore(12f);
+        this.table.setSpacingAfter(12f);
     }
 
     public PdfTableBuilder(float[] columnWidths) {
         this.table = new PdfPTable(columnWidths);
         this.table.setWidthPercentage(100);
-        this.table.setSpacingBefore(10f);
-        this.table.setSpacingAfter(10f);
+        this.table.setSpacingBefore(12f);
+        this.table.setSpacingAfter(12f);
     }
 
     public PdfTableBuilder addHeaders(String... headers) {
         for (String header : headers) {
             PdfPCell cell = new PdfPCell(new Phrase(header, HEADER_FONT));
             cell.setBackgroundColor(COLOR_HEADER);
-            cell.setPadding(8f);
-            cell.setBorderColor(new Color(40, 80, 150));
+            cell.setPadding(6f);
+            cell.setBorderColor(new Color(199, 210, 254)); // Indigo-200
+            cell.setHorizontalAlignment(PdfPCell.ALIGN_CENTER);
+            cell.setVerticalAlignment(PdfPCell.ALIGN_MIDDLE);
             this.table.addCell(cell);
         }
         return this;
@@ -61,6 +62,7 @@ public class PdfTableBuilder {
             PdfPCell cell = new PdfPCell(new Phrase(data, ROW_FONT));
             cell.setBackgroundColor(bgColor);
             cell.setPadding(5f);
+            cell.setBorderColor(new Color(226, 232, 240)); // slate-200
             this.table.addCell(cell);
         }
         rowIndex++;
@@ -80,6 +82,7 @@ public class PdfTableBuilder {
             PdfPCell cell = new PdfPCell(new Phrase(data, ROW_FONT));
             cell.setBackgroundColor(bgColor);
             cell.setPadding(5f);
+            cell.setBorderColor(new Color(226, 232, 240)); // slate-200
             this.table.addCell(cell);
         }
         rowIndex++;
