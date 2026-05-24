@@ -1,6 +1,7 @@
 package pl.edu.ur.teachly.report;
 
 import java.time.LocalDate;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
@@ -27,9 +28,12 @@ public class ReportController {
     public ResponseEntity<?> getMyReport(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+            @RequestParam(required = false, defaultValue = "LESSONS") String type,
+            @RequestParam(required = false) List<String> includeFields,
             @AuthenticationPrincipal User user) {
         try {
-            byte[] pdfBytes = reportService.generateReport(user, startDate, endDate);
+            byte[] pdfBytes =
+                    reportService.generateReport(user, startDate, endDate, type, includeFields);
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_PDF);
