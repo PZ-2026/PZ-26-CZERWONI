@@ -49,6 +49,8 @@ dependencies {
     annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
     // OpenPDF for Reports
     implementation 'com.github.librepdf:openpdf:1.3.38'
+    // Custom Local Report Library
+    implementation files('libs/report-library.jar')
     // Tests
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'

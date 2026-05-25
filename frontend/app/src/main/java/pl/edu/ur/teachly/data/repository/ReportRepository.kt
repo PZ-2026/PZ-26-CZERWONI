@@ -13,14 +13,20 @@ class ReportRepository(
     private val reportApiService: ReportApiService,
     private val context: Context,
 ) {
-    suspend fun downloadReport(startDate: String, endDate: String): Result<File> =
+    suspend fun downloadReport(
+        startDate: String,
+        endDate: String,
+        type: String,
+        includeFields: List<String>,
+    ): Result<File> =
         withContext(Dispatchers.IO) {
             try {
-                val response = reportApiService.getMyReport(startDate, endDate)
+                val includeFieldsStr = if (includeFields.isEmpty()) "none" else includeFields.joinToString(",")
+                val response = reportApiService.getMyReport(startDate, endDate, type, includeFieldsStr)
                 if (response.isSuccessful) {
                     val body = response.body()
                     if (body != null) {
-                        val fileName = "Raport_Teachly_${startDate}_${endDate}.pdf"
+                        val fileName = "Raport_Teachly_${type}_${startDate}_${endDate}.pdf"
                         val downloadsDir =
                             context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)
                         if (downloadsDir != null && !downloadsDir.exists()) {

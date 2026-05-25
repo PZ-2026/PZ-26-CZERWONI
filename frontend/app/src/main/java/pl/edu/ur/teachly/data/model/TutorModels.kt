@@ -20,6 +20,13 @@ data class TutorResponse(
     val offersInPerson: Boolean
 )
 
+data class TutorSelfProfileRequest(
+    val bio: String?,
+    val hourlyRate: Double,
+    val offersOnline: Boolean,
+    val offersInPerson: Boolean,
+)
+
 data class TutorSubjectRequest(
     val subjectId: Int,
     val levelPrimary: Boolean?,

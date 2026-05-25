@@ -10,6 +10,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.core.view.WindowCompat
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import org.koin.compose.koinInject
 import pl.edu.ur.teachly.data.local.TokenManager
@@ -29,13 +30,18 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
                 val tokenManager = koinInject<TokenManager>()
                 val role by tokenManager.roleFlow.collectAsState(initial = null)
+                val currentRoute by navController.currentBackStackEntryAsState()
+                val showBottomBar = currentRoute?.destination?.route
+                    ?.contains("TutorSetup") != true
 
                 Scaffold(
                     bottomBar = {
-                        if (role == "ADMIN") {
-                            AdminBottomNavBar(navController = navController)
-                        } else {
-                            BottomNavBar(navController = navController, role = role)
+                        if (showBottomBar) {
+                            if (role == "ADMIN") {
+                                AdminBottomNavBar(navController = navController)
+                            } else {
+                                BottomNavBar(navController = navController, role = role)
+                            }
                         }
                     }
                 ) { innerPadding ->

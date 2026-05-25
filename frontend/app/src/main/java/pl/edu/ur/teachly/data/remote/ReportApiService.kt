@@ -12,5 +12,7 @@ interface ReportApiService {
     suspend fun getMyReport(
         @Query("startDate") startDate: String,
         @Query("endDate") endDate: String,
+        @Query("type") type: String,
+        @Query("includeFields") includeFields: String?,
     ): Response<ResponseBody>
 }

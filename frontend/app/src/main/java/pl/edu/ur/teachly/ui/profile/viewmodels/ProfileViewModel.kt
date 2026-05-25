@@ -260,10 +260,16 @@ class ProfileViewModel(
         }
     }
 
-    fun downloadReport(startDate: String, endDate: String, onResult: (Result<java.io.File>) -> Unit) {
+    fun downloadReport(
+        startDate: String,
+        endDate: String,
+        type: String,
+        includeFields: List<String>,
+        onResult: (Result<java.io.File>) -> Unit,
+    ) {
         viewModelScope.launch {
             _profile.update { it.copy(isLoading = true, error = null) }
-            val result = reportRepository.downloadReport(startDate, endDate)
+            val result = reportRepository.downloadReport(startDate, endDate, type, includeFields)
             result.onFailure { e ->
                 _profile.update { it.copy(isLoading = false, error = e.message) }
             }

@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.core.content.FileProvider
 import pl.edu.ur.teachly.ui.profile.viewmodels.ProfileViewModel
+import pl.edu.ur.teachly.data.model.UserRole
 import java.io.File
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -44,17 +45,109 @@ fun ReportDownloadSection(
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
+    val profileState by viewModel.profile.collectAsState()
+    val role = profileState.role
 
     val modes = listOf("Dzień", "Tydzień", "Miesiąc", "Rok")
     var selectedMode by remember { mutableStateOf("Miesiąc") }
     var modeExpanded by remember { mutableStateOf(false) }
 
-    // reference date (for DAY/WEEK), reference month, reference year
+    // Reference dates
     var referenceDate by remember { mutableStateOf(LocalDate.now()) }
     var referenceYearMonth by remember { mutableStateOf(YearMonth.now()) }
     var referenceYear by remember { mutableStateOf(LocalDate.now().year) }
 
     var showPicker by remember { mutableStateOf(false) }
+
+    // Report Type choices per user role
+    val reportTypes = remember(role) {
+        when (role) {
+            UserRole.STUDENT -> listOf(
+                "LESSONS" to "Historia lekcji",
+                "EXPENSES" to "Podsumowanie wydatków",
+                "ANALYTICS" to "Czas nauki i analiza"
+            )
+            UserRole.TUTOR -> listOf(
+                "LESSONS" to "Historia zajęć",
+                "REVENUE" to "Podsumowanie przychodów",
+                "STUDENTS" to "Analiza uczniów"
+            )
+            UserRole.ADMIN -> listOf(
+                "LESSONS" to "Wszystkie lekcje platformy",
+                "REVENUE" to "Obrót finansowy platformy",
+                "USERS" to "Analiza zarejestrowanych kont"
+            )
+        }
+    }
+
+    var selectedReportKey by remember(role) {
+        mutableStateOf(
+            when (role) {
+                UserRole.STUDENT -> "LESSONS"
+                UserRole.TUTOR -> "LESSONS"
+                UserRole.ADMIN -> "LESSONS"
+            }
+        )
+    }
+    var reportTypeExpanded by remember { mutableStateOf(false) }
+
+    // Dynamically available fields for checkbox selections
+    val availableFields = remember(role, selectedReportKey) {
+        val list = mutableListOf<Pair<String, String>>()
+        when (selectedReportKey) {
+            "LESSONS" -> {
+                list.add("Data" to "date")
+                list.add("Czas" to "time")
+                list.add("Przedmiot" to "subject")
+                if (role == UserRole.STUDENT) {
+                    list.add("Cena" to "price")
+                } else {
+                    list.add("Zarobki" to "price")
+                }
+                list.add("Statusy lekcji" to "status")
+                if (role == UserRole.STUDENT || role == UserRole.ADMIN) {
+                    list.add("Dane korepetytora" to "tutor")
+                }
+                if (role == UserRole.TUTOR || role == UserRole.ADMIN) {
+                    list.add("Dane ucznia" to "student")
+                }
+            }
+            "REVENUE" -> {
+                list.add("Przedmiot" to "subject")
+                list.add("Zarobki" to "price")
+                list.add("Liczba lekcji" to "status")
+                list.add("Wykresy i wizualizacje" to "charts")
+            }
+            "EXPENSES" -> {
+                list.add("Przedmiot" to "subject")
+                list.add("Kwota" to "price")
+                list.add("Korepetytor" to "tutor")
+                list.add("Data" to "date")
+                list.add("Wykresy i wizualizacje" to "charts")
+            }
+            "ANALYTICS" -> {
+                list.add("Korepetytor" to "tutor")
+                list.add("Przedmiot" to "subject")
+                list.add("Czas nauki" to "status")
+                list.add("Wykresy i wizualizacje" to "charts")
+            }
+            "STUDENTS" -> {
+                list.add("Dane ucznia" to "student")
+                list.add("Przedmiot" to "subject")
+                list.add("Przeprowadzone lekcje" to "status")
+                list.add("Wykresy i wizualizacje" to "charts")
+            }
+            "USERS" -> {
+                list.add("Tabela użytkowników" to "student")
+                list.add("Wykresy i wizualizacje" to "charts")
+            }
+        }
+        list
+    }
+
+    var selectedFields by remember(availableFields) {
+        mutableStateOf(availableFields.map { it.second }.toSet())
+    }
 
     val (startDate, endDate, rangeLabel) = remember(selectedMode, referenceDate, referenceYearMonth, referenceYear) {
         when (selectedMode) {
@@ -131,7 +224,86 @@ fun ReportDownloadSection(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
 
-            // Wybor trybu
+            // 1. Wybór typu raportu
+            val currentReportTypeName = reportTypes.firstOrNull { it.first == selectedReportKey }?.second ?: ""
+            ExposedDropdownMenuBox(
+                expanded = reportTypeExpanded,
+                onExpandedChange = { reportTypeExpanded = !reportTypeExpanded },
+            ) {
+                OutlinedTextField(
+                    value = currentReportTypeName,
+                    onValueChange = {},
+                    readOnly = true,
+                    label = { Text("Typ raportu") },
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = reportTypeExpanded) },
+                    modifier = Modifier.menuAnchor().fillMaxWidth(),
+                    colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
+                )
+                ExposedDropdownMenu(
+                    expanded = reportTypeExpanded,
+                    onDismissRequest = { reportTypeExpanded = false }
+                ) {
+                    reportTypes.forEach { (key, name) ->
+                        DropdownMenuItem(
+                            text = { Text(name) },
+                            onClick = {
+                                selectedReportKey = key
+                                reportTypeExpanded = false
+                            },
+                        )
+                    }
+                }
+            }
+
+            // 2. Wybór zawartości / kolumn (Checkboxy)
+            Text(
+                text = "Zawartość raportu:",
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(top = 4.dp)
+            )
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(8.dp))
+                    .padding(8.dp),
+                verticalArrangement = Arrangement.spacedBy(2.dp)
+            ) {
+                availableFields.forEach { (label, key) ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                selectedFields = if (selectedFields.contains(key)) {
+                                    selectedFields - key
+                                } else {
+                                    selectedFields + key
+                                }
+                            }
+                            .padding(vertical = 4.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Checkbox(
+                            checked = selectedFields.contains(key),
+                            onCheckedChange = { checked ->
+                                selectedFields = if (checked == true) {
+                                    selectedFields + key
+                                } else {
+                                    selectedFields - key
+                                }
+                            }
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = label,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+            }
+
+            // 3. Wybór zakresu czasowego
             ExposedDropdownMenuBox(
                 expanded = modeExpanded,
                 onExpandedChange = { modeExpanded = !modeExpanded },
@@ -140,7 +312,7 @@ fun ReportDownloadSection(
                     value = selectedMode,
                     onValueChange = {},
                     readOnly = true,
-                    label = { Text("Typ zakresu") },
+                    label = { Text("Typ zakresu dat") },
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = modeExpanded) },
                     modifier = Modifier.menuAnchor().fillMaxWidth(),
                     colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
@@ -155,7 +327,6 @@ fun ReportDownloadSection(
                 }
             }
 
-            // Przycisk wyboru okresu
             OutlinedButton(
                 onClick = { showPicker = true },
                 modifier = Modifier.fillMaxWidth(),
@@ -163,7 +334,6 @@ fun ReportDownloadSection(
                 Text("Wybierz okres")
             }
 
-            // Podglad zakresu
             Surface(
                 shape = RoundedCornerShape(8.dp),
                 color = MaterialTheme.colorScheme.primaryContainer,
@@ -183,7 +353,12 @@ fun ReportDownloadSection(
 
             Button(
                 onClick = {
-                    viewModel.downloadReport(ISO.format(startDate), ISO.format(endDate)) { result ->
+                    viewModel.downloadReport(
+                        startDate = ISO.format(startDate),
+                        endDate = ISO.format(endDate),
+                        type = selectedReportKey,
+                        includeFields = selectedFields.toList()
+                    ) { result ->
                         result.onSuccess { file ->
                             Toast.makeText(context, "Zapisano: ${file.name}", Toast.LENGTH_LONG).show()
                             openPdfFile(context, file)

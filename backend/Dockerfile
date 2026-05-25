@@ -7,6 +7,7 @@ WORKDIR /app
 COPY build.gradle settings.gradle ./
 COPY gradle ./gradle
 COPY gradlew ./
+COPY libs ./libs
 RUN chmod +x gradlew && ./gradlew dependencies --no-daemon --quiet
 
 # Build application
