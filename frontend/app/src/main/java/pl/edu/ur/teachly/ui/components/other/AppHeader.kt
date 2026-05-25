@@ -29,6 +29,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import pl.edu.ur.teachly.R
+import androidx.compose.foundation.Image
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.draw.clip
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Arrangement
 
 sealed interface HeaderBackground {
     data class Vertical(val colors: List<Color>) : HeaderBackground
@@ -44,6 +49,7 @@ fun AppHeader(
     topPadding: Dp = 24.dp,
     bottomPadding: Dp = 20.dp,
     decorativeCircle: Boolean = false,
+    showLogo: Boolean = false,
 ) {
     val brush = when (background) {
         is HeaderBackground.Vertical -> Brush.verticalGradient(background.colors)
@@ -102,21 +108,40 @@ fun AppHeader(
                 Spacer(Modifier.height(32.dp))
             } else Spacer(Modifier.height(12.dp))
 
-            Text(
-                text = title,
-                style = typography.headlineMedium,
-                fontWeight = FontWeight.Bold,
-                color = colorScheme.onPrimary,
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = title,
+                        style = typography.headlineMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = colorScheme.onPrimary,
+                    )
 
-            if (subtitle != null) {
-                Spacer(Modifier.height(6.dp))
-                Text(
-                    text = subtitle,
-                    style = typography.bodyLarge,
-                    color = colorScheme.onPrimary.copy(alpha = 0.75f),
-                )
+                    if (subtitle != null) {
+                        Spacer(Modifier.height(6.dp))
+                        Text(
+                            text = subtitle,
+                            style = typography.bodyLarge,
+                            color = colorScheme.onPrimary.copy(alpha = 0.75f),
+                        )
+                    }
+                }
+
+                if (showLogo) {
+                    Image(
+                        painter = painterResource(R.drawable.app_logo),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(52.dp)
+                            .clip(RoundedCornerShape(16.dp))
+                    )
+                }
             }
+
             if (onBack == null) {
                 Spacer(Modifier.height(12.dp))
             }

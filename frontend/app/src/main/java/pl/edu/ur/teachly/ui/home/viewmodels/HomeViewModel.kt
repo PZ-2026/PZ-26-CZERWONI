@@ -26,6 +26,7 @@ data class PendingReviewInfo(
     val tutorFirstName: String,
     val tutorLastName: String,
     val subjectName: String,
+    val tutorAvatarUrl: String?,
 )
 
 data class HomeUiState(
@@ -132,6 +133,7 @@ class HomeViewModel(
                                                     tutorFirstName = lesson.tutorFirstName,
                                                     tutorLastName = lesson.tutorLastName,
                                                     subjectName = lesson.subjectName,
+                                                    tutorAvatarUrl = lesson.tutorAvatarUrl?.takeIf { it != "null" },
                                                 )
                                             }
                                         _state.update { it.copy(pendingReviews = pendingReviews) }

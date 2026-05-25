@@ -28,6 +28,7 @@ fun TutorResponse.toUiTutor(
     nearestSlots = emptyList(),
     bio = bio ?: "",
     lessonCount = lessonCount,
+    avatarUrl = avatarUrl?.takeIf { it != "null" },
 )
 
 fun LessonResponse.toScheduledClass(): ScheduledClass = ScheduledClass(
@@ -35,6 +36,8 @@ fun LessonResponse.toScheduledClass(): ScheduledClass = ScheduledClass(
     subject = subjectName,
     tutorName = "$tutorFirstName $tutorLastName".trim(),
     studentName = "$studentFirstName $studentLastName".trim(),
+    tutorAvatarUrl = tutorAvatarUrl?.takeIf { it != "null" },
+    studentAvatarUrl = studentAvatarUrl?.takeIf { it != "null" },
     day = LocalDate.parse(lessonDate),
     time = timeFrom.take(5),
     durationMinutes = if (timeFrom.isNotEmpty() && timeTo.isNotEmpty()) {
@@ -60,9 +63,11 @@ fun LessonResponse.toUiLessonDetail(): LessonDetail = LessonDetail(
     tutorId = tutorId,
     tutorFirstName = tutorFirstName,
     tutorLastName = tutorLastName,
+    tutorAvatarUrl = tutorAvatarUrl?.takeIf { it != "null" },
     studentId = studentId,
     studentFirstName = studentFirstName,
     studentLastName = studentLastName,
+    studentAvatarUrl = studentAvatarUrl?.takeIf { it != "null" },
     lessonDate = try {
         LocalDate.parse(lessonDate)
     } catch (e: Exception) {

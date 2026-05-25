@@ -136,20 +136,13 @@ private fun LogoRow() {
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(10.dp)
     ) {
-        Box(
+        androidx.compose.foundation.Image(
+            painter = painterResource(R.drawable.app_logo),
+            contentDescription = null,
             modifier = Modifier
-                .size(44.dp)
-                .clip(RoundedCornerShape(14.dp))
-                .background(colorScheme.primary),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                painter = painterResource(R.drawable.ic_logo),
-                contentDescription = null,
-                tint = Color.Unspecified,
-                modifier = Modifier.size(44.dp)
-            )
-        }
+                .size(52.dp)
+                .clip(RoundedCornerShape(16.dp))
+        )
         Text(
             text = stringResource(R.string.app_name),
             style = typography.titleLarge,

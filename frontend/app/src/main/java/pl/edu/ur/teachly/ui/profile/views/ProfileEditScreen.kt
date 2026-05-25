@@ -1,5 +1,11 @@
 package pl.edu.ur.teachly.ui.profile.views
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.net.Uri
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -10,15 +16,32 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
+import com.canhub.cropper.CropImageContract
+import com.canhub.cropper.CropImageContractOptions
+import com.canhub.cropper.CropImageOptions
+import com.canhub.cropper.CropImageView
 import org.koin.androidx.compose.koinViewModel
 import pl.edu.ur.teachly.R
 import pl.edu.ur.teachly.ui.components.auth.AuthTextField
@@ -29,6 +52,7 @@ import pl.edu.ur.teachly.ui.components.other.InitialsAvatar
 import pl.edu.ur.teachly.ui.components.other.PrimaryButton
 import pl.edu.ur.teachly.ui.profile.viewmodels.ProfileViewModel
 import pl.edu.ur.teachly.ui.theme.AvatarColors
+import java.io.File
 
 @Composable
 fun ProfileEditScreen(
@@ -37,6 +61,8 @@ fun ProfileEditScreen(
     viewModel: ProfileViewModel = koinViewModel(),
 ) {
     val editState by viewModel.editState.collectAsState()
+    val profile by viewModel.profile.collectAsState()
+    val context = LocalContext.current
 
     LaunchedEffect(Unit) { viewModel.startEditing() }
 
@@ -47,18 +73,148 @@ fun ProfileEditScreen(
         }
     }
 
+    var showPickerDialog by remember { mutableStateOf(false) }
+    var tempCameraUri by remember { mutableStateOf<Uri?>(null) }
+    var tempCameraFile by remember { mutableStateOf<File?>(null) }
+
+    // Launcher do przycinania zdjęć
+    val cropLauncher = rememberLauncherForActivityResult(CropImageContract()) { result ->
+        if (result.isSuccessful) {
+            val croppedUri = result.uriContent
+            if (croppedUri != null) {
+                // Przekształcamy Uri na plik za pomocą strumienia i wysyłamy na backend
+                val file = uriToFile(context, croppedUri)
+                if (file != null && file.exists()) {
+                    // Walidacja rozmiaru pliku (max 5 MB)
+                    if (file.length() > 5 * 1024 * 1024) {
+                        Toast.makeText(context, "Plik jest za duży. Maksymalny rozmiar to 5 MB.", Toast.LENGTH_LONG).show()
+                        return@rememberLauncherForActivityResult
+                    }
+                    // Walidacja formatu pliku
+                    val extension = file.extension.lowercase()
+                    if (extension != "jpg" && extension != "jpeg" && extension != "png") {
+                        Toast.makeText(context, "Niedozwolony format pliku. Dozwolone są tylko JPG i PNG.", Toast.LENGTH_LONG).show()
+                        return@rememberLauncherForActivityResult
+                    }
+
+                    viewModel.setPendingAvatar(file)
+                    Toast.makeText(context, "Zdjęcie profilowe zostało wybrane (zapisz zmiany, aby zatwierdzić)", Toast.LENGTH_LONG).show()
+                } else {
+                    Toast.makeText(context, "Nie udało się odczytać pliku obrazu", Toast.LENGTH_SHORT).show()
+                }
+            }
+        } else {
+            val error = result.error
+            error?.printStackTrace()
+        }
+    }
+
+    // Launcher do galerii
+    val galleryLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        if (uri != null) {
+            val cropOptions = CropImageContractOptions(
+                uri = uri,
+                cropImageOptions = CropImageOptions(
+                    guidelines = CropImageView.Guidelines.ON,
+                    aspectRatioX = 1,
+                    aspectRatioY = 1,
+                    fixAspectRatio = true,
+                    cropShape = CropImageView.CropShape.RECTANGLE
+                )
+            )
+            cropLauncher.launch(cropOptions)
+        }
+    }
+
+    // Launcher do aparatu
+    val cameraLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.TakePicture()
+    ) { success: Boolean ->
+        if (success && tempCameraUri != null) {
+            val cropOptions = CropImageContractOptions(
+                uri = tempCameraUri,
+                cropImageOptions = CropImageOptions(
+                    guidelines = CropImageView.Guidelines.ON,
+                    aspectRatioX = 1,
+                    aspectRatioY = 1,
+                    fixAspectRatio = true,
+                    cropShape = CropImageView.CropShape.RECTANGLE
+                )
+            )
+            cropLauncher.launch(cropOptions)
+        }
+    }
+
+    // Launcher uprawnień aparatu
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        if (isGranted) {
+            try {
+                val file = File.createTempFile("avatar_capture_", ".jpg", context.cacheDir)
+                val uri = FileProvider.getUriForFile(context, "${context.packageName}.provider", file)
+                tempCameraFile = file
+                tempCameraUri = uri
+                cameraLauncher.launch(uri)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        } else {
+            Toast.makeText(context, "Uprawnienie do aparatu jest wymagane, aby zrobić zdjęcie", Toast.LENGTH_SHORT).show()
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(colorScheme.background)
     ) {
+        var showConfirmBackDialog by remember { mutableStateOf(false) }
+
+        val isDirty = editState.firstName.trim() != profile.firstName.trim() ||
+                editState.lastName.trim() != profile.lastName.trim() ||
+                editState.email.trim() != profile.email.trim() ||
+                editState.phoneNumber.trim() != (profile.phoneNumber ?: "").trim() ||
+                editState.password.isNotEmpty() ||
+                editState.pendingAvatarFile != null ||
+                editState.pendingDeleteAvatar
+
+        if (showConfirmBackDialog) {
+            androidx.compose.material3.AlertDialog(
+                onDismissRequest = { showConfirmBackDialog = false },
+                title = { Text("Niezapisane zmiany") },
+                text = { Text("Masz niezapisane zmiany. Czy na pewno chcesz wyjść bez zapisywania?") },
+                confirmButton = {
+                    TextButton(onClick = { 
+                        showConfirmBackDialog = false
+                        onBack() 
+                    }) {
+                        Text("Tak, wyjdź", color = colorScheme.error)
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showConfirmBackDialog = false }) {
+                        Text("Anuluj")
+                    }
+                }
+            )
+        }
+
         AppHeader(
             title = "Edytuj profil",
             subtitle = "Zmień swoje dane",
             background = HeaderBackground.Diagonal(
                 listOf(colorScheme.onPrimaryContainer, colorScheme.primary)
             ),
-            onBack = onBack,
+            onBack = {
+                if (isDirty) {
+                    showConfirmBackDialog = true
+                } else {
+                    onBack()
+                }
+            },
         )
 
         Column(
@@ -76,8 +232,16 @@ fun ProfileEditScreen(
                     editState.firstName.firstOrNull() ?: "",
                     editState.lastName.firstOrNull() ?: ""
                 )
+
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-                InitialsAvatar(initials = initials, avatarColor = AvatarColors[0], size = 96.dp)
+                InitialsAvatar(
+                    initials = initials,
+                    avatarColor = AvatarColors[0],
+                    avatarUrl = editState.localAvatarUrl ?: if (editState.pendingDeleteAvatar) null else profile.avatarUrl,
+                    size = 96.dp,
+                    isEditable = profile.role != pl.edu.ur.teachly.data.model.UserRole.ADMIN,
+                    onEditClick = { showPickerDialog = true }
+                )
             }
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -131,5 +295,93 @@ fun ProfileEditScreen(
                 modifier = Modifier.padding(bottom = 32.dp, top = 24.dp),
             )
         }
+    }
+
+    if (showPickerDialog) {
+        Dialog(onDismissRequest = { showPickerDialog = false }) {
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(containerColor = colorScheme.surface)
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Text(
+                        text = "Wybierz opcję",
+                        style = androidx.compose.material3.MaterialTheme.typography.titleMedium,
+                        color = colorScheme.onSurface
+                    )
+                    PrimaryButton(
+                        text = "Zrób zdjęcie",
+                        onClick = {
+                            showPickerDialog = false
+                            val permission = Manifest.permission.CAMERA
+                            if (ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED) {
+                                try {
+                                    val file = File.createTempFile("avatar_capture_", ".jpg", context.cacheDir)
+                                    val uri = FileProvider.getUriForFile(context, "${context.packageName}.provider", file)
+                                    tempCameraFile = file
+                                    tempCameraUri = uri
+                                    cameraLauncher.launch(uri)
+                                } catch (e: Exception) {
+                                    e.printStackTrace()
+                                }
+                            } else {
+                                permissionLauncher.launch(permission)
+                            }
+                        }
+                    )
+                    PrimaryButton(
+                        text = "Wybierz z galerii",
+                        onClick = {
+                            showPickerDialog = false
+                            galleryLauncher.launch("image/*")
+                        }
+                    )
+                    val currentAvatarUrl = editState.localAvatarUrl ?: if (editState.pendingDeleteAvatar) null else profile.avatarUrl
+                    val hasCustomAvatar = !currentAvatarUrl.isNullOrBlank() &&
+                            !currentAvatarUrl.equals("null", ignoreCase = true) &&
+                            !currentAvatarUrl.contains("/null", ignoreCase = true) &&
+                            !currentAvatarUrl.endsWith("/uploads/avatars/", ignoreCase = true) &&
+                            currentAvatarUrl.contains("/")
+                    if (hasCustomAvatar) {
+                        PrimaryButton(
+                            text = "Usuń zdjęcie",
+                            onClick = {
+                                showPickerDialog = false
+                                viewModel.setPendingDeleteAvatar()
+                                Toast.makeText(context, "Zdjęcie oznaczone do usunięcia (zapisz zmiany, aby zatwierdzić)", Toast.LENGTH_SHORT).show()
+                            }
+                        )
+                    }
+                    TextButton(
+                        onClick = { showPickerDialog = false }
+                    ) {
+                        Text("Anuluj", color = colorScheme.primary)
+                    }
+                }
+            }
+        }
+    }
+}
+
+private fun uriToFile(context: android.content.Context, uri: Uri): File? {
+    return try {
+        val inputStream = context.contentResolver.openInputStream(uri) ?: return null
+        val tempFile = File.createTempFile("avatar_upload_", ".jpg", context.cacheDir)
+        tempFile.outputStream().use { outputStream ->
+            inputStream.use { input ->
+                input.copyTo(outputStream)
+            }
+        }
+        tempFile
+    } catch (e: Exception) {
+        e.printStackTrace()
+        null
     }
 }

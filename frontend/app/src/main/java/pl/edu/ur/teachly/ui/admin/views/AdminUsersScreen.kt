@@ -145,8 +145,8 @@ fun AdminUsersScreen(
         AdminUserEditDialog(
             user = user,
             onDismiss = { showEditDialog = null },
-            onSave = { request ->
-                viewModel.updateUser(user.id, request)
+            onSave = { request, pendingFile, pendingDelete ->
+                viewModel.updateUser(user.id, request, pendingFile, pendingDelete)
                 showEditDialog = null
             }
         )

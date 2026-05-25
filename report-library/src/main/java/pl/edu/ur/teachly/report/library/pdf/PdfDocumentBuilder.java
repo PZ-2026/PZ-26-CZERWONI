@@ -29,34 +29,46 @@ public class PdfDocumentBuilder {
 
     private static BaseFont loadSpecificFont(boolean bold) {
         String resourcePath = bold ? "/fonts/ArialBold.ttf" : "/fonts/Arial.ttf";
-        String[] sysPaths = bold ? new String[]{
-            "/usr/share/fonts/ttf-dejavu/DejaVuSans-Bold.ttf",
-            "C:/Windows/Fonts/arialbd.ttf",
-            "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
-        } : new String[]{
-            "/usr/share/fonts/ttf-dejavu/DejaVuSans.ttf",
-            "C:/Windows/Fonts/arial.ttf",
-            "C:/Windows/Fonts/tahoma.ttf",
-            "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
-        };
+        String[] sysPaths =
+                bold
+                        ? new String[] {
+                            "/usr/share/fonts/ttf-dejavu/DejaVuSans-Bold.ttf",
+                            "C:/Windows/Fonts/arialbd.ttf",
+                            "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
+                        }
+                        : new String[] {
+                            "/usr/share/fonts/ttf-dejavu/DejaVuSans.ttf",
+                            "C:/Windows/Fonts/arial.ttf",
+                            "C:/Windows/Fonts/tahoma.ttf",
+                            "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
+                        };
 
         try (java.io.InputStream is = PdfDocumentBuilder.class.getResourceAsStream(resourcePath)) {
             if (is != null) {
                 byte[] fontBytes = is.readAllBytes();
-                return BaseFont.createFont(resourcePath, BaseFont.IDENTITY_H, BaseFont.EMBEDDED, true, fontBytes, null);
+                return BaseFont.createFont(
+                        resourcePath,
+                        BaseFont.IDENTITY_H,
+                        BaseFont.EMBEDDED,
+                        true,
+                        fontBytes,
+                        null);
             }
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
 
         for (String path : sysPaths) {
             try {
                 return BaseFont.createFont(path, BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) {
+            }
         }
 
         for (String path : sysPaths) {
             try {
                 return BaseFont.createFont(path, BaseFont.CP1250, BaseFont.EMBEDDED);
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) {
+            }
         }
 
         try {

@@ -15,11 +15,13 @@ public record LessonResponse(
         Integer tutorId,
         String tutorFirstName,
         String tutorLastName,
+        String tutorAvatarUrl,
 
         // Student
         Integer studentId,
         String studentFirstName,
         String studentLastName,
+        String studentAvatarUrl,
 
         // Subject
         Integer subjectId,

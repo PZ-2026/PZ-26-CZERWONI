@@ -119,6 +119,7 @@ fun TutorDetailScreen(
                     StudentProfile(
                         firstName = t.name.substringBefore(" "),
                         lastName = t.name.substringAfter(" "),
+                        avatarUrl = t.avatarUrl,
                     )
                 }
 

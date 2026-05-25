@@ -66,20 +66,13 @@ fun SearchHeader(
                         color = colorScheme.primary,
                     )
                 }
-                Box(
+                androidx.compose.foundation.Image(
+                    painter = painterResource(R.drawable.app_logo),
+                    contentDescription = null,
                     modifier = Modifier
-                        .size(44.dp)
+                        .size(48.dp)
                         .clip(RoundedCornerShape(14.dp))
-                        .background(colorScheme.primary),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_logo),
-                        contentDescription = null,
-                        tint = Color.Unspecified,
-                        modifier = Modifier.size(44.dp)
-                    )
-                }
+                )
             }
 
             Spacer(Modifier.height(20.dp))

@@ -80,6 +80,7 @@ fun PendingReviewFormDialog(
                 InitialsAvatar(
                     initials = initials,
                     avatarColor = AvatarColors[avatarIndex],
+                    avatarUrl = pending.tutorAvatarUrl,
                     size = 72.dp,
                     cornerRadius = 22.dp,
                 )
@@ -248,6 +249,7 @@ fun PendingReviewsSummaryDialog(
                                 InitialsAvatar(
                                     initials = initials,
                                     avatarColor = AvatarColors[avatarIndex],
+                                    avatarUrl = info.tutorAvatarUrl,
                                     size = 44.dp,
                                     cornerRadius = 14.dp,
                                 )

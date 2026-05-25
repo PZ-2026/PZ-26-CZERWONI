@@ -4,6 +4,7 @@ import pl.edu.ur.teachly.data.model.AdminUserUpdateRequest
 import pl.edu.ur.teachly.data.model.UserResponse
 import pl.edu.ur.teachly.data.model.UserUpdateRequest
 import pl.edu.ur.teachly.data.remote.UserApiService
+import okhttp3.MultipartBody
 
 class UserRepository(private val api: UserApiService) {
 
@@ -62,6 +63,26 @@ class UserRepository(private val api: UserApiService) {
             val response = api.deactivateUser(id)
             if (response.isSuccessful) Result.success(Unit)
             else Result.failure(Exception("Błąd deaktywacji użytkownika"))
+        } catch (e: Exception) {
+            Result.failure(Exception("Brak połączenia z serwerem"))
+        }
+    }
+
+    suspend fun uploadAvatar(id: Int, file: MultipartBody.Part): Result<UserResponse> {
+        return try {
+            val response = api.uploadAvatar(id, file)
+            if (response.isSuccessful) Result.success(response.body()!!)
+            else Result.failure(Exception("Błąd wysyłania zdjęcia"))
+        } catch (e: Exception) {
+            Result.failure(Exception("Brak połączenia z serwerem"))
+        }
+    }
+
+    suspend fun deleteAvatar(id: Int): Result<UserResponse> {
+        return try {
+            val response = api.deleteAvatar(id)
+            if (response.isSuccessful) Result.success(response.body()!!)
+            else Result.failure(Exception("Błąd usuwania zdjęcia"))
         } catch (e: Exception) {
             Result.failure(Exception("Brak połączenia z serwerem"))
         }

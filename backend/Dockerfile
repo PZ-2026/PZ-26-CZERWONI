@@ -25,7 +25,7 @@ WORKDIR /app
 RUN apk add --no-cache font-dejavu || apk add --no-cache ttf-dejavu || true
 
 # Non-root user for security
-RUN addgroup -S teachly && adduser -S teachly -G teachly && mkdir -p /app/logs && chown teachly:teachly /app/logs
+RUN addgroup -S teachly && adduser -S teachly -G teachly && mkdir -p /app/logs /app/uploads && chown teachly:teachly /app/logs /app/uploads
 USER teachly
 
 COPY --from=builder /app/build/libs/*.jar app.jar
