@@ -55,8 +55,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.core.content.FileProvider
-import pl.edu.ur.teachly.data.model.UserRole
-import pl.edu.ur.teachly.ui.profile.viewmodels.ProfileViewModel
 import java.io.File
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -64,6 +62,8 @@ import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
 import java.util.Locale
+import pl.edu.ur.teachly.data.model.UserRole
+import pl.edu.ur.teachly.ui.profile.viewmodels.ProfileViewModel
 
 private val ISO = DateTimeFormatter.ISO_LOCAL_DATE
 
@@ -197,8 +197,11 @@ fun ReportDownloadSection(viewModel: ProfileViewModel, modifier: Modifier = Modi
             "Miesiąc" -> {
                 val start = referenceYearMonth.atDay(1)
                 val end = referenceYearMonth.atEndOfMonth()
-                val label = referenceYearMonth.month.getDisplayName(TextStyle.FULL_STANDALONE, Locale.forLanguageTag("pl")) +
-                    " ${referenceYearMonth.year}"
+                val label =
+                    referenceYearMonth.month.getDisplayName(
+                        TextStyle.FULL_STANDALONE,
+                        Locale.forLanguageTag("pl")
+                    ) + " ${referenceYearMonth.year}"
                 Triple(start, end, "Zakres: $label")
             }
 
@@ -589,7 +592,11 @@ private fun MonthPickerContent(current: YearMonth, onSelected: (YearMonth) -> Un
                         text = monthNames[idx],
                         modifier = Modifier.padding(8.dp),
                         textAlign = TextAlign.Center,
-                        color = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface,
+                        color = if (isSelected) {
+                            MaterialTheme.colorScheme.onPrimary
+                        } else {
+                            MaterialTheme.colorScheme.onSurface
+                        },
                         fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
                     )
                 }
@@ -624,7 +631,11 @@ private fun YearPickerContent(currentYear: Int, onSelected: (Int) -> Unit, onDis
                         text = "$yr",
                         modifier = Modifier.padding(8.dp),
                         textAlign = TextAlign.Center,
-                        color = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface,
+                        color = if (isSelected) {
+                            MaterialTheme.colorScheme.onPrimary
+                        } else {
+                            MaterialTheme.colorScheme.onSurface
+                        },
                         fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
                     )
                 }

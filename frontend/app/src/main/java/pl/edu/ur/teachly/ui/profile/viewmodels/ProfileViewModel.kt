@@ -190,7 +190,6 @@ class ProfileViewModel(
                 return@launch
             }
 
-            // 1. Obsługa ewentualnego usuwania lub wgrywania awatara przed aktualizacją profilu
             var updatedAvatarUrl: String? = profile.value.avatarUrl
             if (state.pendingDeleteAvatar) {
                 userRepository.deleteAvatar(userId).fold(
@@ -221,7 +220,6 @@ class ProfileViewModel(
                 )
             }
 
-            // 2. Aktualizacja pozostałych danych profilu
             val request = UserUpdateRequest(
                 firstName = state.firstName.trim(),
                 lastName = state.lastName.trim(),

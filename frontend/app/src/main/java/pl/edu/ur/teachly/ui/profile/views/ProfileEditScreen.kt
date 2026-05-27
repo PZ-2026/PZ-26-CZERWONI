@@ -73,15 +73,12 @@ fun ProfileEditScreen(onBack: () -> Unit, onSave: (Boolean) -> Unit, viewModel: 
     var tempCameraUri by remember { mutableStateOf<Uri?>(null) }
     var tempCameraFile by remember { mutableStateOf<File?>(null) }
 
-    // Launcher do przycinania zdjęć
     val cropLauncher = rememberLauncherForActivityResult(CropImageContract()) { result ->
         if (result.isSuccessful) {
             val croppedUri = result.uriContent
             if (croppedUri != null) {
-                // Przekształcamy Uri na plik za pomocą strumienia i wysyłamy na backend
                 val file = uriToFile(context, croppedUri)
                 if (file != null && file.exists()) {
-                    // Walidacja rozmiaru pliku (max 5 MB)
                     if (file.length() > 5 * 1024 * 1024) {
                         Toast.makeText(
                             context,
@@ -90,7 +87,6 @@ fun ProfileEditScreen(onBack: () -> Unit, onSave: (Boolean) -> Unit, viewModel: 
                         ).show()
                         return@rememberLauncherForActivityResult
                     }
-                    // Walidacja formatu pliku
                     val extension = file.extension.lowercase()
                     if (extension != "jpg" && extension != "jpeg" && extension != "png") {
                         Toast.makeText(
@@ -117,7 +113,6 @@ fun ProfileEditScreen(onBack: () -> Unit, onSave: (Boolean) -> Unit, viewModel: 
         }
     }
 
-    // Launcher do galerii
     val galleryLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
@@ -136,7 +131,6 @@ fun ProfileEditScreen(onBack: () -> Unit, onSave: (Boolean) -> Unit, viewModel: 
         }
     }
 
-    // Launcher do aparatu
     val cameraLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicture()
     ) { success: Boolean ->
@@ -155,7 +149,6 @@ fun ProfileEditScreen(onBack: () -> Unit, onSave: (Boolean) -> Unit, viewModel: 
         }
     }
 
-    // Launcher uprawnień aparatu
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { isGranted: Boolean ->

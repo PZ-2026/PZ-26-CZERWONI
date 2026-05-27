@@ -69,7 +69,10 @@ fun InfoCard(lesson: LessonDetail, userRole: UserRole) {
             val personName = when (userRole) {
                 UserRole.STUDENT -> "${lesson.tutorFirstName} ${lesson.tutorLastName}".trim()
                 UserRole.TUTOR -> "${lesson.studentFirstName} ${lesson.studentLastName}".trim()
-                UserRole.ADMIN -> "${lesson.tutorFirstName} ${lesson.tutorLastName} / ${lesson.studentFirstName} ${lesson.studentLastName}"
+                UserRole.ADMIN -> {
+                    "${lesson.tutorFirstName} ${lesson.tutorLastName} / " +
+                        "${lesson.studentFirstName} ${lesson.studentLastName}"
+                }
             }
             DetailRow(Icons.Default.Person, "$personLabel: $personName")
 

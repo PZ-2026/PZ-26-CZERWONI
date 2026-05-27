@@ -50,7 +50,6 @@ fun InitialsAvatar(
                 .clickable(enabled = isEditable) { onEditClick() },
             contentAlignment = Alignment.Center
         ) {
-            // Zawsze renderujemy inicjały z tyłu jako fallback
             Text(
                 text = initials,
                 style = TextStyle(
@@ -64,7 +63,6 @@ fun InitialsAvatar(
                 overflow = TextOverflow.Clip
             )
 
-            // Jeżeli URL istnieje i nie jest dosłownym ciągiem "null" lub pustym stubem, rysujemy AsyncImage
             if (!avatarUrl.isNullOrBlank() &&
                 !avatarUrl.equals("null", ignoreCase = true) &&
                 !avatarUrl.contains("/null", ignoreCase = true) &&
@@ -97,7 +95,6 @@ fun InitialsAvatar(
             }
         }
 
-        // Kółeczko z ołówkiem w prawym dolnym rogu
         if (isEditable) {
             Box(
                 modifier = Modifier

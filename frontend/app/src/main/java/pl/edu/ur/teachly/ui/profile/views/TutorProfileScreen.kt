@@ -36,6 +36,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import java.time.LocalDate
 import org.koin.androidx.compose.koinViewModel
 import pl.edu.ur.teachly.R
 import pl.edu.ur.teachly.data.model.ReviewResponse
@@ -54,7 +55,6 @@ import pl.edu.ur.teachly.ui.profile.viewmodels.StudentProfile
 import pl.edu.ur.teachly.ui.profile.viewmodels.TutorProfileViewModel
 import pl.edu.ur.teachly.ui.review.views.AddReviewDialog
 import pl.edu.ur.teachly.ui.theme.AvatarColors
-import java.time.LocalDate
 
 @Composable
 fun TutorProfileScreen(

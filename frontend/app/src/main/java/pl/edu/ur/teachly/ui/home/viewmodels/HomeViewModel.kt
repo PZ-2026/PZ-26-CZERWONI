@@ -56,8 +56,8 @@ class HomeViewModel(
     private val reviewPreferencesManager: ReviewPreferencesManager
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(HomeUiState())
-    val uiState: StateFlow<HomeUiState> = _state
+    private val _uiState = MutableStateFlow(HomeUiState())
+    val uiState: StateFlow<HomeUiState> = _uiState
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), HomeUiState())
 
     init {
@@ -66,10 +66,10 @@ class HomeViewModel(
 
     fun load() {
         viewModelScope.launch {
-            _state.value = HomeUiState(isLoading = true)
+            _uiState.value = HomeUiState(isLoading = true)
 
             val userId = tokenManager.userIdFlow.first() ?: run {
-                _state.value = HomeUiState(isLoading = false)
+                _uiState.value = HomeUiState(isLoading = false)
                 return@launch
             }
             val roleName = tokenManager.roleFlow.first() ?: "STUDENT"
@@ -80,7 +80,7 @@ class HomeViewModel(
             }
 
             userRepository.getUserById(userId).fold(
-                onSuccess = { user -> _state.value = _state.value.copy(userName = user.firstName) },
+                onSuccess = { user -> _uiState.value = _uiState.value.copy(userName = user.firstName) },
                 onFailure = {}
             )
 
@@ -106,7 +106,7 @@ class HomeViewModel(
                         val confirmed = upcoming.filter { it.status == LessonStatus.CONFIRMED }
                         val pending = upcoming.filter { it.status == LessonStatus.PENDING }
 
-                        _state.value = _state.value.copy(
+                        _uiState.value = _uiState.value.copy(
                             userRole = role,
                             upcomingConfirmed = confirmed,
                             upcomingPending = pending,
@@ -139,14 +139,14 @@ class HomeViewModel(
                                                     tutorAvatarUrl = lesson.tutorAvatarUrl?.takeIf { it != "null" }
                                                 )
                                             }
-                                        _state.update { it.copy(pendingReviews = pendingReviews) }
+                                        _uiState.update { it.copy(pendingReviews = pendingReviews) }
                                     },
                                     onFailure = { /* silently ignore — not a critical feature */ }
                                 )
                             }
                         }
                     } catch (e: Exception) {
-                        _state.value = _state.value.copy(
+                        _uiState.value = _uiState.value.copy(
                             userRole = role,
                             isLoading = false,
                             error = e.message
@@ -154,7 +154,7 @@ class HomeViewModel(
                     }
                 },
                 onFailure = { e ->
-                    _state.value = _state.value.copy(
+                    _uiState.value = _uiState.value.copy(
                         userRole = role,
                         isLoading = false,
                         error = e.message
@@ -164,30 +164,30 @@ class HomeViewModel(
         }
     }
 
-    fun toggleConfirmed() = _state.update { it.copy(confirmedExpanded = !it.confirmedExpanded) }
-    fun togglePending() = _state.update { it.copy(pendingExpanded = !it.pendingExpanded) }
+    fun toggleConfirmed() = _uiState.update { it.copy(confirmedExpanded = !it.confirmedExpanded) }
+    fun togglePending() = _uiState.update { it.copy(pendingExpanded = !it.pendingExpanded) }
 
     // Pending reviews
 
     fun selectPendingReview(info: PendingReviewInfo) {
-        _state.update { it.copy(selectedPendingReview = info, pendingReviewError = null) }
+        _uiState.update { it.copy(selectedPendingReview = info, pendingReviewError = null) }
     }
 
     /** Back to the list without marking as permanently dismissed (multi-review flow). */
     fun dismissSelectedPendingReview() {
-        _state.update { it.copy(selectedPendingReview = null, pendingReviewError = null) }
+        _uiState.update { it.copy(selectedPendingReview = null, pendingReviewError = null) }
     }
 
     /** User explicitly skips — permanently remember in DataStore so the popup never returns. */
     fun dismissAllPendingReviews() {
         val toDismiss = buildSet {
-            addAll(_state.value.pendingReviews.map { it.tutorId })
-            _state.value.selectedPendingReview?.let { add(it.tutorId) }
+            addAll(_uiState.value.pendingReviews.map { it.tutorId })
+            _uiState.value.selectedPendingReview?.let { add(it.tutorId) }
         }
         viewModelScope.launch {
             reviewPreferencesManager.dismissTutors(toDismiss)
         }
-        _state.update {
+        _uiState.update {
             it.copy(
                 pendingReviews = emptyList(),
                 selectedPendingReview = null,
@@ -197,16 +197,16 @@ class HomeViewModel(
     }
 
     fun submitPendingReview(rating: Double, comment: String?) {
-        val review = _state.value.selectedPendingReview ?: return
+        val review = _uiState.value.selectedPendingReview ?: return
         viewModelScope.launch {
             val studentId = tokenManager.userIdFlow.first() ?: return@launch
-            _state.update { it.copy(isSubmittingPendingReview = true, pendingReviewError = null) }
+            _uiState.update { it.copy(isSubmittingPendingReview = true, pendingReviewError = null) }
             reviewRepository.addReview(studentId, ReviewRequest(review.tutorId, rating, comment))
                 .fold(
                     onSuccess = {
                         val remaining =
-                            _state.value.pendingReviews.filter { it.tutorId != review.tutorId }
-                        _state.update {
+                            _uiState.value.pendingReviews.filter { it.tutorId != review.tutorId }
+                        _uiState.update {
                             it.copy(
                                 isSubmittingPendingReview = false,
                                 selectedPendingReview = null,
@@ -217,7 +217,7 @@ class HomeViewModel(
                         }
                     },
                     onFailure = { e ->
-                        _state.update {
+                        _uiState.update {
                             it.copy(
                                 isSubmittingPendingReview = false,
                                 pendingReviewError = e.message
@@ -229,10 +229,10 @@ class HomeViewModel(
     }
 
     fun clearPendingReviewError() {
-        _state.update { it.copy(pendingReviewError = null) }
+        _uiState.update { it.copy(pendingReviewError = null) }
     }
 
     fun clearPendingReviewSubmitted() {
-        _state.update { it.copy(pendingReviewSubmitted = false) }
+        _uiState.update { it.copy(pendingReviewSubmitted = false) }
     }
 }

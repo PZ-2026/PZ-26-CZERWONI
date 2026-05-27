@@ -32,17 +32,17 @@ class SearchViewModel(
     private val reviewRepository: ReviewRepository
 ) : ViewModel() {
 
-    private val _allTutors = MutableStateFlow<List<Tutor>>(emptyList())
-    private val _query = MutableStateFlow("")
-    private val _activeSubject = MutableStateFlow("Wszystkie")
-    private val _subjects = MutableStateFlow<List<String>>(listOf("Wszystkie"))
-    private val _isLoading = MutableStateFlow(true)
-    private val _error = MutableStateFlow<String?>(null)
+    private val allTutorsFlow = MutableStateFlow<List<Tutor>>(emptyList())
+    private val queryFlow = MutableStateFlow("")
+    private val activeSubjectFlow = MutableStateFlow("Wszystkie")
+    private val subjectsFlow = MutableStateFlow<List<String>>(listOf("Wszystkie"))
+    private val isLoadingFlow = MutableStateFlow(true)
+    private val errorFlow = MutableStateFlow<String?>(null)
 
     val uiState: StateFlow<SearchUiState> = combine(
-        combine(_query, _activeSubject) { q, s -> q to s },
-        combine(_allTutors, _subjects) { t, s -> t to s },
-        combine(_isLoading, _error) { l, e -> l to e }
+        combine(queryFlow, activeSubjectFlow) { q, s -> q to s },
+        combine(allTutorsFlow, subjectsFlow) { t, s -> t to s },
+        combine(isLoadingFlow, errorFlow) { l, e -> l to e }
     ) { (query, subject), (tutors, subjects), (isLoading, error) ->
         val filtered = tutors.filter { tutor ->
             (subject == "Wszystkie" || tutor.subjects.contains(subject)) &&
@@ -68,13 +68,13 @@ class SearchViewModel(
 
     private fun loadData() {
         viewModelScope.launch {
-            _isLoading.value = true
-            _error.value = null
+            isLoadingFlow.value = true
+            errorFlow.value = null
 
             tutorRepository.getAllTutors().fold(
                 onSuccess = { tutors ->
                     try {
-                        _allTutors.value = coroutineScope {
+                        allTutorsFlow.value = coroutineScope {
                             tutors.map { tutor ->
                                 async {
                                     val subjectsDeferred = async {
@@ -102,33 +102,33 @@ class SearchViewModel(
                             }.awaitAll()
                         }
                     } catch (e: Exception) {
-                        _error.value = e.message
+                        errorFlow.value = e.message
                     }
                 },
-                onFailure = { e -> _error.value = e.message }
+                onFailure = { e -> errorFlow.value = e.message }
             )
 
             subjectRepository.getAllSubjects().fold(
                 onSuccess = { subjects ->
-                    _subjects.value = listOf("Wszystkie") + subjects.map { it.subjectName }
+                    subjectsFlow.value = listOf("Wszystkie") + subjects.map { it.subjectName }
                 },
                 onFailure = { }
             )
 
-            _isLoading.value = false
+            isLoadingFlow.value = false
         }
     }
 
     fun onQueryChange(newQuery: String) {
-        _query.value = newQuery
+        queryFlow.value = newQuery
     }
 
     fun onSubjectSelect(newSubject: String) {
-        _activeSubject.value = newSubject
+        activeSubjectFlow.value = newSubject
     }
 
     fun clearQuery() {
-        _query.value = ""
+        queryFlow.value = ""
     }
 
     fun refresh() {
