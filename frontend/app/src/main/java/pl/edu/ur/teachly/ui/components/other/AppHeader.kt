@@ -1,8 +1,11 @@
 package pl.edu.ur.teachly.ui.components.other
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -21,19 +24,16 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import pl.edu.ur.teachly.R
-import androidx.compose.foundation.Image
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.draw.clip
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Arrangement
 
 sealed interface HeaderBackground {
     data class Vertical(val colors: List<Color>) : HeaderBackground
@@ -49,14 +49,14 @@ fun AppHeader(
     topPadding: Dp = 24.dp,
     bottomPadding: Dp = 20.dp,
     decorativeCircle: Boolean = false,
-    showLogo: Boolean = false,
+    showLogo: Boolean = false
 ) {
     val brush = when (background) {
         is HeaderBackground.Vertical -> Brush.verticalGradient(background.colors)
         is HeaderBackground.Diagonal -> Brush.linearGradient(
             colors = background.colors,
             start = Offset.Zero,
-            end = Offset(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY),
+            end = Offset(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY)
         )
     }
 
@@ -95,18 +95,20 @@ fun AppHeader(
                         .size(36.dp)
                         .background(
                             colorScheme.onPrimary.copy(alpha = 0.15f),
-                            RoundedCornerShape(10.dp),
+                            RoundedCornerShape(10.dp)
                         )
                 ) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = stringResource(R.string.cd_back),
                         tint = colorScheme.onPrimary,
-                        modifier = Modifier.size(20.dp),
+                        modifier = Modifier.size(20.dp)
                     )
                 }
                 Spacer(Modifier.height(32.dp))
-            } else Spacer(Modifier.height(12.dp))
+            } else {
+                Spacer(Modifier.height(12.dp))
+            }
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -118,7 +120,7 @@ fun AppHeader(
                         text = title,
                         style = typography.headlineMedium,
                         fontWeight = FontWeight.Bold,
-                        color = colorScheme.onPrimary,
+                        color = colorScheme.onPrimary
                     )
 
                     if (subtitle != null) {
@@ -126,7 +128,7 @@ fun AppHeader(
                         Text(
                             text = subtitle,
                             style = typography.bodyLarge,
-                            color = colorScheme.onPrimary.copy(alpha = 0.75f),
+                            color = colorScheme.onPrimary.copy(alpha = 0.75f)
                         )
                     }
                 }

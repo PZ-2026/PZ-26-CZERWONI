@@ -34,7 +34,7 @@ fun InitialsAvatar(
     size: Dp = 72.dp,
     cornerRadius: Dp = 24.dp,
     isEditable: Boolean = false,
-    onEditClick: () -> Unit = {},
+    onEditClick: () -> Unit = {}
 ) {
     val fontSize = (size.value * 0.38f).sp
 
@@ -50,31 +50,33 @@ fun InitialsAvatar(
                 .clickable(enabled = isEditable) { onEditClick() },
             contentAlignment = Alignment.Center
         ) {
-            // Zawsze renderujemy inicjały z tyłu jako fallback
             Text(
                 text = initials,
                 style = TextStyle(
                     fontSize = fontSize,
                     fontWeight = FontWeight.Bold,
-                    letterSpacing = 0.5.sp,
+                    letterSpacing = 0.5.sp
                 ),
                 color = avatarColor.foreground,
                 maxLines = 1,
                 softWrap = false,
-                overflow = TextOverflow.Clip,
+                overflow = TextOverflow.Clip
             )
 
-            // Jeżeli URL istnieje i nie jest dosłownym ciągiem "null" lub pustym stubem, rysujemy AsyncImage
-            if (!avatarUrl.isNullOrBlank() && 
-                !avatarUrl.equals("null", ignoreCase = true) && 
-                !avatarUrl.contains("/null", ignoreCase = true) && 
-                !avatarUrl.endsWith("/uploads/avatars/", ignoreCase = true)) {
+            if (!avatarUrl.isNullOrBlank() &&
+                !avatarUrl.equals("null", ignoreCase = true) &&
+                !avatarUrl.contains("/null", ignoreCase = true) &&
+                !avatarUrl.endsWith("/uploads/avatars/", ignoreCase = true)
+            ) {
                 val fullUrl = if (avatarUrl.startsWith("http")) {
                     avatarUrl
                 } else if (avatarUrl.startsWith("/uploads/")) {
                     val baseUrl = BuildConfig.BASE_URL.trimEnd('/')
                     "$baseUrl$avatarUrl"
-                } else if (avatarUrl.contains("cache") || avatarUrl.contains("avatar_upload") || avatarUrl.startsWith("/data/")) {
+                } else if (avatarUrl.contains("cache") ||
+                    avatarUrl.contains("avatar_upload") ||
+                    avatarUrl.startsWith("/data/")
+                ) {
                     avatarUrl
                 } else {
                     val baseUrl = BuildConfig.BASE_URL.trimEnd('/')
@@ -93,7 +95,6 @@ fun InitialsAvatar(
             }
         }
 
-        // Kółeczko z ołówkiem w prawym dolnym rogu
         if (isEditable) {
             Box(
                 modifier = Modifier

@@ -31,24 +31,24 @@ fun NotesSection(
     userRole: UserRole,
     isSaving: Boolean,
     onSaveStudentNotes: (String) -> Unit,
-    onSaveTutorNotes: (String) -> Unit,
+    onSaveTutorNotes: (String) -> Unit
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(containerColor = colorScheme.surface),
         border = BorderStroke(1.dp, colorScheme.outline),
-        elevation = CardDefaults.cardElevation(2.dp),
+        elevation = CardDefaults.cardElevation(2.dp)
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Text(
                 text = "Notatki",
                 style = typography.titleSmall,
                 fontWeight = androidx.compose.ui.text.font.FontWeight.SemiBold,
-                color = colorScheme.onSurface,
+                color = colorScheme.onSurface
             )
 
             // Student notes
@@ -57,7 +57,7 @@ fun NotesSection(
                 initialValue = lesson.studentNotes ?: "",
                 editable = userRole == UserRole.STUDENT || userRole == UserRole.ADMIN,
                 isSaving = isSaving,
-                onSave = onSaveStudentNotes,
+                onSave = onSaveStudentNotes
             )
 
             // Tutor notes
@@ -66,20 +66,14 @@ fun NotesSection(
                 initialValue = lesson.tutorNotes ?: "",
                 editable = userRole == UserRole.TUTOR || userRole == UserRole.ADMIN,
                 isSaving = isSaving,
-                onSave = onSaveTutorNotes,
+                onSave = onSaveTutorNotes
             )
         }
     }
 }
 
 @Composable
-fun NoteField(
-    label: String,
-    initialValue: String,
-    editable: Boolean,
-    isSaving: Boolean,
-    onSave: (String) -> Unit,
-) {
+fun NoteField(label: String, initialValue: String, editable: Boolean, isSaving: Boolean, onSave: (String) -> Unit) {
     var text by rememberSaveable(initialValue) { mutableStateOf(initialValue.take(500)) }
     val isDirty = text != initialValue
 
@@ -87,7 +81,7 @@ fun NoteField(
         Text(
             text = label,
             style = typography.labelMedium,
-            color = colorScheme.onSurfaceVariant,
+            color = colorScheme.onSurfaceVariant
         )
         if (editable) {
             OutlinedTextField(
@@ -102,16 +96,16 @@ fun NoteField(
                     Text(
                         text = "${text.length}/500",
                         modifier = Modifier.fillMaxWidth(),
-                        textAlign = TextAlign.End,
+                        textAlign = TextAlign.End
                     )
-                },
+                }
             )
             if (isDirty) {
                 Button(
                     onClick = { onSave(text) },
                     enabled = !isSaving,
                     modifier = Modifier.align(Alignment.End),
-                    shape = RoundedCornerShape(12.dp),
+                    shape = RoundedCornerShape(12.dp)
                 ) {
                     Text(if (isSaving) "Zapisywanie…" else "Zapisz")
                 }
@@ -121,13 +115,13 @@ fun NoteField(
                 Text(
                     text = "Brak notatek",
                     style = typography.bodyMedium,
-                    color = colorScheme.onBackground.copy(alpha = 0.4f),
+                    color = colorScheme.onBackground.copy(alpha = 0.4f)
                 )
             } else {
                 Text(
                     text = initialValue,
                     style = typography.bodyMedium,
-                    color = colorScheme.onSurfaceVariant,
+                    color = colorScheme.onSurfaceVariant
                 )
             }
         }

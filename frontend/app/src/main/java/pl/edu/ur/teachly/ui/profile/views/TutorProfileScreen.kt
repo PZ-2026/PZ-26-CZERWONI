@@ -35,6 +35,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import java.time.LocalDate
 import org.koin.androidx.compose.koinViewModel
 import pl.edu.ur.teachly.R
 import pl.edu.ur.teachly.data.model.ReviewResponse
@@ -48,12 +50,11 @@ import pl.edu.ur.teachly.ui.components.profile.ProfileHeader
 import pl.edu.ur.teachly.ui.components.profile.ProfileInfoRow
 import pl.edu.ur.teachly.ui.components.profile.TutorStatsSection
 import pl.edu.ur.teachly.ui.components.tutor.TutorDetailBody
+import pl.edu.ur.teachly.ui.profile.viewmodels.ProfileViewModel
 import pl.edu.ur.teachly.ui.profile.viewmodels.StudentProfile
 import pl.edu.ur.teachly.ui.profile.viewmodels.TutorProfileViewModel
-import pl.edu.ur.teachly.ui.profile.viewmodels.ProfileViewModel
 import pl.edu.ur.teachly.ui.review.views.AddReviewDialog
 import pl.edu.ur.teachly.ui.theme.AvatarColors
-import java.time.LocalDate
 
 @Composable
 fun TutorProfileScreen(
@@ -66,9 +67,9 @@ fun TutorProfileScreen(
     onSeeAllReviews: () -> Unit = {},
     onAvailabilityClick: () -> Unit = {},
     viewModel: TutorProfileViewModel = koinViewModel(),
-    profileViewModel: ProfileViewModel = koinViewModel(),
+    profileViewModel: ProfileViewModel = koinViewModel()
 ) {
-    val lifecycleOwner = androidx.compose.ui.platform.LocalLifecycleOwner.current
+    val lifecycleOwner = LocalLifecycleOwner.current
     androidx.compose.runtime.DisposableEffect(lifecycleOwner) {
         val observer = androidx.lifecycle.LifecycleEventObserver { _, event ->
             if (event == androidx.lifecycle.Lifecycle.Event.ON_RESUME) {
@@ -103,7 +104,7 @@ fun TutorProfileScreen(
             onSubmit = { rating, comment ->
                 val id = tutorId.toIntOrNull() ?: return@AddReviewDialog
                 viewModel.submitReview(id, rating, comment)
-            },
+            }
         )
     }
 
@@ -119,14 +120,14 @@ fun TutorProfileScreen(
             },
             onSubmit = { rating, comment ->
                 viewModel.updateReview(review.id, review.tutorId, rating, comment)
-            },
+            }
         )
     }
 
     when {
         state.isLoading -> Box(
             modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center,
+            contentAlignment = Alignment.Center
         ) { CircularProgressIndicator() }
 
         state.tutor != null -> {
@@ -136,7 +137,7 @@ fun TutorProfileScreen(
                 StudentProfile(
                     firstName = t.name.substringBefore(" "),
                     lastName = t.name.substringAfter(" "),
-                    avatarUrl = t.avatarUrl,
+                    avatarUrl = t.avatarUrl
                 )
             }
 
@@ -151,7 +152,7 @@ fun TutorProfileScreen(
                     role = UserRole.TUTOR,
                     onBack = onBack,
                     onEditClick = if (isMyProfile) onEditClick else null,
-                    onCalendarClick = if (isMyProfile) onAvailabilityClick else null,
+                    onCalendarClick = if (isMyProfile) onAvailabilityClick else null
                 )
 
                 Column(
@@ -159,7 +160,7 @@ fun TutorProfileScreen(
                         .weight(1f)
                         .verticalScroll(rememberScrollState())
                         .padding(horizontal = 24.dp, vertical = 16.dp),
-                    verticalArrangement = Arrangement.spacedBy(24.dp),
+                    verticalArrangement = Arrangement.spacedBy(24.dp)
                 ) {
                     TutorStatsSection(stats = state.stats)
                     TutorDetailBody(
@@ -169,7 +170,7 @@ fun TutorProfileScreen(
                         canReview = state.canReview && !isMyProfile,
                         onAddReview = { showReviewDialog = true },
                         onEditReview = { review -> showEditReviewDialog = review },
-                        onSeeAllReviews = onSeeAllReviews,
+                        onSeeAllReviews = onSeeAllReviews
                     )
 
                     if (isMyProfile) {
@@ -178,7 +179,7 @@ fun TutorProfileScreen(
                                 ProfileInfoRow(
                                     icon = Icons.Default.AlternateEmail,
                                     label = stringResource(R.string.email),
-                                    value = state.email,
+                                    value = state.email
                                 )
                                 ProfileDataDivider()
                             }
@@ -187,27 +188,29 @@ fun TutorProfileScreen(
                                 ProfileInfoRow(
                                     icon = Icons.Default.Phone,
                                     label = stringResource(R.string.field_phone),
-                                    value = phone,
+                                    value = phone
                                 )
                                 ProfileDataDivider()
                             }
                             ProfileInfoRow(
                                 icon = Icons.Default.AttachMoney,
                                 label = stringResource(R.string.hourly_rate),
-                                value = stringResource(R.string.hourly_rate_value, t.pricePerHour),
+                                value = stringResource(R.string.hourly_rate_value, t.pricePerHour)
                             )
                             ProfileDataDivider()
                             ProfileInfoRow(
                                 icon = Icons.Default.Wifi,
                                 label = stringResource(R.string.lesson_format),
-                                value = t.tags.joinToString(" / "),
+                                value = t.tags.joinToString(" / ")
                             )
                             val formattedDate = remember(profile.createdAt) {
                                 try {
                                     val datePart = profile.createdAt.take(10)
                                     if (datePart.isNotBlank() && datePart != "null") {
                                         formatDate(LocalDate.parse(datePart))
-                                    } else ""
+                                    } else {
+                                        ""
+                                    }
                                 } catch (e: Exception) {
                                     ""
                                 }
@@ -217,14 +220,14 @@ fun TutorProfileScreen(
                                 ProfileInfoRow(
                                     icon = Icons.Default.CalendarToday,
                                     label = stringResource(R.string.account_active_since),
-                                    value = formattedDate,
+                                    value = formattedDate
                                 )
                             }
                             ProfileDataDivider()
                             ProfileInfoRow(
                                 icon = Icons.Default.Person,
                                 label = stringResource(R.string.role),
-                                value = stringResource(R.string.tutor),
+                                value = stringResource(R.string.tutor)
                             )
                         }
                     }
@@ -235,13 +238,13 @@ fun TutorProfileScreen(
                         PrimaryButton(
                             text = "Edytuj profil korepetytora",
                             onClick = onTutorSetupClick,
-                            modifier = Modifier.padding(bottom = 8.dp),
+                            modifier = Modifier.padding(bottom = 8.dp)
                         )
 
                         PrimaryButton(
                             text = stringResource(R.string.profile_logout),
                             onClick = onLogout,
-                            modifier = Modifier.padding(bottom = 24.dp),
+                            modifier = Modifier.padding(bottom = 24.dp)
                         )
                     }
                 }
@@ -288,12 +291,12 @@ fun TutorProfileScreen(
             } else {
                 Box(
                     modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center,
+                    contentAlignment = Alignment.Center
                 ) {
                     Text(
                         text = stringResource(R.string.profile_not_found),
                         style = typography.bodyMedium,
-                        color = colorScheme.onSurfaceVariant,
+                        color = colorScheme.onSurfaceVariant
                     )
                 }
             }

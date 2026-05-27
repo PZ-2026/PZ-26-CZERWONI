@@ -63,7 +63,7 @@ fun TutorSetupScreen(
     tutorId: Int,
     onBack: (() -> Unit)?,
     onDone: () -> Unit,
-    viewModel: TutorSetupViewModel = koinViewModel(),
+    viewModel: TutorSetupViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsState()
     var showAddSubjectDialog by rememberSaveable { mutableStateOf(false) }
@@ -86,14 +86,14 @@ fun TutorSetupScreen(
             onConfirm = { subjectId, lPrimary, lHighSchool, lUniversity, lExamPrep, lProfessional ->
                 viewModel.addSubject(subjectId, lPrimary, lHighSchool, lUniversity, lExamPrep, lProfessional)
                 showAddSubjectDialog = false
-            },
+            }
         )
     }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(colorScheme.background),
+            .background(colorScheme.background)
     ) {
         AppHeader(
             title = "Profil korepetytora",
@@ -101,7 +101,7 @@ fun TutorSetupScreen(
             background = HeaderBackground.Diagonal(
                 listOf(colorScheme.onPrimaryContainer, colorScheme.primary)
             ),
-            onBack = onBack,
+            onBack = onBack
         )
 
         Column(
@@ -109,7 +109,7 @@ fun TutorSetupScreen(
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 24.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Spacer(modifier = Modifier.height(8.dp))
 
@@ -129,9 +129,9 @@ fun TutorSetupScreen(
                     Text(
                         text = "${state.bio.length}/2000",
                         modifier = Modifier.fillMaxWidth(),
-                        textAlign = TextAlign.End,
+                        textAlign = TextAlign.End
                     )
-                },
+                }
             )
 
             OutlinedTextField(
@@ -143,10 +143,14 @@ fun TutorSetupScreen(
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
-                isError = state.hourlyRate.isNotBlank() && (state.hourlyRate.toDoubleOrNull() == null || state.hourlyRate.toDoubleOrNull()!! <= 0),
+                isError =
+                state.hourlyRate.isNotBlank() &&
+                    (state.hourlyRate.toDoubleOrNull() == null || state.hourlyRate.toDoubleOrNull()!! <= 0),
                 supportingText = if (state.hourlyRate.isNotBlank() && !isFormValid) {
                     { Text("Podaj prawidłową stawkę większą niż 0") }
-                } else null,
+                } else {
+                    null
+                }
             )
 
             // --- Forma zajęć ---
@@ -155,12 +159,12 @@ fun TutorSetupScreen(
             DialogSwitchRow(
                 label = "Zajęcia online",
                 checked = state.offersOnline,
-                onCheckedChange = viewModel::onOffersOnlineChange,
+                onCheckedChange = viewModel::onOffersOnlineChange
             )
             DialogSwitchRow(
                 label = "Zajęcia stacjonarne",
                 checked = state.offersInPerson,
-                onCheckedChange = viewModel::onOffersInPersonChange,
+                onCheckedChange = viewModel::onOffersInPersonChange
             )
 
             // --- Przedmioty ---
@@ -171,19 +175,19 @@ fun TutorSetupScreen(
                     text = "Nie dodano jeszcze żadnych przedmiotów.",
                     style = typography.bodyMedium,
                     color = colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(vertical = 4.dp),
+                    modifier = Modifier.padding(vertical = 4.dp)
                 )
             } else {
                 Surface(
                     shape = androidx.compose.material3.MaterialTheme.shapes.medium,
                     tonalElevation = 2.dp,
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth()
                 ) {
                     Column {
                         state.currentSubjects.forEachIndexed { index, subject ->
                             SubjectRow(
                                 subject = subject,
-                                onRemove = { viewModel.removeSubject(subject.id) },
+                                onRemove = { viewModel.removeSubject(subject.id) }
                             )
                             if (index < state.currentSubjects.lastIndex) {
                                 HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
@@ -196,7 +200,7 @@ fun TutorSetupScreen(
             TextButton(
                 onClick = { showAddSubjectDialog = true },
                 modifier = Modifier.align(Alignment.Start),
-                enabled = state.availableSubjects.isNotEmpty(),
+                enabled = state.availableSubjects.isNotEmpty()
             ) {
                 Icon(Icons.Default.Add, contentDescription = null)
                 Text("Dodaj przedmiot", modifier = Modifier.padding(start = 4.dp))
@@ -213,7 +217,7 @@ fun TutorSetupScreen(
                 onClick = { viewModel.saveProfile() },
                 isLoading = state.isSaving,
                 enabled = isFormValid,
-                modifier = Modifier.padding(bottom = 32.dp, top = 8.dp),
+                modifier = Modifier.padding(bottom = 32.dp, top = 8.dp)
             )
         }
     }
@@ -226,15 +230,12 @@ private fun SectionHeader(title: String) {
         style = typography.titleSmall,
         fontWeight = FontWeight.SemiBold,
         color = colorScheme.primary,
-        modifier = Modifier.padding(top = 8.dp),
+        modifier = Modifier.padding(top = 8.dp)
     )
 }
 
 @Composable
-private fun SubjectRow(
-    subject: TutorSubjectResponse,
-    onRemove: () -> Unit,
-) {
+private fun SubjectRow(subject: TutorSubjectResponse, onRemove: () -> Unit) {
     val levels = buildList {
         if (subject.levelPrimary == true) add("Podstawówka")
         if (subject.levelHighSchool == true) add("Liceum")
@@ -247,19 +248,19 @@ private fun SubjectRow(
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = subject.subjectName,
                 style = typography.bodyMedium,
-                fontWeight = FontWeight.Medium,
+                fontWeight = FontWeight.Medium
             )
             if (levels.isNotEmpty()) {
                 Text(
                     text = levels.joinToString(", "),
                     style = typography.labelSmall,
-                    color = colorScheme.onSurfaceVariant,
+                    color = colorScheme.onSurfaceVariant
                 )
             }
         }
@@ -267,7 +268,7 @@ private fun SubjectRow(
             Icon(
                 imageVector = Icons.Default.Close,
                 contentDescription = "Usuń przedmiot",
-                tint = colorScheme.error,
+                tint = colorScheme.error
             )
         }
     }
@@ -278,7 +279,7 @@ private fun AddSubjectDialog(
     availableSubjects: List<SubjectResponse>,
     alreadyAddedSubjectIds: Set<Int>,
     onDismiss: () -> Unit,
-    onConfirm: (Int, Boolean, Boolean, Boolean, Boolean, Boolean) -> Unit,
+    onConfirm: (Int, Boolean, Boolean, Boolean, Boolean, Boolean) -> Unit
 ) {
     val notAdded = availableSubjects.filter { it.id !in alreadyAddedSubjectIds }
     var selectedSubject by remember { mutableStateOf(notAdded.firstOrNull()) }
@@ -296,12 +297,12 @@ private fun AddSubjectDialog(
         text = {
             Column(
                 modifier = Modifier.verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(4.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 if (notAdded.isEmpty()) {
                     Text(
                         text = "Wszystkie dostępne przedmioty zostały już dodane.",
-                        style = typography.bodyMedium,
+                        style = typography.bodyMedium
                     )
                     return@Column
                 }
@@ -310,7 +311,7 @@ private fun AddSubjectDialog(
                 SubjectDropdown(
                     subjects = notAdded,
                     selected = selectedSubject,
-                    onSelect = { selectedSubject = it },
+                    onSelect = { selectedSubject = it }
                 )
 
                 Spacer(modifier = Modifier.height(4.dp))
@@ -329,10 +330,10 @@ private fun AddSubjectDialog(
                     val s = selectedSubject ?: return@TextButton
                     onConfirm(s.id, levelPrimary, levelHighSchool, levelUniversity, levelExamPrep, levelProfessional)
                 },
-                enabled = selectedSubject != null && atLeastOneLevel,
+                enabled = selectedSubject != null && atLeastOneLevel
             ) { Text("Dodaj") }
         },
-        dismissButton = { TextButton(onClick = onDismiss) { Text("Anuluj") } },
+        dismissButton = { TextButton(onClick = onDismiss) { Text("Anuluj") } }
     )
 }
 
@@ -340,13 +341,13 @@ private fun AddSubjectDialog(
 private fun LevelCheckRow(label: String, checked: Boolean, onCheckedChange: (Boolean) -> Unit) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth()
     ) {
         Checkbox(checked = checked, onCheckedChange = onCheckedChange)
         Text(
             text = label,
             style = typography.bodyMedium,
-            modifier = Modifier.padding(start = 4.dp),
+            modifier = Modifier.padding(start = 4.dp)
         )
     }
 }
@@ -356,13 +357,13 @@ private fun LevelCheckRow(label: String, checked: Boolean, onCheckedChange: (Boo
 private fun SubjectDropdown(
     subjects: List<SubjectResponse>,
     selected: SubjectResponse?,
-    onSelect: (SubjectResponse) -> Unit,
+    onSelect: (SubjectResponse) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
 
     ExposedDropdownMenuBox(
         expanded = expanded,
-        onExpandedChange = { expanded = it },
+        onExpandedChange = { expanded = it }
     ) {
         OutlinedTextField(
             value = selected?.subjectName ?: "",
@@ -374,11 +375,11 @@ private fun SubjectDropdown(
             },
             modifier = Modifier
                 .fillMaxWidth()
-                .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable),
+                .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
         )
         ExposedDropdownMenu(
             expanded = expanded,
-            onDismissRequest = { expanded = false },
+            onDismissRequest = { expanded = false }
         ) {
             subjects.forEach { subject ->
                 DropdownMenuItem(
@@ -386,7 +387,7 @@ private fun SubjectDropdown(
                     onClick = {
                         onSelect(subject)
                         expanded = false
-                    },
+                    }
                 )
             }
         }

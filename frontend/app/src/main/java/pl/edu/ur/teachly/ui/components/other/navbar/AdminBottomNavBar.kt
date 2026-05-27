@@ -22,10 +22,7 @@ import pl.edu.ur.teachly.R
 import pl.edu.ur.teachly.navigation.AppRoute
 
 @Composable
-fun AdminBottomNavBar(
-    navController: NavController,
-    modifier: Modifier = Modifier
-) {
+fun AdminBottomNavBar(navController: NavController, modifier: Modifier = Modifier) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val routeStr = navBackStackEntry?.destination?.route ?: ""
 
@@ -37,9 +34,11 @@ fun AdminBottomNavBar(
     val isDashboard = routeStr.contains("AdminDashboard")
     val isUsers = routeStr.contains("AdminUser")
     val isLessons = routeStr.contains("AdminLesson")
-    val isData = routeStr.contains("AdminData") || routeStr.contains("AdminHoliday")
-            || routeStr.contains("AdminSubject") || routeStr.contains("AdminTutor")
-            || routeStr.contains("AdminReview")
+    val isData = routeStr.contains("AdminData") ||
+        routeStr.contains("AdminHoliday") ||
+        routeStr.contains("AdminSubject") ||
+        routeStr.contains("AdminTutor") ||
+        routeStr.contains("AdminReview")
     val isProfile = routeStr.contains("Profile")
 
     NavigationBar(
@@ -60,7 +59,7 @@ fun AdminBottomNavBar(
                 Text(
                     "Dashboard",
                     maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
+                    overflow = TextOverflow.Ellipsis
                 )
             },
             colors = navItemColors()
@@ -78,7 +77,7 @@ fun AdminBottomNavBar(
                 Text(
                     "Użytkownicy",
                     maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
+                    overflow = TextOverflow.Ellipsis
                 )
             },
             colors = navItemColors()
@@ -96,7 +95,7 @@ fun AdminBottomNavBar(
                 Text(
                     "Lekcje",
                     maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
+                    overflow = TextOverflow.Ellipsis
                 )
             },
             colors = navItemColors()
@@ -114,7 +113,7 @@ fun AdminBottomNavBar(
                 Text(
                     "Dane",
                     maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
+                    overflow = TextOverflow.Ellipsis
                 )
             },
             colors = navItemColors()
@@ -137,7 +136,7 @@ fun AdminBottomNavBar(
                 Text(
                     stringResource(R.string.nav_profile),
                     maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
+                    overflow = TextOverflow.Ellipsis
                 )
             },
             colors = navItemColors()

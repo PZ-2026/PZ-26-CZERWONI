@@ -19,12 +19,10 @@ data class AvailabilityUiState(
     val overrides: List<TutorAvailabilityOverrideResponse> = emptyList(),
     val isLoading: Boolean = true,
     val error: String? = null,
-    val successMessage: String? = null,
+    val successMessage: String? = null
 )
 
-class AvailabilityViewModel(
-    private val tutorRepository: TutorRepository,
-) : ViewModel() {
+class AvailabilityViewModel(private val tutorRepository: TutorRepository) : ViewModel() {
 
     private val _state = MutableStateFlow(AvailabilityUiState())
     val state: StateFlow<AvailabilityUiState> = _state.asStateFlow()
@@ -55,17 +53,17 @@ class AvailabilityViewModel(
         viewModelScope.launch {
             tutorRepository.addRecurringAvailability(
                 tutorId,
-                TutorAvailabilityRecurringRequest(dayOfWeek, timeFrom, timeTo, null),
+                TutorAvailabilityRecurringRequest(dayOfWeek, timeFrom, timeTo, null)
             ).fold(
                 onSuccess = { slot ->
                     _state.update {
                         it.copy(
                             recurring = it.recurring + slot,
-                            successMessage = "Slot dostępności dodany",
+                            successMessage = "Slot dostępności dodany"
                         )
                     }
                 },
-                onFailure = { e -> _state.update { it.copy(error = e.message) } },
+                onFailure = { e -> _state.update { it.copy(error = e.message) } }
             )
         }
     }
@@ -77,11 +75,11 @@ class AvailabilityViewModel(
                     _state.update {
                         it.copy(
                             recurring = it.recurring.filter { s -> s.id != slotId },
-                            successMessage = "Slot usunięty",
+                            successMessage = "Slot usunięty"
                         )
                     }
                 },
-                onFailure = { e -> _state.update { it.copy(error = e.message) } },
+                onFailure = { e -> _state.update { it.copy(error = e.message) } }
             )
         }
     }
@@ -90,17 +88,17 @@ class AvailabilityViewModel(
         viewModelScope.launch {
             tutorRepository.addOverride(
                 tutorId,
-                TutorAvailabilityOverrideRequest(date, timeFrom, timeTo),
+                TutorAvailabilityOverrideRequest(date, timeFrom, timeTo)
             ).fold(
                 onSuccess = { override ->
                     _state.update {
                         it.copy(
                             overrides = it.overrides + override,
-                            successMessage = "Niedostępność dodana",
+                            successMessage = "Niedostępność dodana"
                         )
                     }
                 },
-                onFailure = { e -> _state.update { it.copy(error = e.message) } },
+                onFailure = { e -> _state.update { it.copy(error = e.message) } }
             )
         }
     }
@@ -112,11 +110,11 @@ class AvailabilityViewModel(
                     _state.update {
                         it.copy(
                             overrides = it.overrides.filter { o -> o.id != overrideId },
-                            successMessage = "Niedostępność usunięta",
+                            successMessage = "Niedostępność usunięta"
                         )
                     }
                 },
-                onFailure = { e -> _state.update { it.copy(error = e.message) } },
+                onFailure = { e -> _state.update { it.copy(error = e.message) } }
             )
         }
     }

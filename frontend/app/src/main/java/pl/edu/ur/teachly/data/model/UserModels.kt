@@ -17,10 +17,7 @@ data class AdminUserUpdateRequest(
     val userRole: UserRole
 )
 
-data class PasswordChangeRequest(
-    val currentPassword: String,
-    val newPassword: String
-)
+data class PasswordChangeRequest(val currentPassword: String, val newPassword: String)
 
 data class UserResponse(
     val id: Int,

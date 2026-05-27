@@ -53,7 +53,7 @@ fun TutorDetailScreen(
     onBack: () -> Unit,
     onBookClick: () -> Unit,
     onSeeAllReviews: () -> Unit = {},
-    viewModel: TutorDetailViewModel = koinViewModel(),
+    viewModel: TutorDetailViewModel = koinViewModel()
 ) {
     LaunchedEffect(tutorId) { viewModel.loadTutor(tutorId) }
 
@@ -82,7 +82,7 @@ fun TutorDetailScreen(
             onSubmit = { rating, comment ->
                 val id = tutorId.toIntOrNull() ?: return@AddReviewDialog
                 viewModel.submitReview(id, rating, comment)
-            },
+            }
         )
     }
 
@@ -99,7 +99,7 @@ fun TutorDetailScreen(
             onSubmit = { rating, comment ->
                 val id = tutorId.toIntOrNull() ?: return@AddReviewDialog
                 viewModel.updateReview(review.id, id, rating, comment)
-            },
+            }
         )
     }
 
@@ -107,7 +107,7 @@ fun TutorDetailScreen(
         when {
             state.isLoading -> Box(
                 modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center,
+                contentAlignment = Alignment.Center
             ) { CircularProgressIndicator() }
 
             state.error != null -> FullScreenError(message = state.error!!)
@@ -119,7 +119,7 @@ fun TutorDetailScreen(
                     StudentProfile(
                         firstName = t.name.substringBefore(" "),
                         lastName = t.name.substringAfter(" "),
-                        avatarUrl = t.avatarUrl,
+                        avatarUrl = t.avatarUrl
                     )
                 }
 
@@ -131,7 +131,7 @@ fun TutorDetailScreen(
                     ProfileHeader(
                         profile = profile,
                         avatarColor = AvatarColors[avatarIndex % AvatarColors.size],
-                        onBack = onBack,
+                        onBack = onBack
                     )
 
                     Column(
@@ -139,7 +139,7 @@ fun TutorDetailScreen(
                             .weight(1f)
                             .verticalScroll(rememberScrollState())
                             .padding(horizontal = 12.dp, vertical = 16.dp),
-                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
                         TutorDetailBody(
                             tutor = t,
@@ -147,13 +147,13 @@ fun TutorDetailScreen(
                             currentStudentId = state.currentStudentId,
                             onEditReview = { review -> editingReview = review },
                             onSeeAllReviews = if (state.reviews.isNotEmpty()) onSeeAllReviews else null,
-                            canReview = false,
+                            canReview = false
                         )
 
                         if (state.canReview) {
                             WriteReviewCard(
                                 onClick = { showAddDialog = true },
-                                modifier = Modifier.padding(horizontal = 4.dp),
+                                modifier = Modifier.padding(horizontal = 4.dp)
                             )
                         }
                     }
@@ -161,7 +161,7 @@ fun TutorDetailScreen(
                     PrimaryButton(
                         text = stringResource(R.string.tutordetail_book_cta),
                         onClick = onBookClick,
-                        modifier = Modifier.padding(horizontal = 24.dp, vertical = 16.dp),
+                        modifier = Modifier.padding(horizontal = 24.dp, vertical = 16.dp)
                     )
                 }
             }
@@ -170,38 +170,35 @@ fun TutorDetailScreen(
         MessageSnackbars(
             successMessage = if (state.reviewSubmitSuccess) successMessage else null,
             errorMessage = null,
-            modifier = Modifier.align(Alignment.BottomCenter),
+            modifier = Modifier.align(Alignment.BottomCenter)
         )
     }
 }
 
 @Composable
-private fun WriteReviewCard(
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
+private fun WriteReviewCard(onClick: () -> Unit, modifier: Modifier = Modifier) {
     Surface(
         onClick = onClick,
         shape = RoundedCornerShape(16.dp),
         color = MaterialTheme.colorScheme.primary,
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth()
     ) {
         Row(
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             Surface(
                 shape = CircleShape,
                 color = MaterialTheme.colorScheme.onPrimary,
-                modifier = Modifier.size(38.dp),
+                modifier = Modifier.size(38.dp)
             ) {
                 Box(contentAlignment = Alignment.Center) {
                     Icon(
                         imageVector = Icons.Filled.Star,
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(20.dp),
+                        modifier = Modifier.size(20.dp)
                     )
                 }
             }
@@ -210,12 +207,12 @@ private fun WriteReviewCard(
                 style = MaterialTheme.typography.titleSmall,
                 fontWeight = FontWeight.SemiBold,
                 color = MaterialTheme.colorScheme.onPrimary,
-                modifier = Modifier.weight(1f),
+                modifier = Modifier.weight(1f)
             )
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.onPrimary,
+                tint = MaterialTheme.colorScheme.onPrimary
             )
         }
     }

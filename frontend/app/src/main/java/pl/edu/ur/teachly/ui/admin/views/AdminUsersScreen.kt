@@ -37,10 +37,7 @@ import pl.edu.ur.teachly.ui.components.other.cards.UserAdminCard
 import pl.edu.ur.teachly.ui.components.other.dialog.AdminUserEditDialog
 
 @Composable
-fun AdminUsersScreen(
-    viewModel: AdminUsersViewModel = koinViewModel(),
-    initialRoleFilter: String? = null,
-) {
+fun AdminUsersScreen(viewModel: AdminUsersViewModel = koinViewModel(), initialRoleFilter: String? = null) {
     val state by viewModel.state.collectAsState()
     var showEditDialog by remember { mutableStateOf<UserResponse?>(null) }
     var showBanDialog by remember { mutableStateOf<UserResponse?>(null) }
@@ -69,14 +66,14 @@ fun AdminUsersScreen(
                 AdminSearchBar(
                     value = state.searchQuery,
                     onValueChange = { viewModel.onSearchChange(it) },
-                    placeholder = "Szukaj po imieniu, nazwisku, email...",
+                    placeholder = "Szukaj po imieniu, nazwisku, email..."
                 )
             }
             ExpandableFilterSection(
                 activeFilterCount = listOf(
                     state.selectedRole,
                     state.activeFilter
-                ).count { it != null },
+                ).count { it != null }
             ) {
                 FilterChips(
                     label = "Rola",
@@ -86,7 +83,7 @@ fun AdminUsersScreen(
                         viewModel.onRoleFilterChange(
                             if (label == "Wszyscy") null else UserRole.entries.first { it.label == label }
                         )
-                    },
+                    }
                 )
                 FilterChips(
                     label = "Status konta",
@@ -104,7 +101,7 @@ fun AdminUsersScreen(
                                 else -> null
                             }
                         )
-                    },
+                    }
                 )
             }
 
@@ -136,7 +133,7 @@ fun AdminUsersScreen(
         MessageSnackbars(
             successMessage = state.successMessage,
             errorMessage = state.error,
-            modifier = Modifier.align(Alignment.BottomCenter),
+            modifier = Modifier.align(Alignment.BottomCenter)
         )
     }
 
@@ -159,10 +156,11 @@ fun AdminUsersScreen(
             title = { Text(if (user.isActive) "Zablokuj konto" else "Odblokuj konto") },
             text = {
                 Text(
-                    if (user.isActive)
+                    if (user.isActive) {
                         "Czy na pewno chcesz zablokować konto użytkownika ${user.firstName} ${user.lastName}?"
-                    else
+                    } else {
                         "Czy na pewno chcesz odblokować konto użytkownika ${user.firstName} ${user.lastName}?"
+                    }
                 )
             },
             confirmButton = {

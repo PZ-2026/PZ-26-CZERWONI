@@ -24,11 +24,7 @@ import pl.edu.ur.teachly.data.model.TutorRequest
 import pl.edu.ur.teachly.data.model.TutorResponse
 
 @Composable
-fun TutorEditDialog(
-    tutor: TutorResponse,
-    onDismiss: () -> Unit,
-    onSave: (TutorRequest) -> Unit,
-) {
+fun TutorEditDialog(tutor: TutorResponse, onDismiss: () -> Unit, onSave: (TutorRequest) -> Unit) {
     var bio by remember { mutableStateOf(tutor.bio ?: "") }
     var hourlyRate by remember { mutableStateOf(tutor.hourlyRate.toString()) }
     var offersOnline by remember { mutableStateOf(tutor.offersOnline) }
@@ -40,7 +36,7 @@ fun TutorEditDialog(
         text = {
             Column(
                 modifier = Modifier.verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 OutlinedTextField(
                     value = hourlyRate,
@@ -48,7 +44,7 @@ fun TutorEditDialog(
                     label = { Text("Stawka godzinowa (PLN)") },
                     leadingIcon = { Icon(Icons.Default.Payments, null) },
                     modifier = Modifier.fillMaxWidth(),
-                    singleLine = true,
+                    singleLine = true
                 )
                 OutlinedTextField(
                     value = bio,
@@ -56,7 +52,7 @@ fun TutorEditDialog(
                     label = { Text("Bio") },
                     leadingIcon = { Icon(Icons.Default.Info, null) },
                     modifier = Modifier.fillMaxWidth(),
-                    minLines = 3,
+                    minLines = 3
                 )
                 DialogSectionLabel("Forma zajęć")
                 DialogSwitchRow("Zajęcia online", offersOnline) { offersOnline = it }
@@ -71,11 +67,11 @@ fun TutorEditDialog(
                             bio = bio.ifBlank { null },
                             hourlyRate = hourlyRate.toDoubleOrNull() ?: tutor.hourlyRate,
                             offersOnline = offersOnline,
-                            offersInPerson = offersInPerson,
+                            offersInPerson = offersInPerson
                         )
                     )
                 },
-                enabled = hourlyRate.toDoubleOrNull() != null,
+                enabled = hourlyRate.toDoubleOrNull() != null
             ) { Text("Zapisz") }
         },
         dismissButton = { TextButton(onClick = onDismiss) { Text("Anuluj") } }

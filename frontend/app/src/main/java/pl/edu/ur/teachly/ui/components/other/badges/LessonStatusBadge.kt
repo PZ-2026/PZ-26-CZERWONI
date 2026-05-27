@@ -22,14 +22,14 @@ fun LessonStatusBadge(status: LessonStatus) {
     }
     Surface(
         shape = RoundedCornerShape(8.dp),
-        color = color.copy(alpha = 0.12f),
+        color = color.copy(alpha = 0.12f)
     ) {
         Text(
             text = label,
             style = typography.labelSmall,
             color = color,
             fontWeight = FontWeight.SemiBold,
-            modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
+            modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
         )
     }
 }

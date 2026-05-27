@@ -5,7 +5,16 @@ import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
@@ -13,8 +22,28 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChevronLeft
 import androidx.compose.material.icons.filled.ChevronRight
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -26,8 +55,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.core.content.FileProvider
-import pl.edu.ur.teachly.ui.profile.viewmodels.ProfileViewModel
-import pl.edu.ur.teachly.data.model.UserRole
 import java.io.File
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -35,15 +62,14 @@ import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
 import java.util.Locale
+import pl.edu.ur.teachly.data.model.UserRole
+import pl.edu.ur.teachly.ui.profile.viewmodels.ProfileViewModel
 
 private val ISO = DateTimeFormatter.ISO_LOCAL_DATE
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ReportDownloadSection(
-    viewModel: ProfileViewModel,
-    modifier: Modifier = Modifier,
-) {
+fun ReportDownloadSection(viewModel: ProfileViewModel, modifier: Modifier = Modifier) {
     val context = LocalContext.current
     val profileState by viewModel.profile.collectAsState()
     val role = profileState.role
@@ -67,11 +93,13 @@ fun ReportDownloadSection(
                 "EXPENSES" to "Podsumowanie wydatków",
                 "ANALYTICS" to "Czas nauki i analiza"
             )
+
             UserRole.TUTOR -> listOf(
                 "LESSONS" to "Historia zajęć",
                 "REVENUE" to "Podsumowanie przychodów",
                 "STUDENTS" to "Analiza uczniów"
             )
+
             UserRole.ADMIN -> listOf(
                 "LESSONS" to "Wszystkie lekcje platformy",
                 "REVENUE" to "Obrót finansowy platformy",
@@ -112,12 +140,14 @@ fun ReportDownloadSection(
                     list.add("Dane ucznia" to "student")
                 }
             }
+
             "REVENUE" -> {
                 list.add("Przedmiot" to "subject")
                 list.add("Zarobki" to "price")
                 list.add("Liczba lekcji" to "status")
                 list.add("Wykresy i wizualizacje" to "charts")
             }
+
             "EXPENSES" -> {
                 list.add("Przedmiot" to "subject")
                 list.add("Kwota" to "price")
@@ -125,18 +155,21 @@ fun ReportDownloadSection(
                 list.add("Data" to "date")
                 list.add("Wykresy i wizualizacje" to "charts")
             }
+
             "ANALYTICS" -> {
                 list.add("Korepetytor" to "tutor")
                 list.add("Przedmiot" to "subject")
                 list.add("Czas nauki" to "status")
                 list.add("Wykresy i wizualizacje" to "charts")
             }
+
             "STUDENTS" -> {
                 list.add("Dane ucznia" to "student")
                 list.add("Przedmiot" to "subject")
                 list.add("Przeprowadzone lekcje" to "status")
                 list.add("Wykresy i wizualizacje" to "charts")
             }
+
             "USERS" -> {
                 list.add("Tabela użytkowników" to "student")
                 list.add("Wykresy i wizualizacje" to "charts")
@@ -154,23 +187,30 @@ fun ReportDownloadSection(
             "Dzień" -> {
                 Triple(referenceDate, referenceDate, "Dzień: ${ISO.format(referenceDate)}")
             }
+
             "Tydzień" -> {
                 val start = referenceDate.with(DayOfWeek.MONDAY)
                 val end = start.plusDays(6)
                 Triple(start, end, "Zakres: ${ISO.format(start)} – ${ISO.format(end)}")
             }
+
             "Miesiąc" -> {
                 val start = referenceYearMonth.atDay(1)
                 val end = referenceYearMonth.atEndOfMonth()
-                val label = referenceYearMonth.month.getDisplayName(TextStyle.FULL_STANDALONE, Locale("pl")) +
-                        " ${referenceYearMonth.year}"
+                val label =
+                    referenceYearMonth.month.getDisplayName(
+                        TextStyle.FULL_STANDALONE,
+                        Locale.forLanguageTag("pl")
+                    ) + " ${referenceYearMonth.year}"
                 Triple(start, end, "Zakres: $label")
             }
+
             "Rok" -> {
                 val start = LocalDate.of(referenceYear, 1, 1)
                 val end = LocalDate.of(referenceYear, 12, 31)
                 Triple(start, end, "Zakres: $referenceYear")
             }
+
             else -> Triple(referenceDate, referenceDate, "Dzień: ${ISO.format(referenceDate)}")
         }
     }
@@ -180,30 +220,45 @@ fun ReportDownloadSection(
         Dialog(onDismissRequest = { showPicker = false }) {
             Surface(
                 shape = RoundedCornerShape(16.dp),
-                tonalElevation = 6.dp,
+                tonalElevation = 6.dp
             ) {
                 when (selectedMode) {
                     "Dzień" -> DayPickerContent(
                         referenceDate = referenceDate,
                         selectedWeekStart = null,
-                        onDaySelected = { referenceDate = it; showPicker = false },
-                        onDismiss = { showPicker = false },
+                        onDaySelected = {
+                            referenceDate = it
+                            showPicker = false
+                        },
+                        onDismiss = { showPicker = false }
                     )
+
                     "Tydzień" -> DayPickerContent(
                         referenceDate = referenceDate,
                         selectedWeekStart = referenceDate.with(DayOfWeek.MONDAY),
-                        onDaySelected = { referenceDate = it; showPicker = false },
-                        onDismiss = { showPicker = false },
+                        onDaySelected = {
+                            referenceDate = it
+                            showPicker = false
+                        },
+                        onDismiss = { showPicker = false }
                     )
+
                     "Miesiąc" -> MonthPickerContent(
                         current = referenceYearMonth,
-                        onSelected = { referenceYearMonth = it; showPicker = false },
-                        onDismiss = { showPicker = false },
+                        onSelected = {
+                            referenceYearMonth = it
+                            showPicker = false
+                        },
+                        onDismiss = { showPicker = false }
                     )
+
                     "Rok" -> YearPickerContent(
                         currentYear = referenceYear,
-                        onSelected = { referenceYear = it; showPicker = false },
-                        onDismiss = { showPicker = false },
+                        onSelected = {
+                            referenceYear = it
+                            showPicker = false
+                        },
+                        onDismiss = { showPicker = false }
                     )
                 }
             }
@@ -212,23 +267,23 @@ fun ReportDownloadSection(
 
     Card(
         modifier = modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             Text(
                 text = "Raporty i Statystyki",
                 style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
             // 1. Wybór typu raportu
             val currentReportTypeName = reportTypes.firstOrNull { it.first == selectedReportKey }?.second ?: ""
             ExposedDropdownMenuBox(
                 expanded = reportTypeExpanded,
-                onExpandedChange = { reportTypeExpanded = !reportTypeExpanded },
+                onExpandedChange = { reportTypeExpanded = !reportTypeExpanded }
             ) {
                 OutlinedTextField(
                     value = currentReportTypeName,
@@ -236,8 +291,10 @@ fun ReportDownloadSection(
                     readOnly = true,
                     label = { Text("Typ raportu") },
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = reportTypeExpanded) },
-                    modifier = Modifier.menuAnchor().fillMaxWidth(),
-                    colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
+                    modifier = Modifier
+                        .menuAnchor()
+                        .fillMaxWidth(),
+                    colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors()
                 )
                 ExposedDropdownMenu(
                     expanded = reportTypeExpanded,
@@ -249,7 +306,7 @@ fun ReportDownloadSection(
                             onClick = {
                                 selectedReportKey = key
                                 reportTypeExpanded = false
-                            },
+                            }
                         )
                     }
                 }
@@ -306,7 +363,7 @@ fun ReportDownloadSection(
             // 3. Wybór zakresu czasowego
             ExposedDropdownMenuBox(
                 expanded = modeExpanded,
-                onExpandedChange = { modeExpanded = !modeExpanded },
+                onExpandedChange = { modeExpanded = !modeExpanded }
             ) {
                 OutlinedTextField(
                     value = selectedMode,
@@ -314,14 +371,19 @@ fun ReportDownloadSection(
                     readOnly = true,
                     label = { Text("Typ zakresu dat") },
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = modeExpanded) },
-                    modifier = Modifier.menuAnchor().fillMaxWidth(),
-                    colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
+                    modifier = Modifier
+                        .menuAnchor()
+                        .fillMaxWidth(),
+                    colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors()
                 )
                 ExposedDropdownMenu(expanded = modeExpanded, onDismissRequest = { modeExpanded = false }) {
                     modes.forEach { mode ->
                         DropdownMenuItem(
                             text = { Text(mode) },
-                            onClick = { selectedMode = mode; modeExpanded = false },
+                            onClick = {
+                                selectedMode = mode
+                                modeExpanded = false
+                            }
                         )
                     }
                 }
@@ -329,7 +391,7 @@ fun ReportDownloadSection(
 
             OutlinedButton(
                 onClick = { showPicker = true },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Wybierz okres")
             }
@@ -337,7 +399,7 @@ fun ReportDownloadSection(
             Surface(
                 shape = RoundedCornerShape(8.dp),
                 color = MaterialTheme.colorScheme.primaryContainer,
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
                     text = rangeLabel,
@@ -347,7 +409,7 @@ fun ReportDownloadSection(
                         .padding(horizontal = 12.dp, vertical = 10.dp)
                         .fillMaxWidth(),
                     textAlign = TextAlign.Center,
-                    fontWeight = FontWeight.Medium,
+                    fontWeight = FontWeight.Medium
                 )
             }
 
@@ -368,7 +430,7 @@ fun ReportDownloadSection(
                         }
                     }
                 },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Pobierz PDF")
             }
@@ -380,9 +442,9 @@ fun ReportDownloadSection(
 @Composable
 private fun DayPickerContent(
     referenceDate: LocalDate,
-    selectedWeekStart: LocalDate?,         // null = tryb dnia, non-null = tryb tygodnia
+    selectedWeekStart: LocalDate?, // null = tryb dnia, non-null = tryb tygodnia
     onDaySelected: (LocalDate) -> Unit,
-    onDismiss: () -> Unit,
+    onDismiss: () -> Unit
 ) {
     var displayMonth by remember { mutableStateOf(YearMonth.from(referenceDate)) }
     val today = LocalDate.now()
@@ -393,16 +455,16 @@ private fun DayPickerContent(
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
+            verticalAlignment = Alignment.CenterVertically
         ) {
             IconButton(onClick = { displayMonth = displayMonth.minusMonths(1) }) {
                 Icon(Icons.Default.ChevronLeft, contentDescription = null)
             }
             Text(
                 text = displayMonth.month.getDisplayName(TextStyle.FULL_STANDALONE, Locale("pl"))
-                        .replaceFirstChar { it.uppercase() } + " ${displayMonth.year}",
+                    .replaceFirstChar { it.uppercase() } + " ${displayMonth.year}",
                 style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
+                fontWeight = FontWeight.Bold
             )
             IconButton(onClick = { displayMonth = displayMonth.plusMonths(1) }) {
                 Icon(Icons.Default.ChevronRight, contentDescription = null)
@@ -418,7 +480,7 @@ private fun DayPickerContent(
                     modifier = Modifier.weight(1f),
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         }
@@ -436,12 +498,17 @@ private fun DayPickerContent(
                     val cellIndex = row * 7 + col
                     val dayNum = cellIndex - startOffset + 1
                     if (dayNum < 1 || dayNum > daysInMonth) {
-                        Box(modifier = Modifier.weight(1f).aspectRatio(1f))
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .aspectRatio(1f)
+                        )
                     } else {
                         val day = displayMonth.atDay(dayNum)
                         val isToday = day == today
                         val isSelected = day == referenceDate
-                        val isInWeek = weekStart != null && !day.isBefore(weekStart) && !day.isAfter(weekStart.plusDays(6))
+                        val isInWeek =
+                            weekStart != null && !day.isBefore(weekStart) && !day.isAfter(weekStart.plusDays(6))
                         val primary = MaterialTheme.colorScheme.primary
                         val primaryContainer = MaterialTheme.colorScheme.primaryContainer
 
@@ -459,11 +526,14 @@ private fun DayPickerContent(
                                     }
                                 )
                                 .then(
-                                    if (isToday && !isSelected) Modifier.border(1.dp, primary, RoundedCornerShape(4.dp))
-                                    else Modifier
+                                    if (isToday && !isSelected) {
+                                        Modifier.border(1.dp, primary, RoundedCornerShape(4.dp))
+                                    } else {
+                                        Modifier
+                                    }
                                 )
                                 .clickable { onDaySelected(day) },
-                            contentAlignment = Alignment.Center,
+                            contentAlignment = Alignment.Center
                         ) {
                             Text(
                                 text = "$dayNum",
@@ -473,7 +543,7 @@ private fun DayPickerContent(
                                     isSelected -> MaterialTheme.colorScheme.onPrimary
                                     isInWeek -> MaterialTheme.colorScheme.onPrimaryContainer
                                     else -> MaterialTheme.colorScheme.onSurface
-                                },
+                                }
                             )
                         }
                     }
@@ -489,14 +559,10 @@ private fun DayPickerContent(
 
 // ---- PICKER: MIESIĄC ----
 @Composable
-private fun MonthPickerContent(
-    current: YearMonth,
-    onSelected: (YearMonth) -> Unit,
-    onDismiss: () -> Unit,
-) {
+private fun MonthPickerContent(current: YearMonth, onSelected: (YearMonth) -> Unit, onDismiss: () -> Unit) {
     var year by remember { mutableStateOf(current.year) }
     val monthNames = (1..12).map {
-        java.time.Month.of(it).getDisplayName(TextStyle.SHORT_STANDALONE, Locale("pl"))
+        java.time.Month.of(it).getDisplayName(TextStyle.SHORT_STANDALONE, Locale.forLanguageTag("pl"))
             .replaceFirstChar { c -> c.uppercase() }
     }
 
@@ -504,7 +570,7 @@ private fun MonthPickerContent(
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
+            verticalAlignment = Alignment.CenterVertically
         ) {
             IconButton(onClick = { year-- }) { Icon(Icons.Default.ChevronLeft, contentDescription = null) }
             Text(text = "$year", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
@@ -518,14 +584,20 @@ private fun MonthPickerContent(
                 Surface(
                     shape = RoundedCornerShape(8.dp),
                     color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface,
-                    modifier = Modifier.padding(4.dp).clickable { onSelected(ym) },
+                    modifier = Modifier
+                        .padding(4.dp)
+                        .clickable { onSelected(ym) }
                 ) {
                     Text(
                         text = monthNames[idx],
                         modifier = Modifier.padding(8.dp),
                         textAlign = TextAlign.Center,
-                        color = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface,
-                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                        color = if (isSelected) {
+                            MaterialTheme.colorScheme.onPrimary
+                        } else {
+                            MaterialTheme.colorScheme.onSurface
+                        },
+                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
                     )
                 }
             }
@@ -537,11 +609,7 @@ private fun MonthPickerContent(
 
 // ---- PICKER: ROK ----
 @Composable
-private fun YearPickerContent(
-    currentYear: Int,
-    onSelected: (Int) -> Unit,
-    onDismiss: () -> Unit,
-) {
+private fun YearPickerContent(currentYear: Int, onSelected: (Int) -> Unit, onDismiss: () -> Unit) {
     val thisYear = LocalDate.now().year
     val years = (thisYear - 5..thisYear + 2).toList()
 
@@ -555,14 +623,20 @@ private fun YearPickerContent(
                 Surface(
                     shape = RoundedCornerShape(8.dp),
                     color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface,
-                    modifier = Modifier.padding(4.dp).clickable { onSelected(yr) },
+                    modifier = Modifier
+                        .padding(4.dp)
+                        .clickable { onSelected(yr) }
                 ) {
                     Text(
                         text = "$yr",
                         modifier = Modifier.padding(8.dp),
                         textAlign = TextAlign.Center,
-                        color = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface,
-                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                        color = if (isSelected) {
+                            MaterialTheme.colorScheme.onPrimary
+                        } else {
+                            MaterialTheme.colorScheme.onSurface
+                        },
+                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
                     )
                 }
             }
@@ -577,7 +651,7 @@ private fun openPdfFile(context: android.content.Context, file: File) {
         val uri = FileProvider.getUriForFile(
             context,
             context.applicationContext.packageName + ".provider",
-            file,
+            file
         )
         val intent = Intent(Intent.ACTION_VIEW).apply {
             setDataAndType(uri, "application/pdf")

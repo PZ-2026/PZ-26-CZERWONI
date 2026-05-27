@@ -12,4 +12,3 @@ fun navItemColors() = NavigationBarItemDefaults.colors(
     unselectedIconColor = colorScheme.onSurfaceVariant,
     unselectedTextColor = colorScheme.onSurfaceVariant
 )
-

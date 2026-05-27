@@ -25,20 +25,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import pl.edu.ur.teachly.data.model.TutorAvailabilityRecurringResponse
 
-private fun hasOverlap(
-    timeFrom: String,
-    timeTo: String,
-    slots: List<TutorAvailabilityRecurringResponse>,
-): Boolean = slots.any { slot ->
-    timeFrom < slot.timeTo.take(5) && timeTo > slot.timeFrom.take(5)
-}
+private fun hasOverlap(timeFrom: String, timeTo: String, slots: List<TutorAvailabilityRecurringResponse>): Boolean =
+    slots.any { slot ->
+        timeFrom < slot.timeTo.take(5) && timeTo > slot.timeFrom.take(5)
+    }
 
 @Composable
 fun AvailabilityTimeRangeDialog(
     dayName: String,
     existingSlots: List<TutorAvailabilityRecurringResponse>,
     onDismiss: () -> Unit,
-    onSave: (String, String) -> Unit,
+    onSave: (String, String) -> Unit
 ) {
     var fromHour by remember { mutableIntStateOf(9) }
     var fromMinute by remember { mutableIntStateOf(0) }
@@ -59,7 +56,11 @@ fun AvailabilityTimeRangeDialog(
             initialHour = fromHour,
             initialMinute = fromMinute,
             onDismiss = { showFromPicker = false },
-            onConfirm = { h, m -> fromHour = h; fromMinute = m; showFromPicker = false },
+            onConfirm = { h, m ->
+                fromHour = h
+                fromMinute = m
+                showFromPicker = false
+            }
         )
     }
 
@@ -69,7 +70,11 @@ fun AvailabilityTimeRangeDialog(
             initialHour = toHour,
             initialMinute = toMinute,
             onDismiss = { showToPicker = false },
-            onConfirm = { h, m -> toHour = h; toMinute = m; showToPicker = false },
+            onConfirm = { h, m ->
+                toHour = h
+                toMinute = m
+                showToPicker = false
+            }
         )
     }
 
@@ -92,12 +97,13 @@ fun AvailabilityTimeRangeDialog(
                                 )
                             },
                             isError = !rangeValid,
-                            modifier = Modifier.fillMaxWidth(),
+                            modifier = Modifier.fillMaxWidth()
                         )
                         Box(
                             modifier = Modifier
                                 .matchParentSize()
-                                .clickable { showFromPicker = true })
+                                .clickable { showFromPicker = true }
+                        )
                     }
                     Box(modifier = Modifier.weight(1f)) {
                         OutlinedTextField(
@@ -112,25 +118,26 @@ fun AvailabilityTimeRangeDialog(
                                 )
                             },
                             isError = !rangeValid || overlaps,
-                            modifier = Modifier.fillMaxWidth(),
+                            modifier = Modifier.fillMaxWidth()
                         )
                         Box(
                             modifier = Modifier
                                 .matchParentSize()
-                                .clickable { showToPicker = true })
+                                .clickable { showToPicker = true }
+                        )
                     }
                 }
                 if (!rangeValid) {
                     Text(
                         text = "Godzina zakończenia musi być późniejsza od rozpoczęcia",
                         style = typography.bodySmall,
-                        color = colorScheme.error,
+                        color = colorScheme.error
                     )
                 } else if (overlaps) {
                     Text(
                         text = "Ten przedział pokrywa się z istniejącym",
                         style = typography.bodySmall,
-                        color = colorScheme.error,
+                        color = colorScheme.error
                     )
                 }
             }
@@ -142,6 +149,6 @@ fun AvailabilityTimeRangeDialog(
         },
         dismissButton = {
             TextButton(onClick = onDismiss) { Text("Anuluj") }
-        },
+        }
     )
 }

@@ -31,8 +31,8 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
-import pl.edu.ur.teachly.ui.models.MINUTE_OPTIONS
 import kotlin.math.absoluteValue
+import pl.edu.ur.teachly.ui.models.MINUTE_OPTIONS
 
 @Composable
 fun SlottedTimePickerDialog(
@@ -40,7 +40,7 @@ fun SlottedTimePickerDialog(
     initialHour: Int,
     initialMinute: Int,
     onDismiss: () -> Unit,
-    onConfirm: (hour: Int, minute: Int) -> Unit,
+    onConfirm: (hour: Int, minute: Int) -> Unit
 ) {
     var hour by remember { mutableIntStateOf(initialHour) }
     var minute by remember { mutableIntStateOf(initialMinute) }
@@ -53,7 +53,7 @@ fun SlottedTimePickerDialog(
                 hour = hour,
                 minute = minute,
                 onHourChange = { hour = it },
-                onMinuteChange = { minute = it },
+                onMinuteChange = { minute = it }
             )
         },
         confirmButton = {
@@ -61,17 +61,12 @@ fun SlottedTimePickerDialog(
         },
         dismissButton = {
             TextButton(onClick = onDismiss) { Text("Anuluj") }
-        },
+        }
     )
 }
 
 @Composable
-fun SlottedTimePicker(
-    hour: Int,
-    minute: Int,
-    onHourChange: (Int) -> Unit,
-    onMinuteChange: (Int) -> Unit,
-) {
+fun SlottedTimePicker(hour: Int, minute: Int, onHourChange: (Int) -> Unit, onMinuteChange: (Int) -> Unit) {
     // Huge number of pages for infinite scroll effect (typical real world hack)
     val countMultiplier = 500
     val hourTotalPages = 24 * countMultiplier
@@ -103,7 +98,7 @@ fun SlottedTimePicker(
             .fillMaxWidth()
             .height(180.dp),
         horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically,
+        verticalAlignment = Alignment.CenterVertically
     ) {
         WheelPickerColumn(
             state = hourState,
@@ -121,10 +116,7 @@ fun SlottedTimePicker(
 
 @SuppressLint("FrequentlyChangingValue")
 @Composable
-private fun WheelPickerColumn(
-    state: PagerState,
-    label: (Int) -> String
-) {
+private fun WheelPickerColumn(state: PagerState, label: (Int) -> String) {
     VerticalPager(
         state = state,
         modifier = Modifier.width(70.dp),
@@ -135,8 +127,8 @@ private fun WheelPickerColumn(
 
         // Distance from center to animate scale and opacity
         val pageOffset = (
-                (state.currentPage - page) + state.currentPageOffsetFraction
-                ).absoluteValue
+            (state.currentPage - page) + state.currentPageOffsetFraction
+            ).absoluteValue
 
         Box(
             modifier = Modifier

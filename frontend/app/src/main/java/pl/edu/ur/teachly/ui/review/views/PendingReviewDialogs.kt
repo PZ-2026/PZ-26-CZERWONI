@@ -49,7 +49,7 @@ fun PendingReviewFormDialog(
     isLoading: Boolean,
     error: String?,
     onDismiss: () -> Unit,
-    onSubmit: (rating: Double, comment: String?) -> Unit,
+    onSubmit: (rating: Double, comment: String?) -> Unit
 ) {
     var rating by remember { mutableDoubleStateOf(0.0) }
     var comment by remember { mutableStateOf("") }
@@ -62,19 +62,19 @@ fun PendingReviewFormDialog(
 
     Dialog(
         onDismissRequest = onDismiss,
-        properties = DialogProperties(usePlatformDefaultWidth = false),
+        properties = DialogProperties(usePlatformDefaultWidth = false)
     ) {
         Surface(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 20.dp),
             shape = RoundedCornerShape(24.dp),
-            color = MaterialTheme.colorScheme.surface,
+            color = MaterialTheme.colorScheme.surface
         ) {
             Column(
                 modifier = Modifier.padding(24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 // Avatar
                 InitialsAvatar(
@@ -82,26 +82,26 @@ fun PendingReviewFormDialog(
                     avatarColor = AvatarColors[avatarIndex],
                     avatarUrl = pending.tutorAvatarUrl,
                     size = 72.dp,
-                    cornerRadius = 22.dp,
+                    cornerRadius = 22.dp
                 )
 
                 // Name + subject
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(2.dp),
+                    verticalArrangement = Arrangement.spacedBy(2.dp)
                 ) {
                     Text(
                         text = "${pending.tutorFirstName} ${pending.tutorLastName}",
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onSurface,
-                        textAlign = TextAlign.Center,
+                        textAlign = TextAlign.Center
                     )
                     Text(
                         text = pending.subjectName,
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.primary,
-                        fontWeight = FontWeight.Medium,
+                        fontWeight = FontWeight.Medium
                     )
                 }
 
@@ -109,7 +109,7 @@ fun PendingReviewFormDialog(
                     text = stringResource(R.string.pending_review_question),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    textAlign = TextAlign.Center,
+                    textAlign = TextAlign.Center
                 )
 
                 // Star rating row
@@ -118,13 +118,14 @@ fun PendingReviewFormDialog(
                         Icon(
                             imageVector = Icons.Filled.Star,
                             contentDescription = null,
-                            tint = if (i <= rating.toInt())
+                            tint = if (i <= rating.toInt()) {
                                 MaterialTheme.colorScheme.primary
-                            else
-                                MaterialTheme.colorScheme.onSurface.copy(alpha = 0.18f),
+                            } else {
+                                MaterialTheme.colorScheme.onSurface.copy(alpha = 0.18f)
+                            },
                             modifier = Modifier
                                 .size(38.dp)
-                                .clickable { rating = i.toDouble() },
+                                .clickable { rating = i.toDouble() }
                         )
                     }
                 }
@@ -137,7 +138,7 @@ fun PendingReviewFormDialog(
                     modifier = Modifier.fillMaxWidth(),
                     minLines = 3,
                     maxLines = 5,
-                    shape = RoundedCornerShape(12.dp),
+                    shape = RoundedCornerShape(12.dp)
                 )
 
                 // Error message
@@ -146,35 +147,35 @@ fun PendingReviewFormDialog(
                         text = error,
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.error,
-                        textAlign = TextAlign.Center,
+                        textAlign = TextAlign.Center
                     )
                 }
 
                 // Buttons
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     TextButton(
                         onClick = onDismiss,
-                        modifier = Modifier.weight(1f),
+                        modifier = Modifier.weight(1f)
                     ) {
                         Text(
                             text = stringResource(R.string.pending_review_skip),
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                     Button(
                         onClick = { if (rating > 0) onSubmit(rating, comment.ifBlank { null }) },
                         enabled = rating > 0 && !isLoading,
                         modifier = Modifier.weight(1f),
-                        shape = RoundedCornerShape(12.dp),
+                        shape = RoundedCornerShape(12.dp)
                     ) {
                         if (isLoading) {
                             CircularProgressIndicator(
                                 modifier = Modifier.size(18.dp),
                                 strokeWidth = 2.dp,
-                                color = MaterialTheme.colorScheme.onPrimary,
+                                color = MaterialTheme.colorScheme.onPrimary
                             )
                         } else {
                             Text(stringResource(R.string.pending_review_submit))
@@ -192,22 +193,22 @@ fun PendingReviewFormDialog(
 fun PendingReviewsSummaryDialog(
     reviews: List<PendingReviewInfo>,
     onSelect: (PendingReviewInfo) -> Unit,
-    onDismiss: () -> Unit,
+    onDismiss: () -> Unit
 ) {
     Dialog(
         onDismissRequest = onDismiss,
-        properties = DialogProperties(usePlatformDefaultWidth = false),
+        properties = DialogProperties(usePlatformDefaultWidth = false)
     ) {
         Surface(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 20.dp),
             shape = RoundedCornerShape(24.dp),
-            color = MaterialTheme.colorScheme.surface,
+            color = MaterialTheme.colorScheme.surface
         ) {
             Column(
                 modifier = Modifier.padding(24.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 // Header
                 Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
@@ -215,19 +216,19 @@ fun PendingReviewsSummaryDialog(
                         text = stringResource(R.string.pending_reviews_title),
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurface,
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                     Text(
                         text = stringResource(R.string.pending_reviews_subtitle, reviews.size),
                         style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
 
                 // Tutor list card
                 Surface(
                     shape = RoundedCornerShape(16.dp),
-                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
                 ) {
                     Column {
                         reviews.forEachIndexed { index, info ->
@@ -244,39 +245,39 @@ fun PendingReviewsSummaryDialog(
                                     .clickable { onSelect(info) }
                                     .padding(horizontal = 16.dp, vertical = 12.dp),
                                 verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                                horizontalArrangement = Arrangement.spacedBy(12.dp)
                             ) {
                                 InitialsAvatar(
                                     initials = initials,
                                     avatarColor = AvatarColors[avatarIndex],
                                     avatarUrl = info.tutorAvatarUrl,
                                     size = 44.dp,
-                                    cornerRadius = 14.dp,
+                                    cornerRadius = 14.dp
                                 )
                                 Column(modifier = Modifier.weight(1f)) {
                                     Text(
                                         text = "${info.tutorFirstName} ${info.tutorLastName}",
                                         style = MaterialTheme.typography.bodyMedium,
                                         fontWeight = FontWeight.SemiBold,
-                                        color = MaterialTheme.colorScheme.onSurface,
+                                        color = MaterialTheme.colorScheme.onSurface
                                     )
                                     Text(
                                         text = info.subjectName,
                                         style = MaterialTheme.typography.bodySmall,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                 }
                                 Icon(
                                     imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                                     contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
                                 )
                             }
 
                             if (index < reviews.lastIndex) {
                                 HorizontalDivider(
                                     modifier = Modifier.padding(horizontal = 16.dp),
-                                    color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f),
+                                    color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
                                 )
                             }
                         }
@@ -287,11 +288,11 @@ fun PendingReviewsSummaryDialog(
 
                 TextButton(
                     onClick = onDismiss,
-                    modifier = Modifier.align(Alignment.CenterHorizontally),
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
                 ) {
                     Text(
                         text = stringResource(R.string.pending_review_skip_all),
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }
