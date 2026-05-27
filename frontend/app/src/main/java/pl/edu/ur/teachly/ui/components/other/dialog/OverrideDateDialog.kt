@@ -31,14 +31,17 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import pl.edu.ur.teachly.ui.components.other.formatDate
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneOffset
-import pl.edu.ur.teachly.ui.components.other.formatDate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun OverrideDateDialog(onDismiss: () -> Unit, onSave: (date: String, timeFrom: String?, timeTo: String?) -> Unit) {
+fun OverrideDateDialog(
+    onDismiss: () -> Unit,
+    onSave: (date: String, timeFrom: String?, timeTo: String?) -> Unit,
+) {
     var selectedDate by remember { mutableStateOf(LocalDate.now().toString()) }
     var showDatePicker by remember { mutableStateOf(false) }
     var showFromPicker by remember { mutableStateOf(false) }
@@ -58,7 +61,7 @@ fun OverrideDateDialog(onDismiss: () -> Unit, onSave: (date: String, timeFrom: S
         initialSelectedDateMillis = LocalDate.now()
             .atStartOfDay(ZoneOffset.UTC)
             .toInstant()
-            .toEpochMilli()
+            .toEpochMilli(),
     )
 
     if (showDatePicker) {
@@ -77,7 +80,7 @@ fun OverrideDateDialog(onDismiss: () -> Unit, onSave: (date: String, timeFrom: S
             },
             dismissButton = {
                 TextButton(onClick = { showDatePicker = false }) { Text("Anuluj") }
-            }
+            },
         ) { DatePicker(state = datePickerState) }
     }
 
@@ -87,11 +90,7 @@ fun OverrideDateDialog(onDismiss: () -> Unit, onSave: (date: String, timeFrom: S
             initialHour = fromHour,
             initialMinute = fromMinute,
             onDismiss = { showFromPicker = false },
-            onConfirm = { h, m ->
-                fromHour = h
-                fromMinute = m
-                showFromPicker = false
-            }
+            onConfirm = { h, m -> fromHour = h; fromMinute = m; showFromPicker = false },
         )
     }
 
@@ -101,11 +100,7 @@ fun OverrideDateDialog(onDismiss: () -> Unit, onSave: (date: String, timeFrom: S
             initialHour = toHour,
             initialMinute = toMinute,
             onDismiss = { showToPicker = false },
-            onConfirm = { h, m ->
-                toHour = h
-                toMinute = m
-                showToPicker = false
-            }
+            onConfirm = { h, m -> toHour = h; toMinute = m; showToPicker = false },
         )
     }
 
@@ -125,13 +120,12 @@ fun OverrideDateDialog(onDismiss: () -> Unit, onSave: (date: String, timeFrom: S
                         trailingIcon = {
                             Icon(Icons.Default.CalendarMonth, contentDescription = "Wybierz datę")
                         },
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
                     )
                     Box(
                         modifier = Modifier
                             .matchParentSize()
-                            .clickable { showDatePicker = true }
-                    )
+                            .clickable { showDatePicker = true })
                 }
 
                 HorizontalDivider()
@@ -139,7 +133,7 @@ fun OverrideDateDialog(onDismiss: () -> Unit, onSave: (date: String, timeFrom: S
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text("Cały dzień", style = typography.bodyMedium, color = colorScheme.onSurface)
                     Switch(checked = allDay, onCheckedChange = { allDay = it })
@@ -160,13 +154,12 @@ fun OverrideDateDialog(onDismiss: () -> Unit, onSave: (date: String, timeFrom: S
                                     )
                                 },
                                 isError = !rangeValid,
-                                modifier = Modifier.fillMaxWidth()
+                                modifier = Modifier.fillMaxWidth(),
                             )
                             Box(
                                 modifier = Modifier
                                     .matchParentSize()
-                                    .clickable { showFromPicker = true }
-                            )
+                                    .clickable { showFromPicker = true })
                         }
                         Box(modifier = Modifier.weight(1f)) {
                             OutlinedTextField(
@@ -181,20 +174,19 @@ fun OverrideDateDialog(onDismiss: () -> Unit, onSave: (date: String, timeFrom: S
                                     )
                                 },
                                 isError = !rangeValid,
-                                modifier = Modifier.fillMaxWidth()
+                                modifier = Modifier.fillMaxWidth(),
                             )
                             Box(
                                 modifier = Modifier
                                     .matchParentSize()
-                                    .clickable { showToPicker = true }
-                            )
+                                    .clickable { showToPicker = true })
                         }
                     }
                     if (!rangeValid) {
                         Text(
                             text = "Godzina zakończenia musi być późniejsza od rozpoczęcia",
                             style = typography.bodySmall,
-                            color = colorScheme.error
+                            color = colorScheme.error,
                         )
                     }
                 }
@@ -209,11 +201,11 @@ fun OverrideDateDialog(onDismiss: () -> Unit, onSave: (date: String, timeFrom: S
                         if (allDay) null else timeTo
                     )
                 },
-                enabled = canSave
+                enabled = canSave,
             ) { Text("Dodaj") }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) { Text("Anuluj") }
-        }
+        },
     )
 }

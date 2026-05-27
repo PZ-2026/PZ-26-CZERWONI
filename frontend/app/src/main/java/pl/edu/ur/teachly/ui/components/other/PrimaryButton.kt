@@ -20,7 +20,7 @@ fun PrimaryButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    isLoading: Boolean = false
+    isLoading: Boolean = false,
 ) {
     Button(
         onClick = onClick,
@@ -31,19 +31,19 @@ fun PrimaryButton(
         shape = RoundedCornerShape(18.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = colorScheme.primary,
-            disabledContainerColor = colorScheme.primary.copy(alpha = 0.5f)
-        )
+            disabledContainerColor = colorScheme.primary.copy(alpha = 0.5f),
+        ),
     ) {
         if (isLoading) {
             CircularProgressIndicator(
                 modifier = Modifier.size(22.dp),
                 color = colorScheme.onPrimary,
-                strokeWidth = 2.5.dp
+                strokeWidth = 2.5.dp,
             )
         } else {
             Text(
                 text = text,
-                style = typography.labelLarge
+                style = typography.labelLarge,
             )
         }
     }

@@ -51,18 +51,19 @@ import pl.edu.ur.teachly.ui.tutor.views.TutorDetailScreen
 fun AppNavHost(
     navController: NavHostController,
     modifier: Modifier = Modifier,
-    startDestination: AppRoute = AppRoute.Splash
+    startDestination: AppRoute = AppRoute.Splash,
 ) {
     NavHost(
         navController = navController,
         startDestination = startDestination,
-        modifier = modifier
+        modifier = modifier,
     ) {
+
         // Auth
         composable<AppRoute.Splash> {
             SplashScreen(
                 onLoginClick = { navController.navigate(AppRoute.Login) },
-                onRegisterClick = { navController.navigate(AppRoute.Register) }
+                onRegisterClick = { navController.navigate(AppRoute.Register) },
             )
         }
 
@@ -74,13 +75,10 @@ fun AppNavHost(
                 onSuccess = {
                     scope.launch {
                         val role = tokenManager.roleFlow.first()
-                        if (role == "ADMIN") {
-                            navController.navigateToAdminDashboard()
-                        } else {
-                            navController.navigateToHome()
-                        }
+                        if (role == "ADMIN") navController.navigateToAdminDashboard()
+                        else navController.navigateToHome()
                     }
-                }
+                },
             )
         }
 
@@ -99,7 +97,7 @@ fun AppNavHost(
                             else -> navController.navigateToHome()
                         }
                     }
-                }
+                },
             )
         }
 
@@ -110,12 +108,9 @@ fun AppNavHost(
                 tutorId = args.tutorId,
                 onBack = if (args.returnToProfile) ({ navController.popBackStack() }) else null,
                 onDone = {
-                    if (args.returnToProfile) {
-                        navController.popBackStack()
-                    } else {
-                        navController.navigateToHome()
-                    }
-                }
+                    if (args.returnToProfile) navController.popBackStack()
+                    else navController.navigateToHome()
+                },
             )
         }
 
@@ -123,7 +118,7 @@ fun AppNavHost(
         composable<AppRoute.Home> {
             HomeScreen(
                 onSearchClick = { navController.navigate(AppRoute.Search) },
-                onLessonClick = { lessonId -> navController.navigate(AppRoute.LessonDetail(lessonId)) }
+                onLessonClick = { lessonId -> navController.navigate(AppRoute.LessonDetail(lessonId)) },
             )
         }
 
@@ -132,7 +127,7 @@ fun AppNavHost(
             SearchScreen(
                 onTutorClick = { tutor ->
                     navController.navigate(AppRoute.TutorDetail(tutor.id))
-                }
+                },
             )
         }
 
@@ -144,7 +139,7 @@ fun AppNavHost(
                 onBookClick = { navController.navigate(AppRoute.Booking(args.tutorId.toString())) },
                 onSeeAllReviews = {
                     navController.navigate(AppRoute.AllReviews(args.tutorId, ""))
-                }
+                },
             )
         }
 
@@ -162,10 +157,10 @@ fun AppNavHost(
                             timeFrom = timeFrom,
                             timeTo = timeTo,
                             format = format,
-                            amount = amount
+                            amount = amount,
                         )
                     )
-                }
+                },
             )
         }
 
@@ -179,7 +174,7 @@ fun AppNavHost(
                 timeTo = args.timeTo,
                 format = args.format,
                 amount = args.amount,
-                onGoHome = { navController.navigateToHome() }
+                onGoHome = { navController.navigateToHome() },
             )
         }
 
@@ -190,7 +185,7 @@ fun AppNavHost(
                 lessonId = args.lessonId,
                 onBack = { navController.popBackStack() },
                 onGoToTutor = { tutorId -> navController.navigate(AppRoute.TutorDetail(tutorId)) },
-                onRebook = { tutorId -> navController.navigate(AppRoute.Booking(tutorId.toString())) }
+                onRebook = { tutorId -> navController.navigate(AppRoute.Booking(tutorId.toString())) },
             )
         }
 
@@ -198,7 +193,7 @@ fun AppNavHost(
         composable<AppRoute.Schedule> {
             ScheduleScreen(
                 onBack = { navController.popBackStack() },
-                onLessonClick = { lessonId -> navController.navigate(AppRoute.LessonDetail(lessonId)) }
+                onLessonClick = { lessonId -> navController.navigate(AppRoute.LessonDetail(lessonId)) },
             )
         }
 
@@ -214,7 +209,7 @@ fun AppNavHost(
             when (role) {
                 null -> Box(
                     modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
+                    contentAlignment = Alignment.Center,
                 ) { CircularProgressIndicator() }
 
                 "TUTOR" -> TutorProfileScreen(
@@ -238,21 +233,21 @@ fun AppNavHost(
                             navController.navigate(AppRoute.TutorAvailability(it))
                         }
                     },
-                    viewModel = tutorViewModel
+                    viewModel = tutorViewModel,
                 )
 
                 "ADMIN" -> AdminProfileScreen(
                     onBack = { navController.popBackStack() },
                     onLogout = { navController.navigateToSplash() },
                     onEditClick = { navController.navigate(AppRoute.ProfileEdit) },
-                    viewModel = profileViewModel
+                    viewModel = profileViewModel,
                 )
 
                 else -> StudentProfileScreen(
                     onBack = { navController.popBackStack() },
                     onEditClick = { navController.navigate(AppRoute.ProfileEdit) },
                     onLogout = { navController.navigateToSplash() },
-                    viewModel = profileViewModel
+                    viewModel = profileViewModel,
                 )
             }
         }
@@ -271,7 +266,7 @@ fun AppNavHost(
                         navController.popBackStack()
                     }
                 },
-                viewModel = profileViewModel
+                viewModel = profileViewModel,
             )
         }
 
@@ -285,7 +280,7 @@ fun AppNavHost(
                 onLogout = {},
                 onSeeAllReviews = {
                     navController.navigate(AppRoute.AllReviews(args.tutorId, ""))
-                }
+                },
             )
         }
 
@@ -294,7 +289,7 @@ fun AppNavHost(
             AllReviewsScreen(
                 tutorId = args.tutorId,
                 tutorName = args.tutorName,
-                onBack = { navController.popBackStack() }
+                onBack = { navController.popBackStack() },
             )
         }
 
@@ -302,7 +297,7 @@ fun AppNavHost(
             val args = backStackEntry.toRoute<AppRoute.TutorAvailability>()
             AvailabilityScreen(
                 tutorId = args.tutorId,
-                onBack = { navController.popBackStack() }
+                onBack = { navController.popBackStack() },
             )
         }
 
@@ -339,7 +334,7 @@ fun AppNavHost(
                             tutorId
                         )
                     )
-                }
+                },
             )
         }
 
@@ -353,7 +348,7 @@ fun AppNavHost(
 
         composable<AppRoute.AdminTutors> {
             AdminTutorsScreen(
-                onSchedule = { tutorId -> navController.navigate(AppRoute.TutorAvailability(tutorId)) }
+                onSchedule = { tutorId -> navController.navigate(AppRoute.TutorAvailability(tutorId)) },
             )
         }
 

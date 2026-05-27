@@ -21,23 +21,23 @@ fun SectionItems(
     classes: List<ScheduledClass>,
     userRole: UserRole,
     emptyText: String,
-    onLessonClick: (lessonId: Int) -> Unit = {}
+    onLessonClick: (lessonId: Int) -> Unit = {},
 ) {
     Column(
         modifier = Modifier.padding(top = 8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         if (classes.isEmpty()) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 16.dp),
-                contentAlignment = Alignment.Center
+                contentAlignment = Alignment.Center,
             ) {
                 Text(
                     text = emptyText,
                     style = typography.bodyMedium,
-                    color = colorScheme.onBackground.copy(alpha = 0.45f)
+                    color = colorScheme.onBackground.copy(alpha = 0.45f),
                 )
             }
         } else {
@@ -45,7 +45,7 @@ fun SectionItems(
                 ScheduleItemCard(
                     item = item,
                     userRole = userRole,
-                    onClick = { onLessonClick(item.id.toIntOrNull() ?: return@ScheduleItemCard) }
+                    onClick = { onLessonClick(item.id.toIntOrNull() ?: return@ScheduleItemCard) },
                 )
             }
         }

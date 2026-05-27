@@ -10,9 +10,14 @@ import kotlinx.coroutines.launch
 import pl.edu.ur.teachly.data.model.UserRole
 import pl.edu.ur.teachly.data.repository.AuthRepository
 
-enum class UserRoleOption(val emoji: String, val title: String, val description: String, val dataRole: UserRole) {
+enum class UserRoleOption(
+    val emoji: String,
+    val title: String,
+    val description: String,
+    val dataRole: UserRole
+) {
     STUDENT("🎓", "Jestem uczniem", "Szukam korepetytora i chcę umawiać lekcje", UserRole.STUDENT),
-    TUTOR("📖", "Jestem korepetytorem", "Oferuję lekcje i zarządzam harmonogramem", UserRole.TUTOR)
+    TUTOR("📖", "Jestem korepetytorem", "Oferuję lekcje i zarządzam harmonogramem", UserRole.TUTOR),
 }
 
 data class RegisterUiState(
@@ -25,7 +30,7 @@ data class RegisterUiState(
     val password: String = "",
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
-    val isSuccess: Boolean = false
+    val isSuccess: Boolean = false,
 )
 
 class RegisterViewModel(private val repository: AuthRepository) : ViewModel() {
@@ -80,27 +85,23 @@ class RegisterViewModel(private val repository: AuthRepository) : ViewModel() {
         val state = _uiState.value
         when {
             state.firstName.isBlank() -> _uiState.value = state.copy(errorMessage = "Podaj imię")
-            state.lastName.isBlank() ->
-                _uiState.value =
-                    state.copy(errorMessage = "Podaj nazwisko")
+            state.lastName.isBlank() -> _uiState.value =
+                state.copy(errorMessage = "Podaj nazwisko")
 
-            state.email.isBlank() ->
-                _uiState.value =
-                    state.copy(errorMessage = "Podaj adres e-mail")
+            state.email.isBlank() -> _uiState.value =
+                state.copy(errorMessage = "Podaj adres e-mail")
 
             !Patterns.EMAIL_ADDRESS.matcher(state.email).matches()
-            -> _uiState.value = state.copy(errorMessage = "Podaj poprawny adres e-mail")
+                -> _uiState.value = state.copy(errorMessage = "Podaj poprawny adres e-mail")
 
-            state.phoneNumber.isBlank() ->
-                _uiState.value =
-                    state.copy(errorMessage = "Podaj numer telefonu")
+            state.phoneNumber.isBlank() -> _uiState.value =
+                state.copy(errorMessage = "Podaj numer telefonu")
 
             !Patterns.PHONE.matcher(state.phoneNumber).matches()
-            -> _uiState.value = state.copy(errorMessage = "Podaj poprawny numer telefonu")
+                -> _uiState.value = state.copy(errorMessage = "Podaj poprawny numer telefonu")
 
-            state.password.length < 8 ->
-                _uiState.value =
-                    state.copy(errorMessage = "Hasło musi mieć min. 8 znaków")
+            state.password.length < 8 -> _uiState.value =
+                state.copy(errorMessage = "Hasło musi mieć min. 8 znaków")
 
             else -> viewModelScope.launch {
                 _uiState.value = state.copy(isLoading = true, errorMessage = null)

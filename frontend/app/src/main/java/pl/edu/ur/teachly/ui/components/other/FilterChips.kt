@@ -23,7 +23,7 @@ fun FilterChips(
     activeItem: String,
     onSelect: (String) -> Unit,
     modifier: Modifier = Modifier,
-    label: String? = null
+    label: String? = null,
 ) {
     Surface(color = colorScheme.surface, modifier = modifier) {
         Column {
@@ -32,7 +32,7 @@ fun FilterChips(
                     text = label,
                     style = typography.labelSmall,
                     color = colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(start = 24.dp, top = 10.dp)
+                    modifier = Modifier.padding(start = 24.dp, top = 10.dp),
                 )
             }
             Row(
@@ -40,7 +40,7 @@ fun FilterChips(
                     .fillMaxWidth()
                     .horizontalScroll(rememberScrollState())
                     .padding(horizontal = 24.dp, vertical = 8.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 items.forEach { item ->
                     val isActive = activeItem == item
@@ -52,7 +52,7 @@ fun FilterChips(
                             selectedContainerColor = colorScheme.primary,
                             selectedLabelColor = colorScheme.onPrimary,
                             containerColor = colorScheme.surfaceVariant,
-                            labelColor = colorScheme.onSurfaceVariant
+                            labelColor = colorScheme.onSurfaceVariant,
                         ),
                         border = FilterChipDefaults.filterChipBorder(
                             enabled = true,
@@ -60,8 +60,8 @@ fun FilterChips(
                             selectedBorderColor = colorScheme.primary,
                             borderColor = colorScheme.outline,
                             selectedBorderWidth = 1.5.dp,
-                            borderWidth = 1.5.dp
-                        )
+                            borderWidth = 1.5.dp,
+                        ),
                     )
                 }
             }

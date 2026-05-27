@@ -37,7 +37,7 @@ fun AddReviewDialog(
     onDismiss: () -> Unit,
     onSubmit: (rating: Double, comment: String?) -> Unit,
     initialRating: Double = 0.0,
-    initialComment: String = ""
+    initialComment: String = "",
 ) {
     var selectedRating by remember { mutableDoubleStateOf(initialRating) }
     var comment by remember { mutableStateOf(initialComment) }
@@ -48,7 +48,7 @@ fun AddReviewDialog(
             Text(
                 text = stringResource(R.string.review_dialog_title),
                 style = typography.titleMedium,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
             )
         },
         text = {
@@ -57,7 +57,7 @@ fun AddReviewDialog(
                     Text(
                         text = stringResource(R.string.review_dialog_rating_label),
                         style = typography.bodyMedium,
-                        color = colorScheme.onSurfaceVariant
+                        color = colorScheme.onSurfaceVariant,
                     )
                     Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                         for (i in 1..5) {
@@ -67,11 +67,10 @@ fun AddReviewDialog(
                                 modifier = Modifier
                                     .size(36.dp)
                                     .clickable { selectedRating = i.toDouble() },
-                                tint = if (i <= selectedRating) {
+                                tint = if (i <= selectedRating)
                                     colorScheme.primary
-                                } else {
-                                    colorScheme.onSurface.copy(alpha = 0.2f)
-                                }
+                                else
+                                    colorScheme.onSurface.copy(alpha = 0.2f),
                             )
                         }
                     }
@@ -84,14 +83,14 @@ fun AddReviewDialog(
                     modifier = Modifier.fillMaxWidth(),
                     minLines = 3,
                     maxLines = 5,
-                    shape = RoundedCornerShape(12.dp)
+                    shape = RoundedCornerShape(12.dp),
                 )
 
                 if (error != null) {
                     Text(
                         text = error,
                         style = typography.bodySmall,
-                        color = colorScheme.error
+                        color = colorScheme.error,
                     )
                 }
             }
@@ -103,13 +102,13 @@ fun AddReviewDialog(
                         onSubmit(selectedRating, comment.trim().ifBlank { null })
                     }
                 },
-                enabled = selectedRating > 0.0 && !isLoading
+                enabled = selectedRating > 0.0 && !isLoading,
             ) {
                 if (isLoading) {
                     CircularProgressIndicator(
                         modifier = Modifier.size(18.dp),
                         color = colorScheme.onPrimary,
-                        strokeWidth = 2.dp
+                        strokeWidth = 2.dp,
                     )
                 } else {
                     Text(stringResource(R.string.review_dialog_submit))
@@ -120,6 +119,6 @@ fun AddReviewDialog(
             OutlinedButton(onClick = onDismiss, enabled = !isLoading) {
                 Text("Anuluj")
             }
-        }
+        },
     )
 }

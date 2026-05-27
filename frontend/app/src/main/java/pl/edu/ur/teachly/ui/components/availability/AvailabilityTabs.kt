@@ -18,12 +18,12 @@ import pl.edu.ur.teachly.ui.models.DAY_NAMES
 fun WeeklyTab(
     recurring: List<TutorAvailabilityRecurringResponse>,
     onAddSlot: (Int) -> Unit,
-    onDeleteSlot: (Int) -> Unit
+    onDeleteSlot: (Int) -> Unit,
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(10.dp)
+        verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
         items((1..7).toList(), key = { it }) { day ->
             val slots = recurring
@@ -33,29 +33,32 @@ fun WeeklyTab(
                 dayName = DAY_NAMES[day]!!,
                 slots = slots,
                 onAdd = { onAddSlot(day) },
-                onDelete = onDeleteSlot
+                onDelete = onDeleteSlot,
             )
         }
     }
 }
 
 @Composable
-fun OverridesTab(overrides: List<TutorAvailabilityOverrideResponse>, onDeleteOverride: (Int) -> Unit) {
+fun OverridesTab(
+    overrides: List<TutorAvailabilityOverrideResponse>,
+    onDeleteOverride: (Int) -> Unit,
+) {
     if (overrides.isEmpty()) {
         EmptyListState(message = "Brak zdefiniowanej niedostępności")
     } else {
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             items(
                 overrides.sortedBy { it.overrideDate },
-                key = { it.id }
+                key = { it.id },
             ) { override ->
                 OverrideItem(
                     override = override,
-                    onDelete = { onDeleteOverride(override.id) }
+                    onDelete = { onDeleteOverride(override.id) },
                 )
             }
         }

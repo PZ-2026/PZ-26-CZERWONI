@@ -27,12 +27,12 @@ fun ColumnScope.StepProgressBar(step: Int) {
     val progress by animateFloatAsState(
         targetValue = if (step == 1) 0.5f else 1f,
         animationSpec = tween(400),
-        label = "progress"
+        label = "progress",
     )
     Spacer(Modifier.height(16.dp))
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(12.dp)
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Box(
             modifier = Modifier
@@ -52,7 +52,7 @@ fun ColumnScope.StepProgressBar(step: Int) {
         Text(
             text = "$step/2",
             style = typography.labelSmall,
-            color = colorScheme.onPrimary.copy(alpha = 0.6f)
+            color = colorScheme.onPrimary.copy(alpha = 0.6f),
         )
     }
 }

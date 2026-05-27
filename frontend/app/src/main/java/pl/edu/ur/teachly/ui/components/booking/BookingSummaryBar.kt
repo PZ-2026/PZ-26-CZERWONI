@@ -20,10 +20,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import kotlin.math.roundToInt
 import pl.edu.ur.teachly.R
 import pl.edu.ur.teachly.ui.components.other.PrimaryButton
 import pl.edu.ur.teachly.ui.models.CalendarDay
+import kotlin.math.roundToInt
 
 @Composable
 fun BookingSummaryBar(
@@ -33,14 +33,14 @@ fun BookingSummaryBar(
     selectedSlot: String?,
     selectedDuration: Int,
     isSubmitting: Boolean = false,
-    onConfirm: () -> Unit
+    onConfirm: () -> Unit,
 ) {
     Surface(color = colorScheme.surface, shadowElevation = 8.dp) {
         Column(modifier = Modifier.padding(horizontal = 24.dp, vertical = 16.dp)) {
             AnimatedVisibility(
                 visible = selectedSlot != null && selectedDay != null,
                 enter = fadeIn(tween(200)) + expandVertically(),
-                exit = fadeOut(tween(150)) + shrinkVertically()
+                exit = fadeOut(tween(150)) + shrinkVertically(),
             ) {
                 val day = selectedDay
                 val price = (pricePerHour * selectedDuration / 60.0).roundToInt()
@@ -50,7 +50,7 @@ fun BookingSummaryBar(
                             .fillMaxWidth()
                             .padding(bottom = 12.dp),
                         horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Column {
                             Text(
@@ -62,34 +62,32 @@ fun BookingSummaryBar(
                                     selectedDuration
                                 ),
                                 style = typography.bodySmall,
-                                color = colorScheme.onSurfaceVariant
+                                color = colorScheme.onSurfaceVariant,
                             )
                             Text(
                                 tutorName,
                                 style = typography.labelSmall,
                                 color = colorScheme.onSurfaceVariant,
-                                modifier = Modifier.padding(top = 2.dp)
+                                modifier = Modifier.padding(top = 2.dp),
                             )
                         }
                         Text(
                             stringResource(R.string.price_value, price),
                             style = typography.headlineSmall,
-                            color = colorScheme.primary
+                            color = colorScheme.primary,
                         )
                     }
                 }
             }
 
             PrimaryButton(
-                text = if (selectedSlot != null) {
-                    stringResource(R.string.booking_cta_confirm)
-                } else {
-                    stringResource(R.string.booking_cta_pick)
-                },
+                text = if (selectedSlot != null) stringResource(R.string.booking_cta_confirm)
+                else stringResource(R.string.booking_cta_pick),
                 onClick = onConfirm,
                 enabled = selectedSlot != null && !isSubmitting,
-                isLoading = isSubmitting
+                isLoading = isSubmitting,
             )
         }
     }
 }
+

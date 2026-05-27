@@ -29,24 +29,24 @@ import androidx.compose.ui.unit.dp
 fun FullScreenError(message: String, modifier: Modifier = Modifier) {
     Box(
         modifier = modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
+        contentAlignment = Alignment.Center,
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(12.dp),
-            modifier = Modifier.padding(32.dp)
+            modifier = Modifier.padding(32.dp),
         ) {
             Icon(
                 imageVector = Icons.Outlined.ErrorOutline,
                 contentDescription = null,
                 tint = colorScheme.error,
-                modifier = Modifier.size(52.dp)
+                modifier = Modifier.size(52.dp),
             )
             Text(
                 text = message,
                 style = typography.bodyMedium,
                 color = colorScheme.error,
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
             )
         }
     }
@@ -58,23 +58,23 @@ fun ErrorBanner(message: String) {
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
         color = colorScheme.errorContainer,
-        shadowElevation = 3.dp
+        shadowElevation = 3.dp,
     ) {
         Row(
             modifier = Modifier.padding(horizontal = 14.dp, vertical = 12.dp),
             horizontalArrangement = Arrangement.spacedBy(10.dp),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Icon(
                 imageVector = Icons.Rounded.Error,
                 contentDescription = null,
                 tint = colorScheme.error,
-                modifier = Modifier.size(20.dp)
+                modifier = Modifier.size(20.dp),
             )
             Text(
                 text = message,
                 style = typography.bodySmall,
-                color = colorScheme.onErrorContainer
+                color = colorScheme.onErrorContainer,
             )
         }
     }

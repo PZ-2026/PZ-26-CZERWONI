@@ -41,14 +41,18 @@ import pl.edu.ur.teachly.ui.components.other.dialog.OverrideDateDialog
 import pl.edu.ur.teachly.ui.models.DAY_NAMES
 
 @Composable
-fun AvailabilityScreen(tutorId: Int, onBack: () -> Unit, viewModel: AvailabilityViewModel = koinViewModel()) {
+fun AvailabilityScreen(
+    tutorId: Int,
+    onBack: () -> Unit,
+    viewModel: AvailabilityViewModel = koinViewModel(),
+) {
     LaunchedEffect(tutorId) { viewModel.load(tutorId) }
 
     val state by viewModel.state.collectAsState()
     var selectedTab by remember { mutableIntStateOf(0) }
-    var showAddSlotFor by remember { mutableStateOf<Int?>(null) } // dayOfWeek
+    var showAddSlotFor by remember { mutableStateOf<Int?>(null) }  // dayOfWeek
     var showAddOverride by remember { mutableStateOf(false) }
-    var confirmDeleteSlot by remember { mutableStateOf<Int?>(null) } // slotId
+    var confirmDeleteSlot by remember { mutableStateOf<Int?>(null) }     // slotId
     var confirmDeleteOverride by remember { mutableStateOf<Int?>(null) } // overrideId
 
     LaunchedEffect(state.successMessage, state.error) {
@@ -61,7 +65,7 @@ fun AvailabilityScreen(tutorId: Int, onBack: () -> Unit, viewModel: Availability
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(colorScheme.background)
+            .background(colorScheme.background),
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
             AppHeader(
@@ -70,26 +74,26 @@ fun AvailabilityScreen(tutorId: Int, onBack: () -> Unit, viewModel: Availability
                 background = HeaderBackground.Diagonal(
                     listOf(colorScheme.onPrimaryContainer, colorScheme.primary)
                 ),
-                onBack = onBack
+                onBack = onBack,
             )
 
             PrimaryTabRow(selectedTabIndex = selectedTab) {
                 Tab(
                     selected = selectedTab == 0,
                     onClick = { selectedTab = 0 },
-                    text = { Text("Tygodniowy") }
+                    text = { Text("Tygodniowy") },
                 )
                 Tab(
                     selected = selectedTab == 1,
                     onClick = { selectedTab = 1 },
-                    text = { Text("Niedostępność") }
+                    text = { Text("Niedostępność") },
                 )
             }
 
             when {
                 state.isLoading -> Box(
                     modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
+                    contentAlignment = Alignment.Center,
                 ) { CircularProgressIndicator() }
 
                 state.error != null && state.recurring.isEmpty() && state.overrides.isEmpty() ->
@@ -98,12 +102,12 @@ fun AvailabilityScreen(tutorId: Int, onBack: () -> Unit, viewModel: Availability
                 selectedTab == 0 -> WeeklyTab(
                     recurring = state.recurring,
                     onAddSlot = { day -> showAddSlotFor = day },
-                    onDeleteSlot = { slotId -> confirmDeleteSlot = slotId }
+                    onDeleteSlot = { slotId -> confirmDeleteSlot = slotId },
                 )
 
                 else -> OverridesTab(
                     overrides = state.overrides,
-                    onDeleteOverride = { id -> confirmDeleteOverride = id }
+                    onDeleteOverride = { id -> confirmDeleteOverride = id },
                 )
             }
         }
@@ -116,7 +120,7 @@ fun AvailabilityScreen(tutorId: Int, onBack: () -> Unit, viewModel: Availability
                     .padding(20.dp),
                 containerColor = colorScheme.primary,
                 contentColor = colorScheme.onPrimary,
-                shape = CircleShape
+                shape = CircleShape,
             ) {
                 Icon(Icons.Default.Add, contentDescription = "Dodaj niedostępność")
             }
@@ -125,7 +129,7 @@ fun AvailabilityScreen(tutorId: Int, onBack: () -> Unit, viewModel: Availability
         MessageSnackbars(
             successMessage = state.successMessage,
             errorMessage = if (state.recurring.isNotEmpty() || state.overrides.isNotEmpty()) state.error else null,
-            modifier = Modifier.align(Alignment.BottomCenter)
+            modifier = Modifier.align(Alignment.BottomCenter),
         )
     }
 
@@ -138,7 +142,7 @@ fun AvailabilityScreen(tutorId: Int, onBack: () -> Unit, viewModel: Availability
             onSave = { timeFrom, timeTo ->
                 viewModel.addSlot(tutorId, day, timeFrom, timeTo)
                 showAddSlotFor = null
-            }
+            },
         )
     }
 
@@ -148,7 +152,7 @@ fun AvailabilityScreen(tutorId: Int, onBack: () -> Unit, viewModel: Availability
             onSave = { date, timeFrom, timeTo ->
                 viewModel.addOverride(tutorId, date, timeFrom, timeTo)
                 showAddOverride = false
-            }
+            },
         )
     }
 
@@ -159,7 +163,7 @@ fun AvailabilityScreen(tutorId: Int, onBack: () -> Unit, viewModel: Availability
             onConfirm = {
                 viewModel.deleteSlot(tutorId, slotId)
                 confirmDeleteSlot = null
-            }
+            },
         )
     }
 
@@ -170,7 +174,7 @@ fun AvailabilityScreen(tutorId: Int, onBack: () -> Unit, viewModel: Availability
             onConfirm = {
                 viewModel.deleteOverride(tutorId, overrideId)
                 confirmDeleteOverride = null
-            }
+            },
         )
     }
 }

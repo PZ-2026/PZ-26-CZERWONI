@@ -34,7 +34,11 @@ import pl.edu.ur.teachly.ui.components.other.badges.UserRoleBadge
 import pl.edu.ur.teachly.ui.components.other.formatPhoneNumber
 
 @Composable
-fun UserAdminCard(user: UserResponse, onEdit: () -> Unit, onBanToggle: () -> Unit) {
+fun UserAdminCard(
+    user: UserResponse,
+    onEdit: () -> Unit,
+    onBanToggle: () -> Unit,
+) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
@@ -45,23 +49,23 @@ fun UserAdminCard(user: UserResponse, onEdit: () -> Unit, onBanToggle: () -> Uni
             1.dp,
             if (user.isActive) colorScheme.outline else colorScheme.error.copy(alpha = 0.5f)
         ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     Text(
                         text = "${user.firstName} ${user.lastName}",
                         style = typography.titleMedium,
                         fontWeight = FontWeight.Bold,
-                        color = colorScheme.onSurface
+                        color = colorScheme.onSurface,
                     )
                     UserRoleBadge(user.role)
                 }
@@ -77,7 +81,7 @@ fun UserAdminCard(user: UserResponse, onEdit: () -> Unit, onBanToggle: () -> Uni
                         Icon(
                             if (user.isActive) Icons.Default.Block else Icons.Default.LockOpen,
                             contentDescription = if (user.isActive) "Zablokuj" else "Odblokuj",
-                            tint = if (user.isActive) colorScheme.error else colorScheme.primary
+                            tint = if (user.isActive) colorScheme.error else colorScheme.primary,
                         )
                     }
                 }
@@ -85,7 +89,7 @@ fun UserAdminCard(user: UserResponse, onEdit: () -> Unit, onBanToggle: () -> Uni
             if (!user.isActive) {
                 Surface(
                     color = colorScheme.error,
-                    shape = RoundedCornerShape(4.dp)
+                    shape = RoundedCornerShape(4.dp),
                 ) {
                     Text(
                         if (user.firstName.endsWith('a')) "ZABLOKOWANA" else "ZABLOKOWANY",
@@ -97,6 +101,7 @@ fun UserAdminCard(user: UserResponse, onEdit: () -> Unit, onBanToggle: () -> Uni
                 Spacer(Modifier.height(12.dp))
             }
 
+
             CardInfoRow(
                 icon = {
                     Icon(
@@ -106,7 +111,7 @@ fun UserAdminCard(user: UserResponse, onEdit: () -> Unit, onBanToggle: () -> Uni
                         tint = colorScheme.primary
                     )
                 },
-                text = user.email
+                text = user.email,
             )
 
             user.phoneNumber?.let {
@@ -120,7 +125,7 @@ fun UserAdminCard(user: UserResponse, onEdit: () -> Unit, onBanToggle: () -> Uni
                             tint = colorScheme.primary
                         )
                     },
-                    text = formatPhoneNumber(it)
+                    text = formatPhoneNumber(it),
                 )
             }
         }

@@ -21,16 +21,25 @@ interface LessonApiService {
     suspend fun getAllLessons(): Response<List<LessonResponse>>
 
     @POST("api/lessons/student/{studentId}")
-    suspend fun createLesson(@Path("studentId") studentId: Int, @Body request: LessonRequest): Response<LessonResponse>
+    suspend fun createLesson(
+        @Path("studentId") studentId: Int,
+        @Body request: LessonRequest
+    ): Response<LessonResponse>
 
     @GET("api/lessons/student/{studentId}")
-    suspend fun getStudentLessons(@Path("studentId") studentId: Int): Response<List<LessonResponse>>
+    suspend fun getStudentLessons(
+        @Path("studentId") studentId: Int
+    ): Response<List<LessonResponse>>
 
     @GET("api/lessons/tutor/{tutorId}")
-    suspend fun getTutorLessons(@Path("tutorId") tutorId: Int): Response<List<LessonResponse>>
+    suspend fun getTutorLessons(
+        @Path("tutorId") tutorId: Int
+    ): Response<List<LessonResponse>>
 
     @GET("api/lessons/{lessonId}")
-    suspend fun getLesson(@Path("lessonId") lessonId: Int): Response<LessonResponse>
+    suspend fun getLesson(
+        @Path("lessonId") lessonId: Int
+    ): Response<LessonResponse>
 
     @PUT("api/lessons/{lessonId}/admin")
     suspend fun adminUpdateLesson(

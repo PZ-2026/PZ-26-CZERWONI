@@ -51,7 +51,7 @@ import pl.edu.ur.teachly.ui.components.other.dialog.SubjectDialog
 fun AdminSubjectsScreen(
     viewModel: AdminSubjectsViewModel = koinViewModel(),
     showHeader: Boolean = true,
-    initialSubjectTab: Int = 0
+    initialSubjectTab: Int = 0,
 ) {
     val state by viewModel.state.collectAsState()
     var selectedTab by remember { mutableIntStateOf(initialSubjectTab) }
@@ -81,18 +81,16 @@ fun AdminSubjectsScreen(
                 PrimaryTabRow(
                     selectedTabIndex = selectedTab,
                     containerColor = colorScheme.primary,
-                    contentColor = colorScheme.onPrimary
+                    contentColor = colorScheme.onPrimary,
                 ) {
                     Tab(
                         selected = selectedTab == 0,
                         onClick = { selectedTab = 0 },
-                        text = { Text("Przedmioty") }
-                    )
+                        text = { Text("Przedmioty") })
                     Tab(
                         selected = selectedTab == 1,
                         onClick = { selectedTab = 1 },
-                        text = { Text("Kategorie") }
-                    )
+                        text = { Text("Kategorie") })
                 }
             }
             if (showHeader) {
@@ -104,7 +102,7 @@ fun AdminSubjectsScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(horizontal = 16.dp, vertical = 8.dp),
-                            horizontalArrangement = Arrangement.End
+                            horizontalArrangement = Arrangement.End,
                         ) { }
                         innerTabs()
                     }
@@ -154,25 +152,22 @@ fun AdminSubjectsScreen(
         }
         FloatingActionButton(
             onClick = {
-                if (selectedTab == 0) {
-                    showAddSubjectDialog = true
-                } else {
-                    showAddCategoryDialog = true
-                }
+                if (selectedTab == 0) showAddSubjectDialog = true
+                else showAddCategoryDialog = true
             },
             modifier = Modifier
                 .align(Alignment.BottomStart)
                 .padding(16.dp),
             containerColor = colorScheme.primary,
             contentColor = colorScheme.onPrimary,
-            shape = CircleShape
+            shape = CircleShape,
         ) {
             Icon(Icons.Default.Add, contentDescription = "Dodaj")
         }
         MessageSnackbars(
             successMessage = state.successMessage,
             errorMessage = state.error,
-            modifier = Modifier.align(Alignment.BottomCenter)
+            modifier = Modifier.align(Alignment.BottomCenter),
         )
     }
 
@@ -210,8 +205,7 @@ fun AdminSubjectsScreen(
             text = { Text("Czy na pewno chcesz usunąć: ${subject.subjectName}?") },
             confirmButton = {
                 TextButton(onClick = {
-                    viewModel.deleteSubject(subject.id)
-                    showDeleteSubjectDialog = null
+                    viewModel.deleteSubject(subject.id); showDeleteSubjectDialog = null
                 }) {
                     Text("Usuń", color = colorScheme.error)
                 }
@@ -230,10 +224,7 @@ fun AdminSubjectsScreen(
             title = "Dodaj kategorię",
             initialName = "",
             onDismiss = { showAddCategoryDialog = false },
-            onSave = { name ->
-                viewModel.addCategory(name)
-                showAddCategoryDialog = false
-            }
+            onSave = { name -> viewModel.addCategory(name); showAddCategoryDialog = false }
         )
     }
     showEditCategoryDialog?.let { category ->
@@ -242,8 +233,7 @@ fun AdminSubjectsScreen(
             initialName = category.categoryName,
             onDismiss = { showEditCategoryDialog = null },
             onSave = { name ->
-                viewModel.updateCategory(category.id, name)
-                showEditCategoryDialog = null
+                viewModel.updateCategory(category.id, name); showEditCategoryDialog = null
             }
         )
     }
@@ -251,15 +241,10 @@ fun AdminSubjectsScreen(
         AlertDialog(
             onDismissRequest = { showDeleteCategoryDialog = null },
             title = { Text("Usuń kategorię") },
-            text = {
-                Text(
-                    "Czy na pewno chcesz usunąć: ${category.categoryName}? Najpierw usuń wszystkie przypisane przedmioty."
-                )
-            },
+            text = { Text("Czy na pewno chcesz usunąć: ${category.categoryName}? Najpierw usuń wszystkie przypisane przedmioty.") },
             confirmButton = {
                 TextButton(onClick = {
-                    viewModel.deleteCategory(category.id)
-                    showDeleteCategoryDialog = null
+                    viewModel.deleteCategory(category.id); showDeleteCategoryDialog = null
                 }) {
                     Text("Usuń", color = colorScheme.error)
                 }

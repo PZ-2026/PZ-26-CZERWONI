@@ -23,10 +23,11 @@ import androidx.compose.ui.unit.dp
 fun AdminDataScreen(
     initialTab: Int = 0,
     initialSubjectTab: Int = 0,
-    onTutorSchedule: ((tutorId: Int) -> Unit)? = null
+    onTutorSchedule: ((tutorId: Int) -> Unit)? = null,
 ) {
     val tabs = listOf("Przedmioty", "Święta", "Korepetytorzy", "Opinie")
     var selectedTab by remember { mutableIntStateOf(initialTab) }
+
 
     Column(
         modifier = Modifier
@@ -39,17 +40,17 @@ fun AdminDataScreen(
                     "Dane",
                     style = typography.titleLarge,
                     fontWeight = FontWeight.Bold,
-                    color = colorScheme.primary
+                    color = colorScheme.primary,
                 )
                 PrimaryScrollableTabRow(
                     selectedTabIndex = selectedTab,
-                    edgePadding = 0.dp
+                    edgePadding = 0.dp,
                 ) {
                     tabs.forEachIndexed { i, title ->
                         Tab(
                             selected = selectedTab == i,
                             onClick = { selectedTab = i },
-                            text = { Text(title, style = typography.labelMedium) }
+                            text = { Text(title, style = typography.labelMedium) },
                         )
                     }
                 }

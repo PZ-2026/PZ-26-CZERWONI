@@ -21,7 +21,11 @@ import pl.edu.ur.teachly.R
 import pl.edu.ur.teachly.navigation.AppRoute
 
 @Composable
-fun BottomNavBar(navController: NavController, role: String?, modifier: Modifier = Modifier) {
+fun BottomNavBar(
+    navController: NavController,
+    role: String?,
+    modifier: Modifier = Modifier
+) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
     val routeStr = currentDestination?.route ?: ""
@@ -59,7 +63,7 @@ fun BottomNavBar(navController: NavController, role: String?, modifier: Modifier
                 Text(
                     stringResource(R.string.nav_home),
                     maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
+                    overflow = TextOverflow.Ellipsis,
                 )
             },
             colors = navItemColors()
@@ -76,14 +80,14 @@ fun BottomNavBar(navController: NavController, role: String?, modifier: Modifier
                 icon = {
                     Icon(
                         Icons.Default.Search,
-                        contentDescription = stringResource(R.string.nav_search)
+                        contentDescription = stringResource(R.string.nav_search),
                     )
                 },
                 label = {
                     Text(
                         stringResource(R.string.nav_search),
                         maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
+                        overflow = TextOverflow.Ellipsis,
                     )
                 },
                 colors = navItemColors()
@@ -107,7 +111,7 @@ fun BottomNavBar(navController: NavController, role: String?, modifier: Modifier
                 Text(
                     stringResource(R.string.nav_schedule),
                     maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
+                    overflow = TextOverflow.Ellipsis,
                 )
             },
             colors = navItemColors()
@@ -130,10 +134,11 @@ fun BottomNavBar(navController: NavController, role: String?, modifier: Modifier
                 Text(
                     stringResource(R.string.nav_profile),
                     maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
+                    overflow = TextOverflow.Ellipsis,
                 )
             },
             colors = navItemColors()
         )
+
     }
 }

@@ -22,7 +22,10 @@ import pl.edu.ur.teachly.R
 import pl.edu.ur.teachly.navigation.AppRoute
 
 @Composable
-fun AdminBottomNavBar(navController: NavController, modifier: Modifier = Modifier) {
+fun AdminBottomNavBar(
+    navController: NavController,
+    modifier: Modifier = Modifier
+) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val routeStr = navBackStackEntry?.destination?.route ?: ""
 
@@ -34,11 +37,9 @@ fun AdminBottomNavBar(navController: NavController, modifier: Modifier = Modifie
     val isDashboard = routeStr.contains("AdminDashboard")
     val isUsers = routeStr.contains("AdminUser")
     val isLessons = routeStr.contains("AdminLesson")
-    val isData = routeStr.contains("AdminData") ||
-        routeStr.contains("AdminHoliday") ||
-        routeStr.contains("AdminSubject") ||
-        routeStr.contains("AdminTutor") ||
-        routeStr.contains("AdminReview")
+    val isData = routeStr.contains("AdminData") || routeStr.contains("AdminHoliday")
+            || routeStr.contains("AdminSubject") || routeStr.contains("AdminTutor")
+            || routeStr.contains("AdminReview")
     val isProfile = routeStr.contains("Profile")
 
     NavigationBar(
@@ -59,7 +60,7 @@ fun AdminBottomNavBar(navController: NavController, modifier: Modifier = Modifie
                 Text(
                     "Dashboard",
                     maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
+                    overflow = TextOverflow.Ellipsis,
                 )
             },
             colors = navItemColors()
@@ -77,7 +78,7 @@ fun AdminBottomNavBar(navController: NavController, modifier: Modifier = Modifie
                 Text(
                     "Użytkownicy",
                     maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
+                    overflow = TextOverflow.Ellipsis,
                 )
             },
             colors = navItemColors()
@@ -95,7 +96,7 @@ fun AdminBottomNavBar(navController: NavController, modifier: Modifier = Modifie
                 Text(
                     "Lekcje",
                     maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
+                    overflow = TextOverflow.Ellipsis,
                 )
             },
             colors = navItemColors()
@@ -113,7 +114,7 @@ fun AdminBottomNavBar(navController: NavController, modifier: Modifier = Modifie
                 Text(
                     "Dane",
                     maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
+                    overflow = TextOverflow.Ellipsis,
                 )
             },
             colors = navItemColors()
@@ -136,7 +137,7 @@ fun AdminBottomNavBar(navController: NavController, modifier: Modifier = Modifie
                 Text(
                     stringResource(R.string.nav_profile),
                     maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
+                    overflow = TextOverflow.Ellipsis,
                 )
             },
             colors = navItemColors()

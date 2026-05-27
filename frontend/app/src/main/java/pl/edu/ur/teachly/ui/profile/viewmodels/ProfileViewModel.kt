@@ -2,21 +2,21 @@ package pl.edu.ur.teachly.ui.profile.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import java.io.File
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.MultipartBody
-import okhttp3.RequestBody.Companion.asRequestBody
 import pl.edu.ur.teachly.data.local.TokenManager
 import pl.edu.ur.teachly.data.model.UserRole
 import pl.edu.ur.teachly.data.model.UserUpdateRequest
 import pl.edu.ur.teachly.data.repository.LessonRepository
 import pl.edu.ur.teachly.data.repository.UserRepository
+import java.io.File
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
 
 data class StudentProfile(
     val firstName: String = "",
@@ -28,7 +28,7 @@ data class StudentProfile(
     val lessonsCount: Int = 0,
     val avatarUrl: String? = null,
     val isLoading: Boolean = true,
-    val error: String? = null
+    val error: String? = null,
 ) {
     val fullName get() = "$firstName $lastName"
     val initials get() = "${firstName.firstOrNull() ?: ""}${lastName.firstOrNull() ?: ""}"
@@ -46,14 +46,14 @@ data class ProfileEditState(
     val requiresRelogin: Boolean = false,
     val pendingAvatarFile: File? = null,
     val pendingDeleteAvatar: Boolean = false,
-    val localAvatarUrl: String? = null
+    val localAvatarUrl: String? = null,
 )
 
 class ProfileViewModel(
     private val userRepository: UserRepository,
     private val lessonRepository: LessonRepository,
     private val tokenManager: TokenManager,
-    private val reportRepository: pl.edu.ur.teachly.data.repository.ReportRepository
+    private val reportRepository: pl.edu.ur.teachly.data.repository.ReportRepository,
 ) : ViewModel() {
 
     private val _profile = MutableStateFlow(StudentProfile())
@@ -84,22 +84,19 @@ class ProfileViewModel(
                             phoneNumber = user.phoneNumber,
                             role = user.role ?: UserRole.STUDENT,
                             createdAt = user.createdAt,
-                            avatarUrl = user.avatarUrl?.takeIf {
-                                it.isNotBlank() &&
-                                    !it.equals("null", ignoreCase = true)
-                            }
+                            avatarUrl = user.avatarUrl?.takeIf { it.isNotBlank() && !it.equals("null", ignoreCase = true) },
                         )
                     }
                 },
                 onFailure = { e ->
                     _profile.update { it.copy(isLoading = false, error = e.message) }
                     return@launch
-                }
+                },
             )
 
             lessonRepository.getStudentLessons(userId).fold(
                 onSuccess = { lessons -> _profile.update { it.copy(lessonsCount = lessons.size) } },
-                onFailure = {}
+                onFailure = {},
             )
 
             _profile.update { it.copy(isLoading = false) }
@@ -178,9 +175,7 @@ class ProfileViewModel(
                 _editState.update { it.copy(isLoading = false, error = "Nazwisko nie może być puste") }
                 return@launch
             }
-            if (state.email.trim().isBlank() ||
-                !android.util.Patterns.EMAIL_ADDRESS.matcher(state.email.trim()).matches()
-            ) {
+            if (state.email.trim().isBlank() || !android.util.Patterns.EMAIL_ADDRESS.matcher(state.email.trim()).matches()) {
                 _editState.update { it.copy(isLoading = false, error = "Niepoprawny format adresu email") }
                 return@launch
             }
@@ -190,6 +185,7 @@ class ProfileViewModel(
                 return@launch
             }
 
+            // 1. Obsługa ewentualnego usuwania lub wgrywania awatara przed aktualizacją profilu
             var updatedAvatarUrl: String? = profile.value.avatarUrl
             if (state.pendingDeleteAvatar) {
                 userRepository.deleteAvatar(userId).fold(
@@ -212,21 +208,20 @@ class ProfileViewModel(
                 userRepository.uploadAvatar(userId, body).fold(
                     onSuccess = { user -> updatedAvatarUrl = user.avatarUrl },
                     onFailure = { e ->
-                        _editState.update {
-                            it.copy(isLoading = false, error = "Błąd zapisywania zdjęcia: ${e.message}")
-                        }
+                        _editState.update { it.copy(isLoading = false, error = "Błąd zapisywania zdjęcia: ${e.message}") }
                         return@launch
                     }
                 )
             }
 
+            // 2. Aktualizacja pozostałych danych profilu
             val request = UserUpdateRequest(
                 firstName = state.firstName.trim(),
                 lastName = state.lastName.trim(),
                 email = state.email.trim(),
                 phoneNumber = digitsPhone,
                 password = state.password.takeIf { it.isNotBlank() },
-                avatarUrl = updatedAvatarUrl
+                avatarUrl = updatedAvatarUrl,
             )
 
             val requiresRelogin =
@@ -260,7 +255,7 @@ class ProfileViewModel(
                 },
                 onFailure = { e ->
                     _editState.update { it.copy(isLoading = false, error = e.message) }
-                }
+                },
             )
         }
     }
@@ -270,7 +265,7 @@ class ProfileViewModel(
         endDate: String,
         type: String,
         includeFields: List<String>,
-        onResult: (Result<java.io.File>) -> Unit
+        onResult: (Result<java.io.File>) -> Unit,
     ) {
         viewModelScope.launch {
             _profile.update { it.copy(isLoading = true, error = null) }
@@ -311,7 +306,7 @@ class ProfileViewModel(
                 onFailure = {
                     _profile.update { it.copy(isLoading = false) }
                     onResult(false)
-                }
+                },
             )
         }
     }

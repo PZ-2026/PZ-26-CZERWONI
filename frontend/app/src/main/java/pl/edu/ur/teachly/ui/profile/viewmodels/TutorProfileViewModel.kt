@@ -32,14 +32,14 @@ data class TutorProfileState(
     val reviewError: String? = null,
     val reviewSubmitSuccess: Boolean = false,
     val isLoading: Boolean = true,
-    val error: String? = null
+    val error: String? = null,
 )
 
 class TutorProfileViewModel(
     private val tutorRepository: TutorRepository,
     private val lessonRepository: LessonRepository,
     private val reviewRepository: ReviewRepository,
-    private val tokenManager: TokenManager
+    private val tokenManager: TokenManager,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(TutorProfileState())
@@ -79,7 +79,7 @@ class TutorProfileViewModel(
                         .filter { it.lessonStatus == LessonStatus.COMPLETED }
                         .sumOf { it.amount }
                 },
-                onFailure = {}
+                onFailure = {},
             )
 
             var reviews = emptyList<ReviewResponse>()
@@ -93,7 +93,7 @@ class TutorProfileViewModel(
                         avgRating = reviewList.sumOf { it.rating } / reviewList.size
                     }
                 },
-                onFailure = {}
+                onFailure = {},
             )
 
             var canReview = false
@@ -106,7 +106,7 @@ class TutorProfileViewModel(
                                 it.tutorId == id && it.lessonStatus == LessonStatus.COMPLETED
                             }
                         },
-                        onFailure = {}
+                        onFailure = {},
                     )
                 }
             }
@@ -117,7 +117,7 @@ class TutorProfileViewModel(
                         subjects = subjects,
                         rating = avgRating,
                         reviewCount = reviewsCount,
-                        lessonCount = completedLessons
+                        lessonCount = completedLessons,
                     ),
                     email = tutorResponse.email,
                     phoneNumber = tutorResponse.phoneNumber,
@@ -125,12 +125,12 @@ class TutorProfileViewModel(
                         completedLessons = completedLessons,
                         reviewsCount = reviewsCount,
                         avgRating = avgRating,
-                        totalEarnings = totalEarnings
+                        totalEarnings = totalEarnings,
                     ),
                     reviews = reviews,
                     currentStudentId = currentUserId,
                     canReview = canReview,
-                    isLoading = false
+                    isLoading = false,
                 )
             }
         }
@@ -152,7 +152,7 @@ class TutorProfileViewModel(
                 },
                 onFailure = { e ->
                     _state.update { it.copy(isSubmittingReview = false, reviewError = e.message) }
-                }
+                },
             )
         }
     }
@@ -166,13 +166,13 @@ class TutorProfileViewModel(
                         s.copy(
                             reviews = s.reviews.map { if (it.id == reviewId) updated else it },
                             isSubmittingReview = false,
-                            reviewSubmitSuccess = true
+                            reviewSubmitSuccess = true,
                         )
                     }
                 },
                 onFailure = { e ->
                     _state.update { it.copy(isSubmittingReview = false, reviewError = e.message) }
-                }
+                },
             )
         }
     }

@@ -34,7 +34,7 @@ fun LessonDetailScreen(
     onBack: () -> Unit,
     onGoToTutor: (tutorId: Int) -> Unit,
     onRebook: (tutorId: Int) -> Unit,
-    viewModel: LessonDetailViewModel = koinViewModel()
+    viewModel: LessonDetailViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsState()
 
@@ -55,13 +55,13 @@ fun LessonDetailScreen(
                 background = HeaderBackground.Diagonal(
                     listOf(colorScheme.onPrimaryContainer, colorScheme.primary)
                 ),
-                onBack = onBack
+                onBack = onBack,
             )
 
             when {
                 state.isLoading -> Box(
                     Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
+                    contentAlignment = Alignment.Center,
                 ) { CircularProgressIndicator() }
 
                 state.error != null -> FullScreenError(message = state.error!!)
@@ -76,7 +76,7 @@ fun LessonDetailScreen(
                             .fillMaxSize()
                             .verticalScroll(rememberScrollState())
                             .padding(horizontal = 16.dp, vertical = 20.dp),
-                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
                     ) {
                         InfoCard(lesson = lesson, userRole = userRole)
 
@@ -89,7 +89,7 @@ fun LessonDetailScreen(
                             },
                             onSaveTutorNotes = { notes ->
                                 viewModel.saveTutorNotes(lesson.id, notes)
-                            }
+                            },
                         )
 
                         ActionsSection(
@@ -102,7 +102,7 @@ fun LessonDetailScreen(
                             },
                             onMarkPaid = { viewModel.markPaid(lesson.id) },
                             onGoToTutor = { onGoToTutor(lesson.tutorId) },
-                            onRebook = { onRebook(lesson.tutorId) }
+                            onRebook = { onRebook(lesson.tutorId) },
                         )
                     }
                 }
@@ -112,7 +112,7 @@ fun LessonDetailScreen(
         MessageSnackbars(
             successMessage = state.actionSuccess,
             errorMessage = state.actionError,
-            modifier = Modifier.align(Alignment.BottomCenter)
+            modifier = Modifier.align(Alignment.BottomCenter),
         )
     }
 }

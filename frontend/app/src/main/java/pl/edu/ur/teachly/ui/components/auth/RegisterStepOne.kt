@@ -42,20 +42,24 @@ import pl.edu.ur.teachly.ui.auth.viewmodels.UserRoleOption
 import pl.edu.ur.teachly.ui.components.other.PrimaryButton
 
 @Composable
-fun StepOneContent(selectedRole: UserRoleOption?, onRoleSelected: (UserRoleOption) -> Unit, onNext: () -> Unit) {
+fun StepOneContent(
+    selectedRole: UserRoleOption?,
+    onRoleSelected: (UserRoleOption) -> Unit,
+    onNext: () -> Unit,
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(colorScheme.background)
             .verticalScroll(rememberScrollState())
             .padding(horizontal = 24.dp)
-            .padding(top = 28.dp, bottom = 40.dp)
+            .padding(top = 28.dp, bottom = 40.dp),
     ) {
         UserRoleOption.entries.forEach { role ->
             RoleCard(
                 role = role,
                 isSelected = selectedRole == role,
-                onClick = { onRoleSelected(role) }
+                onClick = { onRoleSelected(role) },
             )
             Spacer(Modifier.height(12.dp))
         }
@@ -65,13 +69,17 @@ fun StepOneContent(selectedRole: UserRoleOption?, onRoleSelected: (UserRoleOptio
         PrimaryButton(
             text = stringResource(R.string.btn_next),
             onClick = onNext,
-            enabled = selectedRole != null
+            enabled = selectedRole != null,
         )
     }
 }
 
 @Composable
-fun RoleCard(role: UserRoleOption, isSelected: Boolean, onClick: () -> Unit) {
+fun RoleCard(
+    role: UserRoleOption,
+    isSelected: Boolean,
+    onClick: () -> Unit,
+) {
     val borderColor =
         if (isSelected) colorScheme.primary else colorScheme.outline
     val bgColor =
@@ -89,18 +97,18 @@ fun RoleCard(role: UserRoleOption, isSelected: Boolean, onClick: () -> Unit) {
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = null,
-                onClick = onClick
+                onClick = onClick,
             )
             .padding(horizontal = 16.dp, vertical = 18.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(16.dp)
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         Box(
             modifier = Modifier
                 .size(40.dp)
                 .clip(RoundedCornerShape(14.dp))
                 .background(iconBg),
-            contentAlignment = Alignment.Center
+            contentAlignment = Alignment.Center,
         ) {
             Text(role.emoji, style = typography.headlineSmall)
         }
@@ -118,20 +126,20 @@ fun RoleCard(role: UserRoleOption, isSelected: Boolean, onClick: () -> Unit) {
         AnimatedVisibility(
             visible = isSelected,
             enter = scaleIn(tween(200)) + fadeIn(),
-            exit = scaleOut(tween(150)) + fadeOut()
+            exit = scaleOut(tween(150)) + fadeOut(),
         ) {
             Box(
                 modifier = Modifier
                     .size(24.dp)
                     .clip(CircleShape)
                     .background(colorScheme.primary),
-                contentAlignment = Alignment.Center
+                contentAlignment = Alignment.Center,
             ) {
                 Icon(
                     Icons.Default.Check,
                     contentDescription = null,
                     tint = colorScheme.onPrimary,
-                    modifier = Modifier.size(14.dp)
+                    modifier = Modifier.size(14.dp),
                 )
             }
         }

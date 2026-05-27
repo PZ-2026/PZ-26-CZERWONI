@@ -1,6 +1,9 @@
 package pl.edu.ur.teachly.data.model
 
-data class LoginRequest(val email: String, val password: String)
+data class LoginRequest(
+    val email: String,
+    val password: String
+)
 
 data class RegisterRequest(
     val userRole: UserRole,
@@ -11,4 +14,9 @@ data class RegisterRequest(
     val password: String
 )
 
-data class AuthResponse(val token: String, val tokenType: String, val role: String, val userId: Int)
+data class AuthResponse(
+    val token: String,
+    val tokenType: String,
+    val role: String,
+    val userId: Int
+)

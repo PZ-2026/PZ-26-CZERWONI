@@ -9,7 +9,10 @@ import pl.edu.ur.teachly.data.model.UserRole
 import pl.edu.ur.teachly.data.remote.AuthApiService
 import retrofit2.Response
 
-class AuthRepository(private val api: AuthApiService, private val tokenManager: TokenManager) {
+class AuthRepository(
+    private val api: AuthApiService,
+    private val tokenManager: TokenManager
+) {
 
     private fun parseErrorDetail(response: Response<*>): String? {
         return try {
@@ -26,22 +29,24 @@ class AuthRepository(private val api: AuthApiService, private val tokenManager: 
         }
     }
 
-    suspend fun login(email: String, password: String): Result<AuthResponse> = try {
-        val response = api.login(LoginRequest(email, password))
-        if (response.isSuccessful) {
-            val data = response.body()!!
-            tokenManager.saveAuthData(
-                token = data.token,
-                role = data.role,
-                userId = data.userId
-            )
-            Result.success(data)
-        } else {
-            val detail = parseErrorDetail(response) ?: "Błąd logowania"
-            Result.failure(Exception(detail))
+    suspend fun login(email: String, password: String): Result<AuthResponse> {
+        return try {
+            val response = api.login(LoginRequest(email, password))
+            if (response.isSuccessful) {
+                val data = response.body()!!
+                tokenManager.saveAuthData(
+                    token = data.token,
+                    role = data.role,
+                    userId = data.userId
+                )
+                Result.success(data)
+            } else {
+                val detail = parseErrorDetail(response) ?: "Błąd logowania"
+                Result.failure(Exception(detail))
+            }
+        } catch (e: Exception) {
+            Result.failure(Exception("Brak połączenia z serwerem"))
         }
-    } catch (e: Exception) {
-        Result.failure(Exception("Brak połączenia z serwerem"))
     }
 
     suspend fun register(
@@ -51,24 +56,26 @@ class AuthRepository(private val api: AuthApiService, private val tokenManager: 
         email: String,
         phoneNumber: String,
         password: String
-    ): Result<AuthResponse> = try {
-        val response = api.register(
-            RegisterRequest(userRole, firstName, lastName, email, phoneNumber, password)
-        )
-        if (response.isSuccessful) {
-            val data = response.body()!!
-            tokenManager.saveAuthData(
-                token = data.token,
-                role = data.role,
-                userId = data.userId
+    ): Result<AuthResponse> {
+        return try {
+            val response = api.register(
+                RegisterRequest(userRole, firstName, lastName, email, phoneNumber, password)
             )
-            Result.success(data)
-        } else {
-            val detail = parseErrorDetail(response) ?: "Błąd rejestracji"
-            Result.failure(Exception(detail))
+            if (response.isSuccessful) {
+                val data = response.body()!!
+                tokenManager.saveAuthData(
+                    token = data.token,
+                    role = data.role,
+                    userId = data.userId
+                )
+                Result.success(data)
+            } else {
+                val detail = parseErrorDetail(response) ?: "Błąd rejestracji"
+                Result.failure(Exception(detail))
+            }
+        } catch (e: Exception) {
+            Result.failure(Exception("Brak połączenia z serwerem"))
         }
-    } catch (e: Exception) {
-        Result.failure(Exception("Brak połączenia z serwerem"))
     }
 
     suspend fun logout() {

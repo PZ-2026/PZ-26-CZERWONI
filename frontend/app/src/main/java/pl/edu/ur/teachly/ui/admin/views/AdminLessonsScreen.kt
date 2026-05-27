@@ -36,7 +36,10 @@ import pl.edu.ur.teachly.ui.components.other.cards.LessonAdminCard
 import pl.edu.ur.teachly.ui.components.other.dialog.LessonEditDialog
 
 @Composable
-fun AdminLessonsScreen(viewModel: AdminLessonsViewModel = koinViewModel(), initialStatusFilter: String? = null) {
+fun AdminLessonsScreen(
+    viewModel: AdminLessonsViewModel = koinViewModel(),
+    initialStatusFilter: String? = null,
+) {
     val state by viewModel.state.collectAsState()
     var showEditDialog by remember { mutableStateOf<LessonResponse?>(null) }
 
@@ -64,7 +67,7 @@ fun AdminLessonsScreen(viewModel: AdminLessonsViewModel = koinViewModel(), initi
                 AdminSearchBar(
                     value = state.searchQuery,
                     onValueChange = { viewModel.onSearchChange(it) },
-                    placeholder = "Szukaj po uczestniku, przedmiocie..."
+                    placeholder = "Szukaj po uczestniku, przedmiocie...",
                 )
             }
             ExpandableFilterSection(
@@ -72,8 +75,8 @@ fun AdminLessonsScreen(viewModel: AdminLessonsViewModel = koinViewModel(), initi
                     state.selectedStatus,
                     state.selectedPaymentStatus,
                     state.selectedFormat,
-                    state.showOnlyUpcoming
-                ).count { it != null }
+                    state.showOnlyUpcoming,
+                ).count { it != null },
             ) {
                 FilterChips(
                     label = "Status lekcji",
@@ -83,7 +86,7 @@ fun AdminLessonsScreen(viewModel: AdminLessonsViewModel = koinViewModel(), initi
                         viewModel.onStatusFilterChange(
                             if (label == "Wszystkie") null else LessonStatus.entries.first { it.label == label }
                         )
-                    }
+                    },
                 )
                 FilterChips(
                     label = "Płatność",
@@ -93,7 +96,7 @@ fun AdminLessonsScreen(viewModel: AdminLessonsViewModel = koinViewModel(), initi
                         viewModel.onPaymentStatusFilterChange(
                             if (label == "Wszystkie") null else PaymentStatus.entries.first { it.label == label }
                         )
-                    }
+                    },
                 )
                 FilterChips(
                     label = "Format",
@@ -103,7 +106,7 @@ fun AdminLessonsScreen(viewModel: AdminLessonsViewModel = koinViewModel(), initi
                         viewModel.onFormatFilterChange(
                             if (label == "Wszystkie") null else LessonFormat.entries.first { it.label == label }
                         )
-                    }
+                    },
                 )
                 FilterChips(
                     label = "Termin",
@@ -121,7 +124,7 @@ fun AdminLessonsScreen(viewModel: AdminLessonsViewModel = koinViewModel(), initi
                                 else -> null
                             }
                         )
-                    }
+                    },
                 )
             }
 
@@ -149,7 +152,7 @@ fun AdminLessonsScreen(viewModel: AdminLessonsViewModel = koinViewModel(), initi
         MessageSnackbars(
             successMessage = state.successMessage,
             errorMessage = state.error,
-            modifier = Modifier.align(Alignment.BottomCenter)
+            modifier = Modifier.align(Alignment.BottomCenter),
         )
     }
 

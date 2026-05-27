@@ -45,30 +45,30 @@ import androidx.compose.ui.unit.dp
 fun ExpandableFilterSection(
     activeFilterCount: Int,
     modifier: Modifier = Modifier,
-    content: @Composable ColumnScope.() -> Unit
+    content: @Composable ColumnScope.() -> Unit,
 ) {
     var expanded by rememberSaveable { mutableStateOf(false) }
 
     val chevronRotation by animateFloatAsState(
         targetValue = if (expanded) 180f else 0f,
         animationSpec = tween(200),
-        label = "chevron"
+        label = "chevron",
     )
     val headerBackground by animateColorAsState(
         targetValue = if (expanded) colorScheme.primaryContainer else colorScheme.surface,
         animationSpec = tween(200),
-        label = "headerBg"
+        label = "headerBg",
     )
     val headerContentColor by animateColorAsState(
         targetValue = if (expanded) colorScheme.onPrimaryContainer else colorScheme.onSurfaceVariant,
         animationSpec = tween(200),
-        label = "headerFg"
+        label = "headerFg",
     )
 
     Surface(
         color = colorScheme.surface,
         shadowElevation = 1.dp,
-        modifier = modifier
+        modifier = modifier,
     ) {
         Column {
             Row(
@@ -77,14 +77,14 @@ fun ExpandableFilterSection(
                     .clip(RoundedCornerShape(0.dp))
                     .clickable(role = Role.Button) { expanded = !expanded }
                     .padding(horizontal = 24.dp, vertical = 10.dp),
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 BadgedBox(
                     badge = {
                         if (activeFilterCount > 0) {
                             Badge(
                                 containerColor = colorScheme.primary,
-                                contentColor = colorScheme.onPrimary
+                                contentColor = colorScheme.onPrimary,
                             ) {
                                 Text(activeFilterCount.toString(), style = typography.labelSmall)
                             }
@@ -95,7 +95,7 @@ fun ExpandableFilterSection(
                         imageVector = Icons.Default.Tune,
                         contentDescription = null,
                         tint = headerContentColor,
-                        modifier = Modifier.size(18.dp)
+                        modifier = Modifier.size(18.dp),
                     )
                 }
                 Spacer(Modifier.width(8.dp))
@@ -103,7 +103,7 @@ fun ExpandableFilterSection(
                     text = "Filtry",
                     style = typography.labelLarge,
                     color = headerContentColor,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
                 )
                 Icon(
                     imageVector = Icons.Default.KeyboardArrowDown,
@@ -111,7 +111,7 @@ fun ExpandableFilterSection(
                     tint = headerContentColor,
                     modifier = Modifier
                         .size(20.dp)
-                        .rotate(chevronRotation)
+                        .rotate(chevronRotation),
                 )
             }
 
@@ -126,7 +126,7 @@ fun ExpandableFilterSection(
                     animationSpec = tween(
                         150
                     )
-                )
+                ),
             ) {
                 Column {
                     HorizontalDivider(color = colorScheme.outlineVariant)

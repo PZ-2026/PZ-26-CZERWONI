@@ -28,7 +28,7 @@ fun TutorList(tutors: List<Tutor>, onTutorClick: (Tutor) -> Unit) {
         modifier = Modifier
             .fillMaxSize()
             .padding(horizontal = 24.dp)
-            .padding(top = 16.dp, bottom = 32.dp)
+            .padding(top = 16.dp, bottom = 32.dp),
     ) {
         if (tutors.isEmpty()) {
             item { EmptyState() }
@@ -38,19 +38,19 @@ fun TutorList(tutors: List<Tutor>, onTutorClick: (Tutor) -> Unit) {
                     text = pluralStringResource(
                         R.plurals.home_tutors_count,
                         tutors.size,
-                        tutors.size
+                        tutors.size,
                     ),
                     style = typography.titleMedium,
                     fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
                     color = colorScheme.onBackground,
-                    modifier = Modifier.padding(bottom = 16.dp)
+                    modifier = Modifier.padding(bottom = 16.dp),
                 )
             }
             itemsIndexed(tutors) { index, tutor ->
                 TutorCard(
                     tutor = tutor,
                     colors = AvatarColors[index % AvatarColors.size],
-                    onClick = { onTutorClick(tutor) }
+                    onClick = { onTutorClick(tutor) },
                 )
                 if (index < tutors.lastIndex) Spacer(Modifier.height(12.dp))
             }
@@ -64,7 +64,7 @@ fun EmptyState() {
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 48.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(
             stringResource(R.string.home_no_results),

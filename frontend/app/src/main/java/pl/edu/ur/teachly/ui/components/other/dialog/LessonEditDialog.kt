@@ -36,17 +36,21 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import java.time.LocalDate
 import pl.edu.ur.teachly.data.model.AdminLessonUpdateRequest
 import pl.edu.ur.teachly.data.model.LessonFormat
 import pl.edu.ur.teachly.data.model.LessonResponse
 import pl.edu.ur.teachly.data.model.LessonStatus
 import pl.edu.ur.teachly.data.model.PaymentStatus
 import pl.edu.ur.teachly.ui.components.other.formatDate
+import java.time.LocalDate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LessonEditDialog(lesson: LessonResponse, onDismiss: () -> Unit, onSave: (AdminLessonUpdateRequest) -> Unit) {
+fun LessonEditDialog(
+    lesson: LessonResponse,
+    onDismiss: () -> Unit,
+    onSave: (AdminLessonUpdateRequest) -> Unit,
+) {
     var lessonDate by remember { mutableStateOf(lesson.lessonDate) }
     var timeFrom by remember { mutableStateOf(lesson.timeFrom) }
     var timeTo by remember { mutableStateOf(lesson.timeTo) }
@@ -76,7 +80,7 @@ fun LessonEditDialog(lesson: LessonResponse, onDismiss: () -> Unit, onSave: (Adm
     val timeFromPickerState = rememberTimePickerState(
         initialHour = initialTimeFrom?.hour ?: 8,
         initialMinute = initialTimeFrom?.minute ?: 0,
-        is24Hour = true
+        is24Hour = true,
     )
 
     val initialTimeTo = remember(lesson.timeTo) {
@@ -85,7 +89,7 @@ fun LessonEditDialog(lesson: LessonResponse, onDismiss: () -> Unit, onSave: (Adm
     val timeToPickerState = rememberTimePickerState(
         initialHour = initialTimeTo?.hour ?: 9,
         initialMinute = initialTimeTo?.minute ?: 0,
-        is24Hour = true
+        is24Hour = true,
     )
 
     if (showDatePicker) {
@@ -153,7 +157,7 @@ fun LessonEditDialog(lesson: LessonResponse, onDismiss: () -> Unit, onSave: (Adm
         text = {
             Column(
                 modifier = Modifier.verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 OutlinedTextField(
                     value = formatDate(LocalDate.parse(lessonDate)),
@@ -167,7 +171,7 @@ fun LessonEditDialog(lesson: LessonResponse, onDismiss: () -> Unit, onSave: (Adm
                     },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable { showDatePicker = true }
+                        .clickable { showDatePicker = true },
                 )
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     Box(modifier = Modifier.weight(1f)) {
@@ -177,7 +181,7 @@ fun LessonEditDialog(lesson: LessonResponse, onDismiss: () -> Unit, onSave: (Adm
                             readOnly = true,
                             label = { Text("Od") },
                             leadingIcon = { Icon(Icons.Default.Schedule, null) },
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier.fillMaxWidth(),
                         )
                         Box(
                             modifier = Modifier
@@ -192,7 +196,7 @@ fun LessonEditDialog(lesson: LessonResponse, onDismiss: () -> Unit, onSave: (Adm
                             readOnly = true,
                             label = { Text("Do") },
                             leadingIcon = { Icon(Icons.Default.Schedule, null) },
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier.fillMaxWidth(),
                         )
                         Box(
                             modifier = Modifier
@@ -215,21 +219,21 @@ fun LessonEditDialog(lesson: LessonResponse, onDismiss: () -> Unit, onSave: (Adm
                     entries = LessonFormat.entries,
                     selected = format,
                     onSelect = { format = it },
-                    label = { it.label }
+                    label = { it.label },
                 )
                 DialogSectionLabel("Status lekcji")
                 DialogChipRow(
                     entries = LessonStatus.entries,
                     selected = lessonStatus,
                     onSelect = { lessonStatus = it },
-                    label = { it.label }
+                    label = { it.label },
                 )
                 DialogSectionLabel("Status płatności")
                 DialogChipRow(
                     entries = PaymentStatus.entries,
                     selected = paymentStatus,
                     onSelect = { paymentStatus = it },
-                    label = { it.label }
+                    label = { it.label },
                 )
                 OutlinedTextField(
                     value = studentNotes,
@@ -237,7 +241,7 @@ fun LessonEditDialog(lesson: LessonResponse, onDismiss: () -> Unit, onSave: (Adm
                     label = { Text("Notatki ucznia") },
                     leadingIcon = { Icon(Icons.Default.Person, null) },
                     modifier = Modifier.fillMaxWidth(),
-                    minLines = 2
+                    minLines = 2,
                 )
                 OutlinedTextField(
                     value = tutorNotes,
@@ -245,7 +249,7 @@ fun LessonEditDialog(lesson: LessonResponse, onDismiss: () -> Unit, onSave: (Adm
                     label = { Text("Notatki korepetytora") },
                     leadingIcon = { Icon(Icons.Default.School, null) },
                     modifier = Modifier.fillMaxWidth(),
-                    minLines = 2
+                    minLines = 2,
                 )
             }
         },
@@ -261,7 +265,7 @@ fun LessonEditDialog(lesson: LessonResponse, onDismiss: () -> Unit, onSave: (Adm
                         paymentStatus = paymentStatus,
                         amount = amount.toDoubleOrNull() ?: lesson.amount,
                         studentNotes = studentNotes.ifBlank { null },
-                        tutorNotes = tutorNotes.ifBlank { null }
+                        tutorNotes = tutorNotes.ifBlank { null },
                     )
                 )
             }) { Text("Zapisz") }

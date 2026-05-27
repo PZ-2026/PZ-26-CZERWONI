@@ -15,11 +15,8 @@ class ReviewPreferencesManager(private val context: Context) {
     val dismissedTutorIdsFlow: Flow<Set<Int>> = context.dataStore.data
         .map { prefs ->
             val raw = prefs[KEY_DISMISSED_TUTOR_IDS] ?: ""
-            if (raw.isBlank()) {
-                emptySet()
-            } else {
-                raw.split(",").mapNotNull { it.toIntOrNull() }.toSet()
-            }
+            if (raw.isBlank()) emptySet()
+            else raw.split(",").mapNotNull { it.toIntOrNull() }.toSet()
         }
 
     suspend fun dismissTutors(tutorIds: Set<Int>) {
