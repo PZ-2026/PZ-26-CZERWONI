@@ -25,6 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import java.time.LocalDate
 import org.koin.androidx.compose.koinViewModel
 import pl.edu.ur.teachly.R
 import pl.edu.ur.teachly.data.model.UserRole
@@ -39,14 +40,13 @@ import pl.edu.ur.teachly.ui.components.profile.ProfileHeader
 import pl.edu.ur.teachly.ui.components.profile.ProfileInfoRow
 import pl.edu.ur.teachly.ui.profile.viewmodels.ProfileViewModel
 import pl.edu.ur.teachly.ui.theme.AvatarColors
-import java.time.LocalDate
 
 @Composable
 fun AdminProfileScreen(
     onBack: () -> Unit,
     onLogout: () -> Unit,
     onEditClick: () -> Unit,
-    viewModel: ProfileViewModel = koinViewModel(),
+    viewModel: ProfileViewModel = koinViewModel()
 ) {
     val lifecycleOwner = androidx.compose.ui.platform.LocalLifecycleOwner.current
     androidx.compose.runtime.DisposableEffect(lifecycleOwner) {
@@ -65,7 +65,7 @@ fun AdminProfileScreen(
     when {
         profile.isLoading -> Box(
             modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center,
+            contentAlignment = Alignment.Center
         ) { CircularProgressIndicator() }
 
         profile.error != null -> FullScreenError(message = profile.error!!)
@@ -80,7 +80,7 @@ fun AdminProfileScreen(
                 avatarColor = AvatarColors[0],
                 role = UserRole.ADMIN,
                 onBack = onBack,
-                onEditClick = onEditClick,
+                onEditClick = onEditClick
             )
 
             Column(
@@ -88,7 +88,7 @@ fun AdminProfileScreen(
                     .fillMaxSize()
                     .padding(horizontal = 24.dp)
                     .verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(20.dp),
+                verticalArrangement = Arrangement.spacedBy(20.dp)
             ) {
                 Spacer(Modifier.height(4.dp))
 
@@ -99,7 +99,7 @@ fun AdminProfileScreen(
                         ProfileInfoRow(
                             icon = Icons.Default.AlternateEmail,
                             label = stringResource(R.string.email),
-                            value = profile.email,
+                            value = profile.email
                         )
                     }
                     val phone = formatPhoneNumber(profile.phoneNumber.toString())
@@ -108,7 +108,7 @@ fun AdminProfileScreen(
                         ProfileInfoRow(
                             icon = Icons.Default.Phone,
                             label = stringResource(R.string.phone),
-                            value = phone,
+                            value = phone
                         )
                     }
                     val formattedDate = remember(profile.createdAt) {
@@ -116,7 +116,9 @@ fun AdminProfileScreen(
                             val datePart = profile.createdAt.take(10)
                             if (datePart.isNotBlank() && datePart != "null") {
                                 formatDate(LocalDate.parse(datePart))
-                            } else ""
+                            } else {
+                                ""
+                            }
                         } catch (e: Exception) {
                             ""
                         }
@@ -126,26 +128,25 @@ fun AdminProfileScreen(
                         ProfileInfoRow(
                             icon = Icons.Default.CalendarToday,
                             label = stringResource(R.string.account_active_since),
-                            value = formattedDate,
+                            value = formattedDate
                         )
                     }
                     ProfileDataDivider()
                     ProfileInfoRow(
                         icon = Icons.Default.AdminPanelSettings,
                         label = stringResource(R.string.role),
-                        value = stringResource(R.string.admin),
+                        value = stringResource(R.string.admin)
                     )
                 }
-                
+
                 ReportDownloadSection(viewModel = viewModel)
 
                 PrimaryButton(
                     text = stringResource(R.string.logout),
                     onClick = onLogout,
-                    modifier = Modifier.padding(bottom = 32.dp, top = 8.dp),
+                    modifier = Modifier.padding(bottom = 32.dp, top = 8.dp)
                 )
             }
         }
     }
 }
-

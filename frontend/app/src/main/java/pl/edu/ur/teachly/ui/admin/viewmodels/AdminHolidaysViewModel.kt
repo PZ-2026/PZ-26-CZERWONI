@@ -21,9 +21,7 @@ data class AdminHolidaysState(
     val successMessage: String? = null
 )
 
-class AdminHolidaysViewModel(
-    private val holidayRepository: HolidayRepository
-) : ViewModel() {
+class AdminHolidaysViewModel(private val holidayRepository: HolidayRepository) : ViewModel() {
 
     private val _state = MutableStateFlow(AdminHolidaysState())
     val state: StateFlow<AdminHolidaysState> = _state.asStateFlow()

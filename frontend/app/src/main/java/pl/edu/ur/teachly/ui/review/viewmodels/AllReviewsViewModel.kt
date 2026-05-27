@@ -19,13 +19,11 @@ data class AllReviewsState(
     val isLoading: Boolean = true,
     val isSubmitting: Boolean = false,
     val error: String? = null,
-    val successMessage: String? = null,
+    val successMessage: String? = null
 )
 
-class AllReviewsViewModel(
-    private val reviewRepository: ReviewRepository,
-    private val tokenManager: TokenManager,
-) : ViewModel() {
+class AllReviewsViewModel(private val reviewRepository: ReviewRepository, private val tokenManager: TokenManager) :
+    ViewModel() {
 
     private val _state = MutableStateFlow(AllReviewsState())
     val state: StateFlow<AllReviewsState> = _state.asStateFlow()
@@ -46,7 +44,7 @@ class AllReviewsViewModel(
                 },
                 onFailure = { e ->
                     _state.update { it.copy(isLoading = false, error = e.message) }
-                },
+                }
             )
         }
     }
@@ -60,13 +58,13 @@ class AllReviewsViewModel(
                         s.copy(
                             reviews = s.reviews.map { if (it.id == reviewId) updated else it },
                             isSubmitting = false,
-                            successMessage = "Opinia zaktualizowana",
+                            successMessage = "Opinia zaktualizowana"
                         )
                     }
                 },
                 onFailure = { e ->
                     _state.update { it.copy(isSubmitting = false, error = e.message) }
-                },
+                }
             )
         }
     }
@@ -80,13 +78,13 @@ class AllReviewsViewModel(
                         s.copy(
                             reviews = s.reviews.filter { it.id != reviewId },
                             isSubmitting = false,
-                            successMessage = "Opinia usunięta",
+                            successMessage = "Opinia usunięta"
                         )
                     }
                 },
                 onFailure = { e ->
                     _state.update { it.copy(isSubmitting = false, error = e.message) }
-                },
+                }
             )
         }
     }

@@ -19,13 +19,11 @@ data class MyReviewsState(
     val isSubmitting: Boolean = false,
     val isDeleting: Boolean = false,
     val error: String? = null,
-    val editSuccess: Boolean = false,
+    val editSuccess: Boolean = false
 )
 
-class MyReviewsViewModel(
-    private val reviewRepository: ReviewRepository,
-    private val tokenManager: TokenManager,
-) : ViewModel() {
+class MyReviewsViewModel(private val reviewRepository: ReviewRepository, private val tokenManager: TokenManager) :
+    ViewModel() {
 
     private val _state = MutableStateFlow(MyReviewsState())
     val state: StateFlow<MyReviewsState> = _state.asStateFlow()
@@ -40,7 +38,7 @@ class MyReviewsViewModel(
                 },
                 onFailure = { e ->
                     _state.update { it.copy(isLoading = false, error = e.message) }
-                },
+                }
             )
         }
     }
@@ -55,7 +53,7 @@ class MyReviewsViewModel(
                 },
                 onFailure = { e ->
                     _state.update { it.copy(isSubmitting = false, error = e.message) }
-                },
+                }
             )
         }
     }
@@ -74,7 +72,7 @@ class MyReviewsViewModel(
                 },
                 onFailure = { e ->
                     _state.update { it.copy(isDeleting = false, error = e.message) }
-                },
+                }
             )
         }
     }

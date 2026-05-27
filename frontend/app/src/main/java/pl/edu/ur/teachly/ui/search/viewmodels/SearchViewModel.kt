@@ -23,13 +23,13 @@ data class SearchUiState(
     val tutors: List<Tutor> = emptyList(),
     val subjects: List<String> = listOf("Wszystkie"),
     val isLoading: Boolean = true,
-    val error: String? = null,
+    val error: String? = null
 )
 
 class SearchViewModel(
     private val tutorRepository: TutorRepository,
     private val subjectRepository: SubjectRepository,
-    private val reviewRepository: ReviewRepository,
+    private val reviewRepository: ReviewRepository
 ) : ViewModel() {
 
     private val _allTutors = MutableStateFlow<List<Tutor>>(emptyList())
@@ -42,11 +42,11 @@ class SearchViewModel(
     val uiState: StateFlow<SearchUiState> = combine(
         combine(_query, _activeSubject) { q, s -> q to s },
         combine(_allTutors, _subjects) { t, s -> t to s },
-        combine(_isLoading, _error) { l, e -> l to e },
+        combine(_isLoading, _error) { l, e -> l to e }
     ) { (query, subject), (tutors, subjects), (isLoading, error) ->
         val filtered = tutors.filter { tutor ->
             (subject == "Wszystkie" || tutor.subjects.contains(subject)) &&
-                    (query.isBlank() || tutor.name.contains(query, ignoreCase = true))
+                (query.isBlank() || tutor.name.contains(query, ignoreCase = true))
         }
         SearchUiState(
             query = query,
@@ -54,12 +54,12 @@ class SearchViewModel(
             tutors = filtered,
             subjects = subjects,
             isLoading = isLoading,
-            error = error,
+            error = error
         )
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
-        initialValue = SearchUiState(),
+        initialValue = SearchUiState()
     )
 
     init {
@@ -88,12 +88,15 @@ class SearchViewModel(
                                     }
                                     val subjects = subjectsDeferred.await()
                                     val reviews = reviewsDeferred.await()
-                                    val avgRating = if (reviews.isEmpty()) 0.0
-                                    else reviews.sumOf { it.rating } / reviews.size
+                                    val avgRating = if (reviews.isEmpty()) {
+                                        0.0
+                                    } else {
+                                        reviews.sumOf { it.rating } / reviews.size
+                                    }
                                     tutor.toUiTutor(
                                         subjects = subjects,
                                         rating = (avgRating * 10).toLong() / 10.0,
-                                        reviewCount = reviews.size,
+                                        reviewCount = reviews.size
                                     )
                                 }
                             }.awaitAll()
@@ -102,14 +105,14 @@ class SearchViewModel(
                         _error.value = e.message
                     }
                 },
-                onFailure = { e -> _error.value = e.message },
+                onFailure = { e -> _error.value = e.message }
             )
 
             subjectRepository.getAllSubjects().fold(
                 onSuccess = { subjects ->
                     _subjects.value = listOf("Wszystkie") + subjects.map { it.subjectName }
                 },
-                onFailure = { },
+                onFailure = { }
             )
 
             _isLoading.value = false
@@ -132,4 +135,3 @@ class SearchViewModel(
         loadData()
     }
 }
-

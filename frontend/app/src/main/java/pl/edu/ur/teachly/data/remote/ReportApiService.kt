@@ -13,6 +13,6 @@ interface ReportApiService {
         @Query("startDate") startDate: String,
         @Query("endDate") endDate: String,
         @Query("type") type: String,
-        @Query("includeFields") includeFields: String?,
+        @Query("includeFields") includeFields: String?
     ): Response<ResponseBody>
 }

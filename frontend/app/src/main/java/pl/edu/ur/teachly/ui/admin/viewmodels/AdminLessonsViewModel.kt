@@ -2,6 +2,7 @@ package pl.edu.ur.teachly.ui.admin.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import java.time.LocalDate
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -13,7 +14,6 @@ import pl.edu.ur.teachly.data.model.LessonResponse
 import pl.edu.ur.teachly.data.model.LessonStatus
 import pl.edu.ur.teachly.data.model.PaymentStatus
 import pl.edu.ur.teachly.data.repository.LessonRepository
-import java.time.LocalDate
 
 data class AdminLessonsState(
     val lessons: List<LessonResponse> = emptyList(),
@@ -28,9 +28,7 @@ data class AdminLessonsState(
     val successMessage: String? = null
 )
 
-class AdminLessonsViewModel(
-    private val lessonRepository: LessonRepository
-) : ViewModel() {
+class AdminLessonsViewModel(private val lessonRepository: LessonRepository) : ViewModel() {
 
     private val _state = MutableStateFlow(AdminLessonsState())
     val state: StateFlow<AdminLessonsState> = _state.asStateFlow()
@@ -86,19 +84,23 @@ class AdminLessonsViewModel(
         val today = LocalDate.now()
         val filtered = _state.value.lessons.filter { lesson ->
             val matchesSearch = query.isEmpty() ||
-                    lesson.tutorFirstName.lowercase().contains(query) ||
-                    lesson.tutorLastName.lowercase().contains(query) ||
-                    lesson.studentFirstName.lowercase().contains(query) ||
-                    lesson.studentLastName.lowercase().contains(query) ||
-                    lesson.subjectName.lowercase().contains(query)
+                lesson.tutorFirstName.lowercase().contains(query) ||
+                lesson.tutorLastName.lowercase().contains(query) ||
+                lesson.studentFirstName.lowercase().contains(query) ||
+                lesson.studentLastName.lowercase().contains(query) ||
+                lesson.subjectName.lowercase().contains(query)
             val matchesStatus = status == null || lesson.lessonStatus == status
             val matchesPayment = paymentStatus == null || lesson.paymentStatus == paymentStatus
             val matchesFormat = format == null || lesson.format == format
-            val matchesUpcoming = upcoming == null || run {
-                val lessonDate = runCatching { LocalDate.parse(lesson.lessonDate) }.getOrNull()
-                if (upcoming) lessonDate != null && !lessonDate.isBefore(today)
-                else lessonDate != null && lessonDate.isBefore(today)
-            }
+            val matchesUpcoming = upcoming == null ||
+                run {
+                    val lessonDate = runCatching { LocalDate.parse(lesson.lessonDate) }.getOrNull()
+                    if (upcoming) {
+                        lessonDate != null && !lessonDate.isBefore(today)
+                    } else {
+                        lessonDate != null && lessonDate.isBefore(today)
+                    }
+                }
             matchesSearch && matchesStatus && matchesPayment && matchesFormat && matchesUpcoming
         }
         _state.update { it.copy(filteredLessons = filtered) }

@@ -26,12 +26,7 @@ fun DialogSectionLabel(text: String) {
 }
 
 @Composable
-fun <T> DialogChipRow(
-    entries: List<T>,
-    selected: T,
-    onSelect: (T) -> Unit,
-    label: (T) -> String,
-) {
+fun <T> DialogChipRow(entries: List<T>, selected: T, onSelect: (T) -> Unit, label: (T) -> String) {
     FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
         entries.forEach { entry ->
             FilterChip(
@@ -48,7 +43,7 @@ fun DialogSwitchRow(label: String, checked: Boolean, onCheckedChange: (Boolean) 
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Text(label, style = typography.bodyMedium, color = colorScheme.onSurfaceVariant)
         Switch(checked = checked, onCheckedChange = onCheckedChange)

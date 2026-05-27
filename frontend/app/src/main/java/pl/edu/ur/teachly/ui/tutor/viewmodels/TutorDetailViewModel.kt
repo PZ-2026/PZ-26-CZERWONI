@@ -27,14 +27,14 @@ data class TutorDetailUiState(
     val reviewError: String? = null,
     val reviewSubmitSuccess: Boolean = false,
     val isLoading: Boolean = true,
-    val error: String? = null,
+    val error: String? = null
 )
 
 class TutorDetailViewModel(
     private val tutorRepository: TutorRepository,
     private val reviewRepository: ReviewRepository,
     private val lessonRepository: LessonRepository,
-    private val tokenManager: TokenManager,
+    private val tokenManager: TokenManager
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(TutorDetailUiState())
@@ -67,15 +67,18 @@ class TutorDetailViewModel(
             reviewRepository.getTutorReviews(id).fold(
                 onSuccess = { reviews ->
                     try {
-                        val avgRating = if (reviews.isEmpty()) 0.0
-                        else reviews.sumOf { it.rating } / reviews.size
+                        val avgRating = if (reviews.isEmpty()) {
+                            0.0
+                        } else {
+                            reviews.sumOf { it.rating } / reviews.size
+                        }
                         _state.update { s ->
                             s.copy(
                                 tutor = s.tutor?.copy(
                                     rating = avgRating,
-                                    reviewCount = reviews.size,
+                                    reviewCount = reviews.size
                                 ),
-                                reviews = reviews,
+                                reviews = reviews
                             )
                         }
 
@@ -89,7 +92,7 @@ class TutorDetailViewModel(
                                             it.tutorId == id && it.lessonStatus == LessonStatus.COMPLETED
                                         }
                                     },
-                                    onFailure = {},
+                                    onFailure = {}
                                 )
                             }
                         }
@@ -102,7 +105,7 @@ class TutorDetailViewModel(
                     } catch (_: Exception) {
                     }
                 },
-                onFailure = { },
+                onFailure = { }
             )
 
             _state.update { it.copy(isLoading = false) }
@@ -124,7 +127,7 @@ class TutorDetailViewModel(
                 },
                 onFailure = { e ->
                     _state.update { it.copy(isSubmittingReview = false, reviewError = e.message) }
-                },
+                }
             )
         }
     }
@@ -145,7 +148,7 @@ class TutorDetailViewModel(
                 },
                 onFailure = { e ->
                     _state.update { it.copy(isSubmittingReview = false, reviewError = e.message) }
-                },
+                }
             )
         }
     }

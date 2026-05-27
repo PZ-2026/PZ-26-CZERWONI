@@ -42,6 +42,7 @@ import com.canhub.cropper.CropImageContract
 import com.canhub.cropper.CropImageContractOptions
 import com.canhub.cropper.CropImageOptions
 import com.canhub.cropper.CropImageView
+import java.io.File
 import org.koin.androidx.compose.koinViewModel
 import pl.edu.ur.teachly.R
 import pl.edu.ur.teachly.ui.components.auth.AuthTextField
@@ -52,14 +53,9 @@ import pl.edu.ur.teachly.ui.components.other.InitialsAvatar
 import pl.edu.ur.teachly.ui.components.other.PrimaryButton
 import pl.edu.ur.teachly.ui.profile.viewmodels.ProfileViewModel
 import pl.edu.ur.teachly.ui.theme.AvatarColors
-import java.io.File
 
 @Composable
-fun ProfileEditScreen(
-    onBack: () -> Unit,
-    onSave: (Boolean) -> Unit,
-    viewModel: ProfileViewModel = koinViewModel(),
-) {
+fun ProfileEditScreen(onBack: () -> Unit, onSave: (Boolean) -> Unit, viewModel: ProfileViewModel = koinViewModel()) {
     val editState by viewModel.editState.collectAsState()
     val profile by viewModel.profile.collectAsState()
     val context = LocalContext.current
@@ -87,18 +83,30 @@ fun ProfileEditScreen(
                 if (file != null && file.exists()) {
                     // Walidacja rozmiaru pliku (max 5 MB)
                     if (file.length() > 5 * 1024 * 1024) {
-                        Toast.makeText(context, "Plik jest za duży. Maksymalny rozmiar to 5 MB.", Toast.LENGTH_LONG).show()
+                        Toast.makeText(
+                            context,
+                            "Plik jest za duży. Maksymalny rozmiar to 5 MB.",
+                            Toast.LENGTH_LONG
+                        ).show()
                         return@rememberLauncherForActivityResult
                     }
                     // Walidacja formatu pliku
                     val extension = file.extension.lowercase()
                     if (extension != "jpg" && extension != "jpeg" && extension != "png") {
-                        Toast.makeText(context, "Niedozwolony format pliku. Dozwolone są tylko JPG i PNG.", Toast.LENGTH_LONG).show()
+                        Toast.makeText(
+                            context,
+                            "Niedozwolony format pliku. Dozwolone są tylko JPG i PNG.",
+                            Toast.LENGTH_LONG
+                        ).show()
                         return@rememberLauncherForActivityResult
                     }
 
                     viewModel.setPendingAvatar(file)
-                    Toast.makeText(context, "Zdjęcie profilowe zostało wybrane (zapisz zmiany, aby zatwierdzić)", Toast.LENGTH_LONG).show()
+                    Toast.makeText(
+                        context,
+                        "Zdjęcie profilowe zostało wybrane (zapisz zmiany, aby zatwierdzić)",
+                        Toast.LENGTH_LONG
+                    ).show()
                 } else {
                     Toast.makeText(context, "Nie udało się odczytać pliku obrazu", Toast.LENGTH_SHORT).show()
                 }
@@ -162,7 +170,11 @@ fun ProfileEditScreen(
                 e.printStackTrace()
             }
         } else {
-            Toast.makeText(context, "Uprawnienie do aparatu jest wymagane, aby zrobić zdjęcie", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                context,
+                "Uprawnienie do aparatu jest wymagane, aby zrobić zdjęcie",
+                Toast.LENGTH_SHORT
+            ).show()
         }
     }
 
@@ -174,12 +186,12 @@ fun ProfileEditScreen(
         var showConfirmBackDialog by remember { mutableStateOf(false) }
 
         val isDirty = editState.firstName.trim() != profile.firstName.trim() ||
-                editState.lastName.trim() != profile.lastName.trim() ||
-                editState.email.trim() != profile.email.trim() ||
-                editState.phoneNumber.trim() != (profile.phoneNumber ?: "").trim() ||
-                editState.password.isNotEmpty() ||
-                editState.pendingAvatarFile != null ||
-                editState.pendingDeleteAvatar
+            editState.lastName.trim() != profile.lastName.trim() ||
+            editState.email.trim() != profile.email.trim() ||
+            editState.phoneNumber.trim() != (profile.phoneNumber ?: "").trim() ||
+            editState.password.isNotEmpty() ||
+            editState.pendingAvatarFile != null ||
+            editState.pendingDeleteAvatar
 
         if (showConfirmBackDialog) {
             androidx.compose.material3.AlertDialog(
@@ -187,9 +199,9 @@ fun ProfileEditScreen(
                 title = { Text("Niezapisane zmiany") },
                 text = { Text("Masz niezapisane zmiany. Czy na pewno chcesz wyjść bez zapisywania?") },
                 confirmButton = {
-                    TextButton(onClick = { 
+                    TextButton(onClick = {
                         showConfirmBackDialog = false
-                        onBack() 
+                        onBack()
                     }) {
                         Text("Tak, wyjdź", color = colorScheme.error)
                     }
@@ -214,7 +226,7 @@ fun ProfileEditScreen(
                 } else {
                     onBack()
                 }
-            },
+            }
         )
 
         Column(
@@ -222,7 +234,7 @@ fun ProfileEditScreen(
                 .fillMaxSize()
                 .padding(horizontal = 24.dp)
                 .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Spacer(modifier = Modifier.height(24.dp))
 
@@ -237,7 +249,8 @@ fun ProfileEditScreen(
                 InitialsAvatar(
                     initials = initials,
                     avatarColor = AvatarColors[0],
-                    avatarUrl = editState.localAvatarUrl ?: if (editState.pendingDeleteAvatar) null else profile.avatarUrl,
+                    avatarUrl =
+                    editState.localAvatarUrl ?: if (editState.pendingDeleteAvatar) null else profile.avatarUrl,
                     size = 96.dp,
                     isEditable = profile.role != pl.edu.ur.teachly.data.model.UserRole.ADMIN,
                     onEditClick = { showPickerDialog = true }
@@ -251,14 +264,14 @@ fun ProfileEditScreen(
                 value = editState.firstName,
                 onValueChange = viewModel::onFirstNameChange,
                 placeholder = stringResource(R.string.first_name_placeholder),
-                capitalize = true,
+                capitalize = true
             )
             AuthTextField(
                 label = stringResource(R.string.field_last_name),
                 value = editState.lastName,
                 onValueChange = viewModel::onLastNameChange,
                 placeholder = stringResource(R.string.last_name_placeholder),
-                capitalize = true,
+                capitalize = true
             )
             AuthTextField(
                 label = stringResource(R.string.email),
@@ -280,7 +293,7 @@ fun ProfileEditScreen(
                 label = "Nowe hasło (opcjonalnie)",
                 value = editState.password,
                 onValueChange = viewModel::onPasswordChange,
-                placeholder = "Pozostaw puste by nie zmieniać",
+                placeholder = "Pozostaw puste by nie zmieniać"
             )
             if (editState.error != null) {
                 ErrorBanner(message = editState.error!!)
@@ -292,7 +305,7 @@ fun ProfileEditScreen(
                 text = stringResource(R.string.profile_edit_save),
                 onClick = { viewModel.saveProfile() },
                 isLoading = editState.isLoading,
-                modifier = Modifier.padding(bottom = 32.dp, top = 24.dp),
+                modifier = Modifier.padding(bottom = 32.dp, top = 24.dp)
             )
         }
     }
@@ -321,10 +334,16 @@ fun ProfileEditScreen(
                         onClick = {
                             showPickerDialog = false
                             val permission = Manifest.permission.CAMERA
-                            if (ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED) {
+                            if (ContextCompat.checkSelfPermission(context, permission) ==
+                                PackageManager.PERMISSION_GRANTED
+                            ) {
                                 try {
                                     val file = File.createTempFile("avatar_capture_", ".jpg", context.cacheDir)
-                                    val uri = FileProvider.getUriForFile(context, "${context.packageName}.provider", file)
+                                    val uri = FileProvider.getUriForFile(
+                                        context,
+                                        "${context.packageName}.provider",
+                                        file
+                                    )
                                     tempCameraFile = file
                                     tempCameraUri = uri
                                     cameraLauncher.launch(uri)
@@ -343,19 +362,24 @@ fun ProfileEditScreen(
                             galleryLauncher.launch("image/*")
                         }
                     )
-                    val currentAvatarUrl = editState.localAvatarUrl ?: if (editState.pendingDeleteAvatar) null else profile.avatarUrl
+                    val currentAvatarUrl =
+                        editState.localAvatarUrl ?: if (editState.pendingDeleteAvatar) null else profile.avatarUrl
                     val hasCustomAvatar = !currentAvatarUrl.isNullOrBlank() &&
-                            !currentAvatarUrl.equals("null", ignoreCase = true) &&
-                            !currentAvatarUrl.contains("/null", ignoreCase = true) &&
-                            !currentAvatarUrl.endsWith("/uploads/avatars/", ignoreCase = true) &&
-                            currentAvatarUrl.contains("/")
+                        !currentAvatarUrl.equals("null", ignoreCase = true) &&
+                        !currentAvatarUrl.contains("/null", ignoreCase = true) &&
+                        !currentAvatarUrl.endsWith("/uploads/avatars/", ignoreCase = true) &&
+                        currentAvatarUrl.contains("/")
                     if (hasCustomAvatar) {
                         PrimaryButton(
                             text = "Usuń zdjęcie",
                             onClick = {
                                 showPickerDialog = false
                                 viewModel.setPendingDeleteAvatar()
-                                Toast.makeText(context, "Zdjęcie oznaczone do usunięcia (zapisz zmiany, aby zatwierdzić)", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(
+                                    context,
+                                    "Zdjęcie oznaczone do usunięcia (zapisz zmiany, aby zatwierdzić)",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
                         )
                     }

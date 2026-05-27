@@ -40,7 +40,7 @@ fun BookingConfirmScreen(
     timeTo: String,
     format: String,
     amount: String,
-    onGoHome: () -> Unit,
+    onGoHome: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -48,7 +48,7 @@ fun BookingConfirmScreen(
             .background(colorScheme.background)
             .padding(horizontal = 32.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
+        verticalArrangement = Arrangement.Center
     ) {
         SuccessIcon()
         Spacer(Modifier.height(24.dp))
@@ -61,12 +61,12 @@ fun BookingConfirmScreen(
             timeFrom = timeFrom,
             timeTo = timeTo,
             format = format,
-            amount = amount,
+            amount = amount
         )
         Spacer(Modifier.height(32.dp))
         PrimaryButton(
             text = stringResource(R.string.confirm_go_home),
-            onClick = onGoHome,
+            onClick = onGoHome
         )
     }
 }
@@ -78,13 +78,13 @@ private fun SuccessIcon() {
             .size(80.dp)
             .clip(RoundedCornerShape(26.dp))
             .background(DeepGreen700.copy(alpha = 0.15f)),
-        contentAlignment = Alignment.Center,
+        contentAlignment = Alignment.Center
     ) {
         Icon(
             imageVector = Icons.Default.Check,
             contentDescription = null,
             tint = DeepGreen700,
-            modifier = Modifier.size(40.dp),
+            modifier = Modifier.size(40.dp)
         )
     }
 }
@@ -94,14 +94,14 @@ private fun ConfirmHeadline() {
     Text(
         text = stringResource(R.string.confirm_title),
         style = typography.headlineMedium,
-        color = colorScheme.onBackground,
+        color = colorScheme.onBackground
     )
     Spacer(Modifier.height(8.dp))
     Text(
         text = stringResource(R.string.confirm_subtitle),
         style = typography.bodyMedium,
         color = colorScheme.onSurfaceVariant,
-        textAlign = TextAlign.Center,
+        textAlign = TextAlign.Center
     )
 }
 
@@ -113,7 +113,7 @@ private fun BookingSummaryCard(
     timeFrom: String,
     timeTo: String,
     format: String,
-    amount: String,
+    amount: String
 ) {
     val rows = listOf(
         listOf(stringResource(R.string.summary_date), lessonDate),
@@ -121,7 +121,7 @@ private fun BookingSummaryCard(
         listOf(stringResource(R.string.subject), subjectName),
         listOf(stringResource(R.string.summary_tutor), tutorName),
         listOf("Format", format),
-        listOf(stringResource(R.string.summary_price), "$amount zł"),
+        listOf(stringResource(R.string.summary_price), "$amount zł")
     )
 
     OutlinedCard(modifier = Modifier.fillMaxWidth()) {
@@ -131,22 +131,22 @@ private fun BookingSummaryCard(
                     .fillMaxWidth()
                     .padding(horizontal = 20.dp, vertical = 10.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalAlignment = Alignment.CenterVertically,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
                         label,
                         style = typography.bodySmall,
-                        color = colorScheme.onSurfaceVariant,
+                        color = colorScheme.onSurfaceVariant
                     )
                 }
                 Text(
                     value,
                     style = typography.labelMedium,
-                    color = colorScheme.onSurface,
+                    color = colorScheme.onSurface
                 )
             }
             if (index < rows.lastIndex) {

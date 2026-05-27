@@ -34,7 +34,7 @@ fun SubjectDialog(
     initialCategoryId: Int,
     categories: List<SubjectCategoryResponse>,
     onDismiss: () -> Unit,
-    onSave: (String, Int) -> Unit,
+    onSave: (String, Int) -> Unit
 ) {
     var name by remember { mutableStateOf(initialName) }
     var categoryId by remember { mutableIntStateOf(initialCategoryId) }
@@ -52,12 +52,12 @@ fun SubjectDialog(
                     label = { Text("Nazwa przedmiotu") },
                     leadingIcon = { Icon(Icons.Default.School, null) },
                     modifier = Modifier.fillMaxWidth(),
-                    singleLine = true,
+                    singleLine = true
                 )
                 ExposedDropdownMenuBox(
                     expanded = expanded,
                     onExpandedChange = { expanded = it },
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth()
                 ) {
                     OutlinedTextField(
                         value = selectedCategory?.categoryName ?: "Wybierz kategorię",
@@ -68,16 +68,19 @@ fun SubjectDialog(
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable),
+                            .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
                     )
                     ExposedDropdownMenu(
                         expanded = expanded,
-                        onDismissRequest = { expanded = false },
+                        onDismissRequest = { expanded = false }
                     ) {
                         categories.forEach { cat ->
                             DropdownMenuItem(
                                 text = { Text(cat.categoryName) },
-                                onClick = { categoryId = cat.id; expanded = false },
+                                onClick = {
+                                    categoryId = cat.id
+                                    expanded = false
+                                }
                             )
                         }
                     }
@@ -87,7 +90,7 @@ fun SubjectDialog(
         confirmButton = {
             TextButton(
                 onClick = { onSave(name.trim(), categoryId) },
-                enabled = name.isNotBlank() && categoryId > 0,
+                enabled = name.isNotBlank() && categoryId > 0
             ) { Text("Zapisz") }
         },
         dismissButton = { TextButton(onClick = onDismiss) { Text("Anuluj") } }

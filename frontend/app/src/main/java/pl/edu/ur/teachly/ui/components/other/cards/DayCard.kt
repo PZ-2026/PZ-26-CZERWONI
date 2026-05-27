@@ -30,31 +30,31 @@ fun DayCard(
     dayName: String,
     slots: List<TutorAvailabilityRecurringResponse>,
     onAdd: () -> Unit,
-    onDelete: (Int) -> Unit,
+    onDelete: (Int) -> Unit
 ) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
         color = colorScheme.surface,
-        shadowElevation = 1.dp,
+        shadowElevation = 1.dp
     ) {
         Column(modifier = Modifier.padding(12.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
                     text = dayName,
                     style = typography.titleSmall,
                     fontWeight = FontWeight.SemiBold,
-                    color = colorScheme.onSurface,
+                    color = colorScheme.onSurface
                 )
                 TextButton(onClick = onAdd) {
                     Icon(
                         Icons.Default.Add,
                         contentDescription = null,
-                        modifier = Modifier.size(16.dp),
+                        modifier = Modifier.size(16.dp)
                     )
                     Spacer(Modifier.width(4.dp))
                     Text("Dodaj")
@@ -66,7 +66,7 @@ fun DayCard(
                     text = "Brak dostępności",
                     style = typography.bodySmall,
                     color = colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(top = 2.dp, bottom = 4.dp),
+                    modifier = Modifier.padding(top = 2.dp, bottom = 4.dp)
                 )
             } else {
                 Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {

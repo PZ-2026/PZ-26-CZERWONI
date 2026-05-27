@@ -29,11 +29,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import java.time.LocalDate
 import pl.edu.ur.teachly.data.model.LessonResponse
 import pl.edu.ur.teachly.ui.components.other.badges.LessonStatusBadge
 import pl.edu.ur.teachly.ui.components.other.badges.PaymentStatusBadge
 import pl.edu.ur.teachly.ui.components.other.formatDate
-import java.time.LocalDate
 
 @Composable
 fun LessonAdminCard(lesson: LessonResponse, onEdit: () -> Unit) {
@@ -42,19 +42,19 @@ fun LessonAdminCard(lesson: LessonResponse, onEdit: () -> Unit) {
         colors = CardDefaults.cardColors(containerColor = colorScheme.surface),
         shape = RoundedCornerShape(20.dp),
         border = BorderStroke(1.dp, colorScheme.outline),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
                     text = lesson.subjectName,
                     style = typography.titleMedium,
                     fontWeight = FontWeight.Bold,
-                    color = colorScheme.onSurface,
+                    color = colorScheme.onSurface
                 )
                 IconButton(onClick = onEdit) {
                     Icon(
@@ -76,7 +76,7 @@ fun LessonAdminCard(lesson: LessonResponse, onEdit: () -> Unit) {
                         tint = colorScheme.primary
                     )
                 },
-                text = "Korepetytor: ${lesson.tutorFirstName} ${lesson.tutorLastName}",
+                text = "Korepetytor: ${lesson.tutorFirstName} ${lesson.tutorLastName}"
             )
 
             Spacer(Modifier.height(6.dp))
@@ -90,7 +90,7 @@ fun LessonAdminCard(lesson: LessonResponse, onEdit: () -> Unit) {
                         tint = colorScheme.primary
                     )
                 },
-                text = "Uczeń: ${lesson.studentFirstName} ${lesson.studentLastName}",
+                text = "Uczeń: ${lesson.studentFirstName} ${lesson.studentLastName}"
             )
 
             Spacer(Modifier.height(6.dp))
@@ -104,7 +104,7 @@ fun LessonAdminCard(lesson: LessonResponse, onEdit: () -> Unit) {
                         tint = colorScheme.primary
                     )
                 },
-                text = formatDate(LocalDate.parse(lesson.lessonDate)),
+                text = formatDate(LocalDate.parse(lesson.lessonDate))
             )
 
             Spacer(Modifier.height(6.dp))
@@ -118,7 +118,7 @@ fun LessonAdminCard(lesson: LessonResponse, onEdit: () -> Unit) {
                         tint = colorScheme.primary
                     )
                 },
-                text = "${lesson.timeFrom.take(5)}–${lesson.timeTo.take(5)}",
+                text = "${lesson.timeFrom.take(5)}–${lesson.timeTo.take(5)}"
             )
 
             Spacer(Modifier.height(6.dp))
@@ -132,7 +132,7 @@ fun LessonAdminCard(lesson: LessonResponse, onEdit: () -> Unit) {
                         tint = colorScheme.primary
                     )
                 },
-                text = "%.2f".format(lesson.amount) + " PLN",
+                text = "%.2f".format(lesson.amount) + " PLN"
             )
 
             Spacer(Modifier.height(10.dp))

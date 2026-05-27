@@ -2,6 +2,7 @@ package pl.edu.ur.teachly.ui.home.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import java.time.LocalDate
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -19,14 +20,13 @@ import pl.edu.ur.teachly.data.repository.ReviewRepository
 import pl.edu.ur.teachly.data.repository.UserRepository
 import pl.edu.ur.teachly.ui.models.ScheduledClass
 import pl.edu.ur.teachly.ui.models.toScheduledClass
-import java.time.LocalDate
 
 data class PendingReviewInfo(
     val tutorId: Int,
     val tutorFirstName: String,
     val tutorLastName: String,
     val subjectName: String,
-    val tutorAvatarUrl: String?,
+    val tutorAvatarUrl: String?
 )
 
 data class HomeUiState(
@@ -45,7 +45,7 @@ data class HomeUiState(
     val selectedPendingReview: PendingReviewInfo? = null,
     val isSubmittingPendingReview: Boolean = false,
     val pendingReviewError: String? = null,
-    val pendingReviewSubmitted: Boolean = false,
+    val pendingReviewSubmitted: Boolean = false
 )
 
 class HomeViewModel(
@@ -53,7 +53,7 @@ class HomeViewModel(
     private val lessonRepository: LessonRepository,
     private val userRepository: UserRepository,
     private val reviewRepository: ReviewRepository,
-    private val reviewPreferencesManager: ReviewPreferencesManager,
+    private val reviewPreferencesManager: ReviewPreferencesManager
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(HomeUiState())
@@ -81,7 +81,7 @@ class HomeViewModel(
 
             userRepository.getUserById(userId).fold(
                 onSuccess = { user -> _state.value = _state.value.copy(userName = user.firstName) },
-                onFailure = {},
+                onFailure = {}
             )
 
             val lessonsResult = when (role) {
@@ -95,7 +95,10 @@ class HomeViewModel(
                     try {
                         val today = LocalDate.now()
                         val upcoming = lessons
-                            .filter { it.lessonStatus != LessonStatus.CANCELLED && it.lessonStatus != LessonStatus.COMPLETED }
+                            .filter {
+                                it.lessonStatus != LessonStatus.CANCELLED &&
+                                    it.lessonStatus != LessonStatus.COMPLETED
+                            }
                             .map { it.toScheduledClass() }
                             .filter { it.day >= today }
                             .sortedWith(compareBy({ it.day }, { it.time }))
@@ -110,7 +113,7 @@ class HomeViewModel(
                             totalLessons = lessons.count { it.lessonStatus == LessonStatus.COMPLETED },
                             pendingLessonsCount = lessons.count { it.lessonStatus == LessonStatus.PENDING },
                             isLoading = false,
-                            error = null,
+                            error = null
                         )
 
                         // Load pending reviews only for students
@@ -133,12 +136,12 @@ class HomeViewModel(
                                                     tutorFirstName = lesson.tutorFirstName,
                                                     tutorLastName = lesson.tutorLastName,
                                                     subjectName = lesson.subjectName,
-                                                    tutorAvatarUrl = lesson.tutorAvatarUrl?.takeIf { it != "null" },
+                                                    tutorAvatarUrl = lesson.tutorAvatarUrl?.takeIf { it != "null" }
                                                 )
                                             }
                                         _state.update { it.copy(pendingReviews = pendingReviews) }
                                     },
-                                    onFailure = { /* silently ignore — not a critical feature */ },
+                                    onFailure = { /* silently ignore — not a critical feature */ }
                                 )
                             }
                         }
@@ -146,7 +149,7 @@ class HomeViewModel(
                         _state.value = _state.value.copy(
                             userRole = role,
                             isLoading = false,
-                            error = e.message,
+                            error = e.message
                         )
                     }
                 },
@@ -154,9 +157,9 @@ class HomeViewModel(
                     _state.value = _state.value.copy(
                         userRole = role,
                         isLoading = false,
-                        error = e.message,
+                        error = e.message
                     )
-                },
+                }
             )
         }
     }
@@ -188,7 +191,7 @@ class HomeViewModel(
             it.copy(
                 pendingReviews = emptyList(),
                 selectedPendingReview = null,
-                pendingReviewError = null,
+                pendingReviewError = null
             )
         }
     }
@@ -209,7 +212,7 @@ class HomeViewModel(
                                 selectedPendingReview = null,
                                 pendingReviews = remaining,
                                 pendingReviewError = null,
-                                pendingReviewSubmitted = true,
+                                pendingReviewSubmitted = true
                             )
                         }
                     },
@@ -220,7 +223,7 @@ class HomeViewModel(
                                 pendingReviewError = e.message
                             )
                         }
-                    },
+                    }
                 )
         }
     }
