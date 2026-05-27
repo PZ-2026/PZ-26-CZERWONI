@@ -47,7 +47,10 @@ import pl.edu.ur.teachly.ui.components.admin.AdminScreenHeader
 import pl.edu.ur.teachly.ui.components.other.cards.DashboardCard
 
 @Composable
-fun AdminDashboardScreen(viewModel: AdminDashboardViewModel = koinViewModel(), onNavigate: (AppRoute) -> Unit = {}) {
+fun AdminDashboardScreen(
+    viewModel: AdminDashboardViewModel = koinViewModel(),
+    onNavigate: (AppRoute) -> Unit = {},
+) {
     val state by viewModel.state.collectAsState()
 
     Column(
@@ -59,7 +62,7 @@ fun AdminDashboardScreen(viewModel: AdminDashboardViewModel = koinViewModel(), o
         AdminScreenHeader(
             title = "Panel Administratora",
             icon = Icons.Default.Shield,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         )
 
         when {
@@ -258,3 +261,4 @@ fun AdminDashboardScreen(viewModel: AdminDashboardViewModel = koinViewModel(), o
         }
     }
 }
+

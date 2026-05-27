@@ -9,7 +9,7 @@ val DAY_NAMES = mapOf(
     4 to "Czwartek",
     5 to "Piątek",
     6 to "Sobota",
-    7 to "Niedziela"
+    7 to "Niedziela",
 )
 
 val MINUTE_OPTIONS = listOf(0, 30)

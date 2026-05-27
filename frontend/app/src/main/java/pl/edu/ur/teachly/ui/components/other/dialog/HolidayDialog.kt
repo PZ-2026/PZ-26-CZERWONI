@@ -23,8 +23,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import java.time.LocalDate
 import pl.edu.ur.teachly.ui.components.other.formatDate
+import java.time.LocalDate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -33,7 +33,7 @@ fun HolidayDialog(
     initialDate: String,
     initialDescription: String,
     onDismiss: () -> Unit,
-    onSave: (String, String?) -> Unit
+    onSave: (String, String?) -> Unit,
 ) {
     var date by remember { mutableStateOf(initialDate) }
     var description by remember { mutableStateOf(initialDescription) }
@@ -85,7 +85,7 @@ fun HolidayDialog(
                             Icon(Icons.Default.CalendarMonth, contentDescription = "Wybierz datę")
                         }
                     },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 )
                 OutlinedTextField(
                     value = description,
@@ -93,14 +93,14 @@ fun HolidayDialog(
                     label = { Text("Opis (opcjonalnie)") },
                     leadingIcon = { Icon(Icons.Default.Info, null) },
                     modifier = Modifier.fillMaxWidth(),
-                    singleLine = true
+                    singleLine = true,
                 )
             }
         },
         confirmButton = {
             TextButton(
                 onClick = { onSave(date.trim(), description.trim().ifBlank { null }) },
-                enabled = date.isNotBlank()
+                enabled = date.isNotBlank(),
             ) { Text("Zapisz") }
         },
         dismissButton = { TextButton(onClick = onDismiss) { Text("Anuluj") } }

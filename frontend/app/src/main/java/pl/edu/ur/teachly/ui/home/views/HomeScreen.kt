@@ -56,7 +56,7 @@ import pl.edu.ur.teachly.ui.review.views.PendingReviewsSummaryDialog
 fun HomeScreen(
     onSearchClick: () -> Unit = {},
     viewModel: HomeViewModel = koinViewModel(),
-    onLessonClick: (lessonId: Int) -> Unit = {}
+    onLessonClick: (lessonId: Int) -> Unit = {},
 ) {
     val state by viewModel.uiState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -89,7 +89,7 @@ fun HomeScreen(
         PendingReviewsSummaryDialog(
             reviews = state.pendingReviews,
             onSelect = viewModel::selectPendingReview,
-            onDismiss = viewModel::dismissAllPendingReviews
+            onDismiss = viewModel::dismissAllPendingReviews,
         )
     }
 
@@ -100,13 +100,10 @@ fun HomeScreen(
             isLoading = state.isSubmittingPendingReview,
             error = state.pendingReviewError,
             onDismiss = {
-                if (state.pendingReviews.size <= 1) {
-                    viewModel.dismissAllPendingReviews()
-                } else {
-                    viewModel.dismissSelectedPendingReview()
-                }
+                if (state.pendingReviews.size <= 1) viewModel.dismissAllPendingReviews()
+                else viewModel.dismissSelectedPendingReview()
             },
-            onSubmit = { rating, comment -> viewModel.submitPendingReview(rating, comment) }
+            onSubmit = { rating, comment -> viewModel.submitPendingReview(rating, comment) },
         )
     }
 
@@ -117,30 +114,24 @@ fun HomeScreen(
                 .background(colorScheme.background)
         ) {
             AppHeader(
-                title = if (state.userName.isNotBlank()) {
-                    stringResource(
-                        R.string.hello_name,
-                        state.userName
-                    )
-                } else {
-                    stringResource(R.string.hello)
-                },
+                title = if (state.userName.isNotBlank()) stringResource(
+                    R.string.hello_name,
+                    state.userName
+                ) else stringResource(R.string.hello),
                 subtitle =
-                if (state.userRole == UserRole.STUDENT) {
-                    stringResource(R.string.home_student_subtitle)
-                } else {
-                    stringResource(R.string.home_tutor_subtitle)
-                },
+                    if (state.userRole == UserRole.STUDENT)
+                        stringResource(R.string.home_student_subtitle)
+                    else stringResource(R.string.home_tutor_subtitle),
                 background = HeaderBackground.Diagonal(
                     listOf(colorScheme.onPrimaryContainer, colorScheme.primary)
                 ),
-                showLogo = true
+                showLogo = true,
             )
 
             when {
                 state.isLoading -> Box(
                     modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
+                    contentAlignment = Alignment.Center,
                 ) { CircularProgressIndicator() }
 
                 state.error != null -> FullScreenError(message = state.error!!)
@@ -148,7 +139,7 @@ fun HomeScreen(
                 else -> LazyColumn(
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(horizontal = 16.dp, vertical = 20.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     item {
                         Row(
@@ -156,17 +147,17 @@ fun HomeScreen(
                                 .fillMaxWidth()
                                 .padding(horizontal = 8.dp)
                                 .padding(bottom = 12.dp),
-                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                            horizontalArrangement = Arrangement.spacedBy(12.dp),
                         ) {
                             StatCard(
                                 modifier = Modifier.weight(1f),
                                 value = "${state.totalLessons}",
-                                label = stringResource(R.string.completed_lessons)
+                                label = stringResource(R.string.completed_lessons),
                             )
                             StatCard(
                                 modifier = Modifier.weight(1f),
                                 value = "${state.pendingLessonsCount}",
-                                label = stringResource(R.string.pending_lessons)
+                                label = stringResource(R.string.pending_lessons),
                             )
                         }
                     }
@@ -176,7 +167,7 @@ fun HomeScreen(
                             PrimaryButton(
                                 text = stringResource(R.string.search_tutor),
                                 onClick = onSearchClick,
-                                modifier = Modifier.padding(horizontal = 8.dp)
+                                modifier = Modifier.padding(horizontal = 8.dp),
                             )
                             Spacer(Modifier.height(12.dp))
                         }
@@ -185,15 +176,14 @@ fun HomeScreen(
                     item {
                         Text(
                             text =
-                            if (state.userRole == UserRole.STUDENT) {
-                                stringResource(R.string.upcoming_lessons)
-                            } else {
-                                stringResource(R.string.upcoming_sessions)
-                            },
+                                if (state.userRole == UserRole.STUDENT)
+                                    stringResource(R.string.upcoming_lessons)
+                                else
+                                    stringResource(R.string.upcoming_sessions),
                             style = typography.titleMedium,
                             fontWeight = FontWeight.Bold,
                             color = colorScheme.onBackground,
-                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
                         )
                     }
 
@@ -203,20 +193,20 @@ fun HomeScreen(
                             count = state.upcomingConfirmed.size,
                             expanded = state.confirmedExpanded,
                             badgeColor = colorScheme.primary,
-                            onToggle = viewModel::toggleConfirmed
+                            onToggle = viewModel::toggleConfirmed,
                         )
                     }
                     item {
                         AnimatedVisibility(
                             visible = state.confirmedExpanded,
                             enter = expandVertically(),
-                            exit = shrinkVertically()
+                            exit = shrinkVertically(),
                         ) {
                             SectionItems(
                                 classes = state.upcomingConfirmed,
                                 userRole = state.userRole,
                                 emptyText = stringResource(R.string.no_confirmed_lessons),
-                                onLessonClick = onLessonClick
+                                onLessonClick = onLessonClick,
                             )
                         }
                     }
@@ -227,20 +217,20 @@ fun HomeScreen(
                             count = state.upcomingPending.size,
                             expanded = state.pendingExpanded,
                             badgeColor = Color(0xFFF59E0B),
-                            onToggle = viewModel::togglePending
+                            onToggle = viewModel::togglePending,
                         )
                     }
                     item {
                         AnimatedVisibility(
                             visible = state.pendingExpanded,
                             enter = expandVertically(),
-                            exit = shrinkVertically()
+                            exit = shrinkVertically(),
                         ) {
                             SectionItems(
                                 classes = state.upcomingPending,
                                 userRole = state.userRole,
                                 emptyText = stringResource(R.string.no_pending_lessons),
-                                onLessonClick = onLessonClick
+                                onLessonClick = onLessonClick,
                             )
                         }
                     }
@@ -252,13 +242,13 @@ fun HomeScreen(
             hostState = snackbarHostState,
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .padding(bottom = 16.dp)
+                .padding(bottom = 16.dp),
         ) { data ->
             Snackbar(
                 snackbarData = data,
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimary,
-                shape = RoundedCornerShape(14.dp)
+                shape = RoundedCornerShape(14.dp),
             )
         }
     }

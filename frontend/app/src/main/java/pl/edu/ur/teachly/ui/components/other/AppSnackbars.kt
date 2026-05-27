@@ -15,7 +15,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun MessageSnackbars(successMessage: String?, errorMessage: String?, modifier: Modifier = Modifier) {
+fun MessageSnackbars(
+    successMessage: String?,
+    errorMessage: String?,
+    modifier: Modifier = Modifier,
+) {
     val enter = slideInVertically(tween(300)) { it } + fadeIn(tween(300))
     val exit = slideOutVertically(tween(200)) { it } + fadeOut(tween(200))
 
@@ -27,7 +31,7 @@ fun MessageSnackbars(successMessage: String?, errorMessage: String?, modifier: M
     ) {
         Snackbar(
             modifier = Modifier.padding(16.dp),
-            containerColor = colorScheme.errorContainer
+            containerColor = colorScheme.errorContainer,
         ) { Text(errorMessage.orEmpty(), color = colorScheme.onErrorContainer) }
     }
 
@@ -39,7 +43,7 @@ fun MessageSnackbars(successMessage: String?, errorMessage: String?, modifier: M
     ) {
         Snackbar(
             modifier = Modifier.padding(16.dp),
-            containerColor = colorScheme.primary
+            containerColor = colorScheme.primary,
         ) { Text(successMessage.orEmpty(), color = colorScheme.onPrimary) }
     }
 }

@@ -7,13 +7,13 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.MultipartBody
-import okhttp3.RequestBody.Companion.asRequestBody
 import pl.edu.ur.teachly.data.model.AdminUserUpdateRequest
 import pl.edu.ur.teachly.data.model.UserResponse
 import pl.edu.ur.teachly.data.model.UserRole
 import pl.edu.ur.teachly.data.repository.UserRepository
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
 
 data class AdminUsersState(
     val users: List<UserResponse> = emptyList(),
@@ -26,7 +26,9 @@ data class AdminUsersState(
     val successMessage: String? = null
 )
 
-class AdminUsersViewModel(private val userRepository: UserRepository) : ViewModel() {
+class AdminUsersViewModel(
+    private val userRepository: UserRepository
+) : ViewModel() {
 
     private val _state = MutableStateFlow(AdminUsersState())
     val state: StateFlow<AdminUsersState> = _state.asStateFlow()
@@ -69,9 +71,9 @@ class AdminUsersViewModel(private val userRepository: UserRepository) : ViewMode
         val activeFilter = _state.value.activeFilter
         val filtered = _state.value.users.filter { user ->
             val matchesSearch = query.isEmpty() ||
-                user.firstName.lowercase().contains(query) ||
-                user.lastName.lowercase().contains(query) ||
-                user.email.lowercase().contains(query)
+                    user.firstName.lowercase().contains(query) ||
+                    user.lastName.lowercase().contains(query) ||
+                    user.email.lowercase().contains(query)
             val matchesRole = role == null || user.role == role
             val matchesActive = activeFilter == null || user.isActive == activeFilter
             matchesSearch && matchesRole && matchesActive
@@ -113,23 +115,16 @@ class AdminUsersViewModel(private val userRepository: UserRepository) : ViewMode
         }
     }
 
-    fun updateUser(
-        userId: Int,
-        request: AdminUserUpdateRequest,
-        pendingAvatarFile: java.io.File?,
-        pendingDeleteAvatar: Boolean
-    ) {
+    fun updateUser(userId: Int, request: AdminUserUpdateRequest, pendingAvatarFile: java.io.File?, pendingDeleteAvatar: Boolean) {
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, error = null) }
-
+            
             // 1. Obsługa ewentualnego usuwania lub wgrywania awatara przez Admina przed aktualizacją danych profilowych
             if (pendingDeleteAvatar) {
                 userRepository.deleteAvatar(userId).fold(
                     onSuccess = { user -> },
                     onFailure = { e ->
-                        _state.update {
-                            it.copy(isLoading = false, error = "Błąd podczas usuwania zdjęcia: ${e.message}")
-                        }
+                        _state.update { it.copy(isLoading = false, error = "Błąd podczas usuwania zdjęcia: ${e.message}") }
                         return@launch
                     }
                 )
@@ -146,9 +141,7 @@ class AdminUsersViewModel(private val userRepository: UserRepository) : ViewMode
                 userRepository.uploadAvatar(userId, body).fold(
                     onSuccess = { user -> },
                     onFailure = { e ->
-                        _state.update {
-                            it.copy(isLoading = false, error = "Błąd podczas zapisywania zdjęcia: ${e.message}")
-                        }
+                        _state.update { it.copy(isLoading = false, error = "Błąd podczas zapisywania zdjęcia: ${e.message}") }
                         return@launch
                     }
                 )

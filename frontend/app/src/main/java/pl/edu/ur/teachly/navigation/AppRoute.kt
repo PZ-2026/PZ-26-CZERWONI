@@ -38,7 +38,7 @@ sealed interface AppRoute {
         val timeFrom: String,
         val timeTo: String,
         val format: String,
-        val amount: String
+        val amount: String,
     ) : AppRoute
 
     // Lesson detail

@@ -8,7 +8,11 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 
 @Composable
-fun ConfirmDeleteDialog(message: String, onDismiss: () -> Unit, onConfirm: () -> Unit) {
+fun ConfirmDeleteDialog(
+    message: String,
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit,
+) {
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text("Potwierdź usunięcie") },
@@ -20,6 +24,6 @@ fun ConfirmDeleteDialog(message: String, onDismiss: () -> Unit, onConfirm: () ->
         },
         dismissButton = {
             TextButton(onClick = onDismiss) { Text("Anuluj") }
-        }
+        },
     )
 }

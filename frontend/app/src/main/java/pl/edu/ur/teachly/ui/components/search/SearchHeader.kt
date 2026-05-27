@@ -1,6 +1,8 @@
 package pl.edu.ur.teachly.ui.components.search
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -26,6 +28,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -33,7 +36,12 @@ import androidx.compose.ui.unit.dp
 import pl.edu.ur.teachly.R
 
 @Composable
-fun SearchHeader(query: String, onQueryChange: (String) -> Unit, onClear: () -> Unit, onSearch: () -> Unit) {
+fun SearchHeader(
+    query: String,
+    onQueryChange: (String) -> Unit,
+    onClear: () -> Unit,
+    onSearch: () -> Unit,
+) {
     Surface(color = colorScheme.surface, shadowElevation = 2.dp) {
         Column(
             modifier = Modifier
@@ -43,19 +51,19 @@ fun SearchHeader(query: String, onQueryChange: (String) -> Unit, onClear: () -> 
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.Top
+                verticalAlignment = Alignment.Top,
             ) {
                 Column {
                     Spacer(Modifier.height(4.dp))
                     Text(
                         text = stringResource(R.string.home_find),
                         style = typography.headlineMedium,
-                        color = colorScheme.onBackground
+                        color = colorScheme.onBackground,
                     )
                     Text(
                         text = stringResource(R.string.home_tutor),
                         style = typography.headlineMedium,
-                        color = colorScheme.primary
+                        color = colorScheme.primary,
                     )
                 }
                 androidx.compose.foundation.Image(
@@ -76,7 +84,7 @@ fun SearchHeader(query: String, onQueryChange: (String) -> Unit, onClear: () -> 
                 placeholder = {
                     Text(
                         text = stringResource(R.string.home_search_placeholder),
-                        style = typography.bodyMedium
+                        style = typography.bodyMedium,
                     )
                 },
                 leadingIcon = {
@@ -96,9 +104,7 @@ fun SearchHeader(query: String, onQueryChange: (String) -> Unit, onClear: () -> 
                             )
                         }
                     }
-                } else {
-                    null
-                },
+                } else null,
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
                 keyboardActions = KeyboardActions(onSearch = { onSearch() }),
@@ -107,8 +113,8 @@ fun SearchHeader(query: String, onQueryChange: (String) -> Unit, onClear: () -> 
                     focusedBorderColor = colorScheme.primary,
                     unfocusedBorderColor = colorScheme.outline,
                     focusedContainerColor = colorScheme.surface,
-                    unfocusedContainerColor = colorScheme.surfaceVariant
-                )
+                    unfocusedContainerColor = colorScheme.surfaceVariant,
+                ),
             )
         }
     }

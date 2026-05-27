@@ -50,7 +50,7 @@ fun DetailSection(title: String, content: @Composable () -> Unit) {
             text = title,
             style = typography.titleMedium,
             color = colorScheme.onBackground,
-            modifier = Modifier.padding(bottom = 12.dp)
+            modifier = Modifier.padding(bottom = 12.dp),
         )
         content()
     }
@@ -63,26 +63,26 @@ fun ReviewsSection(
     canReview: Boolean = false,
     onAddReview: (() -> Unit)? = null,
     onSeeAll: (() -> Unit)? = null,
-    onEditReview: ((ReviewResponse) -> Unit)? = null
+    onEditReview: ((ReviewResponse) -> Unit)? = null,
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
                 text = stringResource(R.string.reviews_section_title),
                 style = typography.titleMedium,
                 fontWeight = FontWeight.Bold,
-                color = colorScheme.onBackground
+                color = colorScheme.onBackground,
             )
             if (reviews.size > 3 && onSeeAll != null) {
                 TextButton(onClick = onSeeAll) {
                     Text(
                         text = stringResource(R.string.reviews_see_all_btn),
                         style = typography.labelMedium,
-                        color = colorScheme.primary
+                        color = colorScheme.primary,
                     )
                 }
             }
@@ -92,7 +92,7 @@ fun ReviewsSection(
             Text(
                 text = stringResource(R.string.reviews_empty),
                 style = typography.bodyMedium,
-                color = colorScheme.onSurfaceVariant
+                color = colorScheme.onSurfaceVariant,
             )
         } else {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -101,9 +101,7 @@ fun ReviewsSection(
                         review = review,
                         onEdit = if (onEditReview != null && review.studentId == currentStudentId) {
                             { onEditReview(review) }
-                        } else {
-                            null
-                        }
+                        } else null,
                     )
                 }
             }
@@ -111,7 +109,7 @@ fun ReviewsSection(
                 OutlinedButton(
                     onClick = onSeeAll,
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp)
+                    shape = RoundedCornerShape(12.dp),
                 ) {
                     Text(stringResource(R.string.reviews_see_all_btn))
                 }
@@ -121,7 +119,7 @@ fun ReviewsSection(
         if (canReview && onAddReview != null) {
             PrimaryButton(
                 text = stringResource(R.string.review_add_btn),
-                onClick = onAddReview
+                onClick = onAddReview,
             )
         }
     }

@@ -29,7 +29,13 @@ import androidx.compose.ui.unit.dp
 import pl.edu.ur.teachly.R
 
 @Composable
-fun SectionHeader(title: String, count: Int, expanded: Boolean, badgeColor: Color, onToggle: () -> Unit) {
+fun SectionHeader(
+    title: String,
+    count: Int,
+    expanded: Boolean,
+    badgeColor: Color,
+    onToggle: () -> Unit,
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -38,15 +44,15 @@ fun SectionHeader(title: String, count: Int, expanded: Boolean, badgeColor: Colo
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = null,
-                onClick = onToggle
+                onClick = onToggle,
             )
             .padding(horizontal = 16.dp, vertical = 14.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
+        horizontalArrangement = Arrangement.SpaceBetween,
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(10.dp)
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
         ) {
             Box(
                 modifier = Modifier
@@ -58,23 +64,20 @@ fun SectionHeader(title: String, count: Int, expanded: Boolean, badgeColor: Colo
                 text = title,
                 style = typography.titleSmall,
                 fontWeight = FontWeight.SemiBold,
-                color = colorScheme.onSurface
+                color = colorScheme.onSurface,
             )
             Text(
                 text = "($count)",
                 style = typography.bodySmall,
-                color = colorScheme.onSurfaceVariant
+                color = colorScheme.onSurfaceVariant,
             )
         }
         Icon(
-            imageVector = if (expanded) {
-                Icons.Default.KeyboardArrowUp
-            } else {
-                Icons.Default.KeyboardArrowDown
-            },
+            imageVector = if (expanded) Icons.Default.KeyboardArrowUp
+            else Icons.Default.KeyboardArrowDown,
             contentDescription = if (expanded) stringResource(R.string.hide) else stringResource(R.string.expand),
             tint = colorScheme.onSurfaceVariant,
-            modifier = Modifier.size(20.dp)
+            modifier = Modifier.size(20.dp),
         )
     }
 }

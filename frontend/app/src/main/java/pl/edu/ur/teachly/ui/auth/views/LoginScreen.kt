@@ -54,7 +54,11 @@ import pl.edu.ur.teachly.ui.components.other.PasswordTextField
 import pl.edu.ur.teachly.ui.components.other.PrimaryButton
 
 @Composable
-fun LoginScreen(onBack: () -> Unit, onSuccess: () -> Unit, viewModel: LoginViewModel = koinViewModel()) {
+fun LoginScreen(
+    onBack: () -> Unit,
+    onSuccess: () -> Unit,
+    viewModel: LoginViewModel = koinViewModel(),
+) {
     val uiState by viewModel.uiState.collectAsState()
     val focusManager = LocalFocusManager.current
     var showForgotPasswordDialog by remember { mutableStateOf(false) }
@@ -70,13 +74,13 @@ fun LoginScreen(onBack: () -> Unit, onSuccess: () -> Unit, viewModel: LoginViewM
             background = HeaderBackground.Diagonal(
                 colors = listOf(
                     colorScheme.onPrimaryContainer,
-                    colorScheme.primary
+                    colorScheme.primary,
                 )
             ),
             topPadding = 28.dp,
             bottomPadding = 0.dp,
             decorativeCircle = true,
-            onBack = onBack
+            onBack = onBack,
         )
 
         Column(
@@ -95,11 +99,11 @@ fun LoginScreen(onBack: () -> Unit, onSuccess: () -> Unit, viewModel: LoginViewM
                 leadingIcon = Icons.Default.Email,
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Email,
-                    imeAction = ImeAction.Next
+                    imeAction = ImeAction.Next,
                 ),
                 keyboardActions = KeyboardActions(
                     onNext = { focusManager.moveFocus(FocusDirection.Down) }
-                )
+                ),
             )
 
             PasswordTextField(
@@ -108,17 +112,14 @@ fun LoginScreen(onBack: () -> Unit, onSuccess: () -> Unit, viewModel: LoginViewM
                 label = stringResource(R.string.field_password),
                 placeholder = stringResource(R.string.field_password),
                 keyboardActions = KeyboardActions(
-                    onDone = {
-                        focusManager.clearFocus()
-                        viewModel.login()
-                    }
-                )
+                    onDone = { focusManager.clearFocus(); viewModel.login() }
+                ),
             )
 
             AnimatedVisibility(
                 visible = uiState.errorMessage != null || uiState.errorText != null,
                 enter = fadeIn(tween(200)) + expandVertically(),
-                exit = fadeOut(tween(150)) + shrinkVertically()
+                exit = fadeOut(tween(150)) + shrinkVertically(),
             ) {
                 val msg =
                     uiState.errorText ?: uiState.errorMessage?.let { stringResource(it) }.orEmpty()
@@ -130,7 +131,7 @@ fun LoginScreen(onBack: () -> Unit, onSuccess: () -> Unit, viewModel: LoginViewM
                     Text(
                         text = stringResource(R.string.login_forgot_password),
                         style = typography.labelMedium,
-                        color = colorScheme.primary
+                        color = colorScheme.primary,
                     )
                 }
             }
@@ -144,14 +145,14 @@ fun LoginScreen(onBack: () -> Unit, onSuccess: () -> Unit, viewModel: LoginViewM
                             painter = painterResource(R.drawable.forgot_password),
                             contentDescription = null,
                             contentScale = ContentScale.Fit,
-                            modifier = Modifier.fillMaxWidth().height(300.dp)
+                            modifier = Modifier.fillMaxWidth().height(300.dp),
                         )
                     },
                     confirmButton = {
                         TextButton(onClick = { showForgotPasswordDialog = false }) {
                             Text("OK")
                         }
-                    }
+                    },
                 )
             }
 
@@ -159,11 +160,8 @@ fun LoginScreen(onBack: () -> Unit, onSuccess: () -> Unit, viewModel: LoginViewM
 
             PrimaryButton(
                 text = stringResource(R.string.login_cta),
-                onClick = {
-                    focusManager.clearFocus()
-                    viewModel.login()
-                },
-                isLoading = uiState.isLoading
+                onClick = { focusManager.clearFocus(); viewModel.login() },
+                isLoading = uiState.isLoading,
             )
         }
     }

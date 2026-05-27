@@ -1,6 +1,10 @@
 package pl.edu.ur.teachly.data.model
 
-data class ReviewRequest(val tutorId: Int, val rating: Double, val comment: String?)
+data class ReviewRequest(
+    val tutorId: Int,
+    val rating: Double,
+    val comment: String?
+)
 
 data class ReviewResponse(
     val id: Int,

@@ -16,7 +16,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 
 @Composable
-fun CategoryDialog(title: String, initialName: String, onDismiss: () -> Unit, onSave: (String) -> Unit) {
+fun CategoryDialog(
+    title: String,
+    initialName: String,
+    onDismiss: () -> Unit,
+    onSave: (String) -> Unit,
+) {
     var name by remember { mutableStateOf(initialName) }
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -28,13 +33,13 @@ fun CategoryDialog(title: String, initialName: String, onDismiss: () -> Unit, on
                 label = { Text("Nazwa") },
                 leadingIcon = { Icon(Icons.Default.Edit, null) },
                 modifier = Modifier.fillMaxWidth(),
-                singleLine = true
+                singleLine = true,
             )
         },
         confirmButton = {
             TextButton(
                 onClick = { onSave(name.trim()) },
-                enabled = name.isNotBlank()
+                enabled = name.isNotBlank(),
             ) { Text("Zapisz") }
         },
         dismissButton = { TextButton(onClick = onDismiss) { Text("Anuluj") } }

@@ -41,7 +41,10 @@ import pl.edu.ur.teachly.ui.components.other.PhoneVisualTransformation
 import pl.edu.ur.teachly.ui.components.other.PrimaryButton
 
 @Composable
-fun StepTwoContent(uiState: RegisterUiState, viewModel: RegisterViewModel) {
+fun StepTwoContent(
+    uiState: RegisterUiState,
+    viewModel: RegisterViewModel,
+) {
     val focusManager = LocalFocusManager.current
 
     Column(
@@ -50,7 +53,7 @@ fun StepTwoContent(uiState: RegisterUiState, viewModel: RegisterViewModel) {
             .background(colorScheme.background)
             .verticalScroll(rememberScrollState())
             .padding(horizontal = 24.dp)
-            .padding(top = 28.dp, bottom = 48.dp)
+            .padding(top = 28.dp, bottom = 48.dp),
     ) {
         AuthTextField(
             value = uiState.firstName,
@@ -59,7 +62,7 @@ fun StepTwoContent(uiState: RegisterUiState, viewModel: RegisterViewModel) {
             placeholder = stringResource(R.string.first_name_placeholder),
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
             keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) }),
-            capitalize = true
+            capitalize = true,
         )
         AuthTextField(
             value = uiState.lastName,
@@ -68,7 +71,7 @@ fun StepTwoContent(uiState: RegisterUiState, viewModel: RegisterViewModel) {
             placeholder = stringResource(R.string.last_name_placeholder),
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
             keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) }),
-            capitalize = true
+            capitalize = true,
         )
         AuthTextField(
             value = uiState.email,
@@ -79,7 +82,7 @@ fun StepTwoContent(uiState: RegisterUiState, viewModel: RegisterViewModel) {
                 keyboardType = KeyboardType.Email,
                 imeAction = ImeAction.Next
             ),
-            keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) })
+            keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) }),
         )
         AuthTextField(
             value = uiState.phoneNumber,
@@ -91,23 +94,20 @@ fun StepTwoContent(uiState: RegisterUiState, viewModel: RegisterViewModel) {
                 imeAction = ImeAction.Next
             ),
             keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) }),
-            visualTransformation = PhoneVisualTransformation()
+            visualTransformation = PhoneVisualTransformation(),
         )
         PasswordTextField(
             value = uiState.password,
             onValueChange = viewModel::onPasswordChange,
             label = stringResource(R.string.field_password),
             placeholder = stringResource(R.string.field_password_hint),
-            keyboardActions = KeyboardActions(onDone = {
-                focusManager.clearFocus()
-                viewModel.register()
-            })
+            keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus(); viewModel.register() }),
         )
 
         AnimatedVisibility(
             visible = uiState.errorMessage != null,
             enter = fadeIn(tween(200)) + expandVertically(),
-            exit = fadeOut(tween(150)) + shrinkVertically()
+            exit = fadeOut(tween(150)) + shrinkVertically(),
         ) {
             ErrorBanner(message = uiState.errorMessage.orEmpty())
         }
@@ -126,7 +126,7 @@ fun StepTwoContent(uiState: RegisterUiState, viewModel: RegisterViewModel) {
                 style = typography.bodySmall,
                 color = colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
             )
         }
 
@@ -134,11 +134,8 @@ fun StepTwoContent(uiState: RegisterUiState, viewModel: RegisterViewModel) {
 
         PrimaryButton(
             text = stringResource(R.string.register_cta),
-            onClick = {
-                focusManager.clearFocus()
-                viewModel.register()
-            },
-            isLoading = uiState.isLoading
+            onClick = { focusManager.clearFocus(); viewModel.register() },
+            isLoading = uiState.isLoading,
         )
     }
 }

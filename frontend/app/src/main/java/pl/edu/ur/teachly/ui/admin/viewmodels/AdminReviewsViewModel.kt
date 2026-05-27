@@ -20,7 +20,9 @@ data class AdminReviewsState(
     val successMessage: String? = null
 )
 
-class AdminReviewsViewModel(private val adminRepository: AdminRepository) : ViewModel() {
+class AdminReviewsViewModel(
+    private val adminRepository: AdminRepository
+) : ViewModel() {
 
     private val _state = MutableStateFlow(AdminReviewsState())
     val state: StateFlow<AdminReviewsState> = _state.asStateFlow()
@@ -57,11 +59,11 @@ class AdminReviewsViewModel(private val adminRepository: AdminRepository) : View
         val ratingFilter = _state.value.ratingFilter
         val filtered = _state.value.reviews.filter { review ->
             val matchesSearch = q.isEmpty() ||
-                review.tutorFirstName.lowercase().contains(q) ||
-                review.tutorLastName.lowercase().contains(q) ||
-                review.studentFirstName.lowercase().contains(q) ||
-                review.studentLastName.lowercase().contains(q) ||
-                review.comment?.lowercase()?.contains(q) == true
+                    review.tutorFirstName.lowercase().contains(q) ||
+                    review.tutorLastName.lowercase().contains(q) ||
+                    review.studentFirstName.lowercase().contains(q) ||
+                    review.studentLastName.lowercase().contains(q) ||
+                    review.comment?.lowercase()?.contains(q) == true
             val matchesRating = ratingFilter == null || review.rating.toInt() == ratingFilter
             matchesSearch && matchesRating
         }

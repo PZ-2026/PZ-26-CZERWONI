@@ -23,31 +23,34 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import java.time.LocalDate
 import pl.edu.ur.teachly.data.model.TutorAvailabilityOverrideResponse
 import pl.edu.ur.teachly.data.model.TutorAvailabilityRecurringResponse
 import pl.edu.ur.teachly.ui.components.other.formatDate
+import java.time.LocalDate
 
 @Composable
-fun SlotRow(slot: TutorAvailabilityRecurringResponse, onDelete: () -> Unit) {
+fun SlotRow(
+    slot: TutorAvailabilityRecurringResponse,
+    onDelete: () -> Unit,
+) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             Surface(
                 shape = CircleShape,
                 color = colorScheme.primary,
-                modifier = Modifier.size(8.dp)
+                modifier = Modifier.size(8.dp),
             ) {}
             Text(
                 text = "${slot.timeFrom.take(5)} – ${slot.timeTo.take(5)}",
                 style = typography.bodyMedium,
-                color = colorScheme.onSurface
+                color = colorScheme.onSurface,
             )
         }
         IconButton(onClick = onDelete, modifier = Modifier.size(32.dp)) {
@@ -55,42 +58,45 @@ fun SlotRow(slot: TutorAvailabilityRecurringResponse, onDelete: () -> Unit) {
                 imageVector = Icons.Default.Delete,
                 contentDescription = "Usuń slot",
                 modifier = Modifier.size(16.dp),
-                tint = colorScheme.error
+                tint = colorScheme.error,
             )
         }
     }
 }
 
 @Composable
-fun OverrideItem(override: TutorAvailabilityOverrideResponse, onDelete: () -> Unit) {
+fun OverrideItem(
+    override: TutorAvailabilityOverrideResponse,
+    onDelete: () -> Unit,
+) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
         color = colorScheme.surface,
-        shadowElevation = 1.dp
+        shadowElevation = 1.dp,
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 12.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
             ) {
                 Surface(
                     shape = RoundedCornerShape(8.dp),
                     color = colorScheme.errorContainer,
-                    modifier = Modifier.size(36.dp)
+                    modifier = Modifier.size(36.dp),
                 ) {
                     Box(contentAlignment = Alignment.Center) {
                         Icon(
                             imageVector = Icons.Default.EventBusy,
                             contentDescription = null,
                             tint = colorScheme.onErrorContainer,
-                            modifier = Modifier.size(18.dp)
+                            modifier = Modifier.size(18.dp),
                         )
                     }
                 }
@@ -101,16 +107,14 @@ fun OverrideItem(override: TutorAvailabilityOverrideResponse, onDelete: () -> Un
                         }.getOrDefault(override.overrideDate),
                         style = typography.bodyMedium,
                         fontWeight = FontWeight.Medium,
-                        color = colorScheme.onSurface
+                        color = colorScheme.onSurface,
                     )
                     Text(
-                        text = if (override.timeFrom != null && override.timeTo != null) {
+                        text = if (override.timeFrom != null && override.timeTo != null)
                             "${override.timeFrom.take(5)} – ${override.timeTo.take(5)}"
-                        } else {
-                            "Cały dzień"
-                        },
+                        else "Cały dzień",
                         style = typography.bodySmall,
-                        color = colorScheme.onSurfaceVariant
+                        color = colorScheme.onSurfaceVariant,
                     )
                 }
             }
@@ -118,7 +122,7 @@ fun OverrideItem(override: TutorAvailabilityOverrideResponse, onDelete: () -> Un
                 Icon(
                     imageVector = Icons.Default.Delete,
                     contentDescription = "Usuń",
-                    tint = colorScheme.error
+                    tint = colorScheme.error,
                 )
             }
         }

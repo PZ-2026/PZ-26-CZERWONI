@@ -44,7 +44,10 @@ import pl.edu.ur.teachly.ui.components.other.cards.HolidayCard
 import pl.edu.ur.teachly.ui.components.other.dialog.HolidayDialog
 
 @Composable
-fun AdminHolidaysScreen(viewModel: AdminHolidaysViewModel = koinViewModel(), showHeader: Boolean = true) {
+fun AdminHolidaysScreen(
+    viewModel: AdminHolidaysViewModel = koinViewModel(),
+    showHeader: Boolean = true,
+) {
     val state by viewModel.state.collectAsState()
     var showAddDialog by remember { mutableStateOf(false) }
     var showEditDialog by remember { mutableStateOf<HolidayResponse?>(null) }
@@ -71,14 +74,14 @@ fun AdminHolidaysScreen(viewModel: AdminHolidaysViewModel = koinViewModel(), sho
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(16.dp),
-                        horizontalArrangement = Arrangement.End
+                        horizontalArrangement = Arrangement.End,
                     ) { }
                 }
             }
 
             if (state.availableYears.isNotEmpty()) {
                 ExpandableFilterSection(
-                    activeFilterCount = if (state.selectedYear != null) 1 else 0
+                    activeFilterCount = if (state.selectedYear != null) 1 else 0,
                 ) {
                     FilterChips(
                         label = "Rok",
@@ -86,7 +89,7 @@ fun AdminHolidaysScreen(viewModel: AdminHolidaysViewModel = koinViewModel(), sho
                         activeItem = state.selectedYear?.toString() ?: "Wszystkie",
                         onSelect = { label ->
                             viewModel.onYearFilterChange(if (label == "Wszystkie") null else label.toIntOrNull())
-                        }
+                        },
                     )
                 }
             }
@@ -123,14 +126,14 @@ fun AdminHolidaysScreen(viewModel: AdminHolidaysViewModel = koinViewModel(), sho
                 .padding(16.dp),
             containerColor = colorScheme.primary,
             contentColor = colorScheme.onPrimary,
-            shape = CircleShape
+            shape = CircleShape,
         ) {
             Icon(Icons.Default.Add, contentDescription = "Dodaj")
         }
         MessageSnackbars(
             successMessage = state.successMessage,
             errorMessage = state.error,
-            modifier = Modifier.align(Alignment.BottomCenter)
+            modifier = Modifier.align(Alignment.BottomCenter),
         )
     }
 

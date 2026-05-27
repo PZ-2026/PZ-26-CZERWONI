@@ -43,16 +43,8 @@ import pl.edu.ur.teachly.ui.components.other.HeaderBackground
 fun BookingScreen(
     tutorId: String,
     onBack: () -> Unit,
-    onConfirm: (
-        tutorName: String,
-        subjectName: String,
-        lessonDate: String,
-        timeFrom: String,
-        timeTo: String,
-        format: String,
-        amount: String
-    ) -> Unit,
-    viewModel: BookingViewModel = koinViewModel()
+    onConfirm: (tutorName: String, subjectName: String, lessonDate: String, timeFrom: String, timeTo: String, format: String, amount: String) -> Unit,
+    viewModel: BookingViewModel = koinViewModel(),
 ) {
     val tutorIdInt = tutorId.toIntOrNull() ?: 0
     LaunchedEffect(tutorIdInt) { viewModel.load(tutorIdInt) }
@@ -72,13 +64,13 @@ fun BookingScreen(
             background = HeaderBackground.Diagonal(
                 listOf(colorScheme.onPrimaryContainer, colorScheme.primary)
             ),
-            onBack = onBack
+            onBack = onBack,
         )
 
         when {
             state.isLoading -> Box(
                 modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
+                contentAlignment = Alignment.Center,
             ) { CircularProgressIndicator() }
 
             state.error != null -> FullScreenError(message = state.error!!)
@@ -107,14 +99,14 @@ fun BookingScreen(
                         days = state.calendarDays.map { it.first },
                         selectedIndex = state.selectedDayIndex,
                         availabilityColors = availabilityColors,
-                        onSelect = { index -> viewModel.onDaySelect(index) }
+                        onSelect = { index -> viewModel.onDaySelect(index) },
                     )
                     Spacer(Modifier.height(24.dp))
                     if (state.tutorSubjects.isNotEmpty()) {
                         SubjectPicker(
                             subjects = state.tutorSubjects.map { it.subjectName },
                             selectedIndex = state.selectedSubjectIndex,
-                            onSelect = viewModel::onSubjectSelect
+                            onSelect = viewModel::onSubjectSelect,
                         )
                         Spacer(Modifier.height(24.dp))
                     }
@@ -122,26 +114,26 @@ fun BookingScreen(
                         FormatPicker(
                             formats = state.availableFormats,
                             selectedFormat = state.selectedFormat,
-                            onSelect = viewModel::onFormatSelect
+                            onSelect = viewModel::onFormatSelect,
                         )
                         Spacer(Modifier.height(24.dp))
                     }
                     DurationPicker(
                         selected = state.selectedDuration,
                         isDurationAvailable = viewModel::isDurationAvailable,
-                        onSelect = viewModel::onDurationSelect
+                        onSelect = viewModel::onDurationSelect,
                     )
                     Spacer(Modifier.height(24.dp))
                     TimeSlotGrid(
                         availableSlots = availableSlots,
                         selectedSlot = state.selectedSlot,
-                        onSelect = viewModel::onSlotSelect
+                        onSelect = viewModel::onSlotSelect,
                     )
 
                     AnimatedVisibility(
                         visible = state.submitError != null,
                         enter = fadeIn(tween(200)) + expandVertically(),
-                        exit = fadeOut(tween(150)) + shrinkVertically()
+                        exit = fadeOut(tween(150)) + shrinkVertically(),
                     ) {
                         Column {
                             Spacer(Modifier.height(8.dp))
@@ -160,15 +152,7 @@ fun BookingScreen(
                     selectedDuration = state.selectedDuration,
                     isSubmitting = state.isSubmitting,
                     onConfirm = {
-                        viewModel.confirmBooking {
-                                tutorName,
-                                subjectName,
-                                lessonDate,
-                                timeFrom,
-                                timeTo,
-                                format,
-                                amount
-                            ->
+                        viewModel.confirmBooking { tutorName, subjectName, lessonDate, timeFrom, timeTo, format, amount ->
                             onConfirm(
                                 tutorName,
                                 subjectName,
@@ -179,7 +163,7 @@ fun BookingScreen(
                                 amount
                             )
                         }
-                    }
+                    },
                 )
             }
         }

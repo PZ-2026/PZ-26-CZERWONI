@@ -35,19 +35,19 @@ fun SubjectCard(subject: SubjectResponse, onEdit: () -> Unit, onDelete: () -> Un
         colors = CardDefaults.cardColors(containerColor = colorScheme.surface),
         shape = RoundedCornerShape(20.dp),
         border = BorderStroke(1.dp, colorScheme.outline),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
                     text = subject.subjectName,
                     style = typography.titleMedium,
                     fontWeight = FontWeight.Bold,
-                    color = colorScheme.onSurface
+                    color = colorScheme.onSurface,
                 )
                 Row {
                     IconButton(onClick = onEdit) {
@@ -78,7 +78,7 @@ fun SubjectCard(subject: SubjectResponse, onEdit: () -> Unit, onDelete: () -> Un
                         tint = colorScheme.primary
                     )
                 },
-                text = "Kategoria: ${subject.categoryName}"
+                text = "Kategoria: ${subject.categoryName}",
             )
         }
     }

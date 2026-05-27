@@ -26,11 +26,13 @@ data class ScheduleUiState(
     val cancelledExpanded: Boolean = false,
     val userRole: UserRole = UserRole.STUDENT,
     val isLoading: Boolean = true,
-    val error: String? = null
+    val error: String? = null,
 )
 
-class ScheduleViewModel(private val lessonRepository: LessonRepository, private val tokenManager: TokenManager) :
-    ViewModel() {
+class ScheduleViewModel(
+    private val lessonRepository: LessonRepository,
+    private val tokenManager: TokenManager,
+) : ViewModel() {
 
     private val _state = MutableStateFlow(ScheduleUiState())
     val state: StateFlow<ScheduleUiState> = _state.asStateFlow()
@@ -54,11 +56,10 @@ class ScheduleViewModel(private val lessonRepository: LessonRepository, private 
                 UserRole.STUDENT
             }
 
-            val result = if (role == UserRole.TUTOR) {
+            val result = if (role == UserRole.TUTOR)
                 lessonRepository.getTutorLessons(userId)
-            } else {
+            else
                 lessonRepository.getStudentLessons(userId)
-            }
 
             result.fold(
                 onSuccess = { lessons ->
@@ -71,7 +72,7 @@ class ScheduleViewModel(private val lessonRepository: LessonRepository, private 
                                 completedClasses = scheduled.filter { c -> c.status == LessonStatus.COMPLETED },
                                 cancelledClasses = scheduled.filter { c -> c.status == LessonStatus.CANCELLED },
                                 userRole = role,
-                                isLoading = false
+                                isLoading = false,
                             )
                         }
                     } catch (e: Exception) {
@@ -80,7 +81,7 @@ class ScheduleViewModel(private val lessonRepository: LessonRepository, private 
                 },
                 onFailure = { e ->
                     _state.update { it.copy(isLoading = false, error = e.message) }
-                }
+                },
             )
         }
     }

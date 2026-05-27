@@ -21,7 +21,9 @@ data class AdminSubjectsState(
     val successMessage: String? = null
 )
 
-class AdminSubjectsViewModel(private val subjectRepository: SubjectRepository) : ViewModel() {
+class AdminSubjectsViewModel(
+    private val subjectRepository: SubjectRepository
+) : ViewModel() {
 
     private val _state = MutableStateFlow(AdminSubjectsState())
     val state: StateFlow<AdminSubjectsState> = _state.asStateFlow()
@@ -73,12 +75,7 @@ class AdminSubjectsViewModel(private val subjectRepository: SubjectRepository) :
             subjectRepository.deleteSubject(id).fold(
                 onSuccess = {
                     _state.update { s ->
-                        s.copy(
-                            subjects = s.subjects.filter {
-                                it.id != id
-                            },
-                            successMessage = "Przedmiot został usunięty"
-                        )
+                        s.copy(subjects = s.subjects.filter { it.id != id }, successMessage = "Przedmiot został usunięty")
                     }
                 },
                 onFailure = { e -> _state.update { it.copy(error = e.message) } }
@@ -120,12 +117,7 @@ class AdminSubjectsViewModel(private val subjectRepository: SubjectRepository) :
             subjectRepository.deleteCategory(id).fold(
                 onSuccess = {
                     _state.update { s ->
-                        s.copy(
-                            categories = s.categories.filter {
-                                it.id != id
-                            },
-                            successMessage = "Kategoria została usunięta"
-                        )
+                        s.copy(categories = s.categories.filter { it.id != id }, successMessage = "Kategoria została usunięta")
                     }
                 },
                 onFailure = { e -> _state.update { it.copy(error = e.message) } }

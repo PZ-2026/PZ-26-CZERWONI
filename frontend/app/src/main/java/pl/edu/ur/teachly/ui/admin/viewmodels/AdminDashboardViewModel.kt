@@ -16,7 +16,9 @@ data class AdminDashboardState(
     val error: String? = null
 )
 
-class AdminDashboardViewModel(private val adminRepository: AdminRepository) : ViewModel() {
+class AdminDashboardViewModel(
+    private val adminRepository: AdminRepository
+) : ViewModel() {
 
     private val _state = MutableStateFlow(AdminDashboardState())
     val state: StateFlow<AdminDashboardState> = _state.asStateFlow()

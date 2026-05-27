@@ -13,17 +13,29 @@ import retrofit2.http.Path
 interface ReviewApiService {
 
     @GET("api/reviews/tutor/{tutorId}")
-    suspend fun getTutorReviews(@Path("tutorId") tutorId: Int): Response<List<ReviewResponse>>
+    suspend fun getTutorReviews(
+        @Path("tutorId") tutorId: Int
+    ): Response<List<ReviewResponse>>
 
     @GET("api/reviews/student/{studentId}")
-    suspend fun getStudentReviews(@Path("studentId") studentId: Int): Response<List<ReviewResponse>>
+    suspend fun getStudentReviews(
+        @Path("studentId") studentId: Int
+    ): Response<List<ReviewResponse>>
 
     @POST("api/reviews/student/{studentId}")
-    suspend fun addReview(@Path("studentId") studentId: Int, @Body request: ReviewRequest): Response<ReviewResponse>
+    suspend fun addReview(
+        @Path("studentId") studentId: Int,
+        @Body request: ReviewRequest
+    ): Response<ReviewResponse>
 
     @PUT("api/reviews/{id}")
-    suspend fun updateReview(@Path("id") id: Int, @Body request: ReviewRequest): Response<ReviewResponse>
+    suspend fun updateReview(
+        @Path("id") id: Int,
+        @Body request: ReviewRequest
+    ): Response<ReviewResponse>
 
     @DELETE("api/reviews/{id}")
-    suspend fun deleteReview(@Path("id") id: Int): Response<Unit>
+    suspend fun deleteReview(
+        @Path("id") id: Int
+    ): Response<Unit>
 }

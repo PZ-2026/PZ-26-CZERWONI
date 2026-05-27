@@ -26,9 +26,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import java.time.LocalDate
 import pl.edu.ur.teachly.data.model.HolidayResponse
 import pl.edu.ur.teachly.ui.components.other.formatDate
+import java.time.LocalDate
 
 @Composable
 fun HolidayCard(holiday: HolidayResponse, onEdit: () -> Unit, onDelete: () -> Unit) {
@@ -37,19 +37,19 @@ fun HolidayCard(holiday: HolidayResponse, onEdit: () -> Unit, onDelete: () -> Un
         colors = CardDefaults.cardColors(containerColor = colorScheme.surface),
         shape = RoundedCornerShape(20.dp),
         border = BorderStroke(1.dp, colorScheme.outline),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
                     text = formatDate(LocalDate.parse(holiday.holidayDate)),
                     style = typography.titleMedium,
                     fontWeight = FontWeight.Bold,
-                    color = colorScheme.onSurface
+                    color = colorScheme.onSurface,
                 )
                 Row {
                     IconButton(onClick = onEdit) {
@@ -80,7 +80,7 @@ fun HolidayCard(holiday: HolidayResponse, onEdit: () -> Unit, onDelete: () -> Un
                             tint = colorScheme.primary
                         )
                     },
-                    text = it
+                    text = it,
                 )
             }
         }

@@ -32,14 +32,14 @@ fun AuthTextField(
     keyboardActions: KeyboardActions = KeyboardActions.Default,
     isError: Boolean = false,
     capitalize: Boolean = false,
-    visualTransformation: VisualTransformation = VisualTransformation.None
+    visualTransformation: VisualTransformation = VisualTransformation.None,
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(
             text = label.uppercase(),
             style = typography.labelSmall,
             color = colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(bottom = 8.dp)
+            modifier = Modifier.padding(bottom = 8.dp),
         )
         OutlinedTextField(
             value = value,
@@ -56,7 +56,7 @@ fun AuthTextField(
                 Text(
                     text = placeholder,
                     style = typography.bodyMedium,
-                    color = colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+                    color = colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
                 )
             },
             leadingIcon = leadingIcon?.let {
@@ -65,7 +65,7 @@ fun AuthTextField(
                         imageVector = it,
                         contentDescription = null,
                         tint = colorScheme.onSurfaceVariant,
-                        modifier = Modifier.size(20.dp)
+                        modifier = Modifier.size(20.dp),
                     )
                 }
             },
@@ -75,7 +75,7 @@ fun AuthTextField(
             keyboardActions = keyboardActions,
             shape = RoundedCornerShape(14.dp),
             colors = authTextFieldColors(),
-            visualTransformation = visualTransformation
+            visualTransformation = visualTransformation,
         )
         Spacer(Modifier.height(16.dp))
     }

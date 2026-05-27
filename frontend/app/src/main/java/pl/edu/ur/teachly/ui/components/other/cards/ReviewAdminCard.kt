@@ -26,10 +26,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import java.time.LocalDate
 import pl.edu.ur.teachly.data.model.ReviewResponse
 import pl.edu.ur.teachly.ui.components.other.formatDate
 import pl.edu.ur.teachly.ui.review.views.StarRatingDisplay
+import java.time.LocalDate
 
 @Composable
 fun ReviewAdminCard(review: ReviewResponse, onDelete: () -> Unit) {
@@ -38,20 +38,20 @@ fun ReviewAdminCard(review: ReviewResponse, onDelete: () -> Unit) {
         colors = CardDefaults.cardColors(containerColor = colorScheme.surface),
         shape = RoundedCornerShape(20.dp),
         border = BorderStroke(1.dp, colorScheme.outline),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 StarRatingDisplay(rating = review.rating)
                 IconButton(onClick = onDelete) {
                     Icon(
                         Icons.Default.Delete,
                         contentDescription = "Usuń opinię",
-                        tint = colorScheme.error
+                        tint = colorScheme.error,
                     )
                 }
             }
@@ -64,10 +64,10 @@ fun ReviewAdminCard(review: ReviewResponse, onDelete: () -> Unit) {
                         Icons.Default.School,
                         null,
                         modifier = Modifier.size(16.dp),
-                        tint = colorScheme.primary
+                        tint = colorScheme.primary,
                     )
                 },
-                text = "Korepetytor: ${review.tutorFirstName} ${review.tutorLastName}"
+                text = "Korepetytor: ${review.tutorFirstName} ${review.tutorLastName}",
             )
 
             Spacer(Modifier.height(4.dp))
@@ -78,42 +78,42 @@ fun ReviewAdminCard(review: ReviewResponse, onDelete: () -> Unit) {
                         Icons.Default.Person,
                         null,
                         modifier = Modifier.size(16.dp),
-                        tint = colorScheme.primary
+                        tint = colorScheme.primary,
                     )
                 },
-                text = "Uczeń: ${review.studentFirstName} ${review.studentLastName}"
+                text = "Uczeń: ${review.studentFirstName} ${review.studentLastName}",
             )
 
             if (!review.comment.isNullOrBlank()) {
                 Spacer(Modifier.height(8.dp))
                 Surface(
                     color = colorScheme.surfaceVariant,
-                    shape = RoundedCornerShape(8.dp)
+                    shape = RoundedCornerShape(8.dp),
                 ) {
                     Text(
                         text = review.comment,
                         style = typography.bodyMedium,
                         color = colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
+                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
                     )
                 }
             }
 
             Spacer(Modifier.height(6.dp))
             val createdAtFormatted = "${formatDate(LocalDate.parse(review.createdAt.take(10)))} " +
-                review.createdAt.substring(11, 16)
+                    review.createdAt.substring(11, 16)
             val updatedAtFormatted = "${formatDate(LocalDate.parse(review.updatedAt.take(10)))} " +
-                review.updatedAt.substring(11, 16)
+                    review.updatedAt.substring(11, 16)
             Text(
                 text = "Dodana: $createdAtFormatted",
                 style = typography.bodySmall,
-                color = colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                color = colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
             )
             Spacer(Modifier.height(2.dp))
             Text(
                 text = "Edytowana: $updatedAtFormatted",
                 style = typography.bodySmall,
-                color = colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                color = colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
             )
         }
     }

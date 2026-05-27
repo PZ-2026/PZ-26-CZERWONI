@@ -18,7 +18,7 @@ fun authTextFieldColors() = OutlinedTextFieldDefaults.colors(
     focusedContainerColor = colorScheme.surface,
     unfocusedContainerColor = colorScheme.surfaceVariant,
     errorBorderColor = colorScheme.error,
-    cursorColor = colorScheme.primary
+    cursorColor = colorScheme.primary,
 )
 
 fun formatDate(date: LocalDate, locale: Locale = Locale.forLanguageTag("pl")): String {
