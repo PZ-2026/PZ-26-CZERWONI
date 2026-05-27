@@ -20,9 +20,7 @@ data class AdminTutorsState(
     val successMessage: String? = null
 )
 
-class AdminTutorsViewModel(
-    private val tutorRepository: TutorRepository
-) : ViewModel() {
+class AdminTutorsViewModel(private val tutorRepository: TutorRepository) : ViewModel() {
 
     private val _state = MutableStateFlow(AdminTutorsState())
     val state: StateFlow<AdminTutorsState> = _state.asStateFlow()
@@ -48,9 +46,9 @@ class AdminTutorsViewModel(
         val q = query.lowercase()
         val filtered = _state.value.tutors.filter { tutor ->
             q.isEmpty() ||
-                    tutor.firstName.lowercase().contains(q) ||
-                    tutor.lastName.lowercase().contains(q) ||
-                    tutor.email.lowercase().contains(q)
+                tutor.firstName.lowercase().contains(q) ||
+                tutor.lastName.lowercase().contains(q) ||
+                tutor.email.lowercase().contains(q)
         }
         _state.update { it.copy(filteredTutors = filtered) }
     }

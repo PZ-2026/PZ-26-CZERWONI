@@ -24,13 +24,13 @@ fun DashboardCard(
     icon: ImageVector,
     containerColor: Color,
     contentColor: Color,
-    onClick: (() -> Unit)? = null,
+    onClick: (() -> Unit)? = null
 ) {
     Surface(
         shape = MaterialTheme.shapes.medium,
         color = containerColor,
         contentColor = contentColor,
-        modifier = if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier,
+        modifier = if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier
     ) {
         Column(
             modifier = Modifier.padding(12.dp),

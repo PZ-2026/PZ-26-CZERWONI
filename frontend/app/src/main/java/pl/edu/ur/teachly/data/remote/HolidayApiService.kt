@@ -16,18 +16,11 @@ interface HolidayApiService {
     suspend fun getAllHolidays(): Response<List<HolidayResponse>>
 
     @POST("api/holidays")
-    suspend fun addHoliday(
-        @Body request: HolidayRequest
-    ): Response<HolidayResponse>
+    suspend fun addHoliday(@Body request: HolidayRequest): Response<HolidayResponse>
 
     @PUT("api/holidays/{id}")
-    suspend fun updateHoliday(
-        @Path("id") id: Int,
-        @Body request: HolidayRequest
-    ): Response<HolidayResponse>
+    suspend fun updateHoliday(@Path("id") id: Int, @Body request: HolidayRequest): Response<HolidayResponse>
 
     @DELETE("api/holidays/{id}")
-    suspend fun deleteHoliday(
-        @Path("id") id: Int
-    ): Response<Unit>
+    suspend fun deleteHoliday(@Path("id") id: Int): Response<Unit>
 }

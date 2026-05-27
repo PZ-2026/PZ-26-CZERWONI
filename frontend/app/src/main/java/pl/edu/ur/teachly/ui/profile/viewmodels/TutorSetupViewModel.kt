@@ -25,12 +25,12 @@ data class TutorSetupState(
     val isLoading: Boolean = true,
     val isSaving: Boolean = false,
     val error: String? = null,
-    val isSaved: Boolean = false,
+    val isSaved: Boolean = false
 )
 
 class TutorSetupViewModel(
     private val tutorRepository: TutorRepository,
-    private val subjectRepository: SubjectRepository,
+    private val subjectRepository: SubjectRepository
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(TutorSetupState())
@@ -61,7 +61,7 @@ class TutorSetupViewModel(
                     currentSubjects = currentSubjects,
                     availableSubjects = availableSubjects,
                     isLoading = false,
-                    error = tutorResult.exceptionOrNull()?.message,
+                    error = tutorResult.exceptionOrNull()?.message
                 )
             }
         }
@@ -79,11 +79,11 @@ class TutorSetupViewModel(
                 bio = _state.value.bio.ifBlank { null },
                 hourlyRate = _state.value.hourlyRate.toDoubleOrNull() ?: 0.0,
                 offersOnline = _state.value.offersOnline,
-                offersInPerson = _state.value.offersInPerson,
+                offersInPerson = _state.value.offersInPerson
             )
             tutorRepository.updateMyProfile(request).fold(
                 onSuccess = { _state.update { it.copy(isSaving = false, isSaved = true) } },
-                onFailure = { e -> _state.update { it.copy(isSaving = false, error = e.message) } },
+                onFailure = { e -> _state.update { it.copy(isSaving = false, error = e.message) } }
             )
         }
     }
@@ -94,7 +94,7 @@ class TutorSetupViewModel(
         levelHighSchool: Boolean,
         levelUniversity: Boolean,
         levelExamPrep: Boolean,
-        levelProfessional: Boolean,
+        levelProfessional: Boolean
     ) {
         viewModelScope.launch {
             _state.update { it.copy(error = null) }
@@ -104,13 +104,13 @@ class TutorSetupViewModel(
                 levelHighSchool = levelHighSchool,
                 levelUniversity = levelUniversity,
                 levelExamPrep = levelExamPrep,
-                levelProfessional = levelProfessional,
+                levelProfessional = levelProfessional
             )
             tutorRepository.addMySubject(request).fold(
                 onSuccess = { added ->
                     _state.update { it.copy(currentSubjects = it.currentSubjects + added) }
                 },
-                onFailure = { e -> _state.update { it.copy(error = e.message) } },
+                onFailure = { e -> _state.update { it.copy(error = e.message) } }
             )
         }
     }
@@ -119,9 +119,11 @@ class TutorSetupViewModel(
         viewModelScope.launch {
             tutorRepository.removeMySubject(tutorSubjectId).fold(
                 onSuccess = {
-                    _state.update { it.copy(currentSubjects = it.currentSubjects.filter { s -> s.id != tutorSubjectId }) }
+                    _state.update {
+                        it.copy(currentSubjects = it.currentSubjects.filter { s -> s.id != tutorSubjectId })
+                    }
                 },
-                onFailure = { e -> _state.update { it.copy(error = e.message) } },
+                onFailure = { e -> _state.update { it.copy(error = e.message) } }
             )
         }
     }

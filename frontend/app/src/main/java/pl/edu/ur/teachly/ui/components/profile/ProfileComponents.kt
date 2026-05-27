@@ -35,24 +35,24 @@ fun ProfileInfoRow(icon: ImageVector, label: String, value: String) {
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 14.dp),
         horizontalArrangement = Arrangement.spacedBy(14.dp),
-        verticalAlignment = Alignment.CenterVertically,
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
             imageVector = icon,
             contentDescription = null,
             tint = colorScheme.primary,
-            modifier = Modifier.size(20.dp),
+            modifier = Modifier.size(20.dp)
         )
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = label,
                 style = typography.labelSmall,
-                color = colorScheme.onSurfaceVariant,
+                color = colorScheme.onSurfaceVariant
             )
             Text(
                 text = value,
                 style = typography.bodyMedium,
-                color = colorScheme.onSurface,
+                color = colorScheme.onSurface
             )
         }
     }
@@ -60,26 +60,22 @@ fun ProfileInfoRow(icon: ImageVector, label: String, value: String) {
 
 // Wrapper card with automatic dividers between rows
 @Composable
-fun ProfileDataCard(
-    title: String,
-    modifier: Modifier = Modifier,
-    content: @Composable () -> Unit,
-) {
+fun ProfileDataCard(title: String, modifier: Modifier = Modifier, content: @Composable () -> Unit) {
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(10.dp),
+        verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
         Text(
             text = title,
             style = typography.titleMedium,
             fontWeight = FontWeight.Bold,
-            color = colorScheme.onBackground,
+            color = colorScheme.onBackground
         )
         Surface(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(16.dp),
             color = colorScheme.surface,
-            shadowElevation = 2.dp,
+            shadowElevation = 2.dp
         ) {
             Column(modifier = Modifier.padding(vertical = 6.dp)) {
                 content()
@@ -92,7 +88,7 @@ fun ProfileDataCard(
 fun ProfileDataDivider() {
     HorizontalDivider(
         modifier = Modifier.padding(horizontal = 16.dp),
-        color = colorScheme.outline.copy(alpha = 0.4f),
+        color = colorScheme.outline.copy(alpha = 0.4f)
     )
 }
 
@@ -102,19 +98,19 @@ fun SubjectsSection(subjects: List<String>) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         FlowRow(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             subjects.forEach { subject ->
                 Surface(
                     shape = RoundedCornerShape(16.dp),
-                    color = colorScheme.primaryContainer,
+                    color = colorScheme.primaryContainer
                 ) {
                     Text(
                         text = subject,
                         style = typography.bodyMedium,
                         fontWeight = FontWeight.SemiBold,
                         color = colorScheme.primary,
-                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                     )
                 }
             }
@@ -127,30 +123,30 @@ fun AdminBadge() {
     Surface(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
-        color = colorScheme.primaryContainer,
+        color = colorScheme.primaryContainer
     ) {
         Row(
             modifier = Modifier.padding(horizontal = 20.dp, vertical = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(14.dp),
-            verticalAlignment = Alignment.CenterVertically,
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
                 imageVector = Icons.Default.Shield,
                 contentDescription = null,
                 tint = colorScheme.primary,
-                modifier = Modifier.size(32.dp),
+                modifier = Modifier.size(32.dp)
             )
             Column {
                 Text(
                     text = stringResource(R.string.full_permission),
                     style = typography.titleSmall,
                     fontWeight = FontWeight.Bold,
-                    color = colorScheme.primary,
+                    color = colorScheme.primary
                 )
                 Text(
                     text = stringResource(R.string.admin_permissions),
                     style = typography.bodySmall,
-                    color = colorScheme.primary,
+                    color = colorScheme.primary
                 )
             }
         }
@@ -164,41 +160,41 @@ fun TutorStatsSection(stats: TutorStats) {
             text = stringResource(R.string.profile_stats_title),
             style = typography.titleMedium,
             fontWeight = FontWeight.Bold,
-            color = colorScheme.onBackground,
+            color = colorScheme.onBackground
         )
         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 StatCard(
                     value = "${stats.completedLessons}",
                     label = stringResource(R.string.tutor_lessons_count),
                     modifier = Modifier.weight(1f),
-                    compact = true,
+                    compact = true
                 )
                 StatCard(
                     value = if (stats.avgRating > 0.0) "%.1f".format(stats.avgRating) else "–",
                     label = stringResource(R.string.avg_rating),
                     modifier = Modifier.weight(1f),
-                    compact = true,
+                    compact = true
                 )
             }
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 StatCard(
                     value = "${stats.reviewsCount}",
                     label = stringResource(R.string.tutor_reviews_count),
                     modifier = Modifier.weight(1f),
-                    compact = true,
+                    compact = true
                 )
                 StatCard(
                     value = stringResource(R.string.total_earnings).format(stats.totalEarnings),
                     label = stringResource(R.string.tutor_earnings),
                     modifier = Modifier.weight(1f),
-                    compact = true,
+                    compact = true
                 )
             }
         }

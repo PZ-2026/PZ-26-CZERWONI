@@ -41,19 +41,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import java.time.LocalDate
 import org.koin.androidx.compose.koinViewModel
 import pl.edu.ur.teachly.R
 import pl.edu.ur.teachly.data.model.ReviewResponse
 import pl.edu.ur.teachly.ui.components.other.formatDate
 import pl.edu.ur.teachly.ui.review.viewmodels.AllReviewsViewModel
-import java.time.LocalDate
 
 @Composable
 fun AllReviewsScreen(
     tutorId: Int,
     tutorName: String,
     onBack: () -> Unit,
-    viewModel: AllReviewsViewModel = koinViewModel(),
+    viewModel: AllReviewsViewModel = koinViewModel()
 ) {
     LaunchedEffect(tutorId) { viewModel.loadReviews(tutorId) }
 
@@ -71,19 +71,19 @@ fun AllReviewsScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(colorScheme.background),
+            .background(colorScheme.background)
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 8.dp, vertical = 4.dp),
-            verticalAlignment = Alignment.CenterVertically,
+            verticalAlignment = Alignment.CenterVertically
         ) {
             IconButton(onClick = onBack) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = stringResource(R.string.cd_back),
-                    tint = colorScheme.onBackground,
+                    tint = colorScheme.onBackground
                 )
             }
             Column(modifier = Modifier.padding(start = 4.dp)) {
@@ -91,13 +91,13 @@ fun AllReviewsScreen(
                     text = stringResource(R.string.all_reviews_title),
                     style = typography.titleLarge,
                     fontWeight = FontWeight.Bold,
-                    color = colorScheme.onBackground,
+                    color = colorScheme.onBackground
                 )
                 if (tutorName.isNotBlank()) {
                     Text(
                         text = tutorName,
                         style = typography.bodyMedium,
-                        color = colorScheme.onSurfaceVariant,
+                        color = colorScheme.onSurfaceVariant
                     )
                 }
             }
@@ -106,34 +106,38 @@ fun AllReviewsScreen(
         when {
             state.isLoading -> Box(
                 modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center,
+                contentAlignment = Alignment.Center
             ) { CircularProgressIndicator() }
 
             state.reviews.isEmpty() -> Box(
                 modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center,
+                contentAlignment = Alignment.Center
             ) {
                 Text(
                     text = stringResource(R.string.reviews_empty),
                     style = typography.bodyMedium,
-                    color = colorScheme.onSurfaceVariant,
+                    color = colorScheme.onSurfaceVariant
                 )
             }
 
             else -> LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 items(state.reviews) { review ->
                     ReviewCard(
                         review = review,
                         onEdit = if (review.studentId == state.currentStudentId) {
                             { showEditDialog = review }
-                        } else null,
+                        } else {
+                            null
+                        },
                         onDelete = if (review.studentId == state.currentStudentId) {
                             { showDeleteDialog = review }
-                        } else null,
+                        } else {
+                            null
+                        }
                     )
                 }
                 item { Spacer(modifier = Modifier.height(16.dp)) }
@@ -147,11 +151,14 @@ fun AllReviewsScreen(
             error = state.error,
             initialRating = review.rating,
             initialComment = review.comment ?: "",
-            onDismiss = { showEditDialog = null; viewModel.clearMessage() },
+            onDismiss = {
+                showEditDialog = null
+                viewModel.clearMessage()
+            },
             onSubmit = { rating, comment ->
                 viewModel.updateReview(review.id, review.tutorId, rating, comment)
                 showEditDialog = null
-            },
+            }
         )
     }
 
@@ -168,7 +175,7 @@ fun AllReviewsScreen(
             },
             dismissButton = {
                 TextButton(onClick = { showDeleteDialog = null }) { Text("Anuluj") }
-            },
+            }
         )
     }
 }
@@ -179,26 +186,26 @@ fun ReviewCard(
     modifier: Modifier = Modifier,
     name: String = "${review.studentFirstName} ${review.studentLastName}",
     onEdit: (() -> Unit)? = null,
-    onDelete: (() -> Unit)? = null,
+    onDelete: (() -> Unit)? = null
 ) {
     Surface(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
         color = colorScheme.surface,
-        shadowElevation = 2.dp,
+        shadowElevation = 2.dp
     ) {
         Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
                     text = name,
                     style = typography.labelLarge,
                     fontWeight = FontWeight.SemiBold,
                     color = colorScheme.onSurface,
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier.weight(1f)
                 )
                 StarRatingDisplay(rating = review.rating)
             }
@@ -208,7 +215,7 @@ fun ReviewCard(
                 Text(
                     text = review.comment,
                     style = typography.bodyMedium,
-                    color = colorScheme.onSurfaceVariant,
+                    color = colorScheme.onSurfaceVariant
                 )
             }
 
@@ -216,7 +223,7 @@ fun ReviewCard(
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 val createdStr = review.createdAt.take(10)
                 val updatedStr = review.updatedAt.take(10)
@@ -232,7 +239,7 @@ fun ReviewCard(
                 Text(
                     text = dateText,
                     style = typography.bodySmall,
-                    color = colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
+                    color = colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
                 )
                 if (onEdit != null || onDelete != null) {
                     Row {
@@ -242,7 +249,7 @@ fun ReviewCard(
                                     Icons.Default.Edit,
                                     contentDescription = "Edytuj",
                                     modifier = Modifier.size(16.dp),
-                                    tint = colorScheme.primary,
+                                    tint = colorScheme.primary
                                 )
                             }
                         }
@@ -252,7 +259,7 @@ fun ReviewCard(
                                     Icons.Default.Delete,
                                     contentDescription = "Usuń",
                                     modifier = Modifier.size(16.dp),
-                                    tint = colorScheme.error,
+                                    tint = colorScheme.error
                                 )
                             }
                         }
@@ -271,10 +278,11 @@ fun StarRatingDisplay(rating: Double, modifier: Modifier = Modifier) {
                 imageVector = Icons.Filled.Star,
                 contentDescription = null,
                 modifier = Modifier.size(16.dp),
-                tint = if (i <= rating)
+                tint = if (i <= rating) {
                     colorScheme.primary
-                else
-                    colorScheme.onSurface.copy(alpha = 0.2f),
+                } else {
+                    colorScheme.onSurface.copy(alpha = 0.2f)
+                }
             )
         }
     }

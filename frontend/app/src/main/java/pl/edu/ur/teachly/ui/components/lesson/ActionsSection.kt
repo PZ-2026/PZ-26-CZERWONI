@@ -35,7 +35,7 @@ fun ActionsSection(
     onChangeStatus: (LessonStatus) -> Unit,
     onMarkPaid: () -> Unit,
     onGoToTutor: () -> Unit,
-    onRebook: () -> Unit,
+    onRebook: () -> Unit
 ) {
     val status = lesson.lessonStatus
     var pendingConfirm by remember { mutableStateOf<ConfirmConfig?>(null) }
@@ -45,7 +45,6 @@ fun ActionsSection(
     }
 
     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-
         if (userRole == UserRole.STUDENT || userRole == UserRole.ADMIN) {
             // Go to tutor profile (always)
             Button(
@@ -54,8 +53,8 @@ fun ActionsSection(
                 shape = RoundedCornerShape(14.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = colorScheme.onSecondaryFixedVariant,
-                    contentColor = colorScheme.onSecondary,
-                ),
+                    contentColor = colorScheme.onSecondary
+                )
             ) {
                 Text("Profil korepetytora")
             }
@@ -65,7 +64,7 @@ fun ActionsSection(
                 Button(
                     onClick = onRebook,
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(14.dp),
+                    shape = RoundedCornerShape(14.dp)
                 ) {
                     Text("Zarezerwuj ponownie")
                 }
@@ -80,7 +79,7 @@ fun ActionsSection(
                             message = "Czy na pewno chcesz anulować tę lekcję? Tej operacji nie można cofnąć.",
                             confirmLabel = "Anuluj lekcję",
                             destructive = true,
-                            action = { onChangeStatus(LessonStatus.CANCELLED) },
+                            action = { onChangeStatus(LessonStatus.CANCELLED) }
                         )
                     },
                     enabled = !isSaving,
@@ -88,8 +87,8 @@ fun ActionsSection(
                     shape = RoundedCornerShape(14.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = colorScheme.error,
-                        contentColor = colorScheme.onError,
-                    ),
+                        contentColor = colorScheme.onError
+                    )
                 ) {
                     Text("Anuluj lekcję")
                 }
@@ -105,12 +104,12 @@ fun ActionsSection(
                             title = "Zaakceptuj lekcję",
                             message = "Czy na pewno chcesz zaakceptować tę lekcję?",
                             confirmLabel = "Zaakceptuj",
-                            action = { onChangeStatus(LessonStatus.CONFIRMED) },
+                            action = { onChangeStatus(LessonStatus.CONFIRMED) }
                         )
                     },
                     enabled = !isSaving,
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(14.dp),
+                    shape = RoundedCornerShape(14.dp)
                 ) {
                     Text("Zaakceptuj")
                 }
@@ -122,16 +121,16 @@ fun ActionsSection(
                             message = "Czy na pewno chcesz odrzucić tę lekcję?",
                             confirmLabel = "Odrzuć",
                             destructive = true,
-                            action = { onChangeStatus(LessonStatus.CANCELLED) },
+                            action = { onChangeStatus(LessonStatus.CANCELLED) }
                         )
                     },
                     enabled = !isSaving,
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(14.dp),
                     colors = ButtonDefaults.outlinedButtonColors(
-                        contentColor = colorScheme.error,
+                        contentColor = colorScheme.error
                     ),
-                    border = BorderStroke(1.dp, colorScheme.error.copy(alpha = 0.5f)),
+                    border = BorderStroke(1.dp, colorScheme.error.copy(alpha = 0.5f))
                 ) {
                     Text("Odrzuć")
                 }
@@ -146,7 +145,7 @@ fun ActionsSection(
                             message = "Czy na pewno chcesz anulować potwierdzoną lekcję?",
                             confirmLabel = "Anuluj lekcję",
                             destructive = true,
-                            action = { onChangeStatus(LessonStatus.CANCELLED) },
+                            action = { onChangeStatus(LessonStatus.CANCELLED) }
                         )
                     },
                     enabled = !isSaving,
@@ -154,8 +153,8 @@ fun ActionsSection(
                     shape = RoundedCornerShape(14.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = colorScheme.error,
-                        contentColor = colorScheme.onError,
-                    ),
+                        contentColor = colorScheme.onError
+                    )
                 ) {
                     Text("Anuluj lekcję")
                 }
@@ -167,7 +166,7 @@ fun ActionsSection(
                     onClick = { onChangeStatus(LessonStatus.COMPLETED) },
                     enabled = !isSaving,
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(14.dp),
+                    shape = RoundedCornerShape(14.dp)
                 ) {
                     Text("Oznacz jako zakończoną")
                 }
@@ -175,7 +174,7 @@ fun ActionsSection(
 
             // Mark paid. Must be completed or confirmed + 30min past AND not already paid
             val canMarkPaid = lesson.paymentStatus == PaymentStatus.PENDING &&
-                    (status == LessonStatus.COMPLETED || (status == LessonStatus.CONFIRMED && thirtyMinPast))
+                (status == LessonStatus.COMPLETED || (status == LessonStatus.CONFIRMED && thirtyMinPast))
             if (canMarkPaid) {
                 Button(
                     onClick = onMarkPaid,
@@ -184,8 +183,8 @@ fun ActionsSection(
                     shape = RoundedCornerShape(14.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = colorScheme.tertiary,
-                        contentColor = colorScheme.onTertiary,
-                    ),
+                        contentColor = colorScheme.onTertiary
+                    )
                 ) {
                     Text("Oznacz jako opłaconą")
                 }

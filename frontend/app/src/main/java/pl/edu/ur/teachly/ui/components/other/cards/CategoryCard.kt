@@ -29,30 +29,25 @@ import androidx.compose.ui.unit.dp
 import pl.edu.ur.teachly.data.model.SubjectCategoryResponse
 
 @Composable
-fun CategoryCard(
-    category: SubjectCategoryResponse,
-    subjectCount: Int,
-    onEdit: () -> Unit,
-    onDelete: () -> Unit,
-) {
+fun CategoryCard(category: SubjectCategoryResponse, subjectCount: Int, onEdit: () -> Unit, onDelete: () -> Unit) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = colorScheme.surface),
         shape = RoundedCornerShape(20.dp),
         border = BorderStroke(1.dp, colorScheme.outline),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
                     text = category.categoryName,
                     style = typography.titleMedium,
                     fontWeight = FontWeight.Bold,
-                    color = colorScheme.onSurface,
+                    color = colorScheme.onSurface
                 )
                 Row {
                     IconButton(onClick = onEdit) {
@@ -66,7 +61,7 @@ fun CategoryCard(
                         Icon(
                             Icons.Default.Delete,
                             contentDescription = "Usuń",
-                            tint = if (subjectCount == 0) colorScheme.error else colorScheme.onSurfaceVariant,
+                            tint = if (subjectCount == 0) colorScheme.error else colorScheme.onSurfaceVariant
                         )
                     }
                 }
@@ -83,7 +78,7 @@ fun CategoryCard(
                         tint = colorScheme.primary
                     )
                 },
-                text = "Przedmioty: $subjectCount",
+                text = "Przedmioty: $subjectCount"
             )
         }
     }

@@ -32,34 +32,36 @@ fun AdminScreenHeader(
     modifier: Modifier = Modifier,
     icon: ImageVector? = null,
     action: @Composable (() -> Unit)? = null,
-    content: @Composable (ColumnScope.() -> Unit)? = null,
+    content: @Composable (ColumnScope.() -> Unit)? = null
 ) {
     Surface(
         color = colorScheme.surface,
         shadowElevation = 2.dp,
-        modifier = modifier,
+        modifier = modifier
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = if (action != null) Arrangement.SpaceBetween else Arrangement.Start,
-                verticalAlignment = Alignment.CenterVertically,
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    if (icon != null) Icon(
-                        icon,
-                        contentDescription = null,
-                        tint = colorScheme.primary,
-                        modifier = Modifier.size(28.dp),
-                    )
+                    if (icon != null) {
+                        Icon(
+                            icon,
+                            contentDescription = null,
+                            tint = colorScheme.primary,
+                            modifier = Modifier.size(28.dp)
+                        )
+                    }
                     Text(
                         title,
                         style = typography.titleLarge,
                         fontWeight = FontWeight.Bold,
-                        color = colorScheme.primary,
+                        color = colorScheme.primary
                     )
                 }
                 action?.invoke()
@@ -77,7 +79,7 @@ fun AdminSearchBar(
     modifier: Modifier = Modifier,
     value: String,
     onValueChange: (String) -> Unit,
-    placeholder: String = "Szukaj...",
+    placeholder: String = "Szukaj..."
 ) {
     OutlinedTextField(
         value = value,
@@ -88,9 +90,8 @@ fun AdminSearchBar(
         shape = RoundedCornerShape(12.dp),
         colors = OutlinedTextFieldDefaults.colors(
             focusedContainerColor = colorScheme.surface,
-            unfocusedContainerColor = colorScheme.surface,
+            unfocusedContainerColor = colorScheme.surface
         ),
-        singleLine = true,
+        singleLine = true
     )
 }
-

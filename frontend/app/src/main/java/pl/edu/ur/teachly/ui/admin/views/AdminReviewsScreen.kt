@@ -41,10 +41,7 @@ import pl.edu.ur.teachly.ui.components.other.MessageSnackbars
 import pl.edu.ur.teachly.ui.components.other.cards.ReviewAdminCard
 
 @Composable
-fun AdminReviewsScreen(
-    viewModel: AdminReviewsViewModel = koinViewModel(),
-    showHeader: Boolean = true,
-) {
+fun AdminReviewsScreen(viewModel: AdminReviewsViewModel = koinViewModel(), showHeader: Boolean = true) {
     val state by viewModel.state.collectAsState()
     var confirmDeleteId by remember { mutableStateOf<Int?>(null) }
 
@@ -66,7 +63,7 @@ fun AdminReviewsScreen(
                     AdminSearchBar(
                         value = state.searchQuery,
                         onValueChange = { viewModel.onSearchChange(it) },
-                        placeholder = "Szukaj po imieniu, nazwisku, treści...",
+                        placeholder = "Szukaj po imieniu, nazwisku, treści..."
                     )
                 }
             } else {
@@ -75,7 +72,7 @@ fun AdminReviewsScreen(
                         AdminSearchBar(
                             value = state.searchQuery,
                             onValueChange = { viewModel.onSearchChange(it) },
-                            placeholder = "Szukaj po imieniu, nazwisku, treści...",
+                            placeholder = "Szukaj po imieniu, nazwisku, treści..."
                         )
                     }
                 }
@@ -83,13 +80,13 @@ fun AdminReviewsScreen(
 
             LazyRow(
                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 item {
                     FilterChip(
                         selected = state.ratingFilter == null,
                         onClick = { viewModel.onRatingFilterChange(null) },
-                        label = { Text("Wszystkie") },
+                        label = { Text("Wszystkie") }
                     )
                 }
                 items((5 downTo 1).toList()) { rating ->
@@ -99,16 +96,16 @@ fun AdminReviewsScreen(
                         label = {
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                                horizontalArrangement = Arrangement.spacedBy(4.dp)
                             ) {
                                 Text("$rating")
                                 Icon(
                                     Icons.Default.Star,
                                     contentDescription = null,
-                                    modifier = Modifier.size(14.dp),
+                                    modifier = Modifier.size(14.dp)
                                 )
                             }
-                        },
+                        }
                     )
                 }
             }
@@ -124,12 +121,12 @@ fun AdminReviewsScreen(
                 else -> LazyColumn(
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     items(state.filteredReviews) { review ->
                         ReviewAdminCard(
                             review = review,
-                            onDelete = { confirmDeleteId = review.id },
+                            onDelete = { confirmDeleteId = review.id }
                         )
                     }
                 }
@@ -139,7 +136,7 @@ fun AdminReviewsScreen(
         MessageSnackbars(
             successMessage = state.successMessage,
             errorMessage = state.error,
-            modifier = Modifier.align(Alignment.BottomCenter),
+            modifier = Modifier.align(Alignment.BottomCenter)
         )
     }
 

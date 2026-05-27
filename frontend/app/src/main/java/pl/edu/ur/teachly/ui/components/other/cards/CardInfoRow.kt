@@ -19,7 +19,7 @@ fun CardInfoRow(icon: @Composable () -> Unit, text: String) {
         Text(
             text = text,
             style = typography.bodyMedium,
-            color = colorScheme.onSurfaceVariant,
+            color = colorScheme.onSurfaceVariant
         )
     }
 }

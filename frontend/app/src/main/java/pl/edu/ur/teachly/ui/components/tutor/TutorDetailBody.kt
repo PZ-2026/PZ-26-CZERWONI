@@ -20,7 +20,7 @@ fun TutorDetailBody(
     canReview: Boolean = false,
     onAddReview: (() -> Unit)? = null,
     onEditReview: ((ReviewResponse) -> Unit)? = null,
-    onSeeAllReviews: (() -> Unit)? = null,
+    onSeeAllReviews: (() -> Unit)? = null
 ) {
     Column(
         modifier = Modifier.padding(vertical = 20.dp),
@@ -42,7 +42,7 @@ fun TutorDetailBody(
             canReview = canReview,
             onAddReview = onAddReview,
             onSeeAll = onSeeAllReviews,
-            onEditReview = onEditReview,
+            onEditReview = onEditReview
         )
     }
 }

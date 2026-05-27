@@ -29,16 +29,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import pl.edu.ur.teachly.R
+import pl.edu.ur.teachly.ui.components.other.InitialsAvatar
 import pl.edu.ur.teachly.ui.models.Tutor
 import pl.edu.ur.teachly.ui.theme.AvatarColor
-import pl.edu.ur.teachly.ui.components.other.InitialsAvatar
 
 @Composable
-fun TutorCard(
-    tutor: Tutor,
-    colors: AvatarColor,
-    onClick: () -> Unit,
-) {
+fun TutorCard(tutor: Tutor, colors: AvatarColor, onClick: () -> Unit) {
     val (avatarBg, avatarFg) = colors
 
     Surface(
@@ -47,12 +43,12 @@ fun TutorCard(
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = null,
-                onClick = onClick,
+                onClick = onClick
             ),
         shape = RoundedCornerShape(20.dp),
         color = MaterialTheme.colorScheme.surface,
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
-        shadowElevation = 2.dp,
+        shadowElevation = 2.dp
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -70,25 +66,23 @@ fun TutorCard(
 }
 
 @Composable
-fun TutorAvatar(
-    initials: String,
-    bg: Color,
-    fg: Color,
-    size: Int = 48,
-) {
+fun TutorAvatar(initials: String, bg: Color, fg: Color, size: Int = 48) {
     Box(contentAlignment = Alignment.BottomEnd) {
         Box(
             modifier = Modifier
                 .size(size.dp)
                 .clip(RoundedCornerShape((size * 0.33f).dp))
                 .background(bg),
-            contentAlignment = Alignment.Center,
+            contentAlignment = Alignment.Center
         ) {
             Text(
                 text = initials,
-                style = if (size >= 64) MaterialTheme.typography.titleMedium
-                else MaterialTheme.typography.labelMedium,
-                color = fg,
+                style = if (size >= 64) {
+                    MaterialTheme.typography.titleMedium
+                } else {
+                    MaterialTheme.typography.labelMedium
+                },
+                color = fg
             )
         }
     }
@@ -100,7 +94,7 @@ private fun TutorCardInfo(tutor: Tutor) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.Top,
+            verticalAlignment = Alignment.Top
         ) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
@@ -117,7 +111,7 @@ private fun TutorCardInfo(tutor: Tutor) {
                     tutor.subjects.forEach { subject ->
                         Surface(
                             shape = RoundedCornerShape(16.dp),
-                            color = MaterialTheme.colorScheme.primaryContainer,
+                            color = MaterialTheme.colorScheme.primaryContainer
                         ) {
                             Text(
                                 text = subject,
@@ -149,14 +143,17 @@ fun TutorHourlyRate(price: Int, large: Boolean = false) {
     Column(horizontalAlignment = Alignment.End) {
         Text(
             text = stringResource(R.string.tutor_price_format, price),
-            style = if (large) MaterialTheme.typography.headlineSmall
-            else MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.primary,
+            style = if (large) {
+                MaterialTheme.typography.headlineSmall
+            } else {
+                MaterialTheme.typography.titleMedium
+            },
+            color = MaterialTheme.colorScheme.primary
         )
         Text(
             text = stringResource(R.string.tutor_per_hour),
             style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
         )
     }
 }
@@ -166,25 +163,25 @@ fun TutorHourlyRate(price: Int, large: Boolean = false) {
 fun TutorAverageRating(rating: Double, reviewCount: Int) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         if (reviewCount == 0) {
             Text(
                 text = "Brak ocen",
                 style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         } else {
             Text(
                 text = stringResource(R.string.tutor_rating_format, rating),
                 style = MaterialTheme.typography.labelMedium,
                 fontWeight = FontWeight.SemiBold,
-                color = Color(0xFFD97706),
+                color = Color(0xFFD97706)
             )
             Text(
                 text = stringResource(R.string.tutor_reviews_format, reviewCount),
                 style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
     }
@@ -204,10 +201,9 @@ fun TutorFormatTags(tags: List<String>) {
                 Text(
                     text = tag,
                     style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.primary,
+                    color = MaterialTheme.colorScheme.primary
                 )
             }
         }
     }
 }
-
