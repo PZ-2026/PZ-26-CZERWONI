@@ -39,8 +39,8 @@ import java.io.File
 import pl.edu.ur.teachly.data.model.AdminUserUpdateRequest
 import pl.edu.ur.teachly.data.model.UserResponse
 import pl.edu.ur.teachly.data.model.UserRole
-import pl.edu.ur.teachly.ui.components.other.PhoneVisualTransformation
 import pl.edu.ur.teachly.ui.components.other.InitialsAvatar
+import pl.edu.ur.teachly.ui.components.other.PhoneVisualTransformation
 import pl.edu.ur.teachly.ui.components.other.PrimaryButton
 import pl.edu.ur.teachly.ui.theme.AvatarColors
 
@@ -48,7 +48,7 @@ import pl.edu.ur.teachly.ui.theme.AvatarColors
 fun AdminUserEditDialog(
     user: UserResponse,
     onDismiss: () -> Unit,
-    onSave: (AdminUserUpdateRequest, File?, Boolean) -> Unit,
+    onSave: (AdminUserUpdateRequest, File?, Boolean) -> Unit
 ) {
     val context = LocalContext.current
     var firstName by remember { mutableStateOf(user.firstName) }
@@ -75,13 +75,21 @@ fun AdminUserEditDialog(
                 if (file != null && file.exists()) {
                     // Walidacja rozmiaru pliku (max 5 MB)
                     if (file.length() > 5 * 1024 * 1024) {
-                        Toast.makeText(context, "Plik jest za duży. Maksymalny rozmiar to 5 MB.", Toast.LENGTH_LONG).show()
+                        Toast.makeText(
+                            context,
+                            "Plik jest za duży. Maksymalny rozmiar to 5 MB.",
+                            Toast.LENGTH_LONG
+                        ).show()
                         return@rememberLauncherForActivityResult
                     }
                     // Walidacja formatu pliku
                     val extension = file.extension.lowercase()
                     if (extension != "jpg" && extension != "jpeg" && extension != "png") {
-                        Toast.makeText(context, "Niedozwolony format pliku. Dozwolone są tylko JPG i PNG.", Toast.LENGTH_LONG).show()
+                        Toast.makeText(
+                            context,
+                            "Niedozwolony format pliku. Dozwolone są tylko JPG i PNG.",
+                            Toast.LENGTH_LONG
+                        ).show()
                         return@rememberLauncherForActivityResult
                     }
 
@@ -151,12 +159,18 @@ fun AdminUserEditDialog(
                 e.printStackTrace()
             }
         } else {
-            Toast.makeText(context, "Uprawnienie do aparatu jest wymagane do zrobienia zdjęcia", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                context,
+                "Uprawnienie do aparatu jest wymagane do zrobienia zdjęcia",
+                Toast.LENGTH_SHORT
+            ).show()
         }
     }
 
-    val isValid = firstName.isNotBlank() && lastName.isNotBlank()
-            && email.isNotBlank() && phone.length == 9
+    val isValid = firstName.isNotBlank() &&
+        lastName.isNotBlank() &&
+        email.isNotBlank() &&
+        phone.length == 9
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -164,7 +178,7 @@ fun AdminUserEditDialog(
         text = {
             Column(
                 modifier = Modifier.verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -186,14 +200,14 @@ fun AdminUserEditDialog(
                         onValueChange = { firstName = it },
                         label = { Text("Imię") },
                         modifier = Modifier.weight(1f),
-                        singleLine = true,
+                        singleLine = true
                     )
                     OutlinedTextField(
                         value = lastName,
                         onValueChange = { lastName = it },
                         label = { Text("Nazwisko") },
                         modifier = Modifier.weight(1f),
-                        singleLine = true,
+                        singleLine = true
                     )
                 }
                 OutlinedTextField(
@@ -202,7 +216,7 @@ fun AdminUserEditDialog(
                     label = { Text("Email") },
                     leadingIcon = { Icon(Icons.Default.Email, null) },
                     modifier = Modifier.fillMaxWidth(),
-                    singleLine = true,
+                    singleLine = true
                 )
                 OutlinedTextField(
                     value = phone,
@@ -221,7 +235,7 @@ fun AdminUserEditDialog(
                     entries = UserRole.entries,
                     selected = role,
                     onSelect = { role = it },
-                    label = { it.label },
+                    label = { it.label }
                 )
             }
         },
@@ -236,7 +250,9 @@ fun AdminUserEditDialog(
                         Toast.makeText(context, "Nazwisko nie może być puste", Toast.LENGTH_SHORT).show()
                         return@TextButton
                     }
-                    if (email.trim().isBlank() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email.trim()).matches()) {
+                    if (email.trim().isBlank() ||
+                        !android.util.Patterns.EMAIL_ADDRESS.matcher(email.trim()).matches()
+                    ) {
                         Toast.makeText(context, "Niepoprawny format adresu email", Toast.LENGTH_SHORT).show()
                         return@TextButton
                     }
@@ -256,7 +272,7 @@ fun AdminUserEditDialog(
                         pendingAvatarFile,
                         pendingDeleteAvatar
                     )
-                },
+                }
             ) { Text("Zapisz") }
         },
         dismissButton = { TextButton(onClick = onDismiss) { Text("Anuluj") } }
@@ -269,7 +285,9 @@ fun AdminUserEditDialog(
                     .fillMaxWidth()
                     .padding(16.dp),
                 shape = androidx.compose.foundation.shape.RoundedCornerShape(16.dp),
-                colors = androidx.compose.material3.CardDefaults.cardColors(containerColor = androidx.compose.material3.MaterialTheme.colorScheme.surface)
+                colors = androidx.compose.material3.CardDefaults.cardColors(
+                    containerColor = androidx.compose.material3.MaterialTheme.colorScheme.surface
+                )
             ) {
                 Column(
                     modifier = Modifier.padding(16.dp),
@@ -286,10 +304,16 @@ fun AdminUserEditDialog(
                         onClick = {
                             showPickerDialog = false
                             val permission = Manifest.permission.CAMERA
-                            if (ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED) {
+                            if (ContextCompat.checkSelfPermission(context, permission) ==
+                                PackageManager.PERMISSION_GRANTED
+                            ) {
                                 try {
                                     val file = File.createTempFile("avatar_capture_", ".jpg", context.cacheDir)
-                                    val uri = FileProvider.getUriForFile(context, "${context.packageName}.provider", file)
+                                    val uri = FileProvider.getUriForFile(
+                                        context,
+                                        "${context.packageName}.provider",
+                                        file
+                                    )
                                     tempCameraFile = file
                                     tempCameraUri = uri
                                     cameraLauncher.launch(uri)
@@ -310,10 +334,10 @@ fun AdminUserEditDialog(
                     )
                     val currentAvatarUrl = localAvatarUrl ?: if (pendingDeleteAvatar) null else user.avatarUrl
                     val hasCustomAvatar = !currentAvatarUrl.isNullOrBlank() &&
-                            !currentAvatarUrl.equals("null", ignoreCase = true) &&
-                            !currentAvatarUrl.contains("/null", ignoreCase = true) &&
-                            !currentAvatarUrl.endsWith("/uploads/avatars/", ignoreCase = true) &&
-                            currentAvatarUrl.contains("/")
+                        !currentAvatarUrl.equals("null", ignoreCase = true) &&
+                        !currentAvatarUrl.contains("/null", ignoreCase = true) &&
+                        !currentAvatarUrl.endsWith("/uploads/avatars/", ignoreCase = true) &&
+                        currentAvatarUrl.contains("/")
                     if (hasCustomAvatar) {
                         PrimaryButton(
                             text = "Usuń zdjęcie",

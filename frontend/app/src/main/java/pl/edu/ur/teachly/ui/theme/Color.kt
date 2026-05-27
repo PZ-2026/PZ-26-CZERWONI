@@ -11,7 +11,7 @@ val DeepGreen950 = Color(0xFF0B1A0F)
 val DeepGreen900 = Color(0xFF112A14)
 val DeepGreen800 = Color(0xFF1E3A1E)
 val DeepGreen700 = Color(0xFF2E7D32)
-val DeepGreen600 = Color(0xFF388E3C)   // PRIMARY
+val DeepGreen600 = Color(0xFF388E3C) // PRIMARY
 val DeepGreen500 = Color(0xFF4CAF50)
 val DeepGreen400 = Color(0xFF66BB6A)
 val DeepGreen300 = Color(0xFF81C784)
@@ -55,9 +55,8 @@ val AvatarColors = listOf(
     AvatarColor(Color(0xFFFCE7F3), Color(0xFF9D174D)),
     AvatarColor(Color(0xFFFEF3C7), Color(0xFF92400E)),
     AvatarColor(Color(0xFFF3E8FF), Color(0xFF6B21A8)),
-    AvatarColor(Color(0xFFFFEDD5), Color(0xFF9A3412)),
+    AvatarColor(Color(0xFFFFEDD5), Color(0xFF9A3412))
 )
-
 
 // Light color scheme
 val LightColorScheme = lightColorScheme(
@@ -98,7 +97,6 @@ val LightColorScheme = lightColorScheme(
     inverseOnSurface = Neutral50,
     inversePrimary = DeepGreen100
 )
-
 
 // Dark color scheme
 val DarkColorScheme = darkColorScheme(

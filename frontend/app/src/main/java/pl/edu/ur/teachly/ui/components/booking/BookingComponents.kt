@@ -45,12 +45,7 @@ import pl.edu.ur.teachly.ui.models.CalendarDay
 import pl.edu.ur.teachly.ui.models.DURATION_OPTIONS
 
 @Composable
-fun DayPicker(
-    days: List<CalendarDay>,
-    selectedIndex: Int,
-    availabilityColors: List<Color>,
-    onSelect: (Int) -> Unit,
-) {
+fun DayPicker(days: List<CalendarDay>, selectedIndex: Int, availabilityColors: List<Color>, onSelect: (Int) -> Unit) {
     SectionLabel(text = stringResource(R.string.booking_section_day))
     Spacer(Modifier.height(10.dp))
     Row(
@@ -69,23 +64,29 @@ fun DayPicker(
                     .background(if (isSelected) colorScheme.primary else colorScheme.surfaceVariant)
                     .clickable(
                         interactionSource = remember { MutableInteractionSource() },
-                        indication = null,
+                        indication = null
                     ) { onSelect(index) }
                     .padding(vertical = 10.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
                     text = day.shortName,
                     style = typography.labelSmall,
-                    color = if (isSelected) colorScheme.onPrimary.copy(alpha = 0.7f)
-                    else colorScheme.onSurfaceVariant,
+                    color = if (isSelected) {
+                        colorScheme.onPrimary.copy(alpha = 0.7f)
+                    } else {
+                        colorScheme.onSurfaceVariant
+                    }
                 )
                 Spacer(Modifier.height(4.dp))
                 Text(
                     text = day.dayNumber,
                     style = typography.labelMedium,
-                    color = if (isSelected) colorScheme.onPrimary
-                    else colorScheme.onSurface,
+                    color = if (isSelected) {
+                        colorScheme.onPrimary
+                    } else {
+                        colorScheme.onSurface
+                    }
                 )
                 Spacer(Modifier.height(6.dp))
                 // Availability indicator bar
@@ -114,7 +115,7 @@ fun DurationPicker(selected: Int, isDurationAvailable: (Int) -> Boolean, onSelec
                     .clickable(
                         enabled = isAvailable,
                         interactionSource = remember { MutableInteractionSource() },
-                        indication = null,
+                        indication = null
                     ) { onSelect(duration) },
                 shape = RoundedCornerShape(14.dp),
                 color = when {
@@ -122,16 +123,20 @@ fun DurationPicker(selected: Int, isDurationAvailable: (Int) -> Boolean, onSelec
                     isAvailable -> colorScheme.surfaceVariant
                     else -> colorScheme.surfaceVariant.copy(alpha = 0.4f)
                 },
-                border = if (isSelected) BorderStroke(
-                    2.dp,
-                    colorScheme.primary
-                ) else null,
+                border = if (isSelected) {
+                    BorderStroke(
+                        2.dp,
+                        colorScheme.primary
+                    )
+                } else {
+                    null
+                }
             ) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 14.dp),
-                    contentAlignment = Alignment.Center,
+                    contentAlignment = Alignment.Center
                 ) {
                     Text(
                         text = "$duration min",
@@ -140,7 +145,7 @@ fun DurationPicker(selected: Int, isDurationAvailable: (Int) -> Boolean, onSelec
                             isSelected -> colorScheme.onPrimary
                             isAvailable -> colorScheme.onSurfaceVariant
                             else -> colorScheme.onSurfaceVariant.copy(alpha = 0.3f)
-                        },
+                        }
                     )
                 }
             }
@@ -150,11 +155,7 @@ fun DurationPicker(selected: Int, isDurationAvailable: (Int) -> Boolean, onSelec
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SubjectPicker(
-    subjects: List<String>,
-    selectedIndex: Int,
-    onSelect: (Int) -> Unit,
-) {
+fun SubjectPicker(subjects: List<String>, selectedIndex: Int, onSelect: (Int) -> Unit) {
     SectionLabel(text = stringResource(R.string.subject))
     Spacer(Modifier.height(10.dp))
 
@@ -164,7 +165,7 @@ fun SubjectPicker(
 
     ExposedDropdownMenuBox(
         expanded = expanded,
-        onExpandedChange = { expanded = it },
+        onExpandedChange = { expanded = it }
     ) {
         OutlinedTextField(
             value = selectedLabel,
@@ -174,16 +175,19 @@ fun SubjectPicker(
             modifier = Modifier
                 .menuAnchor()
                 .fillMaxWidth(),
-            shape = RoundedCornerShape(12.dp),
+            shape = RoundedCornerShape(12.dp)
         )
         ExposedDropdownMenu(
             expanded = expanded,
-            onDismissRequest = { expanded = false },
+            onDismissRequest = { expanded = false }
         ) {
             subjects.forEachIndexed { index, subject ->
                 DropdownMenuItem(
                     text = { Text(subject) },
-                    onClick = { onSelect(index); expanded = false },
+                    onClick = {
+                        onSelect(index)
+                        expanded = false
+                    }
                 )
             }
         }
@@ -194,7 +198,7 @@ fun SubjectPicker(
 fun SlotLegendItem(color: Color, label: String) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(5.dp),
+        horizontalArrangement = Arrangement.spacedBy(5.dp)
     ) {
         Box(
             modifier = Modifier
@@ -205,17 +209,13 @@ fun SlotLegendItem(color: Color, label: String) {
         Text(
             label,
             style = typography.labelSmall,
-            color = colorScheme.onSurfaceVariant,
+            color = colorScheme.onSurfaceVariant
         )
     }
 }
 
 @Composable
-fun TimeSlotGrid(
-    availableSlots: List<TimeSlotUI>,
-    selectedSlot: String?,
-    onSelect: (String) -> Unit,
-) {
+fun TimeSlotGrid(availableSlots: List<TimeSlotUI>, selectedSlot: String?, onSelect: (String) -> Unit) {
     SectionLabel(text = stringResource(R.string.booking_section_time))
     Spacer(Modifier.height(10.dp))
 
@@ -224,14 +224,14 @@ fun TimeSlotGrid(
             text = stringResource(R.string.no_available_slots_this_day),
             style = typography.bodyMedium,
             color = colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(vertical = 8.dp),
+            modifier = Modifier.padding(vertical = 8.dp)
         )
         return
     }
 
     Row(
         horizontalArrangement = Arrangement.spacedBy(16.dp),
-        modifier = Modifier.padding(bottom = 12.dp),
+        modifier = Modifier.padding(bottom = 12.dp)
     ) {
         SlotLegendItem(
             color = colorScheme.primary,
@@ -253,7 +253,7 @@ fun TimeSlotGrid(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             rowSlots.forEach { slot ->
                 val isSelected = slot.time == selectedSlot
@@ -272,10 +272,10 @@ fun TimeSlotGrid(
                         .clickable(
                             enabled = isAvailable,
                             interactionSource = remember { MutableInteractionSource() },
-                            indication = null,
+                            indication = null
                         ) { onSelect(slot.time) }
                         .padding(vertical = 12.dp),
-                    contentAlignment = Alignment.Center,
+                    contentAlignment = Alignment.Center
                 ) {
                     Text(
                         text = slot.time,
@@ -284,7 +284,7 @@ fun TimeSlotGrid(
                             isSelected -> colorScheme.onPrimary
                             isAvailable -> colorScheme.onSurface
                             else -> colorScheme.onSurface.copy(alpha = 0.3f)
-                        },
+                        }
                     )
                 }
             }
@@ -294,41 +294,41 @@ fun TimeSlotGrid(
 }
 
 @Composable
-fun FormatPicker(
-    formats: List<LessonFormat>,
-    selectedFormat: LessonFormat?,
-    onSelect: (LessonFormat) -> Unit,
-) {
+fun FormatPicker(formats: List<LessonFormat>, selectedFormat: LessonFormat?, onSelect: (LessonFormat) -> Unit) {
     SectionLabel(text = stringResource(R.string.lesson_format))
     Spacer(Modifier.height(10.dp))
     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
         formats.forEach { format ->
             val isSelected = format == selectedFormat
             val label =
-                if (format == LessonFormat.ONLINE) stringResource(R.string.online) else stringResource(
-                    R.string.in_person
-                )
+                if (format == LessonFormat.ONLINE) {
+                    stringResource(R.string.online)
+                } else {
+                    stringResource(
+                        R.string.in_person
+                    )
+                }
             Surface(
                 modifier = Modifier
                     .weight(1f)
                     .clickable(
                         interactionSource = remember { MutableInteractionSource() },
-                        indication = null,
+                        indication = null
                     ) { onSelect(format) },
                 shape = RoundedCornerShape(14.dp),
                 color = if (isSelected) colorScheme.primary else colorScheme.surfaceVariant,
-                border = if (isSelected) BorderStroke(2.dp, colorScheme.primary) else null,
+                border = if (isSelected) BorderStroke(2.dp, colorScheme.primary) else null
             ) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 14.dp),
-                    contentAlignment = Alignment.Center,
+                    contentAlignment = Alignment.Center
                 ) {
                     Text(
                         text = label,
                         style = typography.labelMedium,
-                        color = if (isSelected) colorScheme.onPrimary else colorScheme.onSurfaceVariant,
+                        color = if (isSelected) colorScheme.onPrimary else colorScheme.onSurfaceVariant
                     )
                 }
             }

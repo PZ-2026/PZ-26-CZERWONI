@@ -38,19 +38,19 @@ fun TutorAdminCard(tutor: TutorResponse, onEdit: () -> Unit, onSchedule: () -> U
         colors = CardDefaults.cardColors(containerColor = colorScheme.surface),
         shape = RoundedCornerShape(20.dp),
         border = BorderStroke(1.dp, colorScheme.outline),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
                     text = "${tutor.firstName} ${tutor.lastName}",
                     style = typography.titleMedium,
                     fontWeight = FontWeight.Bold,
-                    color = colorScheme.onSurface,
+                    color = colorScheme.onSurface
                 )
                 Row {
                     IconButton(onClick = onSchedule) {
@@ -81,7 +81,7 @@ fun TutorAdminCard(tutor: TutorResponse, onEdit: () -> Unit, onSchedule: () -> U
                         tint = colorScheme.primary
                     )
                 },
-                text = tutor.email,
+                text = tutor.email
             )
 
             Spacer(Modifier.height(6.dp))
@@ -95,7 +95,7 @@ fun TutorAdminCard(tutor: TutorResponse, onEdit: () -> Unit, onSchedule: () -> U
                         tint = colorScheme.primary
                     )
                 },
-                text = "Stawka: ${tutor.hourlyRate} PLN/h",
+                text = "Stawka: ${tutor.hourlyRate} PLN/h"
             )
 
             tutor.bio?.let {
@@ -109,34 +109,38 @@ fun TutorAdminCard(tutor: TutorResponse, onEdit: () -> Unit, onSchedule: () -> U
                             tint = colorScheme.primary
                         )
                     },
-                    text = it.take(80) + if (it.length > 80) "..." else "",
+                    text = it.take(80) + if (it.length > 80) "..." else ""
                 )
             }
 
             if (tutor.offersOnline || tutor.offersInPerson) {
                 Spacer(Modifier.height(10.dp))
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    if (tutor.offersOnline) Surface(
-                        color = colorScheme.primaryContainer,
-                        shape = RoundedCornerShape(4.dp)
-                    ) {
-                        Text(
-                            "Online",
-                            style = typography.labelSmall,
-                            color = colorScheme.onPrimary,
-                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
-                        )
+                    if (tutor.offersOnline) {
+                        Surface(
+                            color = colorScheme.primaryContainer,
+                            shape = RoundedCornerShape(4.dp)
+                        ) {
+                            Text(
+                                "Online",
+                                style = typography.labelSmall,
+                                color = colorScheme.onPrimary,
+                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                            )
+                        }
                     }
-                    if (tutor.offersInPerson) Surface(
-                        color = colorScheme.secondaryContainer,
-                        shape = RoundedCornerShape(4.dp)
-                    ) {
-                        Text(
-                            "Stacjonarnie",
-                            style = typography.labelSmall,
-                            color = colorScheme.onSecondaryContainer,
-                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
-                        )
+                    if (tutor.offersInPerson) {
+                        Surface(
+                            color = colorScheme.secondaryContainer,
+                            shape = RoundedCornerShape(4.dp)
+                        ) {
+                            Text(
+                                "Stacjonarnie",
+                                style = typography.labelSmall,
+                                color = colorScheme.onSecondaryContainer,
+                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                            )
+                        }
                     }
                 }
             }

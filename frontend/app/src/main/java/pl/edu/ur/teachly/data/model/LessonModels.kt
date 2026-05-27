@@ -12,10 +12,7 @@ data class LessonRequest(
     val amount: Double
 )
 
-data class LessonStatusRequest(
-    val lessonStatus: LessonStatus,
-    val tutorNotes: String?
-)
+data class LessonStatusRequest(val lessonStatus: LessonStatus, val tutorNotes: String?)
 
 data class StudentNotesRequest(val studentNotes: String?)
 

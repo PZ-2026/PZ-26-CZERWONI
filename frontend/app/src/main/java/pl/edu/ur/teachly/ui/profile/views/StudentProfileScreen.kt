@@ -41,6 +41,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import java.time.LocalDate
 import org.koin.androidx.compose.koinViewModel
 import pl.edu.ur.teachly.R
 import pl.edu.ur.teachly.data.model.ReviewResponse
@@ -59,7 +61,6 @@ import pl.edu.ur.teachly.ui.review.viewmodels.MyReviewsViewModel
 import pl.edu.ur.teachly.ui.review.views.AddReviewDialog
 import pl.edu.ur.teachly.ui.review.views.ReviewCard
 import pl.edu.ur.teachly.ui.theme.AvatarColors
-import java.time.LocalDate
 
 @Composable
 fun StudentProfileScreen(
@@ -67,9 +68,9 @@ fun StudentProfileScreen(
     onEditClick: () -> Unit,
     onLogout: () -> Unit,
     viewModel: ProfileViewModel = koinViewModel(),
-    myReviewsViewModel: MyReviewsViewModel = koinViewModel(),
+    myReviewsViewModel: MyReviewsViewModel = koinViewModel()
 ) {
-    val lifecycleOwner = androidx.compose.ui.platform.LocalLifecycleOwner.current
+    val lifecycleOwner = LocalLifecycleOwner.current
     androidx.compose.runtime.DisposableEffect(lifecycleOwner) {
         val observer = androidx.lifecycle.LifecycleEventObserver { _, event ->
             if (event == androidx.lifecycle.Lifecycle.Event.ON_RESUME) {
@@ -109,7 +110,7 @@ fun StudentProfileScreen(
             },
             onSubmit = { rating, comment ->
                 myReviewsViewModel.updateReview(review.id, review.tutorId, rating, comment)
-            },
+            }
         )
     }
 
@@ -126,19 +127,19 @@ fun StudentProfileScreen(
                         myReviewsViewModel.deleteReview(review.id)
                         deletingReview = null
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = colorScheme.error),
+                    colors = ButtonDefaults.buttonColors(containerColor = colorScheme.error)
                 ) { Text("Usuń") }
             },
             dismissButton = {
                 OutlinedButton(onClick = { deletingReview = null }) { Text("Anuluj") }
-            },
+            }
         )
     }
 
     when {
         profile.isLoading -> Box(
             modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center,
+            contentAlignment = Alignment.Center
         ) { CircularProgressIndicator() }
 
         profile.error != null -> FullScreenError(message = profile.error!!)
@@ -153,23 +154,23 @@ fun StudentProfileScreen(
                 avatarColor = AvatarColors[0],
                 role = profile.role,
                 onBack = onBack,
-                onEditClick = onEditClick,
+                onEditClick = onEditClick
             )
 
             PrimaryTabRow(
                 selectedTabIndex = selectedTab,
                 containerColor = colorScheme.surface,
-                contentColor = colorScheme.primary,
+                contentColor = colorScheme.primary
             ) {
                 Tab(
                     selected = selectedTab == 0,
                     onClick = { selectedTab = 0 },
-                    text = { Text("Profil") },
+                    text = { Text("Profil") }
                 )
                 Tab(
                     selected = selectedTab == 1,
                     onClick = { selectedTab = 1 },
-                    text = { Text(stringResource(R.string.my_reviews_title)) },
+                    text = { Text(stringResource(R.string.my_reviews_title)) }
                 )
             }
 
@@ -177,14 +178,14 @@ fun StudentProfileScreen(
                 0 -> ProfileTab(
                     profile = profile,
                     viewModel = viewModel,
-                    onLogout = onLogout,
+                    onLogout = onLogout
                 )
 
                 1 -> MyReviewsTab(
                     reviews = reviewsState.reviews,
                     isLoading = reviewsState.isLoading,
                     onEditReview = { editingReview = it },
-                    onDeleteReview = { deletingReview = it },
+                    onDeleteReview = { deletingReview = it }
                 )
             }
         }
@@ -195,14 +196,14 @@ fun StudentProfileScreen(
 private fun ProfileTab(
     profile: pl.edu.ur.teachly.ui.profile.viewmodels.StudentProfile,
     viewModel: ProfileViewModel,
-    onLogout: () -> Unit,
+    onLogout: () -> Unit
 ) {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(horizontal = 24.dp)
             .verticalScroll(rememberScrollState()),
-        verticalArrangement = Arrangement.spacedBy(20.dp),
+        verticalArrangement = Arrangement.spacedBy(20.dp)
     ) {
         Spacer(Modifier.height(4.dp))
 
@@ -211,16 +212,16 @@ private fun ProfileTab(
                 text = stringResource(R.string.activity),
                 style = typography.titleMedium,
                 fontWeight = FontWeight.Bold,
-                color = colorScheme.onBackground,
+                color = colorScheme.onBackground
             )
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 StatCard(
                     value = "${profile.lessonsCount}",
                     label = stringResource(R.string.completed_lessons),
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier.weight(1f)
                 )
             }
         }
@@ -230,7 +231,7 @@ private fun ProfileTab(
                 ProfileInfoRow(
                     icon = Icons.Default.AlternateEmail,
                     label = stringResource(R.string.email),
-                    value = profile.email,
+                    value = profile.email
                 )
             }
             val phone = formatPhoneNumber(profile.phoneNumber.toString())
@@ -239,7 +240,7 @@ private fun ProfileTab(
                 ProfileInfoRow(
                     icon = Icons.Default.Phone,
                     label = stringResource(R.string.field_phone),
-                    value = phone,
+                    value = phone
                 )
             }
             val formattedDate = remember(profile.createdAt) {
@@ -247,7 +248,9 @@ private fun ProfileTab(
                     val datePart = profile.createdAt.take(10)
                     if (datePart.isNotBlank() && datePart != "null") {
                         formatDate(LocalDate.parse(datePart))
-                    } else ""
+                    } else {
+                        ""
+                    }
                 } catch (e: Exception) {
                     ""
                 }
@@ -257,14 +260,14 @@ private fun ProfileTab(
                 ProfileInfoRow(
                     icon = Icons.Default.CalendarToday,
                     label = stringResource(R.string.account_active_since),
-                    value = formattedDate,
+                    value = formattedDate
                 )
             }
             ProfileDataDivider()
             ProfileInfoRow(
                 icon = Icons.Default.Person,
                 label = stringResource(R.string.role),
-                value = stringResource(R.string.student),
+                value = stringResource(R.string.student)
             )
         }
 
@@ -273,7 +276,7 @@ private fun ProfileTab(
         PrimaryButton(
             text = stringResource(R.string.logout),
             onClick = onLogout,
-            modifier = Modifier.padding(bottom = 32.dp, top = 8.dp),
+            modifier = Modifier.padding(bottom = 32.dp, top = 8.dp)
         )
     }
 }
@@ -283,12 +286,12 @@ private fun MyReviewsTab(
     reviews: List<ReviewResponse>,
     isLoading: Boolean,
     onEditReview: (ReviewResponse) -> Unit,
-    onDeleteReview: (ReviewResponse) -> Unit,
+    onDeleteReview: (ReviewResponse) -> Unit
 ) {
     when {
         isLoading -> Box(
             modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center,
+            contentAlignment = Alignment.Center
         ) { CircularProgressIndicator() }
 
         reviews.isEmpty() -> EmptyListState(message = stringResource(R.string.my_reviews_empty))
@@ -298,14 +301,14 @@ private fun MyReviewsTab(
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 16.dp, vertical = 12.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             reviews.forEach { review ->
                 ReviewCard(
                     review = review,
                     name = "${review.tutorFirstName} ${review.tutorLastName}",
                     onEdit = { onEditReview(review) },
-                    onDelete = { onDeleteReview(review) },
+                    onDelete = { onDeleteReview(review) }
                 )
             }
             Spacer(Modifier.height(16.dp))

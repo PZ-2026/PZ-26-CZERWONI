@@ -1,10 +1,12 @@
 import java.util.Properties
+import org.jlleitschuh.gradle.ktlint.reporter.ReporterType
 
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.ktlint)
 }
 
 val localProperties = Properties()
@@ -50,6 +52,27 @@ android {
         compose = true
         buildConfig = true
     }
+}
+
+ktlint {
+    // Android Studio-friendly defaults
+    android.set(true)
+    outputToConsole.set(true)
+    ignoreFailures.set(false)
+
+    reporters {
+        reporter(ReporterType.PLAIN)
+        reporter(ReporterType.CHECKSTYLE)
+    }
+
+    filter {
+        exclude("**/build/**")
+        exclude("**/generated/**")
+    }
+}
+
+tasks.named("check") {
+    dependsOn("ktlintCheck")
 }
 
 dependencies {

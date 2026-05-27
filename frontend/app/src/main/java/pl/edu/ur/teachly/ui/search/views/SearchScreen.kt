@@ -21,10 +21,7 @@ import pl.edu.ur.teachly.ui.models.Tutor
 import pl.edu.ur.teachly.ui.search.viewmodels.SearchViewModel
 
 @Composable
-fun SearchScreen(
-    onTutorClick: (Tutor) -> Unit = {},
-    viewModel: SearchViewModel = koinViewModel(),
-) {
+fun SearchScreen(onTutorClick: (Tutor) -> Unit = {}, viewModel: SearchViewModel = koinViewModel()) {
     val uiState by viewModel.uiState.collectAsState()
     val focusManager = LocalFocusManager.current
 
@@ -37,18 +34,18 @@ fun SearchScreen(
             query = uiState.query,
             onQueryChange = viewModel::onQueryChange,
             onClear = viewModel::clearQuery,
-            onSearch = { focusManager.clearFocus() },
+            onSearch = { focusManager.clearFocus() }
         )
         FilterChips(
             items = uiState.subjects,
             activeItem = uiState.activeSubject,
-            onSelect = viewModel::onSubjectSelect,
+            onSelect = viewModel::onSubjectSelect
         )
 
         when {
             uiState.isLoading -> Box(
                 modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center,
+                contentAlignment = Alignment.Center
             ) { CircularProgressIndicator() }
 
             uiState.error != null -> FullScreenError(message = uiState.error!!)

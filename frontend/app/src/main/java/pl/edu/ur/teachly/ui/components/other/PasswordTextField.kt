@@ -40,7 +40,7 @@ fun PasswordTextField(
     label: String,
     placeholder: String,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
-    isError: Boolean = false,
+    isError: Boolean = false
 ) {
     var visible by remember { mutableStateOf(false) }
 
@@ -49,7 +49,7 @@ fun PasswordTextField(
             text = label.uppercase(),
             style = typography.labelSmall,
             color = colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(bottom = 8.dp),
+            modifier = Modifier.padding(bottom = 8.dp)
         )
         OutlinedTextField(
             value = value,
@@ -59,7 +59,7 @@ fun PasswordTextField(
                 Text(
                     text = placeholder,
                     style = typography.bodyMedium,
-                    color = colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+                    color = colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
                 )
             },
             leadingIcon = {
@@ -67,7 +67,7 @@ fun PasswordTextField(
                     Icons.Default.Lock,
                     contentDescription = null,
                     tint = colorScheme.onSurfaceVariant,
-                    modifier = Modifier.size(20.dp),
+                    modifier = Modifier.size(20.dp)
                 )
             },
             trailingIcon = {
@@ -77,7 +77,7 @@ fun PasswordTextField(
                         contentDescription = stringResource(
                             if (visible) R.string.cd_hide_password else R.string.cd_show_password
                         ),
-                        tint = colorScheme.onSurfaceVariant,
+                        tint = colorScheme.onSurfaceVariant
                     )
                 }
             },
@@ -86,11 +86,11 @@ fun PasswordTextField(
             singleLine = true,
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Password,
-                imeAction = ImeAction.Done,
+                imeAction = ImeAction.Done
             ),
             keyboardActions = keyboardActions,
             shape = RoundedCornerShape(14.dp),
-            colors = authTextFieldColors(),
+            colors = authTextFieldColors()
         )
         Spacer(Modifier.height(16.dp))
     }

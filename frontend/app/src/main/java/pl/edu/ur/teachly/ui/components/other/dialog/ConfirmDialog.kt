@@ -13,7 +13,7 @@ data class ConfirmConfig(
     val message: String,
     val confirmLabel: String,
     val destructive: Boolean = false,
-    val action: () -> Unit,
+    val action: () -> Unit
 )
 
 @Composable
@@ -24,19 +24,24 @@ fun ConfirmDialog(config: ConfirmConfig, onDismiss: () -> Unit) {
         text = { Text(config.message) },
         confirmButton = {
             Button(
-                onClick = { config.action(); onDismiss() },
-                colors = if (config.destructive)
+                onClick = {
+                    config.action()
+                    onDismiss()
+                },
+                colors = if (config.destructive) {
                     ButtonDefaults.buttonColors(
                         containerColor = colorScheme.error,
-                        contentColor = colorScheme.onError,
+                        contentColor = colorScheme.onError
                     )
-                else ButtonDefaults.buttonColors(),
+                } else {
+                    ButtonDefaults.buttonColors()
+                }
             ) {
                 Text(config.confirmLabel)
             }
         },
         dismissButton = {
             OutlinedButton(onClick = onDismiss) { Text("Anuluj") }
-        },
+        }
     )
 }
