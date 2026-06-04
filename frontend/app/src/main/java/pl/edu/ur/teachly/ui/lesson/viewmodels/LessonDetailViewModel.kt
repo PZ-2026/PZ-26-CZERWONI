@@ -25,13 +25,11 @@ data class LessonDetailUiState(
     val error: String? = null,
     val isSaving: Boolean = false,
     val actionError: String? = null,
-    val actionSuccess: String? = null,
+    val actionSuccess: String? = null
 )
 
-class LessonDetailViewModel(
-    private val lessonRepository: LessonRepository,
-    private val tokenManager: TokenManager,
-) : ViewModel() {
+class LessonDetailViewModel(private val lessonRepository: LessonRepository, private val tokenManager: TokenManager) :
+    ViewModel() {
 
     private val _state = MutableStateFlow(LessonDetailUiState())
     val state: StateFlow<LessonDetailUiState> = _state.asStateFlow()
@@ -53,13 +51,13 @@ class LessonDetailViewModel(
                             lesson = lesson.toUiLessonDetail(),
                             currentUserId = userId,
                             currentUserRole = role,
-                            isLoading = false,
+                            isLoading = false
                         )
                     }
                 },
                 onFailure = { e ->
                     _state.update { it.copy(isLoading = false, error = e.message) }
-                },
+                }
             )
         }
     }
@@ -80,7 +78,7 @@ class LessonDetailViewModel(
                     },
                     onFailure = { e ->
                         _state.update { it.copy(isSaving = false, actionError = e.message) }
-                    },
+                    }
                 )
         }
     }
@@ -100,7 +98,7 @@ class LessonDetailViewModel(
                 },
                 onFailure = { e ->
                     _state.update { it.copy(isSaving = false, actionError = e.message) }
-                },
+                }
             )
         }
     }
@@ -120,7 +118,7 @@ class LessonDetailViewModel(
                 },
                 onFailure = { e ->
                     _state.update { it.copy(isSaving = false, actionError = e.message) }
-                },
+                }
             )
         }
     }
@@ -140,7 +138,7 @@ class LessonDetailViewModel(
                 },
                 onFailure = { e ->
                     _state.update { it.copy(isSaving = false, actionError = e.message) }
-                },
+                }
             )
         }
     }
@@ -149,12 +147,10 @@ class LessonDetailViewModel(
         _state.update { it.copy(actionError = null, actionSuccess = null) }
     }
 
-    fun isThirtyMinutesAfterStart(lesson: LessonDetail): Boolean {
-        return try {
-            val start = lesson.lessonDate.atTime(lesson.timeFrom)
-            java.time.LocalDateTime.now().isAfter(start.plusMinutes(30))
-        } catch (e: Exception) {
-            false
-        }
+    fun isThirtyMinutesAfterStart(lesson: LessonDetail): Boolean = try {
+        val start = lesson.lessonDate.atTime(lesson.timeFrom)
+        java.time.LocalDateTime.now().isAfter(start.plusMinutes(30))
+    } catch (e: Exception) {
+        false
     }
 }

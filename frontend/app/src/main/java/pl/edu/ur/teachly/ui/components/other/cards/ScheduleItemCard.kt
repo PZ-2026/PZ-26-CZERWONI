@@ -20,10 +20,8 @@ import androidx.compose.material.icons.filled.School
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.MaterialTheme.typography
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -31,22 +29,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import java.time.LocalTime
 import pl.edu.ur.teachly.R
 import pl.edu.ur.teachly.data.model.LessonFormat
 import pl.edu.ur.teachly.data.model.LessonStatus
-import pl.edu.ur.teachly.data.model.PaymentStatus
 import pl.edu.ur.teachly.data.model.UserRole
-import pl.edu.ur.teachly.ui.components.other.LessonStatusBadge
+import pl.edu.ur.teachly.ui.components.other.badges.LessonStatusBadge
+import pl.edu.ur.teachly.ui.components.other.badges.PaymentStatusBadge
 import pl.edu.ur.teachly.ui.components.other.formatDate
 import pl.edu.ur.teachly.ui.models.ScheduledClass
-import java.time.LocalTime
 
 @Composable
-fun ScheduleItemCard(
-    item: ScheduledClass,
-    userRole: UserRole = UserRole.STUDENT,
-    onClick: (() -> Unit)? = null,
-) {
+fun ScheduleItemCard(item: ScheduledClass, userRole: UserRole = UserRole.STUDENT, onClick: (() -> Unit)? = null) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -54,47 +48,25 @@ fun ScheduleItemCard(
         colors = CardDefaults.cardColors(containerColor = colorScheme.surface),
         shape = RoundedCornerShape(20.dp),
         border = BorderStroke(1.dp, colorScheme.outline),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-
-            // Subject and status badge
+            // Subject and status badges
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
                     text = item.subject,
                     style = typography.titleMedium,
                     fontWeight = FontWeight.Bold,
-                    color = colorScheme.onSurface,
+                    color = colorScheme.onSurface
                 )
                 Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                     if (item.status != LessonStatus.PENDING && item.status != LessonStatus.CANCELLED) {
-                        val payLabel = when (item.paymentStatus) {
-                            PaymentStatus.PAID -> "Opłacone"
-                            PaymentStatus.PENDING -> "Nieopłacone"
-                            PaymentStatus.CANCELLED -> "Anulowane"
-                        }
-                        val payColor = when (item.paymentStatus) {
-                            PaymentStatus.PAID -> colorScheme.primary
-                            PaymentStatus.PENDING -> colorScheme.tertiary
-                            PaymentStatus.CANCELLED -> colorScheme.error
-                        }
-                        Surface(
-                            shape = MaterialTheme.shapes.small,
-                            color = payColor.copy(alpha = 0.12f)
-                        ) {
-                            Text(
-                                text = payLabel,
-                                style = typography.labelSmall,
-                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                                color = payColor,
-                            )
-                        }
+                        PaymentStatusBadge(status = item.paymentStatus)
                     }
-
                     LessonStatusBadge(status = item.status)
                 }
             }
@@ -124,7 +96,7 @@ fun ScheduleItemCard(
                             tint = colorScheme.primary
                         )
                     },
-                    text = "$personLabel: $personName",
+                    text = "$personLabel: $personName"
                 )
                 Spacer(Modifier.height(6.dp))
             }
@@ -139,7 +111,7 @@ fun ScheduleItemCard(
                         tint = colorScheme.primary
                     )
                 },
-                text = formatDate(item.day),
+                text = formatDate(item.day)
             )
 
             Spacer(Modifier.height(6.dp))
@@ -183,24 +155,6 @@ fun ScheduleItemCard(
 }
 
 @Composable
-private fun StatusBadge(status: String) {
-    val containerColor = when (status) {
-        stringResource(R.string.confirmed) -> colorScheme.primaryContainer
-        stringResource(R.string.pending) -> colorScheme.inversePrimary
-        stringResource(R.string.completed) -> colorScheme.surfaceVariant
-        else -> colorScheme.surface
-    }
-    Surface(shape = MaterialTheme.shapes.small, color = containerColor) {
-        Text(
-            text = status,
-            style = typography.labelSmall,
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-            color = colorScheme.onSurface,
-        )
-    }
-}
-
-@Composable
 private fun InfoRow(icon: @Composable () -> Unit, text: String) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         icon()
@@ -208,7 +162,7 @@ private fun InfoRow(icon: @Composable () -> Unit, text: String) {
         Text(
             text = text,
             style = typography.bodyMedium,
-            color = colorScheme.onSurfaceVariant,
+            color = colorScheme.onSurfaceVariant
         )
     }
 }

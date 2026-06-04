@@ -12,7 +12,15 @@ data class TutorResponse(
     val firstName: String,
     val lastName: String,
     val email: String,
+    val phoneNumber: String?,
     val avatarUrl: String?,
+    val bio: String?,
+    val hourlyRate: Double,
+    val offersOnline: Boolean,
+    val offersInPerson: Boolean
+)
+
+data class TutorSelfProfileRequest(
     val bio: String?,
     val hourlyRate: Double,
     val offersOnline: Boolean,
@@ -56,11 +64,7 @@ data class TutorAvailabilityRecurringResponse(
     val dateTo: String?
 )
 
-data class TutorAvailabilityOverrideRequest(
-    val overrideDate: String,
-    val timeFrom: String?,
-    val timeTo: String?
-)
+data class TutorAvailabilityOverrideRequest(val overrideDate: String, val timeFrom: String?, val timeTo: String?)
 
 data class TutorAvailabilityOverrideResponse(
     val id: Int,
@@ -70,12 +74,6 @@ data class TutorAvailabilityOverrideResponse(
     val timeTo: String?
 )
 
-data class TimeSlot(
-    val timeFrom: String,
-    val timeTo: String
-)
+data class TimeSlot(val timeFrom: String, val timeTo: String)
 
-data class TimetableDayResponse(
-    val date: String,
-    val availableSlots: List<TimeSlot>
-)
+data class TimetableDayResponse(val date: String, val availableSlots: List<TimeSlot>)

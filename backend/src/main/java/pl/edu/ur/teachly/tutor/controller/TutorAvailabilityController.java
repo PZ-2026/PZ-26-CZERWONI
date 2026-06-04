@@ -6,6 +6,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import pl.edu.ur.teachly.tutor.dto.request.TutorAvailabilityOverrideRequest;
@@ -42,6 +43,7 @@ public class TutorAvailabilityController {
 
     @PostMapping("/recurring")
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasRole('ADMIN') or authentication.principal.id == #tutorId")
     public TutorAvailabilityRecurringResponse addRecurring(
             @PathVariable Integer tutorId,
             @Valid @RequestBody TutorAvailabilityRecurringRequest request) {
@@ -50,8 +52,9 @@ public class TutorAvailabilityController {
 
     @DeleteMapping("/recurring/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PreAuthorize("hasRole('ADMIN') or authentication.principal.id == #tutorId")
     public void deleteRecurring(@PathVariable Integer tutorId, @PathVariable Integer id) {
-        availabilityService.deleteRecurring(id);
+        availabilityService.deleteRecurring(id, tutorId);
     }
 
     @GetMapping("/override")
@@ -62,6 +65,7 @@ public class TutorAvailabilityController {
 
     @PostMapping("/override")
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasRole('ADMIN') or authentication.principal.id == #tutorId")
     public TutorAvailabilityOverrideResponse addOverride(
             @PathVariable Integer tutorId,
             @Valid @RequestBody TutorAvailabilityOverrideRequest request) {
@@ -70,7 +74,8 @@ public class TutorAvailabilityController {
 
     @DeleteMapping("/override/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PreAuthorize("hasRole('ADMIN') or authentication.principal.id == #tutorId")
     public void deleteOverride(@PathVariable Integer tutorId, @PathVariable Integer id) {
-        availabilityService.deleteOverride(id);
+        availabilityService.deleteOverride(id, tutorId);
     }
 }

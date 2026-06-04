@@ -7,6 +7,7 @@ public record TutorResponse(
         String firstName,
         String lastName,
         String email,
+        String phoneNumber,
         String avatarUrl,
         String bio,
         BigDecimal hourlyRate,

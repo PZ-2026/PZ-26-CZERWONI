@@ -20,7 +20,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.OutlinedButton
@@ -43,17 +42,14 @@ import androidx.compose.ui.unit.dp
 import pl.edu.ur.teachly.R
 
 @Composable
-fun SplashScreen(
-    onLoginClick: () -> Unit,
-    onRegisterClick: () -> Unit,
-) {
+fun SplashScreen(onLoginClick: () -> Unit, onRegisterClick: () -> Unit) {
     var visible by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) { visible = true }
 
     val authGradient = Brush.linearGradient(
         colors = listOf(
             colorScheme.onPrimaryContainer,
-            colorScheme.primary,
+            colorScheme.primary
         ),
         start = Offset.Zero,
         end = Offset(1000f, 1000f)
@@ -81,17 +77,17 @@ fun SplashScreen(
             AnimatedVisibility(
                 visible = visible,
                 enter = fadeIn(tween(500, delayMillis = 150)) +
-                        slideInVertically(tween(500, delayMillis = 150)) { 30 }
+                    slideInVertically(tween(500, delayMillis = 150)) { 30 }
             ) { HeadlineBlock() }
 
             AnimatedVisibility(
                 visible = visible,
                 enter = fadeIn(tween(500, delayMillis = 300)) +
-                        slideInVertically(tween(500, delayMillis = 300)) { 40 }
+                    slideInVertically(tween(500, delayMillis = 300)) { 40 }
             ) {
                 CtaButtons(
                     onRegisterClick = onRegisterClick,
-                    onLoginClick = onLoginClick,
+                    onLoginClick = onLoginClick
                 )
             }
         }
@@ -136,24 +132,17 @@ private fun LogoRow() {
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(10.dp)
     ) {
-        Box(
+        androidx.compose.foundation.Image(
+            painter = painterResource(R.drawable.app_logo),
+            contentDescription = null,
             modifier = Modifier
-                .size(44.dp)
-                .clip(RoundedCornerShape(14.dp))
-                .background(colorScheme.primary),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                painter = painterResource(R.drawable.ic_logo),
-                contentDescription = null,
-                tint = Color.Unspecified,
-                modifier = Modifier.size(44.dp)
-            )
-        }
+                .size(52.dp)
+                .clip(RoundedCornerShape(16.dp))
+        )
         Text(
             text = stringResource(R.string.app_name),
             style = typography.titleLarge,
-            color = colorScheme.onPrimary,
+            color = colorScheme.onPrimary
         )
     }
 }
@@ -165,22 +154,19 @@ private fun HeadlineBlock() {
         Text(
             text = stringResource(R.string.splash_headline),
             style = typography.displayLarge,
-            color = colorScheme.onPrimary,
+            color = colorScheme.onPrimary
         )
         Text(
             text = stringResource(R.string.splash_subtitle),
             style = typography.bodyLarge,
-            color = colorScheme.onPrimary.copy(alpha = 0.7f),
+            color = colorScheme.onPrimary.copy(alpha = 0.7f)
         )
     }
 }
 
 // CTA buttons
 @Composable
-private fun CtaButtons(
-    onRegisterClick: () -> Unit,
-    onLoginClick: () -> Unit,
-) {
+private fun CtaButtons(onRegisterClick: () -> Unit, onLoginClick: () -> Unit) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Button(
             onClick = onRegisterClick,
@@ -190,12 +176,12 @@ private fun CtaButtons(
             shape = RoundedCornerShape(18.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = colorScheme.secondary,
-                contentColor = colorScheme.onSecondary,
+                contentColor = colorScheme.onSecondary
             )
         ) {
             Text(
                 text = stringResource(R.string.splash_register),
-                style = typography.labelLarge,
+                style = typography.labelLarge
             )
         }
 
@@ -207,16 +193,16 @@ private fun CtaButtons(
             shape = RoundedCornerShape(18.dp),
             colors = ButtonDefaults.outlinedButtonColors(
                 containerColor = Color.Transparent,
-                contentColor = colorScheme.onPrimary,
+                contentColor = colorScheme.onPrimary
             ),
             border = BorderStroke(
                 width = 1.5.dp,
-                color = colorScheme.onPrimary.copy(alpha = 0.3f),
+                color = colorScheme.onPrimary.copy(alpha = 0.3f)
             )
         ) {
             Text(
                 text = stringResource(R.string.splash_login),
-                style = typography.labelLarge,
+                style = typography.labelLarge
             )
         }
     }

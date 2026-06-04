@@ -9,6 +9,7 @@ import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Path
 
 interface SubjectApiService {
@@ -17,25 +18,26 @@ interface SubjectApiService {
     suspend fun getAllSubjects(): Response<List<SubjectResponse>>
 
     @POST("api/subjects")
-    suspend fun addSubject(
-        @Body request: SubjectRequest
-    ): Response<SubjectResponse>
+    suspend fun addSubject(@Body request: SubjectRequest): Response<SubjectResponse>
+
+    @PUT("api/subjects/{id}")
+    suspend fun updateSubject(@Path("id") id: Int, @Body request: SubjectRequest): Response<SubjectResponse>
 
     @DELETE("api/subjects/{id}")
-    suspend fun deleteSubject(
-        @Path("id") id: Int
-    ): Response<Unit>
+    suspend fun deleteSubject(@Path("id") id: Int): Response<Unit>
 
     @GET("api/subjects/categories")
     suspend fun getAllCategories(): Response<List<SubjectCategoryResponse>>
 
     @POST("api/subjects/categories")
-    suspend fun addCategory(
+    suspend fun addCategory(@Body request: SubjectCategoryRequest): Response<SubjectCategoryResponse>
+
+    @PUT("api/subjects/categories/{id}")
+    suspend fun updateCategory(
+        @Path("id") id: Int,
         @Body request: SubjectCategoryRequest
     ): Response<SubjectCategoryResponse>
 
     @DELETE("api/subjects/categories/{id}")
-    suspend fun deleteCategory(
-        @Path("id") id: Int
-    ): Response<Unit>
+    suspend fun deleteCategory(@Path("id") id: Int): Response<Unit>
 }

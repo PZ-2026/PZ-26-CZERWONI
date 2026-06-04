@@ -27,17 +27,17 @@ import androidx.lifecycle.repeatOnLifecycle
 import org.koin.androidx.compose.koinViewModel
 import pl.edu.ur.teachly.R
 import pl.edu.ur.teachly.ui.components.other.AppHeader
+import pl.edu.ur.teachly.ui.components.other.FullScreenError
 import pl.edu.ur.teachly.ui.components.other.HeaderBackground
 import pl.edu.ur.teachly.ui.components.other.section.SectionHeader
 import pl.edu.ur.teachly.ui.components.other.section.SectionItems
 import pl.edu.ur.teachly.ui.schedule.viewmodels.ScheduleViewModel
 
-
 @Composable
 fun ScheduleScreen(
     viewModel: ScheduleViewModel = koinViewModel(),
     onBack: () -> Unit,
-    onLessonClick: (lessonId: Int) -> Unit = {},
+    onLessonClick: (lessonId: Int) -> Unit = {}
 ) {
     val state by viewModel.state.collectAsState()
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -51,43 +51,38 @@ fun ScheduleScreen(
         AppHeader(
             title = stringResource(R.string.schedule),
             subtitle =
-                if (state.userRole == pl.edu.ur.teachly.data.model.UserRole.STUDENT || state.userRole == pl.edu.ur.teachly.data.model.UserRole.ADMIN)
-                    stringResource(R.string.check_your_lessons)
-                else
-                    stringResource(R.string.check_your_sessions),
+            if (state.userRole == pl.edu.ur.teachly.data.model.UserRole.STUDENT ||
+                state.userRole == pl.edu.ur.teachly.data.model.UserRole.ADMIN
+            ) {
+                stringResource(R.string.check_your_lessons)
+            } else {
+                stringResource(R.string.check_your_sessions)
+            },
             background = HeaderBackground.Diagonal(
                 listOf(colorScheme.onPrimaryContainer, colorScheme.primary)
             ),
-            onBack = onBack,
+            onBack = onBack
         )
 
         when {
             state.isLoading -> Box(
                 modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center,
+                contentAlignment = Alignment.Center
             ) { CircularProgressIndicator() }
 
-            state.error != null -> Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center,
-            ) {
-                Text(
-                    text = state.error!!,
-                    style = typography.bodyLarge,
-                    color = colorScheme.error,
-                )
-            }
+            state.error != null -> FullScreenError(message = state.error!!)
 
             state.confirmedClasses.isEmpty() &&
-                    state.pendingClasses.isEmpty() &&
-                    state.completedClasses.isEmpty() -> Box(
+                state.pendingClasses.isEmpty() &&
+                state.completedClasses.isEmpty() &&
+                state.cancelledClasses.isEmpty() -> Box(
                 modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center,
+                contentAlignment = Alignment.Center
             ) {
                 Text(
                     text = stringResource(R.string.no_lesson_history),
                     style = typography.bodyLarge,
-                    color = colorScheme.onBackground.copy(alpha = 0.5f),
+                    color = colorScheme.onBackground.copy(alpha = 0.5f)
                 )
             }
 
@@ -97,9 +92,9 @@ fun ScheduleScreen(
                     start = 16.dp,
                     end = 16.dp,
                     top = 20.dp,
-                    bottom = 80.dp,
+                    bottom = 80.dp
                 ),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 // Confirmed
                 item {
@@ -108,20 +103,20 @@ fun ScheduleScreen(
                         count = state.confirmedClasses.size,
                         expanded = state.confirmedExpanded,
                         badgeColor = colorScheme.primary,
-                        onToggle = viewModel::toggleConfirmed,
+                        onToggle = viewModel::toggleConfirmed
                     )
                 }
                 item {
                     AnimatedVisibility(
                         visible = state.confirmedExpanded,
                         enter = expandVertically(),
-                        exit = shrinkVertically(),
+                        exit = shrinkVertically()
                     ) {
                         SectionItems(
                             classes = state.confirmedClasses,
                             userRole = state.userRole,
                             emptyText = stringResource(R.string.no_confirmed_lessons),
-                            onLessonClick = onLessonClick,
+                            onLessonClick = onLessonClick
                         )
                     }
                 }
@@ -133,20 +128,20 @@ fun ScheduleScreen(
                         count = state.pendingClasses.size,
                         expanded = state.pendingExpanded,
                         badgeColor = colorScheme.tertiary,
-                        onToggle = viewModel::togglePending,
+                        onToggle = viewModel::togglePending
                     )
                 }
                 item {
                     AnimatedVisibility(
                         visible = state.pendingExpanded,
                         enter = expandVertically(),
-                        exit = shrinkVertically(),
+                        exit = shrinkVertically()
                     ) {
                         SectionItems(
                             classes = state.pendingClasses,
                             userRole = state.userRole,
                             emptyText = stringResource(R.string.no_pending_lessons),
-                            onLessonClick = onLessonClick,
+                            onLessonClick = onLessonClick
                         )
                     }
                 }
@@ -158,20 +153,20 @@ fun ScheduleScreen(
                         count = state.completedClasses.size,
                         expanded = state.completedExpanded,
                         badgeColor = colorScheme.outline,
-                        onToggle = viewModel::toggleCompleted,
+                        onToggle = viewModel::toggleCompleted
                     )
                 }
                 item {
                     AnimatedVisibility(
                         visible = state.completedExpanded,
                         enter = expandVertically(),
-                        exit = shrinkVertically(),
+                        exit = shrinkVertically()
                     ) {
                         SectionItems(
                             classes = state.completedClasses,
                             userRole = state.userRole,
                             emptyText = stringResource(R.string.no_completed_lessons),
-                            onLessonClick = onLessonClick,
+                            onLessonClick = onLessonClick
                         )
                     }
                 }
@@ -183,20 +178,20 @@ fun ScheduleScreen(
                         count = state.cancelledClasses.size,
                         expanded = state.cancelledExpanded,
                         badgeColor = colorScheme.error,
-                        onToggle = viewModel::toggleCancelled,
+                        onToggle = viewModel::toggleCancelled
                     )
                 }
                 item {
                     AnimatedVisibility(
                         visible = state.cancelledExpanded,
                         enter = expandVertically(),
-                        exit = shrinkVertically(),
+                        exit = shrinkVertically()
                     ) {
                         SectionItems(
                             classes = state.cancelledClasses,
                             userRole = state.userRole,
                             emptyText = stringResource(R.string.no_cancelled_lessons),
-                            onLessonClick = onLessonClick,
+                            onLessonClick = onLessonClick
                         )
                     }
                 }

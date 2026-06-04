@@ -14,27 +14,27 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun StatCard(modifier: Modifier = Modifier, value: String, label: String) {
+fun StatCard(modifier: Modifier = Modifier, value: String, label: String, compact: Boolean = false) {
     Surface(
         modifier = modifier,
         shape = RoundedCornerShape(16.dp),
         color = colorScheme.surface,
-        shadowElevation = 2.dp,
+        shadowElevation = 2.dp
     ) {
         Column(
-            modifier = Modifier.padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.padding(if (compact) 12.dp else 16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
                 text = value,
-                style = typography.headlineMedium,
+                style = if (compact) typography.titleLarge else typography.headlineMedium,
                 fontWeight = FontWeight.Bold,
-                color = colorScheme.primary,
+                color = colorScheme.primary
             )
             Text(
                 text = label,
                 style = typography.bodySmall,
-                color = colorScheme.onSurfaceVariant,
+                color = colorScheme.onSurfaceVariant
             )
         }
     }

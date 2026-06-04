@@ -15,5 +15,6 @@ public record TutorRequest(
                         message = "Stawka musi być większa niż 0zł")
                 @DecimalMax(value = "1000.0", message = "Stawka nie może być większa niż 1 000zł")
                 BigDecimal hourlyRate,
-        @NotNull Boolean offersOnline,
-        @NotNull Boolean offersInPerson) {}
+        @NotNull(message = "Informacja o lekcjach online jest wymagana") Boolean offersOnline,
+        @NotNull(message = "Informacja o lekcjach stacjonarnych jest wymagana")
+                Boolean offersInPerson) {}

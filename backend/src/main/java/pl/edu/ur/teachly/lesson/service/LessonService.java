@@ -1,10 +1,13 @@
 package pl.edu.ur.teachly.lesson.service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,7 +16,12 @@ import pl.edu.ur.teachly.common.enums.PaymentStatus;
 import pl.edu.ur.teachly.common.enums.UserRole;
 import pl.edu.ur.teachly.common.exception.ResourceNotFoundException;
 import pl.edu.ur.teachly.common.exception.SlotNotAvailableException;
-import pl.edu.ur.teachly.lesson.dto.request.*;
+import pl.edu.ur.teachly.lesson.dto.request.AdminLessonUpdateRequest;
+import pl.edu.ur.teachly.lesson.dto.request.LessonRequest;
+import pl.edu.ur.teachly.lesson.dto.request.LessonStatusRequest;
+import pl.edu.ur.teachly.lesson.dto.request.PaymentStatusRequest;
+import pl.edu.ur.teachly.lesson.dto.request.StudentNotesRequest;
+import pl.edu.ur.teachly.lesson.dto.request.TutorNotesRequest;
 import pl.edu.ur.teachly.lesson.dto.response.LessonResponse;
 import pl.edu.ur.teachly.lesson.entity.Lesson;
 import pl.edu.ur.teachly.lesson.mapper.LessonMapper;
@@ -63,6 +71,11 @@ public class LessonService {
             throw new IllegalArgumentException("Niepoprawny zakres czasu");
         }
 
+        if (LocalDateTime.of(request.lessonDate(), request.timeFrom())
+                .isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("Nie można zarezerwować lekcji w przeszłości");
+        }
+
         List<TimetableDayResponse> available =
                 timetableService.getTimetable(
                         request.tutorId(), request.lessonDate(), request.lessonDate(), studentId);
@@ -105,22 +118,69 @@ public class LessonService {
             throw new SlotNotAvailableException("Masz już zarezerwowaną lekcję w tym czasie");
         }
 
+        BigDecimal amount =
+                tutor.getHourlyRate()
+                        .multiply(BigDecimal.valueOf(duration))
+                        .divide(BigDecimal.valueOf(60), 2, RoundingMode.HALF_UP);
+
         Lesson lesson = lessonMapper.toEntity(request);
         lesson.setStudent(student);
         lesson.setTutor(tutor);
         lesson.setSubject(subject);
         lesson.setLessonStatus(LessonStatus.PENDING);
         lesson.setPaymentStatus(PaymentStatus.PENDING);
+        lesson.setAmount(amount);
 
         return lessonMapper.toResponse(lessonRepository.save(lesson));
     }
 
     @Transactional(readOnly = true)
     public LessonResponse getLesson(Integer lessonId) {
-        return lessonRepository
-                .findById(lessonId)
-                .map(lessonMapper::toResponse)
-                .orElseThrow(() -> new ResourceNotFoundException("Nie znaleziono szukanej lekcji"));
+        Lesson lesson =
+                lessonRepository
+                        .findById(lessonId)
+                        .orElseThrow(
+                                () ->
+                                        new ResourceNotFoundException(
+                                                "Nie znaleziono szukanej lekcji"));
+        User caller = getCurrentUser();
+        if (caller.getUserRole() != UserRole.ADMIN) {
+            boolean isParticipant =
+                    (lesson.getStudent() != null
+                                    && lesson.getStudent().getId().equals(caller.getId()))
+                            || (lesson.getTutor() != null
+                                    && lesson.getTutor().getUserId().equals(caller.getId()));
+            if (!isParticipant) {
+                throw new AccessDeniedException("Brak dostępu do tej lekcji");
+            }
+        }
+        return lessonMapper.toResponse(lesson);
+    }
+
+    @Transactional(readOnly = true)
+    public List<LessonResponse> getAllLessons() {
+        return lessonRepository.findAll().stream().map(lessonMapper::toResponse).toList();
+    }
+
+    @Transactional
+    public LessonResponse adminUpdateLesson(Integer lessonId, AdminLessonUpdateRequest request) {
+        Lesson lesson =
+                lessonRepository
+                        .findById(lessonId)
+                        .orElseThrow(
+                                () ->
+                                        new ResourceNotFoundException(
+                                                "Nie znaleziono szukanej lekcji"));
+        lesson.setLessonDate(request.lessonDate());
+        lesson.setTimeFrom(request.timeFrom());
+        lesson.setTimeTo(request.timeTo());
+        lesson.setFormat(request.format());
+        lesson.setLessonStatus(request.lessonStatus());
+        lesson.setPaymentStatus(request.paymentStatus());
+        lesson.setAmount(request.amount());
+        lesson.setStudentNotes(request.studentNotes());
+        lesson.setTutorNotes(request.tutorNotes());
+        return lessonMapper.toResponse(lessonRepository.save(lesson));
     }
 
     @Transactional(readOnly = true)
@@ -149,9 +209,19 @@ public class LessonService {
 
         LessonStatus newStatus = request.lessonStatus();
         LessonStatus currentStatus = lesson.getLessonStatus();
-        UserRole currentUserRole = getCurrentUserRole();
+        User currentUser = getCurrentUser();
+        UserRole currentUserRole = currentUser.getUserRole();
 
         if (currentUserRole != UserRole.ADMIN) {
+            boolean isParticipant =
+                    (lesson.getStudent() != null
+                                    && lesson.getStudent().getId().equals(currentUser.getId()))
+                            || (lesson.getTutor() != null
+                                    && lesson.getTutor().getUserId().equals(currentUser.getId()));
+            if (!isParticipant) {
+                throw new AccessDeniedException("Brak dostępu do tej lekcji");
+            }
+
             LocalDateTime lessonStart =
                     LocalDateTime.of(lesson.getLessonDate(), lesson.getTimeFrom());
 
@@ -168,7 +238,8 @@ public class LessonService {
     }
 
     @Transactional
-    public LessonResponse updateStudentNotes(Integer lessonId, StudentNotesRequest request) {
+    public LessonResponse updateStudentNotes(
+            Integer lessonId, StudentNotesRequest request, Integer callerId) {
         Lesson lesson =
                 lessonRepository
                         .findById(lessonId)
@@ -176,12 +247,16 @@ public class LessonService {
                                 () ->
                                         new ResourceNotFoundException(
                                                 "Nie znaleziono szukanej lekcji"));
+        if (!lesson.getStudent().getId().equals(callerId)) {
+            throw new AccessDeniedException("Brak uprawnień do edycji notatek tej lekcji");
+        }
         lesson.setStudentNotes(request.studentNotes());
         return lessonMapper.toResponse(lessonRepository.save(lesson));
     }
 
     @Transactional
-    public LessonResponse updateTutorNotes(Integer lessonId, TutorNotesRequest request) {
+    public LessonResponse updateTutorNotes(
+            Integer lessonId, TutorNotesRequest request, Integer callerId) {
         Lesson lesson =
                 lessonRepository
                         .findById(lessonId)
@@ -189,6 +264,9 @@ public class LessonService {
                                 () ->
                                         new ResourceNotFoundException(
                                                 "Nie znaleziono szukanej lekcji"));
+        if (!lesson.getTutor().getUserId().equals(callerId)) {
+            throw new AccessDeniedException("Brak uprawnień do edycji notatek tej lekcji");
+        }
         lesson.setTutorNotes(request.tutorNotes());
         return lessonMapper.toResponse(lessonRepository.save(lesson));
     }
@@ -206,12 +284,12 @@ public class LessonService {
         return lessonMapper.toResponse(lessonRepository.save(lesson));
     }
 
-    private UserRole getCurrentUserRole() {
+    private User getCurrentUser() {
         var auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth == null || !(auth.getPrincipal() instanceof User user)) {
             throw new IllegalStateException("Brak uwierzytelnienia");
         }
-        return user.getUserRole();
+        return user;
     }
 
     private boolean isValidTransition(

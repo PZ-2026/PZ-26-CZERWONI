@@ -12,27 +12,93 @@ import pl.edu.ur.teachly.lesson.entity.Lesson;
 
 @Repository
 public interface LessonRepository extends JpaRepository<Lesson, Integer> {
-    List<Lesson> findByTutor_UserId(Integer tutorId);
 
-    List<Lesson> findByStudent_Id(Integer studentId);
+    // Lesson JOIN Tutor
+    @Query("SELECT l FROM Lesson l JOIN l.tutor t WHERE t.userId = :tutorId")
+    List<Lesson> findByTutor_UserId(@Param("tutorId") Integer tutorId);
 
-    List<Lesson> findByTutor_UserIdAndLessonDate(Integer tutorId, LocalDate lessonDate);
+    // Lesson JOIN User (student)
+    @Query("SELECT l FROM Lesson l JOIN l.student s WHERE s.id = :studentId")
+    List<Lesson> findByStudent_Id(@Param("studentId") Integer studentId);
 
+    // Lesson JOIN Tutor
+    @Query(
+            """
+                    SELECT l FROM Lesson l
+                    JOIN l.tutor t
+                    WHERE t.userId = :tutorId
+                      AND l.lessonDate = :lessonDate
+                    """)
+    List<Lesson> findByTutor_UserIdAndLessonDate(
+            @Param("tutorId") Integer tutorId, @Param("lessonDate") LocalDate lessonDate);
+
+    // Lesson JOIN User (student) JOIN Tutor
+    @Query(
+            """
+                    SELECT COUNT(l) > 0 FROM Lesson l
+                    JOIN l.student s
+                    JOIN l.tutor t
+                    WHERE s.id = :studentId
+                      AND t.userId = :tutorId
+                      AND l.lessonStatus = :status
+                    """)
     boolean existsByStudent_IdAndTutor_UserIdAndLessonStatus(
-            Integer studentId, Integer tutorId, LessonStatus status);
+            @Param("studentId") Integer studentId,
+            @Param("tutorId") Integer tutorId,
+            @Param("status") LessonStatus status);
 
+    // Lesson JOIN Tutor
+    @Query(
+            """
+                    SELECT l FROM Lesson l
+                    JOIN FETCH l.student
+                    JOIN FETCH l.subject
+                    JOIN FETCH l.tutor t
+                    WHERE t.userId = :tutorId
+                      AND l.lessonDate BETWEEN :startDate AND :endDate
+                    """)
     List<Lesson> findByTutor_UserIdAndLessonDateBetween(
-            Integer tutorId, LocalDate startDate, LocalDate endDate);
+            @Param("tutorId") Integer tutorId,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate);
+
+    // Lesson JOIN User (student)
+    @Query(
+            """
+                    SELECT l FROM Lesson l
+                    JOIN FETCH l.tutor t
+                    JOIN FETCH l.subject
+                    JOIN FETCH l.student s
+                    WHERE s.id = :studentId
+                      AND l.lessonDate BETWEEN :startDate AND :endDate
+                    """)
+    List<Lesson> findByStudent_IdAndLessonDateBetween(
+            @Param("studentId") Integer studentId,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate);
+
+    // Lesson for Admin
+    @Query(
+            """
+                    SELECT l FROM Lesson l
+                    JOIN FETCH l.tutor t
+                    JOIN FETCH l.student
+                    JOIN FETCH l.subject
+                    WHERE l.lessonDate BETWEEN :startDate AND :endDate
+                    """)
+    List<Lesson> findByLessonDateBetween(
+            @Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
 
     @Query(
             """
-                        SELECT COUNT(l) > 0
-                        FROM Lesson l
-                        WHERE l.tutor.userId = :tutorId
-                          AND l.lessonDate = :date
-                          AND l.lessonStatus = :status
-                          AND l.timeFrom < :timeTo
-                          AND l.timeTo > :timeFrom
+                    SELECT COUNT(l) > 0
+                    FROM Lesson l
+                    JOIN l.tutor t
+                    WHERE t.userId = :tutorId
+                      AND l.lessonDate = :date
+                      AND l.lessonStatus = :status
+                      AND l.timeFrom < :timeTo
+                      AND l.timeTo > :timeFrom
                     """)
     boolean existsConflictingLesson(
             @Param("tutorId") Integer tutorId,
@@ -43,13 +109,14 @@ public interface LessonRepository extends JpaRepository<Lesson, Integer> {
 
     @Query(
             """
-                        SELECT COUNT(l) > 0
-                        FROM Lesson l
-                        WHERE l.student.id = :studentId
-                          AND l.lessonDate = :date
-                          AND l.lessonStatus <> :cancelledStatus
-                          AND l.timeFrom < :timeTo
-                          AND l.timeTo > :timeFrom
+                    SELECT COUNT(l) > 0
+                    FROM Lesson l
+                    JOIN l.student s
+                    WHERE s.id = :studentId
+                      AND l.lessonDate = :date
+                      AND l.lessonStatus <> :cancelledStatus
+                      AND l.timeFrom < :timeTo
+                      AND l.timeTo > :timeFrom
                     """)
     boolean existsConflictingStudentLesson(
             @Param("studentId") Integer studentId,
@@ -57,4 +124,7 @@ public interface LessonRepository extends JpaRepository<Lesson, Integer> {
             @Param("timeFrom") LocalTime timeFrom,
             @Param("timeTo") LocalTime timeTo,
             @Param("cancelledStatus") LessonStatus cancelledStatus);
+
+    @Query("SELECT l.lessonStatus, COUNT(l) FROM Lesson l GROUP BY l.lessonStatus")
+    List<Object[]> countGroupedByStatus();
 }

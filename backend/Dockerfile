@@ -7,6 +7,7 @@ WORKDIR /app
 COPY build.gradle settings.gradle ./
 COPY gradle ./gradle
 COPY gradlew ./
+COPY libs ./libs
 RUN chmod +x gradlew && ./gradlew dependencies --no-daemon --quiet
 
 # Build application
@@ -19,8 +20,12 @@ FROM eclipse-temurin:21-jre-alpine
 
 WORKDIR /app
 
+# Install DejaVu fonts for full Unicode/Polish characters support in PDF generation
+# font-dejavu is the correct package name in Alpine 3.16+
+RUN apk add --no-cache font-dejavu || apk add --no-cache ttf-dejavu || true
+
 # Non-root user for security
-RUN addgroup -S teachly && adduser -S teachly -G teachly
+RUN addgroup -S teachly && adduser -S teachly -G teachly && mkdir -p /app/logs /app/uploads && chown teachly:teachly /app/logs /app/uploads
 USER teachly
 
 COPY --from=builder /app/build/libs/*.jar app.jar

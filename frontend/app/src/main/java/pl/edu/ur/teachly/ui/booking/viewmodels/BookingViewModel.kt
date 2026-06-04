@@ -2,6 +2,9 @@ package pl.edu.ur.teachly.ui.booking.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import java.time.DayOfWeek
+import java.time.LocalDate
+import java.time.LocalTime
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -17,9 +20,6 @@ import pl.edu.ur.teachly.data.model.TutorSubjectResponse
 import pl.edu.ur.teachly.data.repository.LessonRepository
 import pl.edu.ur.teachly.data.repository.TutorRepository
 import pl.edu.ur.teachly.ui.models.CalendarDay
-import java.time.DayOfWeek
-import java.time.LocalDate
-import java.time.LocalTime
 
 data class TimeSlotUI(val time: String, val isAvailable: Boolean)
 
@@ -37,13 +37,13 @@ data class BookingUiState(
     val isLoading: Boolean = true,
     val isSubmitting: Boolean = false,
     val error: String? = null,
-    val submitError: String? = null,
+    val submitError: String? = null
 )
 
 class BookingViewModel(
     private val tutorRepository: TutorRepository,
     private val lessonRepository: LessonRepository,
-    private val tokenManager: TokenManager,
+    private val tokenManager: TokenManager
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(BookingUiState())
@@ -67,19 +67,19 @@ class BookingViewModel(
                         it.copy(
                             tutor = tutor,
                             availableFormats = formats,
-                            selectedFormat = formats.firstOrNull(),
+                            selectedFormat = formats.firstOrNull()
                         )
                     }
                 },
                 onFailure = { e ->
                     _state.update { it.copy(error = e.message, isLoading = false) }
                     return@launch
-                },
+                }
             )
 
             tutorRepository.getTutorSubjects(tutorId).fold(
                 onSuccess = { subjects -> _state.update { it.copy(tutorSubjects = subjects) } },
-                onFailure = {},
+                onFailure = {}
             )
 
             // Load timetable for next 7 days
@@ -91,8 +91,9 @@ class BookingViewModel(
                         .groupBy { it.date }
                         .mapValues { entry ->
                             val daySlots = entry.value.flatMap { it.availableSlots }
-                            if (daySlots.isEmpty()) emptyList<TimeSlotUI>()
-                            else {
+                            if (daySlots.isEmpty()) {
+                                emptyList<TimeSlotUI>()
+                            } else {
                                 val minTime = daySlots.minOf { LocalTime.parse(it.timeFrom) }
                                 val maxTime = daySlots.maxOf { LocalTime.parse(it.timeTo) }
 
@@ -112,7 +113,7 @@ class BookingViewModel(
                         }
                     _state.update { it.copy(timetableByDate = byDate, isLoading = false) }
                 },
-                onFailure = { _state.update { it.copy(isLoading = false) } },
+                onFailure = { _state.update { it.copy(isLoading = false) } }
             )
         }
     }
@@ -174,7 +175,15 @@ class BookingViewModel(
     }
 
     fun confirmBooking(
-        onSuccess: (tutorName: String, subjectName: String, lessonDate: String, timeFrom: String, timeTo: String, format: String, amount: String) -> Unit
+        onSuccess: (
+            tutorName: String,
+            subjectName: String,
+            lessonDate: String,
+            timeFrom: String,
+            timeTo: String,
+            format: String,
+            amount: String
+        ) -> Unit
     ) {
         val st = _state.value
         val tutor = st.tutor ?: return
@@ -214,7 +223,7 @@ class BookingViewModel(
                 format = format,
                 lessonStatus = LessonStatus.PENDING,
                 studentNotes = null,
-                amount = amount,
+                amount = amount
             )
 
             lessonRepository.createLesson(userId, request).fold(
@@ -231,12 +240,12 @@ class BookingViewModel(
                         lesson.timeFrom.take(5),
                         lesson.timeTo.take(5),
                         formatLabel,
-                        "%.2f".format(lesson.amount),
+                        "%.2f".format(lesson.amount)
                     )
                 },
                 onFailure = { e ->
                     _state.update { it.copy(isSubmitting = false, submitError = e.message) }
-                },
+                }
             )
         }
     }

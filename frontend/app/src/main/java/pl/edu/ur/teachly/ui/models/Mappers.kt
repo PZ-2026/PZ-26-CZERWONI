@@ -1,17 +1,17 @@
 package pl.edu.ur.teachly.ui.models
 
-import pl.edu.ur.teachly.data.model.LessonResponse
-import pl.edu.ur.teachly.data.model.ReviewResponse
-import pl.edu.ur.teachly.data.model.TutorResponse
 import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalTime
+import pl.edu.ur.teachly.data.model.LessonResponse
+import pl.edu.ur.teachly.data.model.ReviewResponse
+import pl.edu.ur.teachly.data.model.TutorResponse
 
 fun TutorResponse.toUiTutor(
     subjects: List<String> = emptyList(),
     rating: Double = 0.0,
     reviewCount: Int = 0,
-    lessonCount: Int = 0,
+    lessonCount: Int = 0
 ): Tutor = Tutor(
     id = id,
     name = "$firstName $lastName".trim(),
@@ -28,6 +28,7 @@ fun TutorResponse.toUiTutor(
     nearestSlots = emptyList(),
     bio = bio ?: "",
     lessonCount = lessonCount,
+    avatarUrl = avatarUrl?.takeIf { it != "null" }
 )
 
 fun LessonResponse.toScheduledClass(): ScheduledClass = ScheduledClass(
@@ -35,21 +36,27 @@ fun LessonResponse.toScheduledClass(): ScheduledClass = ScheduledClass(
     subject = subjectName,
     tutorName = "$tutorFirstName $tutorLastName".trim(),
     studentName = "$studentFirstName $studentLastName".trim(),
+    tutorAvatarUrl = tutorAvatarUrl?.takeIf { it != "null" },
+    studentAvatarUrl = studentAvatarUrl?.takeIf { it != "null" },
     day = LocalDate.parse(lessonDate),
     time = timeFrom.take(5),
     durationMinutes = if (timeFrom.isNotEmpty() && timeTo.isNotEmpty()) {
         Duration.between(LocalTime.parse(timeFrom), LocalTime.parse(timeTo))
             .toMinutes().toInt().coerceAtLeast(0)
-    } else 0,
+    } else {
+        0
+    },
     status = lessonStatus,
     format = format,
-    paymentStatus = paymentStatus,
+    paymentStatus = paymentStatus
 )
 
 fun ReviewResponse.toUiReview(): Review = Review(
+    id = id,
+    studentId = studentId,
     authorName = "$studentFirstName $studentLastName".trim(),
     text = comment ?: "",
-    rating = rating.toInt().coerceIn(1, 5),
+    rating = rating.toInt().coerceIn(1, 5)
 )
 
 fun LessonResponse.toUiLessonDetail(): LessonDetail = LessonDetail(
@@ -58,9 +65,11 @@ fun LessonResponse.toUiLessonDetail(): LessonDetail = LessonDetail(
     tutorId = tutorId,
     tutorFirstName = tutorFirstName,
     tutorLastName = tutorLastName,
+    tutorAvatarUrl = tutorAvatarUrl?.takeIf { it != "null" },
     studentId = studentId,
     studentFirstName = studentFirstName,
     studentLastName = studentLastName,
+    studentAvatarUrl = studentAvatarUrl?.takeIf { it != "null" },
     lessonDate = try {
         LocalDate.parse(lessonDate)
     } catch (e: Exception) {
@@ -81,5 +90,5 @@ fun LessonResponse.toUiLessonDetail(): LessonDetail = LessonDetail(
     tutorNotes = tutorNotes,
     studentNotes = studentNotes,
     amount = amount,
-    paymentStatus = paymentStatus,
+    paymentStatus = paymentStatus
 )

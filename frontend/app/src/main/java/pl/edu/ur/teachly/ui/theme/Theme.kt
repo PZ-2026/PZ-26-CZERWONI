@@ -7,7 +7,6 @@ import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 
-
 @Composable
 fun TeachlyTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),

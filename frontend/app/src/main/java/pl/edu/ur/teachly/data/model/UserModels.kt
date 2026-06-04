@@ -3,13 +3,21 @@ package pl.edu.ur.teachly.data.model
 data class UserUpdateRequest(
     val firstName: String,
     val lastName: String,
+    val email: String,
+    val phoneNumber: String?,
+    val password: String?,
     val avatarUrl: String?
 )
 
-data class PasswordChangeRequest(
-    val currentPassword: String,
-    val newPassword: String
+data class AdminUserUpdateRequest(
+    val firstName: String,
+    val lastName: String,
+    val email: String,
+    val phoneNumber: String,
+    val userRole: UserRole
 )
+
+data class PasswordChangeRequest(val currentPassword: String, val newPassword: String)
 
 data class UserResponse(
     val id: Int,

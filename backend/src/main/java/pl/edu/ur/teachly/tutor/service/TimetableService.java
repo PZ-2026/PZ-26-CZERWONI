@@ -1,8 +1,13 @@
 package pl.edu.ur.teachly.tutor.service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -103,8 +108,14 @@ public class TimetableService {
                 freeBlocks = subtractLesson(freeBlocks, lesson.getTimeFrom(), lesson.getTimeTo());
             }
 
+            final LocalTime minTime =
+                    currentDate.equals(LocalDate.now())
+                            ? LocalDateTime.now().toLocalTime()
+                            : LocalTime.MIDNIGHT;
+
             freeBlocks =
                     freeBlocks.stream()
+                            .filter(b -> b.getTimeFrom().isAfter(minTime))
                             .filter(
                                     b ->
                                             java.time.Duration.between(

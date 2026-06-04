@@ -28,12 +28,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.OffsetMapping
-import androidx.compose.ui.text.input.TransformedText
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import pl.edu.ur.teachly.R
@@ -41,34 +37,11 @@ import pl.edu.ur.teachly.ui.auth.viewmodels.RegisterUiState
 import pl.edu.ur.teachly.ui.auth.viewmodels.RegisterViewModel
 import pl.edu.ur.teachly.ui.components.other.ErrorBanner
 import pl.edu.ur.teachly.ui.components.other.PasswordTextField
+import pl.edu.ur.teachly.ui.components.other.PhoneVisualTransformation
 import pl.edu.ur.teachly.ui.components.other.PrimaryButton
 
-class PhoneVisualTransformation : VisualTransformation {
-    override fun filter(text: AnnotatedString): TransformedText {
-        val formatted = text.text.chunked(3).joinToString(" ")
-
-        val offsetMapping = object : OffsetMapping {
-            override fun originalToTransformed(offset: Int) = offset + when {
-                offset <= 3 -> 0
-                offset <= 6 -> 1
-                else -> 2
-            }
-
-            override fun transformedToOriginal(offset: Int) = offset - when {
-                offset <= 4 -> 0
-                offset <= 8 -> 1
-                else -> 2
-            }
-        }
-        return TransformedText(AnnotatedString(formatted), offsetMapping)
-    }
-}
-
 @Composable
-fun StepTwoContent(
-    uiState: RegisterUiState,
-    viewModel: RegisterViewModel,
-) {
+fun StepTwoContent(uiState: RegisterUiState, viewModel: RegisterViewModel) {
     val focusManager = LocalFocusManager.current
 
     Column(
@@ -77,7 +50,7 @@ fun StepTwoContent(
             .background(colorScheme.background)
             .verticalScroll(rememberScrollState())
             .padding(horizontal = 24.dp)
-            .padding(top = 28.dp, bottom = 48.dp),
+            .padding(top = 28.dp, bottom = 48.dp)
     ) {
         AuthTextField(
             value = uiState.firstName,
@@ -86,7 +59,7 @@ fun StepTwoContent(
             placeholder = stringResource(R.string.first_name_placeholder),
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
             keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) }),
-            capitalize = true,
+            capitalize = true
         )
         AuthTextField(
             value = uiState.lastName,
@@ -95,7 +68,7 @@ fun StepTwoContent(
             placeholder = stringResource(R.string.last_name_placeholder),
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
             keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) }),
-            capitalize = true,
+            capitalize = true
         )
         AuthTextField(
             value = uiState.email,
@@ -106,7 +79,7 @@ fun StepTwoContent(
                 keyboardType = KeyboardType.Email,
                 imeAction = ImeAction.Next
             ),
-            keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) }),
+            keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) })
         )
         AuthTextField(
             value = uiState.phoneNumber,
@@ -118,20 +91,23 @@ fun StepTwoContent(
                 imeAction = ImeAction.Next
             ),
             keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) }),
-            visualTransformation = PhoneVisualTransformation(),
+            visualTransformation = PhoneVisualTransformation()
         )
         PasswordTextField(
             value = uiState.password,
             onValueChange = viewModel::onPasswordChange,
             label = stringResource(R.string.field_password),
             placeholder = stringResource(R.string.field_password_hint),
-            keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus(); viewModel.register() }),
+            keyboardActions = KeyboardActions(onDone = {
+                focusManager.clearFocus()
+                viewModel.register()
+            })
         )
 
         AnimatedVisibility(
             visible = uiState.errorMessage != null,
             enter = fadeIn(tween(200)) + expandVertically(),
-            exit = fadeOut(tween(150)) + shrinkVertically(),
+            exit = fadeOut(tween(150)) + shrinkVertically()
         ) {
             ErrorBanner(message = uiState.errorMessage.orEmpty())
         }
@@ -150,7 +126,7 @@ fun StepTwoContent(
                 style = typography.bodySmall,
                 color = colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth()
             )
         }
 
@@ -158,8 +134,11 @@ fun StepTwoContent(
 
         PrimaryButton(
             text = stringResource(R.string.register_cta),
-            onClick = { focusManager.clearFocus(); viewModel.register() },
-            isLoading = uiState.isLoading,
+            onClick = {
+                focusManager.clearFocus()
+                viewModel.register()
+            },
+            isLoading = uiState.isLoading
         )
     }
 }

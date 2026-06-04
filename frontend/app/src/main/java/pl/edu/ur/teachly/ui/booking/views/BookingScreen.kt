@@ -1,5 +1,11 @@
 package pl.edu.ur.teachly.ui.booking.views
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,8 +17,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme.colorScheme
-import androidx.compose.material3.MaterialTheme.typography
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -31,14 +35,24 @@ import pl.edu.ur.teachly.ui.components.booking.FormatPicker
 import pl.edu.ur.teachly.ui.components.booking.SubjectPicker
 import pl.edu.ur.teachly.ui.components.booking.TimeSlotGrid
 import pl.edu.ur.teachly.ui.components.other.AppHeader
+import pl.edu.ur.teachly.ui.components.other.ErrorBanner
+import pl.edu.ur.teachly.ui.components.other.FullScreenError
 import pl.edu.ur.teachly.ui.components.other.HeaderBackground
 
 @Composable
 fun BookingScreen(
     tutorId: String,
     onBack: () -> Unit,
-    onConfirm: (tutorName: String, subjectName: String, lessonDate: String, timeFrom: String, timeTo: String, format: String, amount: String) -> Unit,
-    viewModel: BookingViewModel = koinViewModel(),
+    onConfirm: (
+        tutorName: String,
+        subjectName: String,
+        lessonDate: String,
+        timeFrom: String,
+        timeTo: String,
+        format: String,
+        amount: String
+    ) -> Unit,
+    viewModel: BookingViewModel = koinViewModel()
 ) {
     val tutorIdInt = tutorId.toIntOrNull() ?: 0
     LaunchedEffect(tutorIdInt) { viewModel.load(tutorIdInt) }
@@ -53,35 +67,21 @@ fun BookingScreen(
         AppHeader(
             title = stringResource(R.string.booking_title),
             subtitle = state.tutor?.let {
-                stringResource(
-                    R.string.tutor_name,
-                    it.firstName,
-                    it.lastName
-                )
+                stringResource(R.string.tutor_name, it.firstName, it.lastName)
             } ?: "",
             background = HeaderBackground.Diagonal(
                 listOf(colorScheme.onPrimaryContainer, colorScheme.primary)
             ),
-            onBack = onBack,
+            onBack = onBack
         )
 
         when {
             state.isLoading -> Box(
                 modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center,
+                contentAlignment = Alignment.Center
             ) { CircularProgressIndicator() }
 
-            state.error != null -> Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center,
-            ) {
-                Text(
-                    text = state.error!!,
-                    style = typography.bodyMedium,
-                    color = colorScheme.error,
-                    modifier = Modifier.padding(24.dp),
-                )
-            }
+            state.error != null -> FullScreenError(message = state.error!!)
 
             else -> {
                 val availableSlots = viewModel.availableSlotsForSelectedDay
@@ -96,10 +96,10 @@ fun BookingScreen(
                         val slotsCount =
                             state.timetableByDate[date.toString()]?.count { it.isAvailable } ?: 0
                         when {
-                            slotsCount >= 6 -> colorScheme.primary
+                            slotsCount >= 6 -> colorScheme.secondary
                             slotsCount in 3..5 -> colorScheme.tertiary
                             slotsCount in 1..2 -> colorScheme.error
-                            else -> colorScheme.outlineVariant
+                            else -> colorScheme.inverseSurface
                         }
                     }
 
@@ -107,14 +107,14 @@ fun BookingScreen(
                         days = state.calendarDays.map { it.first },
                         selectedIndex = state.selectedDayIndex,
                         availabilityColors = availabilityColors,
-                        onSelect = { index -> viewModel.onDaySelect(index) },
+                        onSelect = { index -> viewModel.onDaySelect(index) }
                     )
                     Spacer(Modifier.height(24.dp))
                     if (state.tutorSubjects.isNotEmpty()) {
                         SubjectPicker(
                             subjects = state.tutorSubjects.map { it.subjectName },
                             selectedIndex = state.selectedSubjectIndex,
-                            onSelect = viewModel::onSubjectSelect,
+                            onSelect = viewModel::onSubjectSelect
                         )
                         Spacer(Modifier.height(24.dp))
                     }
@@ -122,29 +122,33 @@ fun BookingScreen(
                         FormatPicker(
                             formats = state.availableFormats,
                             selectedFormat = state.selectedFormat,
-                            onSelect = viewModel::onFormatSelect,
+                            onSelect = viewModel::onFormatSelect
                         )
                         Spacer(Modifier.height(24.dp))
                     }
                     DurationPicker(
                         selected = state.selectedDuration,
                         isDurationAvailable = viewModel::isDurationAvailable,
-                        onSelect = viewModel::onDurationSelect,
+                        onSelect = viewModel::onDurationSelect
                     )
                     Spacer(Modifier.height(24.dp))
                     TimeSlotGrid(
                         availableSlots = availableSlots,
                         selectedSlot = state.selectedSlot,
-                        onSelect = viewModel::onSlotSelect,
+                        onSelect = viewModel::onSlotSelect
                     )
-                    if (state.submitError != null) {
-                        Spacer(Modifier.height(8.dp))
-                        Text(
-                            text = state.submitError!!,
-                            style = typography.bodySmall,
-                            color = colorScheme.error,
-                        )
+
+                    AnimatedVisibility(
+                        visible = state.submitError != null,
+                        enter = fadeIn(tween(200)) + expandVertically(),
+                        exit = fadeOut(tween(150)) + shrinkVertically()
+                    ) {
+                        Column {
+                            Spacer(Modifier.height(8.dp))
+                            ErrorBanner(message = state.submitError.orEmpty())
+                        }
                     }
+
                     Spacer(Modifier.height(80.dp))
                 }
 
@@ -156,7 +160,15 @@ fun BookingScreen(
                     selectedDuration = state.selectedDuration,
                     isSubmitting = state.isSubmitting,
                     onConfirm = {
-                        viewModel.confirmBooking { tutorName, subjectName, lessonDate, timeFrom, timeTo, format, amount ->
+                        viewModel.confirmBooking {
+                                tutorName,
+                                subjectName,
+                                lessonDate,
+                                timeFrom,
+                                timeTo,
+                                format,
+                                amount
+                            ->
                             onConfirm(
                                 tutorName,
                                 subjectName,
@@ -167,7 +179,7 @@ fun BookingScreen(
                                 amount
                             )
                         }
-                    },
+                    }
                 )
             }
         }

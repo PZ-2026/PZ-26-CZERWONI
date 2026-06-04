@@ -16,7 +16,7 @@ data class LoginUiState(
     val isLoading: Boolean = false,
     val errorMessage: Int? = null,
     val errorText: String? = null,
-    val isSuccess: Boolean = false,
+    val isSuccess: Boolean = false
 )
 
 class LoginViewModel(private val repository: AuthRepository) : ViewModel() {

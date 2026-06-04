@@ -10,9 +10,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -39,6 +41,7 @@ fun ProfileHeader(
     role: UserRole = UserRole.STUDENT,
     onBack: () -> Unit,
     onEditClick: (() -> Unit)? = null,
+    onCalendarClick: (() -> Unit)? = null
 ) {
     val roleLabel = when (role) {
         UserRole.STUDENT -> stringResource(R.string.profile_student_role)
@@ -52,7 +55,7 @@ fun ProfileHeader(
                 Brush.linearGradient(
                     colors = listOf(colorScheme.onPrimaryContainer, colorScheme.primary),
                     start = Offset.Zero,
-                    end = Offset(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY),
+                    end = Offset(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY)
                 )
             )
             .padding(horizontal = 24.dp)
@@ -62,7 +65,7 @@ fun ProfileHeader(
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 IconButton(
                     onClick = onBack,
@@ -70,33 +73,54 @@ fun ProfileHeader(
                         .size(36.dp)
                         .background(
                             colorScheme.onPrimary.copy(alpha = 0.15f),
-                            RoundedCornerShape(10.dp),
+                            RoundedCornerShape(10.dp)
                         )
                 ) {
                     Icon(
                         Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = stringResource(R.string.cd_back),
                         tint = colorScheme.onPrimary,
-                        modifier = Modifier.size(20.dp),
+                        modifier = Modifier.size(20.dp)
                     )
                 }
 
-                if (onEditClick != null) {
-                    IconButton(
-                        onClick = onEditClick,
-                        modifier = Modifier
-                            .size(36.dp)
-                            .background(
-                                colorScheme.onPrimary.copy(alpha = 0.15f),
-                                RoundedCornerShape(10.dp),
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    if (onCalendarClick != null) {
+                        IconButton(
+                            onClick = onCalendarClick,
+                            modifier = Modifier
+                                .size(36.dp)
+                                .background(
+                                    colorScheme.onPrimary.copy(alpha = 0.15f),
+                                    RoundedCornerShape(10.dp)
+                                )
+                        ) {
+                            Icon(
+                                Icons.Default.CalendarMonth,
+                                contentDescription = "Harmonogram",
+                                tint = colorScheme.onPrimary,
+                                modifier = Modifier.size(18.dp)
                             )
-                    ) {
-                        Icon(
-                            Icons.Default.Edit,
-                            contentDescription = stringResource(R.string.cd_edit_profile),
-                            tint = colorScheme.onPrimary,
-                            modifier = Modifier.size(18.dp),
-                        )
+                        }
+                        Spacer(modifier = Modifier.width(8.dp))
+                    }
+                    if (onEditClick != null) {
+                        IconButton(
+                            onClick = onEditClick,
+                            modifier = Modifier
+                                .size(36.dp)
+                                .background(
+                                    colorScheme.onPrimary.copy(alpha = 0.15f),
+                                    RoundedCornerShape(10.dp)
+                                )
+                        ) {
+                            Icon(
+                                Icons.Default.Edit,
+                                contentDescription = stringResource(R.string.cd_edit_profile),
+                                tint = colorScheme.onPrimary,
+                                modifier = Modifier.size(18.dp)
+                            )
+                        }
                     }
                 }
             }
@@ -105,24 +129,25 @@ fun ProfileHeader(
 
             Row(
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
-                verticalAlignment = Alignment.CenterVertically,
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 InitialsAvatar(
                     initials = profile.initials,
                     avatarColor = avatarColor,
+                    avatarUrl = profile.avatarUrl
                 )
 
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
                         text = profile.fullName,
                         style = typography.titleLarge,
-                        color = colorScheme.onPrimary,
+                        color = colorScheme.onPrimary
                     )
                     Text(
                         text = roleLabel,
                         style = typography.bodySmall,
                         color = colorScheme.onPrimary.copy(alpha = 0.75f),
-                        modifier = Modifier.padding(top = 2.dp),
+                        modifier = Modifier.padding(top = 2.dp)
                     )
                 }
             }
