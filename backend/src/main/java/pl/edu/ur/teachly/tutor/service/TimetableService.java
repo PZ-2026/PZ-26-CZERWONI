@@ -22,6 +22,7 @@ import pl.edu.ur.teachly.tutor.entity.TutorAvailabilityOverride;
 import pl.edu.ur.teachly.tutor.entity.TutorAvailabilityRecurring;
 import pl.edu.ur.teachly.tutor.repository.TutorAvailabilityOverrideRepository;
 import pl.edu.ur.teachly.tutor.repository.TutorAvailabilityRecurringRepository;
+import pl.edu.ur.teachly.tutor.repository.TutorRepository;
 
 @Service
 @RequiredArgsConstructor
@@ -31,9 +32,23 @@ public class TimetableService {
     private final TutorAvailabilityOverrideRepository overrideRepository;
     private final HolidayRepository holidayRepository;
     private final LessonRepository lessonRepository;
+    private final TutorRepository tutorRepository;
 
     public List<TimetableDayResponse> getTimetable(
             Integer tutorId, LocalDate fromDate, LocalDate toDate, Integer currentStudentId) {
+
+        boolean tutorActive =
+                tutorRepository
+                        .findById(tutorId)
+                        .map(
+                                tutor ->
+                                        tutor.getUser() != null
+                                                && Boolean.TRUE.equals(
+                                                        tutor.getUser().getIsActive()))
+                        .orElse(false);
+        if (!tutorActive) {
+            return Collections.emptyList();
+        }
 
         List<TutorAvailabilityRecurring> recurrings =
                 recurringRepository.findByTutor_UserId(tutorId);

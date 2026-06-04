@@ -12,6 +12,7 @@ import pl.edu.ur.teachly.tutor.dto.request.TutorSelfProfileRequest;
 import pl.edu.ur.teachly.tutor.dto.request.TutorSubjectRequest;
 import pl.edu.ur.teachly.tutor.dto.response.TutorResponse;
 import pl.edu.ur.teachly.tutor.dto.response.TutorSubjectResponse;
+import pl.edu.ur.teachly.tutor.entity.Tutor;
 import pl.edu.ur.teachly.tutor.entity.TutorSubject;
 import pl.edu.ur.teachly.tutor.mapper.TutorMapper;
 import pl.edu.ur.teachly.tutor.mapper.TutorSubjectMapper;
@@ -30,13 +31,16 @@ public class TutorService {
 
     @Transactional(readOnly = true)
     public List<TutorResponse> getAllTutors() {
-        return tutorRepository.findAll().stream().map(tutorMapper::toResponse).toList();
+        return tutorRepository.findByUser_IsActiveTrue().stream()
+                .map(tutorMapper::toResponse)
+                .toList();
     }
 
     @Transactional(readOnly = true)
     public TutorResponse getTutorById(Integer tutorId) {
         return tutorRepository
                 .findById(tutorId)
+                .filter(this::isTutorActive)
                 .map(tutorMapper::toResponse)
                 .orElseThrow(
                         () ->
@@ -46,12 +50,20 @@ public class TutorService {
 
     @Transactional(readOnly = true)
     public List<TutorSubjectResponse> getTutorSubjects(Integer tutorId) {
-        if (!tutorRepository.existsById(tutorId)) {
-            throw new ResourceNotFoundException("Nie znaleziono szukanego korepetytora");
-        }
+        tutorRepository
+                .findById(tutorId)
+                .filter(this::isTutorActive)
+                .orElseThrow(
+                        () ->
+                                new ResourceNotFoundException(
+                                        "Nie znaleziono szukanego korepetytora"));
         return tutorSubjectRepository.findByTutor_UserId(tutorId).stream()
                 .map(tutorSubjectMapper::toResponse)
                 .toList();
+    }
+
+    private boolean isTutorActive(Tutor tutor) {
+        return tutor.getUser() != null && Boolean.TRUE.equals(tutor.getUser().getIsActive());
     }
 
     @Transactional
@@ -73,7 +85,9 @@ public class TutorService {
                 tutorRepository
                         .findById(currentUser.getId())
                         .orElseThrow(
-                                () -> new ResourceNotFoundException("Nie znaleziono profilu korepetytora"));
+                                () ->
+                                        new ResourceNotFoundException(
+                                                "Nie znaleziono profilu korepetytora"));
         tutor.setBio(request.bio());
         tutor.setHourlyRate(request.hourlyRate());
         tutor.setOffersOnline(request.offersOnline());
@@ -87,11 +101,14 @@ public class TutorService {
                 tutorRepository
                         .findById(currentUser.getId())
                         .orElseThrow(
-                                () -> new ResourceNotFoundException("Nie znaleziono profilu korepetytora"));
+                                () ->
+                                        new ResourceNotFoundException(
+                                                "Nie znaleziono profilu korepetytora"));
         var subject =
                 subjectRepository
                         .findById(request.subjectId())
-                        .orElseThrow(() -> new ResourceNotFoundException("Nie znaleziono przedmiotu"));
+                        .orElseThrow(
+                                () -> new ResourceNotFoundException("Nie znaleziono przedmiotu"));
         var tutorSubject =
                 TutorSubject.builder()
                         .tutor(tutor)
@@ -110,7 +127,8 @@ public class TutorService {
         var tutorSubject =
                 tutorSubjectRepository
                         .findById(tutorSubjectId)
-                        .orElseThrow(() -> new ResourceNotFoundException("Nie znaleziono przedmiotu"));
+                        .orElseThrow(
+                                () -> new ResourceNotFoundException("Nie znaleziono przedmiotu"));
         if (!tutorSubject.getTutor().getUserId().equals(currentUser.getId())) {
             throw new AccessDeniedException("Brak uprawnień do usunięcia tego przedmiotu");
         }

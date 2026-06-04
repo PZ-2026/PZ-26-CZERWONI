@@ -11,5 +11,5 @@ public record UserUpdateRequest(
                 @Email(message = "Niepoprawny format adresu email")
                 String email,
         String phoneNumber,
-        String password,
+        @Size(min = 8, message = "Hasło musi mieć co najmniej 8 znaków") String password,
         String avatarUrl) {}

@@ -13,6 +13,7 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import pl.edu.ur.teachly.data.local.TokenManager
+import pl.edu.ur.teachly.data.model.LessonStatus
 import pl.edu.ur.teachly.data.model.UserRole
 import pl.edu.ur.teachly.data.model.UserUpdateRequest
 import pl.edu.ur.teachly.data.repository.LessonRepository
@@ -98,7 +99,11 @@ class ProfileViewModel(
             )
 
             lessonRepository.getStudentLessons(userId).fold(
-                onSuccess = { lessons -> _profile.update { it.copy(lessonsCount = lessons.size) } },
+                onSuccess = { lessons ->
+                    val completedCount =
+                        lessons.count { it.lessonStatus == LessonStatus.COMPLETED }
+                    _profile.update { it.copy(lessonsCount = completedCount) }
+                },
                 onFailure = {}
             )
 
@@ -187,6 +192,12 @@ class ProfileViewModel(
             val digitsPhone = state.phoneNumber.filter { it.isDigit() }
             if (digitsPhone.length != 9) {
                 _editState.update { it.copy(isLoading = false, error = "Numer telefonu musi składać się z 9 cyfr") }
+                return@launch
+            }
+            if (state.password.isNotBlank() && state.password.length < 8) {
+                _editState.update {
+                    it.copy(isLoading = false, error = "Hasło musi mieć co najmniej 8 znaków")
+                }
                 return@launch
             }
 

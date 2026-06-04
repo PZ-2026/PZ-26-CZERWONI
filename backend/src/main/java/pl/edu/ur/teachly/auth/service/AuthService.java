@@ -55,12 +55,13 @@ public class AuthService {
         userRepository.save(user);
 
         if (user.getUserRole() == UserRole.TUTOR) {
-            Tutor tutor = Tutor.builder()
-                    .user(user)
-                    .hourlyRate(BigDecimal.ZERO)
-                    .offersOnline(false)
-                    .offersInPerson(false)
-                    .build();
+            Tutor tutor =
+                    Tutor.builder()
+                            .user(user)
+                            .hourlyRate(BigDecimal.ZERO)
+                            .offersOnline(false)
+                            .offersInPerson(false)
+                            .build();
             tutorRepository.save(tutor);
         }
 

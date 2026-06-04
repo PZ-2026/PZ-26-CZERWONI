@@ -22,6 +22,7 @@ import pl.edu.ur.teachly.tutor.mapper.TutorMapper;
 import pl.edu.ur.teachly.tutor.mapper.TutorSubjectMapper;
 import pl.edu.ur.teachly.tutor.repository.TutorRepository;
 import pl.edu.ur.teachly.tutor.repository.TutorSubjectRepository;
+import pl.edu.ur.teachly.user.entity.User;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("TutorService - testy jednostkowe")
@@ -35,9 +36,9 @@ class TutorServiceTest {
     @InjectMocks private TutorService tutorService;
 
     @Test
-    @DisplayName("getAllTutors - zwraca listę wszystkich korepetytorów")
+    @DisplayName("getAllTutors - zwraca listę aktywnych korepetytorów")
     void getAllTutors_returnsList() {
-        Tutor t1 = new Tutor();
+        Tutor t1 = Tutor.builder().user(User.builder().isActive(true).build()).build();
         TutorResponse r1 =
                 new TutorResponse(
                         1,
@@ -51,7 +52,7 @@ class TutorServiceTest {
                         true,
                         true);
 
-        when(tutorRepository.findAll()).thenReturn(List.of(t1));
+        when(tutorRepository.findByUser_IsActiveTrue()).thenReturn(List.of(t1));
         when(tutorMapper.toResponse(t1)).thenReturn(r1);
 
         List<TutorResponse> result = tutorService.getAllTutors();
@@ -62,7 +63,7 @@ class TutorServiceTest {
     @Test
     @DisplayName("getTutorById - sukces: zwraca korepetytora")
     void getTutorById_found_returnsResponse() {
-        Tutor t1 = new Tutor();
+        Tutor t1 = Tutor.builder().user(User.builder().isActive(true).build()).build();
         TutorResponse r1 =
                 new TutorResponse(
                         1,
@@ -96,13 +97,13 @@ class TutorServiceTest {
     @Test
     @DisplayName("getTutorSubjects - sukces: zwraca przedmioty korepetytora")
     void getTutorSubjects_success() {
-        Tutor t1 = new Tutor();
+        Tutor t1 = Tutor.builder().user(User.builder().isActive(true).build()).build();
         TutorSubject ts = new TutorSubject();
         TutorSubjectResponse r1 =
                 new TutorSubjectResponse(
                         1, 1, "Matematyka", "Kategoria", true, false, false, false, false);
 
-        when(tutorRepository.existsById(1)).thenReturn(true);
+        when(tutorRepository.findById(1)).thenReturn(Optional.of(t1));
         when(tutorSubjectRepository.findByTutor_UserId(1)).thenReturn(List.of(ts));
         when(tutorSubjectMapper.toResponse(ts)).thenReturn(r1);
 
@@ -114,7 +115,7 @@ class TutorServiceTest {
     @Test
     @DisplayName("getTutorSubjects - błąd: tutor nie istnieje")
     void getTutorSubjects_tutorNotFound_throwsException() {
-        when(tutorRepository.existsById(99)).thenReturn(false);
+        when(tutorRepository.findById(99)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> tutorService.getTutorSubjects(99))
                 .isInstanceOf(ResourceNotFoundException.class);

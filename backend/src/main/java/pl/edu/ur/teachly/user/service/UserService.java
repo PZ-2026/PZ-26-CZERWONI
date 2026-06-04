@@ -11,6 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import pl.edu.ur.teachly.common.exception.BusinessValidationException;
 import pl.edu.ur.teachly.common.exception.ResourceNotFoundException;
 import pl.edu.ur.teachly.user.dto.request.AdminUserUpdateRequest;
 import pl.edu.ur.teachly.user.dto.request.UserUpdateRequest;
@@ -55,6 +56,9 @@ public class UserService {
         userMapper.updateFromRequest(request, user);
 
         if (request.password() != null && !request.password().isBlank()) {
+            if (request.password().length() < 8) {
+                throw new BusinessValidationException("Hasło musi mieć co najmniej 8 znaków");
+            }
             user.setPasswordHash(passwordEncoder.encode(request.password()));
         }
 
@@ -148,6 +152,8 @@ public class UserService {
                 Files.createDirectories(uploadPath);
             }
 
+            deleteAvatarFileIfPresent(user.getAvatarUrl());
+
             Path filePath = uploadPath.resolve(newFilename);
             Files.copy(file.getInputStream(), filePath);
 
@@ -167,8 +173,27 @@ public class UserService {
                         .orElseThrow(
                                 () -> new ResourceNotFoundException("Nie znaleziono użytkownika"));
 
+        deleteAvatarFileIfPresent(user.getAvatarUrl());
         user.setAvatarUrl(null);
         User updatedUser = userRepository.save(user);
         return userMapper.toResponse(updatedUser);
+    }
+
+    private void deleteAvatarFileIfPresent(String avatarUrl) {
+        if (avatarUrl == null || avatarUrl.isBlank()) {
+            return;
+        }
+        try {
+            String relativePath = avatarUrl;
+            if (relativePath.startsWith("/uploads/avatars/")) {
+                relativePath = relativePath.substring("/uploads/avatars/".length());
+            }
+            Path path = Paths.get("uploads/avatars").resolve(relativePath).normalize();
+            if (!path.startsWith(Paths.get("uploads/avatars").normalize())) {
+                return;
+            }
+            Files.deleteIfExists(path);
+        } catch (IOException ignored) {
+        }
     }
 }

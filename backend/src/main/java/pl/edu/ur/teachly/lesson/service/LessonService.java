@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import pl.edu.ur.teachly.common.enums.LessonStatus;
 import pl.edu.ur.teachly.common.enums.PaymentStatus;
 import pl.edu.ur.teachly.common.enums.UserRole;
+import pl.edu.ur.teachly.common.exception.BusinessValidationException;
 import pl.edu.ur.teachly.common.exception.ResourceNotFoundException;
 import pl.edu.ur.teachly.common.exception.SlotNotAvailableException;
 import pl.edu.ur.teachly.lesson.dto.request.AdminLessonUpdateRequest;
@@ -59,6 +60,9 @@ public class LessonService {
                                 () ->
                                         new ResourceNotFoundException(
                                                 "Nie znaleziono takiego korepetytora"));
+        if (tutor.getUser() == null || !Boolean.TRUE.equals(tutor.getUser().getIsActive())) {
+            throw new BusinessValidationException("Korepetytor jest niedostępny");
+        }
         var subject =
                 subjectRepository
                         .findById(request.subjectId())

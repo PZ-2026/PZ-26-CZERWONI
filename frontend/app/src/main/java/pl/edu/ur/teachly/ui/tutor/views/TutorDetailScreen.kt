@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import org.koin.androidx.compose.koinViewModel
 import pl.edu.ur.teachly.R
 import pl.edu.ur.teachly.data.model.ReviewResponse
+import pl.edu.ur.teachly.data.model.UserRole
 import pl.edu.ur.teachly.ui.components.other.FullScreenError
 import pl.edu.ur.teachly.ui.components.other.MessageSnackbars
 import pl.edu.ur.teachly.ui.components.other.PrimaryButton
@@ -131,6 +132,7 @@ fun TutorDetailScreen(
                     ProfileHeader(
                         profile = profile,
                         avatarColor = AvatarColors[avatarIndex % AvatarColors.size],
+                        role = UserRole.TUTOR,
                         onBack = onBack
                     )
 

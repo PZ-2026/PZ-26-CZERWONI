@@ -1,32 +1,51 @@
 package pl.edu.ur.teachly.report;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
+
 import java.time.LocalDate;
+import java.util.ArrayList;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import pl.edu.ur.teachly.common.enums.UserRole;
+import pl.edu.ur.teachly.lesson.repository.LessonRepository;
 import pl.edu.ur.teachly.user.entity.User;
 import pl.edu.ur.teachly.user.repository.UserRepository;
 
-@SpringBootTest
-public class ReportServiceTest {
+@ExtendWith(MockitoExtension.class)
+@DisplayName("ReportService – testy jednostkowe")
+class ReportServiceTest {
 
-    @Autowired private ReportService reportService;
+    @Mock private LessonRepository lessonRepository;
+    @Mock private UserRepository userRepository;
 
-    @Autowired private UserRepository userRepository;
+    @InjectMocks private ReportService reportService;
 
     @Test
-    public void testTutorReport() {
-        // user_id = 2 is Marek Nowak (Tutor) in seed data
-        User tutor = userRepository.findById(2).orElseThrow();
-        System.out.println("Tutor: " + tutor.getFirstName());
+    @DisplayName("generateReport – korepetytor, raport lekcji")
+    void generateReport_tutorLessonsReport() {
+        User tutor =
+                User.builder()
+                        .id(2)
+                        .firstName("Marek")
+                        .lastName("Nowak")
+                        .userRole(UserRole.TUTOR)
+                        .build();
         LocalDate endDate = LocalDate.now();
         LocalDate startDate = endDate.minusYears(1);
-        try {
-            reportService.generateReport(tutor, startDate, endDate, "LESSONS", null);
-            System.out.println("TUTOR REPORT SUCCESS");
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw e;
-        }
+
+        when(lessonRepository.findByTutor_UserIdAndLessonDateBetween(
+                        eq(2), eq(startDate), eq(endDate)))
+                .thenReturn(new ArrayList<>());
+
+        byte[] report = reportService.generateReport(tutor, startDate, endDate, "LESSONS", null);
+
+        assertThat(report).isNotNull();
+        assertThat(report.length).isGreaterThan(0);
     }
 }
