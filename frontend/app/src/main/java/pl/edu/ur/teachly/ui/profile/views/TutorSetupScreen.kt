@@ -43,13 +43,19 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import org.koin.androidx.compose.koinViewModel
 import pl.edu.ur.teachly.data.model.SubjectResponse
+import pl.edu.ur.teachly.R
 import pl.edu.ur.teachly.data.model.TutorSubjectResponse
+import pl.edu.ur.teachly.ui.models.TeachingLevel
+import pl.edu.ur.teachly.ui.models.activeTeachingLevels
+import pl.edu.ur.teachly.ui.models.displayLabel
+import pl.edu.ur.teachly.ui.models.shortLabel
 import pl.edu.ur.teachly.ui.components.other.AppHeader
 import pl.edu.ur.teachly.ui.components.other.ErrorBanner
 import pl.edu.ur.teachly.ui.components.other.HeaderBackground
@@ -236,13 +242,7 @@ private fun SectionHeader(title: String) {
 
 @Composable
 private fun SubjectRow(subject: TutorSubjectResponse, onRemove: () -> Unit) {
-    val levels = buildList {
-        if (subject.levelPrimary == true) add("Podstawówka")
-        if (subject.levelHighSchool == true) add("Liceum")
-        if (subject.levelUniversity == true) add("Studia")
-        if (subject.levelExamPrep == true) add("Egzaminy")
-        if (subject.levelProfessional == true) add("Zawodowe")
-    }
+    val levels = subject.activeTeachingLevels().map { it.shortLabel() }
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -315,13 +315,19 @@ private fun AddSubjectDialog(
                 )
 
                 Spacer(modifier = Modifier.height(4.dp))
-                DialogSectionLabel("Poziomy nauczania (wybierz co najmniej jeden)")
+                DialogSectionLabel(stringResource(R.string.teaching_levels_dialog_title))
 
-                LevelCheckRow("Szkoła podstawowa", levelPrimary) { levelPrimary = it }
-                LevelCheckRow("Liceum / technikum", levelHighSchool) { levelHighSchool = it }
-                LevelCheckRow("Studia", levelUniversity) { levelUniversity = it }
-                LevelCheckRow("Przygotowanie do egzaminów", levelExamPrep) { levelExamPrep = it }
-                LevelCheckRow("Szkolenie zawodowe", levelProfessional) { levelProfessional = it }
+                LevelCheckRow(TeachingLevel.PRIMARY.displayLabel(), levelPrimary) { levelPrimary = it }
+                LevelCheckRow(TeachingLevel.HIGH_SCHOOL.displayLabel(), levelHighSchool) {
+                    levelHighSchool = it
+                }
+                LevelCheckRow(TeachingLevel.UNIVERSITY.displayLabel(), levelUniversity) {
+                    levelUniversity = it
+                }
+                LevelCheckRow(TeachingLevel.EXAM.displayLabel(), levelExamPrep) { levelExamPrep = it }
+                LevelCheckRow(TeachingLevel.PROFESSIONAL.displayLabel(), levelProfessional) {
+                    levelProfessional = it
+                }
             }
         },
         confirmButton = {

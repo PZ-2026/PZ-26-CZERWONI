@@ -50,12 +50,10 @@ class TutorDetailViewModel(
                 return@launch
             }
 
-            val subjects = tutorRepository.getTutorSubjects(id)
-                .getOrDefault(emptyList())
-                .map { it.subjectName }
+            val tutorSubjects = tutorRepository.getTutorSubjects(id).getOrDefault(emptyList())
 
             try {
-                _state.update { it.copy(tutor = tutorResponse.toUiTutor(subjects)) }
+                _state.update { it.copy(tutor = tutorResponse.toUiTutor(tutorSubjects = tutorSubjects)) }
             } catch (e: Exception) {
                 _state.update { it.copy(isLoading = false, error = e.message) }
                 return@launch

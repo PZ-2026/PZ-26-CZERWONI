@@ -6,9 +6,11 @@ import java.time.LocalTime
 import pl.edu.ur.teachly.data.model.LessonResponse
 import pl.edu.ur.teachly.data.model.ReviewResponse
 import pl.edu.ur.teachly.data.model.TutorResponse
+import pl.edu.ur.teachly.data.model.TutorSubjectResponse
 
 fun TutorResponse.toUiTutor(
-    subjects: List<String> = emptyList(),
+    tutorSubjects: List<TutorSubjectResponse> = emptyList(),
+    subjects: List<String> = tutorSubjects.map { it.subjectName }.distinct(),
     rating: Double = 0.0,
     reviewCount: Int = 0,
     lessonCount: Int = 0
@@ -17,6 +19,13 @@ fun TutorResponse.toUiTutor(
     name = "$firstName $lastName".trim(),
     initials = "${firstName.firstOrNull() ?: ""}${lastName.firstOrNull() ?: ""}",
     subjects = subjects,
+    subjectsByLevel = tutorSubjects.groupByTeachingLevel(),
+    subjectsWithoutLevel =
+        tutorSubjects
+            .filter { it.activeTeachingLevels().isEmpty() }
+            .map { it.subjectName }
+            .distinct()
+            .sorted(),
     rating = rating,
     reviewCount = reviewCount,
     pricePerHour = hourlyRate.toInt(),

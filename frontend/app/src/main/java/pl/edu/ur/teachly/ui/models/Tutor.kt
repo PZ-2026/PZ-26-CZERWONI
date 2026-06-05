@@ -5,6 +5,8 @@ data class Tutor(
     val name: String,
     val initials: String,
     val subjects: List<String>,
+    val subjectsByLevel: List<SubjectsByLevelGroup> = emptyList(),
+    val subjectsWithoutLevel: List<String> = emptyList(),
     val rating: Double,
     val reviewCount: Int,
     val pricePerHour: Int,

@@ -56,9 +56,7 @@ class TutorProfileViewModel(
             }
 
             val subjectsDeferred = async {
-                tutorRepository.getTutorSubjects(id)
-                    .getOrDefault(emptyList())
-                    .map { it.subjectName }
+                tutorRepository.getTutorSubjects(id).getOrDefault(emptyList())
             }
             val lessonsDeferred = async { lessonRepository.getTutorLessons(id) }
             val reviewsDeferred = async { reviewRepository.getTutorReviews(id) }
@@ -66,7 +64,7 @@ class TutorProfileViewModel(
             val currentUserId = tokenManager.userIdFlow.first()
             val currentRole = tokenManager.roleFlow.first()
 
-            val subjects = subjectsDeferred.await()
+            val tutorSubjects = subjectsDeferred.await()
             val lessonsResult = lessonsDeferred.await()
             val reviewsResult = reviewsDeferred.await()
 
@@ -114,7 +112,7 @@ class TutorProfileViewModel(
             _state.update {
                 it.copy(
                     tutor = tutorResponse.toUiTutor(
-                        subjects = subjects,
+                        tutorSubjects = tutorSubjects,
                         rating = avgRating,
                         reviewCount = reviewsCount,
                         lessonCount = completedLessons

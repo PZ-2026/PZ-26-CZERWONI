@@ -65,6 +65,20 @@
     <string name="tutor_lessons_count">Lekcje</string>
     <string name="tutor_profile_subjects_title">Nauczam</string>
 
+    <!-- Teaching levels (audience / educational stage) -->
+    <string name="teaching_levels_dialog_title">Dla kogo prowadzisz zajęcia? (wybierz co najmniej jeden)</string>
+    <string name="teaching_level_primary">Szkoła podstawowa</string>
+    <string name="teaching_level_high_school">Liceum / technikum</string>
+    <string name="teaching_level_university">Studia</string>
+    <string name="teaching_level_exam">Przygotowanie do egzaminów</string>
+    <string name="teaching_level_professional">Kursy zawodowe</string>
+    <string name="teaching_level_primary_short">Szkoła podst.</string>
+    <string name="teaching_level_high_school_short">Liceum</string>
+    <string name="teaching_level_university_short">Studia</string>
+    <string name="teaching_level_exam_short">Egzaminy</string>
+    <string name="teaching_level_professional_short">Kursy zawodowe</string>
+    <string name="teaching_level_other">Inne przedmioty</string>
+
     <!-- TutorCard -->
     <string name="tutor_price_format">%1$d zł</string>
     <string name="tutor_per_hour">/godz</string>

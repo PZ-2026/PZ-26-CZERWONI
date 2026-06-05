@@ -5,8 +5,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Shield
@@ -25,7 +28,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import pl.edu.ur.teachly.R
 import pl.edu.ur.teachly.ui.components.other.cards.StatCard
+import pl.edu.ur.teachly.ui.models.SubjectsByLevelGroup
 import pl.edu.ur.teachly.ui.models.TutorStats
+import pl.edu.ur.teachly.ui.models.displayLabel
 
 // Shared info row
 @Composable
@@ -92,7 +97,53 @@ fun ProfileDataDivider() {
     )
 }
 
-// Subjects section
+@Composable
+fun SubjectsByLevelSection(
+    groups: List<SubjectsByLevelGroup>,
+    otherSubjects: List<String> = emptyList(),
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier =
+            modifier
+                .heightIn(max = 280.dp)
+                .verticalScroll(rememberScrollState()),
+        verticalArrangement = Arrangement.spacedBy(14.dp)
+    ) {
+        groups.forEach { group ->
+            Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                Text(
+                    text = group.level.displayLabel(),
+                    style = typography.labelLarge,
+                    fontWeight = FontWeight.SemiBold,
+                    color = colorScheme.primary
+                )
+                Text(
+                    text = group.subjectNames.joinToString(" · "),
+                    style = typography.bodyMedium,
+                    color = colorScheme.onSurface
+                )
+            }
+        }
+        if (otherSubjects.isNotEmpty()) {
+            Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                Text(
+                    text = stringResource(R.string.teaching_level_other),
+                    style = typography.labelLarge,
+                    fontWeight = FontWeight.SemiBold,
+                    color = colorScheme.primary
+                )
+                Text(
+                    text = otherSubjects.joinToString(" · "),
+                    style = typography.bodyMedium,
+                    color = colorScheme.onSurface
+                )
+            }
+        }
+    }
+}
+
+// Subjects section (flat chips — fallback when levels are unavailable)
 @Composable
 fun SubjectsSection(subjects: List<String>) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {

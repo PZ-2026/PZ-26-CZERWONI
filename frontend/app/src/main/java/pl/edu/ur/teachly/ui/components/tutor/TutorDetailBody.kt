@@ -9,6 +9,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import pl.edu.ur.teachly.R
 import pl.edu.ur.teachly.data.model.ReviewResponse
+import pl.edu.ur.teachly.ui.components.profile.SubjectsByLevelSection
 import pl.edu.ur.teachly.ui.components.profile.SubjectsSection
 import pl.edu.ur.teachly.ui.models.Tutor
 
@@ -30,7 +31,14 @@ fun TutorDetailBody(
             TutorBioSection(tutor = tutor)
         }
 
-        if (tutor.subjects.isNotEmpty()) {
+        if (tutor.subjectsByLevel.isNotEmpty() || tutor.subjectsWithoutLevel.isNotEmpty()) {
+            DetailSection(title = stringResource(R.string.tutor_profile_subjects_title)) {
+                SubjectsByLevelSection(
+                    groups = tutor.subjectsByLevel,
+                    otherSubjects = tutor.subjectsWithoutLevel
+                )
+            }
+        } else if (tutor.subjects.isNotEmpty()) {
             DetailSection(title = stringResource(R.string.tutor_profile_subjects_title)) {
                 SubjectsSection(subjects = tutor.subjects)
             }

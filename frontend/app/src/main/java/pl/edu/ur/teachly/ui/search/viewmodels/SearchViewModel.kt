@@ -80,13 +80,12 @@ class SearchViewModel(
                                     val subjectsDeferred = async {
                                         tutorRepository.getTutorSubjects(tutor.id)
                                             .getOrDefault(emptyList())
-                                            .map { it.subjectName }
                                     }
                                     val reviewsDeferred = async {
                                         reviewRepository.getTutorReviews(tutor.id)
                                             .getOrDefault(emptyList())
                                     }
-                                    val subjects = subjectsDeferred.await()
+                                    val tutorSubjects = subjectsDeferred.await()
                                     val reviews = reviewsDeferred.await()
                                     val avgRating = if (reviews.isEmpty()) {
                                         0.0
@@ -94,7 +93,7 @@ class SearchViewModel(
                                         reviews.sumOf { it.rating } / reviews.size
                                     }
                                     tutor.toUiTutor(
-                                        subjects = subjects,
+                                        tutorSubjects = tutorSubjects,
                                         rating = (avgRating * 10).toLong() / 10.0,
                                         reviewCount = reviews.size
                                     )
