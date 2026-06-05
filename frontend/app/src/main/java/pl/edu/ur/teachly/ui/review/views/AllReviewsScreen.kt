@@ -46,6 +46,7 @@ import org.koin.androidx.compose.koinViewModel
 import pl.edu.ur.teachly.R
 import pl.edu.ur.teachly.data.model.ReviewResponse
 import pl.edu.ur.teachly.ui.components.other.formatDate
+import pl.edu.ur.teachly.ui.components.other.rememberDebouncedCallback
 import pl.edu.ur.teachly.ui.review.viewmodels.AllReviewsViewModel
 
 @Composable
@@ -79,7 +80,8 @@ fun AllReviewsScreen(
                 .padding(horizontal = 8.dp, vertical = 4.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            IconButton(onClick = onBack) {
+            val debouncedBack = rememberDebouncedCallback(onClick = onBack)
+            IconButton(onClick = debouncedBack) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = stringResource(R.string.cd_back),

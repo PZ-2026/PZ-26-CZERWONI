@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import pl.edu.ur.teachly.R
 import pl.edu.ur.teachly.data.model.UserRole
 import pl.edu.ur.teachly.ui.components.other.InitialsAvatar
+import pl.edu.ur.teachly.ui.components.other.rememberDebouncedCallback
 import pl.edu.ur.teachly.ui.profile.viewmodels.StudentProfile
 import pl.edu.ur.teachly.ui.theme.AvatarColor
 
@@ -67,8 +68,9 @@ fun ProfileHeader(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                val debouncedBack = rememberDebouncedCallback(onClick = onBack)
                 IconButton(
-                    onClick = onBack,
+                    onClick = debouncedBack,
                     modifier = Modifier
                         .size(36.dp)
                         .background(

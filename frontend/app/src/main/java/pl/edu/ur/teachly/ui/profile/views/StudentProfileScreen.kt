@@ -142,7 +142,10 @@ fun StudentProfileScreen(
             contentAlignment = Alignment.Center
         ) { CircularProgressIndicator() }
 
-        profile.error != null -> FullScreenError(message = profile.error!!)
+        profile.error != null -> FullScreenError(
+            message = profile.error!!,
+            onLogout = onLogout
+        )
 
         else -> Column(
             modifier = Modifier

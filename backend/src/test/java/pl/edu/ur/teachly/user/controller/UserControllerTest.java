@@ -73,6 +73,6 @@ class UserControllerTest {
     @Test
     void deactivateUser() throws Exception {
         mockMvc.perform(delete("/api/users/1")).andExpect(status().isNoContent());
-        verify(userService).deactivateUser(1);
+        verify(userService).deactivateUser(eq(1), any());
     }
 }

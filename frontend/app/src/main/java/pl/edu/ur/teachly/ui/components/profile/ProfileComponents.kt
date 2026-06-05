@@ -103,9 +103,9 @@ private const val CollapsedLevelCount = 2
 
 @Composable
 fun SubjectChip(
+    modifier: Modifier = Modifier,
     text: String,
     isOverflow: Boolean = false,
-    modifier: Modifier = Modifier
 ) {
     Surface(
         modifier = modifier,
@@ -134,9 +134,9 @@ fun SubjectChip(
 
 @Composable
 fun SubjectChipsRow(
+    modifier: Modifier = Modifier,
     subjects: List<String>,
     maxVisible: Int? = null,
-    modifier: Modifier = Modifier
 ) {
     val visibleSubjects =
         if (maxVisible != null) {
@@ -195,9 +195,9 @@ private fun SubjectLevelCard(
 
 @Composable
 fun SubjectsByLevelSection(
+    modifier: Modifier = Modifier,
     groups: List<SubjectsByLevelGroup>,
     otherSubjects: List<String> = emptyList(),
-    modifier: Modifier = Modifier
 ) {
     var expanded by rememberSaveable { mutableStateOf(false) }
 

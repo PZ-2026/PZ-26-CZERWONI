@@ -89,8 +89,9 @@ fun AppHeader(
                 .padding(top = topPadding, bottom = bottomPadding)
         ) {
             if (onBack != null) {
+                val debouncedBack = rememberDebouncedCallback(onClick = onBack)
                 IconButton(
-                    onClick = onBack,
+                    onClick = debouncedBack,
                     modifier = Modifier
                         .size(36.dp)
                         .background(

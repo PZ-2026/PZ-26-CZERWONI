@@ -13,6 +13,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import pl.edu.ur.teachly.common.enums.UserRole;
+import pl.edu.ur.teachly.common.exception.BusinessValidationException;
 import pl.edu.ur.teachly.common.exception.ResourceNotFoundException;
 import pl.edu.ur.teachly.user.dto.request.AdminUserUpdateRequest;
 import pl.edu.ur.teachly.user.dto.request.UserUpdateRequest;
@@ -121,21 +122,34 @@ class UserServiceTest {
     @Test
     @DisplayName("deactivateUser – sukces: ustawia isActive = false")
     void deactivateUser_success() {
+        User admin = User.builder().id(2).isActive(true).build();
         User user = User.builder().id(1).isActive(true).build();
         when(userRepository.findById(1)).thenReturn(Optional.of(user));
 
-        userService.deactivateUser(1);
+        userService.deactivateUser(1, admin);
 
         assertThat(user.getIsActive()).isFalse();
         verify(userRepository).save(user);
     }
 
     @Test
+    @DisplayName("deactivateUser – błąd: admin próbuje zablokować własne konto")
+    void deactivateUser_self_throwsBusinessValidationException() {
+        User admin = User.builder().id(1).isActive(true).build();
+
+        assertThatThrownBy(() -> userService.deactivateUser(1, admin))
+                .isInstanceOf(BusinessValidationException.class)
+                .hasMessage("Nie możesz zablokować własnego konta");
+        verify(userRepository, never()).save(any());
+    }
+
+    @Test
     @DisplayName("deactivateUser – błąd: użytkownik nie istnieje")
     void deactivateUser_notFound_throwsResourceNotFoundException() {
+        User admin = User.builder().id(2).isActive(true).build();
         when(userRepository.findById(99)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> userService.deactivateUser(99))
+        assertThatThrownBy(() -> userService.deactivateUser(99, admin))
                 .isInstanceOf(ResourceNotFoundException.class);
     }
 
@@ -147,7 +161,8 @@ class UserServiceTest {
         User user = User.builder().id(1).isActive(false).build();
         when(userRepository.findById(1)).thenReturn(Optional.of(user));
 
-        userService.activateUser(1);
+        User admin = User.builder().id(2).isActive(true).build();
+        userService.activateUser(1, admin);
 
         assertThat(user.getIsActive()).isTrue();
         verify(userRepository).save(user);
@@ -189,6 +204,7 @@ class UserServiceTest {
     @Test
     @DisplayName("adminUpdateUser – sukces")
     void adminUpdateUser_success() {
+        User admin = User.builder().id(2).build();
         User user = User.builder().id(1).build();
         AdminUserUpdateRequest req =
                 new AdminUserUpdateRequest("A", "B", "a@b.pl", "123456789", UserRole.TUTOR);
@@ -209,7 +225,7 @@ class UserServiceTest {
         when(userRepository.save(user)).thenReturn(user);
         when(userMapper.toResponse(user)).thenReturn(response);
 
-        UserResponse result = userService.adminUpdateUser(1, req);
+        UserResponse result = userService.adminUpdateUser(1, req, admin);
 
         assertThat(result).isEqualTo(response);
         assertThat(user.getFirstName()).isEqualTo("A");
@@ -217,5 +233,19 @@ class UserServiceTest {
         assertThat(user.getEmail()).isEqualTo("a@b.pl");
         assertThat(user.getUserRole()).isEqualTo(UserRole.TUTOR);
         verify(userRepository).save(user);
+    }
+
+    @Test
+    @DisplayName("adminUpdateUser – błąd: admin próbuje edytować własne konto")
+    void adminUpdateUser_self_throwsBusinessValidationException() {
+        User admin = User.builder().id(1).userRole(UserRole.ADMIN).build();
+        AdminUserUpdateRequest req =
+                new AdminUserUpdateRequest("A", "B", "a@b.pl", "123456789", UserRole.STUDENT);
+
+        assertThatThrownBy(() -> userService.adminUpdateUser(1, req, admin))
+                .isInstanceOf(BusinessValidationException.class)
+                .hasMessage("Nie możesz edytować własnego konta z panelu administratora");
+        verify(userRepository, never()).findById(any());
+        verify(userRepository, never()).save(any());
     }
 }

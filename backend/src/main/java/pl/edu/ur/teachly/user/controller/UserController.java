@@ -5,11 +5,13 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import pl.edu.ur.teachly.user.dto.request.AdminUserUpdateRequest;
 import pl.edu.ur.teachly.user.dto.request.UserUpdateRequest;
 import pl.edu.ur.teachly.user.dto.response.UserResponse;
+import pl.edu.ur.teachly.user.entity.User;
 import pl.edu.ur.teachly.user.service.UserService;
 
 @RestController
@@ -40,22 +42,25 @@ public class UserController {
     @PutMapping("/{id}/admin")
     @PreAuthorize("hasRole('ADMIN')")
     public UserResponse adminUpdateUser(
-            @PathVariable Integer id, @Valid @RequestBody AdminUserUpdateRequest request) {
-        return userService.adminUpdateUser(id, request);
+            @PathVariable Integer id,
+            @Valid @RequestBody AdminUserUpdateRequest request,
+            @AuthenticationPrincipal User currentUser) {
+        return userService.adminUpdateUser(id, request, currentUser);
     }
 
     @PatchMapping("/{id}/activate")
     @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void activateUser(@PathVariable Integer id) {
-        userService.activateUser(id);
+    public void activateUser(@PathVariable Integer id, @AuthenticationPrincipal User currentUser) {
+        userService.activateUser(id, currentUser);
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deactivateUser(@PathVariable Integer id) {
-        userService.deactivateUser(id);
+    public void deactivateUser(
+            @PathVariable Integer id, @AuthenticationPrincipal User currentUser) {
+        userService.deactivateUser(id, currentUser);
     }
 
     @PostMapping(value = "/{id}/avatar", consumes = "multipart/form-data")
