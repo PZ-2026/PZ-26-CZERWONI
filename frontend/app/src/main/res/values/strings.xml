@@ -78,6 +78,9 @@
     <string name="teaching_level_exam_short">Egzaminy</string>
     <string name="teaching_level_professional_short">Kursy zawodowe</string>
     <string name="teaching_level_other">Inne przedmioty</string>
+    <string name="subjects_see_more">Zobacz więcej</string>
+    <string name="subjects_see_less">Zobacz mniej</string>
+    <string name="subjects_more_count">+%d</string>
 
     <!-- TutorCard -->
     <string name="tutor_price_format">%1$d zł</string>

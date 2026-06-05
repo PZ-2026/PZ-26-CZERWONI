@@ -5,11 +5,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Shield
@@ -19,7 +16,12 @@ import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -97,46 +99,141 @@ fun ProfileDataDivider() {
     )
 }
 
+private const val CollapsedLevelCount = 2
+
+@Composable
+fun SubjectChip(
+    text: String,
+    isOverflow: Boolean = false,
+    modifier: Modifier = Modifier
+) {
+    Surface(
+        modifier = modifier,
+        shape = RoundedCornerShape(16.dp),
+        color =
+            if (isOverflow) {
+                colorScheme.surfaceVariant
+            } else {
+                colorScheme.primaryContainer
+            }
+    ) {
+        Text(
+            text = text,
+            style = typography.bodySmall,
+            fontWeight = FontWeight.SemiBold,
+            color =
+                if (isOverflow) {
+                    colorScheme.onSurfaceVariant
+                } else {
+                    colorScheme.primary
+                },
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
+        )
+    }
+}
+
+@Composable
+fun SubjectChipsRow(
+    subjects: List<String>,
+    maxVisible: Int? = null,
+    modifier: Modifier = Modifier
+) {
+    val visibleSubjects =
+        if (maxVisible != null) {
+            subjects.take(maxVisible)
+        } else {
+            subjects
+        }
+    val hiddenCount =
+        if (maxVisible != null) {
+            (subjects.size - maxVisible).coerceAtLeast(0)
+        } else {
+            0
+        }
+
+    FlowRow(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        visibleSubjects.forEach { subject ->
+            SubjectChip(text = subject)
+        }
+        if (hiddenCount > 0) {
+            SubjectChip(
+                text = stringResource(R.string.subjects_more_count, hiddenCount),
+                isOverflow = true
+            )
+        }
+    }
+}
+
+@Composable
+private fun SubjectLevelCard(
+    title: String,
+    subjectNames: List<String>
+) {
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(14.dp),
+        color = colorScheme.primaryContainer.copy(alpha = 0.35f)
+    ) {
+        Column(
+            modifier = Modifier.padding(horizontal = 14.dp, vertical = 12.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            Text(
+                text = title,
+                style = typography.labelLarge,
+                fontWeight = FontWeight.SemiBold,
+                color = colorScheme.primary
+            )
+            SubjectChipsRow(subjects = subjectNames)
+        }
+    }
+}
+
 @Composable
 fun SubjectsByLevelSection(
     groups: List<SubjectsByLevelGroup>,
     otherSubjects: List<String> = emptyList(),
     modifier: Modifier = Modifier
 ) {
-    Column(
-        modifier =
-            modifier
-                .heightIn(max = 280.dp)
-                .verticalScroll(rememberScrollState()),
-        verticalArrangement = Arrangement.spacedBy(14.dp)
-    ) {
-        groups.forEach { group ->
-            Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                Text(
-                    text = group.level.displayLabel(),
-                    style = typography.labelLarge,
-                    fontWeight = FontWeight.SemiBold,
-                    color = colorScheme.primary
-                )
-                Text(
-                    text = group.subjectNames.joinToString(" · "),
-                    style = typography.bodyMedium,
-                    color = colorScheme.onSurface
+    var expanded by rememberSaveable { mutableStateOf(false) }
+
+    val hasOtherSubjects = otherSubjects.isNotEmpty()
+    val totalBlocks = groups.size + if (hasOtherSubjects) 1 else 0
+    val canExpand = totalBlocks > CollapsedLevelCount
+
+    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(10.dp)) {
+        groups.forEachIndexed { index, group ->
+            if (expanded || index < CollapsedLevelCount) {
+                SubjectLevelCard(
+                    title = group.level.displayLabel(),
+                    subjectNames = group.subjectNames
                 )
             }
         }
-        if (otherSubjects.isNotEmpty()) {
-            Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+        if (hasOtherSubjects && (expanded || groups.size < CollapsedLevelCount)) {
+            SubjectLevelCard(
+                title = stringResource(R.string.teaching_level_other),
+                subjectNames = otherSubjects
+            )
+        }
+        if (canExpand) {
+            TextButton(
+                onClick = { expanded = !expanded },
+                modifier = Modifier.padding(start = 4.dp)
+            ) {
                 Text(
-                    text = stringResource(R.string.teaching_level_other),
+                    text =
+                        if (expanded) {
+                            stringResource(R.string.subjects_see_less)
+                        } else {
+                            stringResource(R.string.subjects_see_more)
+                        },
                     style = typography.labelLarge,
-                    fontWeight = FontWeight.SemiBold,
-                    color = colorScheme.primary
-                )
-                Text(
-                    text = otherSubjects.joinToString(" · "),
-                    style = typography.bodyMedium,
-                    color = colorScheme.onSurface
+                    fontWeight = FontWeight.SemiBold
                 )
             }
         }
@@ -146,27 +243,7 @@ fun SubjectsByLevelSection(
 // Subjects section (flat chips — fallback when levels are unavailable)
 @Composable
 fun SubjectsSection(subjects: List<String>) {
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        FlowRow(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            subjects.forEach { subject ->
-                Surface(
-                    shape = RoundedCornerShape(16.dp),
-                    color = colorScheme.primaryContainer
-                ) {
-                    Text(
-                        text = subject,
-                        style = typography.bodyMedium,
-                        fontWeight = FontWeight.SemiBold,
-                        color = colorScheme.primary,
-                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-                    )
-                }
-            }
-        }
-    }
+    SubjectChipsRow(subjects = subjects)
 }
 
 @Composable

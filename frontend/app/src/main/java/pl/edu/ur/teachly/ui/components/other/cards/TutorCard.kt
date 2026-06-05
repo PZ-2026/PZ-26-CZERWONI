@@ -7,7 +7,6 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -30,6 +29,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import pl.edu.ur.teachly.R
 import pl.edu.ur.teachly.ui.components.other.InitialsAvatar
+import pl.edu.ur.teachly.ui.components.profile.SubjectChipsRow
 import pl.edu.ur.teachly.ui.models.Tutor
 import pl.edu.ur.teachly.ui.theme.AvatarColor
 
@@ -103,26 +103,10 @@ private fun TutorCardInfo(tutor: Tutor) {
                     color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
-                FlowRow(
-                    horizontalArrangement = Arrangement.spacedBy(6.dp),
-                    maxItemsInEachRow = 3,
-                    verticalArrangement = Arrangement.spacedBy(4.dp)
-                ) {
-                    tutor.subjects.forEach { subject ->
-                        Surface(
-                            shape = RoundedCornerShape(16.dp),
-                            color = MaterialTheme.colorScheme.primaryContainer
-                        ) {
-                            Text(
-                                text = subject,
-                                style = MaterialTheme.typography.bodySmall,
-                                fontWeight = FontWeight.SemiBold,
-                                color = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
-                            )
-                        }
-                    }
-                }
+                SubjectChipsRow(
+                    subjects = tutor.subjects,
+                    maxVisible = 3
+                )
             }
             TutorHourlyRate(price = tutor.pricePerHour)
         }
