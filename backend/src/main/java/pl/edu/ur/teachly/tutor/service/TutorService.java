@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import pl.edu.ur.teachly.common.exception.BusinessValidationException;
 import pl.edu.ur.teachly.common.exception.ResourceNotFoundException;
 import pl.edu.ur.teachly.subject.repository.SubjectRepository;
 import pl.edu.ur.teachly.tutor.dto.request.TutorRequest;
@@ -81,6 +82,14 @@ public class TutorService {
 
     @Transactional
     public TutorResponse updateMyProfile(TutorSelfProfileRequest request, User currentUser) {
+        if (!Boolean.TRUE.equals(request.offersOnline())
+                && !Boolean.TRUE.equals(request.offersInPerson())) {
+            throw new BusinessValidationException(
+                    "Wybierz co najmniej jedną formę zajęć (online lub stacjonarnie)");
+        }
+        if (tutorSubjectRepository.findByTutor_UserId(currentUser.getId()).isEmpty()) {
+            throw new BusinessValidationException("Dodaj co najmniej jeden prowadzony przedmiot");
+        }
         var tutor =
                 tutorRepository
                         .findById(currentUser.getId())
@@ -131,6 +140,10 @@ public class TutorService {
                                 () -> new ResourceNotFoundException("Nie znaleziono przedmiotu"));
         if (!tutorSubject.getTutor().getUserId().equals(currentUser.getId())) {
             throw new AccessDeniedException("Brak uprawnień do usunięcia tego przedmiotu");
+        }
+        if (tutorSubjectRepository.findByTutor_UserId(currentUser.getId()).size() <= 1) {
+            throw new BusinessValidationException(
+                    "Musi pozostać co najmniej jeden prowadzony przedmiot");
         }
         tutorSubjectRepository.delete(tutorSubject);
     }

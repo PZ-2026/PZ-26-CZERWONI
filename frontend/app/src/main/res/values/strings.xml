@@ -82,6 +82,13 @@
     <string name="subjects_see_less">Zobacz mniej</string>
     <string name="subjects_more_count">+%d</string>
 
+    <!-- Tutor setup validation -->
+    <string name="tutor_setup_rate_min">Stawka musi wynosić co najmniej 1 PLN</string>
+    <string name="tutor_setup_rate_invalid">Podaj prawidłową stawkę godzinową</string>
+    <string name="tutor_setup_lesson_format_required">Wybierz co najmniej jedną formę zajęć (online lub stacjonarnie)</string>
+    <string name="tutor_setup_subjects_required">Dodaj co najmniej jeden prowadzony przedmiot</string>
+    <string name="tutor_setup_cannot_remove_last_subject">Musi pozostać co najmniej jeden prowadzony przedmiot</string>
+
     <!-- TutorCard -->
     <string name="tutor_price_format">%1$d zł</string>
     <string name="tutor_per_hour">/godz</string>

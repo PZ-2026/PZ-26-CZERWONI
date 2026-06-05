@@ -73,7 +73,14 @@ fun TutorSetupScreen(
 ) {
     val state by viewModel.state.collectAsState()
     var showAddSubjectDialog by rememberSaveable { mutableStateOf(false) }
-    val isFormValid = state.hourlyRate.toDoubleOrNull()?.let { it > 0 } == true
+    val isFormValid = state.isFormValid
+    val hourlyRateError =
+        when {
+            state.hourlyRate.isBlank() -> null
+            state.parsedHourlyRate == null -> stringResource(R.string.tutor_setup_rate_invalid)
+            !state.isHourlyRateValid -> stringResource(R.string.tutor_setup_rate_min)
+            else -> null
+        }
 
     LaunchedEffect(tutorId) { viewModel.load(tutorId) }
 
@@ -149,14 +156,8 @@ fun TutorSetupScreen(
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
-                isError =
-                state.hourlyRate.isNotBlank() &&
-                    (state.hourlyRate.toDoubleOrNull() == null || state.hourlyRate.toDoubleOrNull()!! <= 0),
-                supportingText = if (state.hourlyRate.isNotBlank() && !isFormValid) {
-                    { Text("Podaj prawidłową stawkę większą niż 0") }
-                } else {
-                    null
-                }
+                isError = hourlyRateError != null,
+                supportingText = hourlyRateError?.let { error -> { Text(error) } }
             )
 
             // --- Forma zajęć ---
@@ -168,19 +169,27 @@ fun TutorSetupScreen(
                 onCheckedChange = viewModel::onOffersOnlineChange
             )
             DialogSwitchRow(
-                label = "Zajęcia stacjonarne",
+                label = "Zajęcia stacjonarnie",
                 checked = state.offersInPerson,
                 onCheckedChange = viewModel::onOffersInPersonChange
             )
+            if (!state.hasLessonFormat) {
+                Text(
+                    text = stringResource(R.string.tutor_setup_lesson_format_required),
+                    style = typography.bodySmall,
+                    color = colorScheme.error,
+                    modifier = Modifier.padding(start = 4.dp)
+                )
+            }
 
             // --- Przedmioty ---
             SectionHeader("Prowadzone przedmioty")
 
             if (state.currentSubjects.isEmpty()) {
                 Text(
-                    text = "Nie dodano jeszcze żadnych przedmiotów.",
+                    text = stringResource(R.string.tutor_setup_subjects_required),
                     style = typography.bodyMedium,
-                    color = colorScheme.onSurfaceVariant,
+                    color = colorScheme.error,
                     modifier = Modifier.padding(vertical = 4.dp)
                 )
             } else {
