@@ -71,7 +71,7 @@ fun FullScreenError(
                 textAlign = TextAlign.Center
             )
             Spacer(Modifier.height(8.dp))
-            PrimaryButton(
+            LogoutButton(
                 text = stringResource(R.string.logout),
                 onClick = {
                     if (onLogout != null) {

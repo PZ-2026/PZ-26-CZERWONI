@@ -8,6 +8,8 @@
     <string name="cd_hide_password">Ukryj hasło</string>
     <string name="splash_logo_description">Logo Teachly</string>
     <string name="cd_edit_profile">Edytuj profil</string>
+    <string name="cd_edit_tutor_profile">Edytuj profil korepetytora</string>
+    <string name="cd_tutor_schedule">Harmonogram dostępności</string>
 
     <!-- Shared -->
     <string name="divider_or">lub</string>

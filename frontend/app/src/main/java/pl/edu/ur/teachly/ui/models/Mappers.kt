@@ -33,7 +33,8 @@ fun TutorResponse.toUiTutor(
         if (offersOnline) add("Online")
         if (offersInPerson) add("Stacjonarnie")
     },
-    isOnline = offersOnline,
+    offersOnline = offersOnline,
+    offersInPerson = offersInPerson,
     nearestSlots = emptyList(),
     bio = bio ?: "",
     lessonCount = lessonCount,

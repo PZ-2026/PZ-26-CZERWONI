@@ -41,6 +41,7 @@ import org.koin.androidx.compose.koinViewModel
 import pl.edu.ur.teachly.R
 import pl.edu.ur.teachly.data.model.ReviewResponse
 import pl.edu.ur.teachly.data.model.UserRole
+import pl.edu.ur.teachly.ui.components.other.LogoutButton
 import pl.edu.ur.teachly.ui.components.other.PrimaryButton
 import pl.edu.ur.teachly.ui.components.other.formatDate
 import pl.edu.ur.teachly.ui.components.other.formatPhoneNumber
@@ -152,7 +153,8 @@ fun TutorProfileScreen(
                     role = UserRole.TUTOR,
                     onBack = onBack,
                     onEditClick = if (isMyProfile) onEditClick else null,
-                    onCalendarClick = if (isMyProfile) onAvailabilityClick else null
+                    onCalendarClick = if (isMyProfile) onAvailabilityClick else null,
+                    onTutorSetupClick = if (isMyProfile) onTutorSetupClick else null
                 )
 
                 Column(
@@ -197,12 +199,6 @@ fun TutorProfileScreen(
                                 label = stringResource(R.string.hourly_rate),
                                 value = stringResource(R.string.hourly_rate_value, t.pricePerHour)
                             )
-                            ProfileDataDivider()
-                            ProfileInfoRow(
-                                icon = Icons.Default.Wifi,
-                                label = stringResource(R.string.lesson_format),
-                                value = t.tags.joinToString(" / ")
-                            )
                             val formattedDate = remember(profile.createdAt) {
                                 try {
                                     val datePart = profile.createdAt.take(10)
@@ -235,13 +231,7 @@ fun TutorProfileScreen(
                     if (isMyProfile) {
                         ReportDownloadSection(viewModel = profileViewModel)
 
-                        PrimaryButton(
-                            text = "Edytuj profil korepetytora",
-                            onClick = onTutorSetupClick,
-                            modifier = Modifier.padding(bottom = 8.dp)
-                        )
-
-                        PrimaryButton(
+                        LogoutButton(
                             text = stringResource(R.string.profile_logout),
                             onClick = onLogout,
                             modifier = Modifier.padding(bottom = 24.dp)
@@ -282,7 +272,7 @@ fun TutorProfileScreen(
                         modifier = Modifier.padding(horizontal = 32.dp)
                     )
                     Spacer(Modifier.height(16.dp))
-                    PrimaryButton(
+                    LogoutButton(
                         text = stringResource(R.string.profile_logout),
                         onClick = onLogout,
                         modifier = Modifier.padding(horizontal = 32.dp)

@@ -121,12 +121,7 @@ fun SubjectChip(
             text = text,
             style = typography.bodySmall,
             fontWeight = FontWeight.SemiBold,
-            color =
-                if (isOverflow) {
-                    colorScheme.onSurfaceVariant
-                } else {
-                    colorScheme.primary
-                },
+            color = colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
         )
     }

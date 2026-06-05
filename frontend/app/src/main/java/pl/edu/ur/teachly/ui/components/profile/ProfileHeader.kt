@@ -16,6 +16,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.School
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme.colorScheme
@@ -42,7 +43,8 @@ fun ProfileHeader(
     role: UserRole = UserRole.STUDENT,
     onBack: () -> Unit,
     onEditClick: (() -> Unit)? = null,
-    onCalendarClick: (() -> Unit)? = null
+    onCalendarClick: (() -> Unit)? = null,
+    onTutorSetupClick: (() -> Unit)? = null
 ) {
     val roleLabel = when (role) {
         UserRole.STUDENT -> stringResource(R.string.profile_student_role)
@@ -88,8 +90,9 @@ fun ProfileHeader(
 
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     if (onCalendarClick != null) {
+                        val debouncedCalendar = rememberDebouncedCallback(onClick = onCalendarClick)
                         IconButton(
-                            onClick = onCalendarClick,
+                            onClick = debouncedCalendar,
                             modifier = Modifier
                                 .size(36.dp)
                                 .background(
@@ -99,16 +102,37 @@ fun ProfileHeader(
                         ) {
                             Icon(
                                 Icons.Default.CalendarMonth,
-                                contentDescription = "Harmonogram",
+                                contentDescription = stringResource(R.string.cd_tutor_schedule),
                                 tint = colorScheme.onPrimary,
                                 modifier = Modifier.size(18.dp)
                             )
                         }
-                        Spacer(modifier = Modifier.width(8.dp))
                     }
-                    if (onEditClick != null) {
+                    Spacer(modifier = Modifier.width(8.dp))
+                    if (onTutorSetupClick != null) {
+                        val debouncedTutorSetup = rememberDebouncedCallback(onClick = onTutorSetupClick)
                         IconButton(
-                            onClick = onEditClick,
+                            onClick = debouncedTutorSetup,
+                            modifier = Modifier
+                                .size(36.dp)
+                                .background(
+                                    colorScheme.onPrimary.copy(alpha = 0.15f),
+                                    RoundedCornerShape(10.dp)
+                                )
+                        ) {
+                            Icon(
+                                Icons.Default.School,
+                                contentDescription = stringResource(R.string.cd_edit_tutor_profile),
+                                tint = colorScheme.onPrimary,
+                                modifier = Modifier.size(18.dp)
+                            )
+                        }
+                    }
+                    Spacer(modifier = Modifier.width(8.dp))
+                    if (onEditClick != null) {
+                        val debouncedEdit = rememberDebouncedCallback(onClick = onEditClick)
+                        IconButton(
+                            onClick = debouncedEdit,
                             modifier = Modifier
                                 .size(36.dp)
                                 .background(

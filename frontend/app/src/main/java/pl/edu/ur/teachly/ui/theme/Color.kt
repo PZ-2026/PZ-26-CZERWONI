@@ -104,7 +104,7 @@ val DarkColorScheme = darkColorScheme(
     primary = DeepGreen600,
     onPrimary = Color.White,
     primaryContainer = DeepGreen800,
-    onPrimaryContainer = DeepGreen900,
+    onPrimaryContainer = DeepGreen100,
 
     secondary = Mint700,
     onSecondary = Color.White,

@@ -31,6 +31,8 @@ fun TutorDetailBody(
             TutorBioSection(tutor = tutor)
         }
 
+        TutorLessonFormatSection(tutor = tutor)
+
         if (tutor.subjectsByLevel.isNotEmpty() || tutor.subjectsWithoutLevel.isNotEmpty()) {
             DetailSection(title = stringResource(R.string.tutor_profile_subjects_title)) {
                 SubjectsByLevelSection(
