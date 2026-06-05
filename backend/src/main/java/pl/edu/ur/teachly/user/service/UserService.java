@@ -66,7 +66,12 @@ public class UserService {
     }
 
     @Transactional
-    public UserResponse adminUpdateUser(Integer id, AdminUserUpdateRequest request) {
+    public UserResponse adminUpdateUser(
+            Integer id, AdminUserUpdateRequest request, User currentUser) {
+        if (currentUser.getId().equals(id)) {
+            throw new BusinessValidationException(
+                    "Nie możesz edytować własnego konta z panelu administratora");
+        }
         User user =
                 userRepository
                         .findById(id)
@@ -85,7 +90,7 @@ public class UserService {
     }
 
     @Transactional
-    public void activateUser(Integer id) {
+    public void activateUser(Integer id, User currentUser) {
         User user =
                 userRepository
                         .findById(id)
@@ -98,7 +103,10 @@ public class UserService {
     }
 
     @Transactional
-    public void deactivateUser(Integer id) {
+    public void deactivateUser(Integer id, User currentUser) {
+        if (currentUser.getId().equals(id)) {
+            throw new BusinessValidationException("Nie możesz zablokować własnego konta");
+        }
         User user =
                 userRepository
                         .findById(id)

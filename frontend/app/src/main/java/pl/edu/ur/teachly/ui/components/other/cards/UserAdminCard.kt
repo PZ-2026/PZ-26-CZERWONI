@@ -34,7 +34,13 @@ import pl.edu.ur.teachly.ui.components.other.badges.UserRoleBadge
 import pl.edu.ur.teachly.ui.components.other.formatPhoneNumber
 
 @Composable
-fun UserAdminCard(user: UserResponse, onEdit: () -> Unit, onBanToggle: () -> Unit) {
+fun UserAdminCard(
+    user: UserResponse,
+    onEdit: () -> Unit,
+    onBanToggle: () -> Unit,
+    canEdit: Boolean = true,
+    canToggleBan: Boolean = true
+) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
@@ -66,19 +72,23 @@ fun UserAdminCard(user: UserResponse, onEdit: () -> Unit, onBanToggle: () -> Uni
                     UserRoleBadge(user.role)
                 }
                 Row {
-                    IconButton(onClick = onEdit) {
-                        Icon(
-                            Icons.Default.Edit,
-                            contentDescription = "Edytuj",
-                            tint = colorScheme.primary
-                        )
+                    if (canEdit) {
+                        IconButton(onClick = onEdit) {
+                            Icon(
+                                Icons.Default.Edit,
+                                contentDescription = "Edytuj",
+                                tint = colorScheme.primary
+                            )
+                        }
                     }
-                    IconButton(onClick = onBanToggle) {
-                        Icon(
-                            if (user.isActive) Icons.Default.Block else Icons.Default.LockOpen,
-                            contentDescription = if (user.isActive) "Zablokuj" else "Odblokuj",
-                            tint = if (user.isActive) colorScheme.error else colorScheme.primary
-                        )
+                    if (canToggleBan) {
+                        IconButton(onClick = onBanToggle) {
+                            Icon(
+                                if (user.isActive) Icons.Default.Block else Icons.Default.LockOpen,
+                                contentDescription = if (user.isActive) "Zablokuj" else "Odblokuj",
+                                tint = if (user.isActive) colorScheme.error else colorScheme.primary
+                            )
+                        }
                     }
                 }
             }

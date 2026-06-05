@@ -69,7 +69,7 @@ val appModule = module {
 
     // Admin ViewModels
     viewModel { AdminDashboardViewModel(get()) }
-    viewModel { AdminUsersViewModel(get()) }
+    viewModel { AdminUsersViewModel(get(), get()) }
     viewModel { AdminLessonsViewModel(get()) }
     viewModel { AdminHolidaysViewModel(get()) }
     viewModel { AdminSubjectsViewModel(get()) }

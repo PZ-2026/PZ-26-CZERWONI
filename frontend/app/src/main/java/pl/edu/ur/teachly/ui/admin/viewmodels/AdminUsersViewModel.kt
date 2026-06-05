@@ -5,9 +5,11 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import pl.edu.ur.teachly.data.local.TokenManager
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import pl.edu.ur.teachly.data.model.AdminUserUpdateRequest
@@ -21,17 +23,24 @@ data class AdminUsersState(
     val searchQuery: String = "",
     val selectedRole: UserRole? = null,
     val activeFilter: Boolean? = null,
+    val currentUserId: Int? = null,
     val isLoading: Boolean = true,
     val error: String? = null,
     val successMessage: String? = null
 )
 
-class AdminUsersViewModel(private val userRepository: UserRepository) : ViewModel() {
+class AdminUsersViewModel(
+    private val userRepository: UserRepository,
+    private val tokenManager: TokenManager
+) : ViewModel() {
 
     private val _state = MutableStateFlow(AdminUsersState())
     val state: StateFlow<AdminUsersState> = _state.asStateFlow()
 
     init {
+        viewModelScope.launch {
+            _state.update { it.copy(currentUserId = tokenManager.userIdFlow.first()) }
+        }
         loadUsers()
     }
 
@@ -80,6 +89,10 @@ class AdminUsersViewModel(private val userRepository: UserRepository) : ViewMode
     }
 
     fun banUser(userId: Int) {
+        if (userId == _state.value.currentUserId) {
+            _state.update { it.copy(error = "Nie możesz zablokować własnego konta") }
+            return
+        }
         viewModelScope.launch {
             userRepository.deactivateUser(userId).fold(
                 onSuccess = {
@@ -119,6 +132,10 @@ class AdminUsersViewModel(private val userRepository: UserRepository) : ViewMode
         pendingAvatarFile: java.io.File?,
         pendingDeleteAvatar: Boolean
     ) {
+        if (userId == _state.value.currentUserId) {
+            _state.update { it.copy(error = "Nie możesz edytować własnego konta z panelu administratora") }
+            return
+        }
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, error = null) }
 

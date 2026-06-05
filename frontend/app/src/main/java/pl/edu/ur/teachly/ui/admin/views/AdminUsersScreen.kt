@@ -121,10 +121,13 @@ fun AdminUsersScreen(viewModel: AdminUsersViewModel = koinViewModel(), initialRo
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     items(state.filteredUsers) { user ->
+                        val isCurrentUser = user.id == state.currentUserId
                         UserAdminCard(
                             user = user,
                             onEdit = { showEditDialog = user },
-                            onBanToggle = { showBanDialog = user }
+                            onBanToggle = { showBanDialog = user },
+                            canEdit = !isCurrentUser,
+                            canToggleBan = !isCurrentUser
                         )
                     }
                 }
