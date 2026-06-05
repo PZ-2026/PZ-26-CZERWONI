@@ -35,8 +35,6 @@ import pl.edu.ur.teachly.ui.theme.AvatarColor
 
 @Composable
 fun TutorCard(tutor: Tutor, colors: AvatarColor, onClick: () -> Unit) {
-    val (avatarBg, avatarFg) = colors
-
     Surface(
         modifier = Modifier
             .fillMaxWidth()

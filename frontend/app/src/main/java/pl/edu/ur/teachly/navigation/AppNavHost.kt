@@ -211,52 +211,58 @@ fun AppNavHost(
             val role by tokenManager.roleFlow.collectAsState(initial = null)
             val userId by tokenManager.userIdFlow.collectAsState(initial = null)
 
-            val profileViewModel: ProfileViewModel = koinViewModel(viewModelStoreOwner = entry)
-            val tutorViewModel: TutorProfileViewModel = koinViewModel(viewModelStoreOwner = entry)
-
             when (role) {
                 null -> Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) { CircularProgressIndicator() }
 
-                "TUTOR" -> TutorProfileScreen(
-                    tutorId = userId?.toString() ?: "",
-                    isMyProfile = true,
-                    onBack = onBack,
-                    onEditClick = { navController.navigate(AppRoute.ProfileEdit) },
-                    onTutorSetupClick = {
-                        userId?.let {
-                            navController.navigate(AppRoute.TutorSetup(it, returnToProfile = true))
-                        }
-                    },
-                    onLogout = { navController.navigateToSplash() },
-                    onSeeAllReviews = {
-                        userId?.let {
-                            navController.navigate(AppRoute.AllReviews(it, ""))
-                        }
-                    },
-                    onAvailabilityClick = {
-                        userId?.let {
-                            navController.navigate(AppRoute.TutorAvailability(it))
-                        }
-                    },
-                    viewModel = tutorViewModel
-                )
+                "TUTOR" -> {
+                    val tutorViewModel: TutorProfileViewModel = koinViewModel(viewModelStoreOwner = entry)
+                    TutorProfileScreen(
+                        tutorId = userId?.toString() ?: "",
+                        isMyProfile = true,
+                        onBack = onBack,
+                        onEditClick = { navController.navigate(AppRoute.ProfileEdit) },
+                        onTutorSetupClick = {
+                            userId?.let {
+                                navController.navigate(AppRoute.TutorSetup(it, returnToProfile = true))
+                            }
+                        },
+                        onLogout = { navController.navigateToSplash() },
+                        onSeeAllReviews = {
+                            userId?.let {
+                                navController.navigate(AppRoute.AllReviews(it, ""))
+                            }
+                        },
+                        onAvailabilityClick = {
+                            userId?.let {
+                                navController.navigate(AppRoute.TutorAvailability(it))
+                            }
+                        },
+                        viewModel = tutorViewModel
+                    )
+                }
 
-                "ADMIN" -> AdminProfileScreen(
-                    onBack = onBack,
-                    onLogout = { navController.navigateToSplash() },
-                    onEditClick = { navController.navigate(AppRoute.ProfileEdit) },
-                    viewModel = profileViewModel
-                )
+                "ADMIN" -> {
+                    val profileViewModel: ProfileViewModel = koinViewModel(viewModelStoreOwner = entry)
+                    AdminProfileScreen(
+                        onBack = onBack,
+                        onLogout = { navController.navigateToSplash() },
+                        onEditClick = { navController.navigate(AppRoute.ProfileEdit) },
+                        viewModel = profileViewModel
+                    )
+                }
 
-                else -> StudentProfileScreen(
-                    onBack = onBack,
-                    onEditClick = { navController.navigate(AppRoute.ProfileEdit) },
-                    onLogout = { navController.navigateToSplash() },
-                    viewModel = profileViewModel
-                )
+                else -> {
+                    val profileViewModel: ProfileViewModel = koinViewModel(viewModelStoreOwner = entry)
+                    StudentProfileScreen(
+                        onBack = onBack,
+                        onEditClick = { navController.navigate(AppRoute.ProfileEdit) },
+                        onLogout = { navController.navigateToSplash() },
+                        viewModel = profileViewModel
+                    )
+                }
             }
         }
 

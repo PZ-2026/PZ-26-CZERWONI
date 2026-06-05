@@ -45,10 +45,14 @@ class TutorProfileViewModel(
     private val _state = MutableStateFlow(TutorProfileState())
     val state: StateFlow<TutorProfileState> = _state.asStateFlow()
 
+    private var hasLoaded = false
+
     fun loadProfile(tutorId: String) {
         val id = tutorId.toIntOrNull() ?: return
         viewModelScope.launch {
-            _state.update { it.copy(isLoading = true, error = null) }
+            if (!hasLoaded) {
+                _state.update { it.copy(isLoading = true, error = null) }
+            }
 
             val tutorResponse = tutorRepository.getTutorById(id).getOrElse { e ->
                 _state.update { it.copy(isLoading = false, error = e.message) }
@@ -109,6 +113,7 @@ class TutorProfileViewModel(
                 }
             }
 
+            hasLoaded = true
             _state.update {
                 it.copy(
                     tutor = tutorResponse.toUiTutor(
@@ -128,7 +133,8 @@ class TutorProfileViewModel(
                     reviews = reviews,
                     currentStudentId = currentUserId,
                     canReview = canReview,
-                    isLoading = false
+                    isLoading = false,
+                    error = null
                 )
             }
         }

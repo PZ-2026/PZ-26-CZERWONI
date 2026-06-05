@@ -4,10 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import java.time.LocalDate
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import pl.edu.ur.teachly.data.local.ReviewPreferencesManager
@@ -57,19 +56,18 @@ class HomeViewModel(
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HomeUiState())
-    val uiState: StateFlow<HomeUiState> = _uiState
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), HomeUiState())
+    val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
 
-    init {
-        load()
-    }
+    private var hasLoaded = false
 
     fun load() {
         viewModelScope.launch {
-            _uiState.value = HomeUiState(isLoading = true)
+            if (!hasLoaded) {
+                _uiState.update { it.copy(isLoading = true, error = null) }
+            }
 
             val userId = tokenManager.userIdFlow.first() ?: run {
-                _uiState.value = HomeUiState(isLoading = false)
+                _uiState.update { it.copy(isLoading = false) }
                 return@launch
             }
             val roleName = tokenManager.roleFlow.first() ?: "STUDENT"
@@ -106,6 +104,7 @@ class HomeViewModel(
                         val confirmed = upcoming.filter { it.status == LessonStatus.CONFIRMED }
                         val pending = upcoming.filter { it.status == LessonStatus.PENDING }
 
+                        hasLoaded = true
                         _uiState.value = _uiState.value.copy(
                             userRole = role,
                             upcomingConfirmed = confirmed,

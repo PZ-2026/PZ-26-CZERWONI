@@ -63,13 +63,13 @@ class ProfileViewModel(
     private val _editState = MutableStateFlow(ProfileEditState())
     val editState: StateFlow<ProfileEditState> = _editState.asStateFlow()
 
-    init {
-        loadProfile()
-    }
+    private var hasLoaded = false
 
     fun loadProfile() {
         viewModelScope.launch {
-            _profile.update { it.copy(isLoading = true) }
+            if (!hasLoaded) {
+                _profile.update { it.copy(isLoading = true, error = null) }
+            }
 
             val userId = tokenManager.userIdFlow.first() ?: run {
                 _profile.update { it.copy(isLoading = false) }
@@ -107,6 +107,7 @@ class ProfileViewModel(
                 onFailure = {}
             )
 
+            hasLoaded = true
             _profile.update { it.copy(isLoading = false) }
         }
     }
