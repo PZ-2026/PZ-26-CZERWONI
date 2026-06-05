@@ -14,7 +14,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -44,6 +43,7 @@ import pl.edu.ur.teachly.ui.components.other.EmptyListState
 import pl.edu.ur.teachly.ui.components.other.MessageSnackbars
 import pl.edu.ur.teachly.ui.components.other.cards.CategoryCard
 import pl.edu.ur.teachly.ui.components.other.cards.SubjectCard
+import pl.edu.ur.teachly.ui.components.other.dialog.AppConfirmDialog
 import pl.edu.ur.teachly.ui.components.other.dialog.CategoryDialog
 import pl.edu.ur.teachly.ui.components.other.dialog.SubjectDialog
 
@@ -204,23 +204,16 @@ fun AdminSubjectsScreen(
         )
     }
     showDeleteSubjectDialog?.let { subject ->
-        AlertDialog(
-            onDismissRequest = { showDeleteSubjectDialog = null },
-            title = { Text("Usuń przedmiot") },
-            text = { Text("Czy na pewno chcesz usunąć: ${subject.subjectName}?") },
-            confirmButton = {
-                TextButton(onClick = {
-                    viewModel.deleteSubject(subject.id)
-                    showDeleteSubjectDialog = null
-                }) {
-                    Text("Usuń", color = colorScheme.error)
-                }
+        AppConfirmDialog(
+            title = "Usuń przedmiot",
+            message = "Czy na pewno chcesz usunąć: ${subject.subjectName}?",
+            confirmText = "Usuń",
+            onDismiss = { showDeleteSubjectDialog = null },
+            onConfirm = {
+                viewModel.deleteSubject(subject.id)
+                showDeleteSubjectDialog = null
             },
-            dismissButton = {
-                TextButton(onClick = {
-                    showDeleteSubjectDialog = null
-                }) { Text("Anuluj") }
-            }
+            destructive = true
         )
     }
 
@@ -248,27 +241,16 @@ fun AdminSubjectsScreen(
         )
     }
     showDeleteCategoryDialog?.let { category ->
-        AlertDialog(
-            onDismissRequest = { showDeleteCategoryDialog = null },
-            title = { Text("Usuń kategorię") },
-            text = {
-                Text(
-                    "Czy na pewno chcesz usunąć: ${category.categoryName}? Najpierw usuń wszystkie przypisane przedmioty."
-                )
+        AppConfirmDialog(
+            title = "Usuń kategorię",
+            message = "Czy na pewno chcesz usunąć: ${category.categoryName}? Najpierw usuń wszystkie przypisane przedmioty.",
+            confirmText = "Usuń",
+            onDismiss = { showDeleteCategoryDialog = null },
+            onConfirm = {
+                viewModel.deleteCategory(category.id)
+                showDeleteCategoryDialog = null
             },
-            confirmButton = {
-                TextButton(onClick = {
-                    viewModel.deleteCategory(category.id)
-                    showDeleteCategoryDialog = null
-                }) {
-                    Text("Usuń", color = colorScheme.error)
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = {
-                    showDeleteCategoryDialog = null
-                }) { Text("Anuluj") }
-            }
+            destructive = true
         )
     }
 }

@@ -92,7 +92,7 @@
     <string name="tutor_setup_cannot_remove_last_subject">Musi pozostać co najmniej jeden prowadzony przedmiot</string>
 
     <!-- TutorCard -->
-    <string name="tutor_price_format">%1$d zł</string>
+    <string name="tutor_price_format">%1$s zł</string>
     <string name="tutor_per_hour">/godz</string>
     <string name="tutor_rating_format">★ %1$.1f</string>
     <string name="tutor_reviews_format">(%1$d opinii)</string>

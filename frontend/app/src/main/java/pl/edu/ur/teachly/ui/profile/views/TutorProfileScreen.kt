@@ -44,6 +44,7 @@ import pl.edu.ur.teachly.data.model.UserRole
 import pl.edu.ur.teachly.ui.components.other.LogoutButton
 import pl.edu.ur.teachly.ui.components.other.PrimaryButton
 import pl.edu.ur.teachly.ui.components.other.formatDate
+import pl.edu.ur.teachly.ui.components.other.formatHourlyRate
 import pl.edu.ur.teachly.ui.components.other.formatPhoneNumber
 import pl.edu.ur.teachly.ui.components.profile.ProfileDataCard
 import pl.edu.ur.teachly.ui.components.profile.ProfileDataDivider
@@ -197,7 +198,7 @@ fun TutorProfileScreen(
                             ProfileInfoRow(
                                 icon = Icons.Default.AttachMoney,
                                 label = stringResource(R.string.hourly_rate),
-                                value = stringResource(R.string.hourly_rate_value, t.pricePerHour)
+                                value = formatHourlyRate(t.pricePerHour)
                             )
                             val formattedDate = remember(profile.createdAt) {
                                 try {

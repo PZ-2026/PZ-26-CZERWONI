@@ -20,15 +20,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import kotlin.math.roundToInt
 import pl.edu.ur.teachly.R
+import pl.edu.ur.teachly.ui.components.other.formatMoney
 import pl.edu.ur.teachly.ui.components.other.PrimaryButton
 import pl.edu.ur.teachly.ui.models.CalendarDay
 
 @Composable
 fun BookingSummaryBar(
     tutorName: String,
-    pricePerHour: Int,
+    pricePerHour: Double,
     selectedDay: CalendarDay?,
     selectedSlot: String?,
     selectedDuration: Int,
@@ -43,7 +43,7 @@ fun BookingSummaryBar(
                 exit = fadeOut(tween(150)) + shrinkVertically()
             ) {
                 val day = selectedDay
-                val price = (pricePerHour * selectedDuration / 60.0).roundToInt()
+                val price = pricePerHour * selectedDuration / 60.0
                 if (day != null && selectedSlot != null) {
                     Row(
                         modifier = Modifier
@@ -72,7 +72,7 @@ fun BookingSummaryBar(
                             )
                         }
                         Text(
-                            stringResource(R.string.price_value, price),
+                            formatMoney(price),
                             style = typography.headlineSmall,
                             color = colorScheme.primary
                         )

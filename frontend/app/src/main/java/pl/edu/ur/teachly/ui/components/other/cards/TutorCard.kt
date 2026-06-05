@@ -28,6 +28,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import pl.edu.ur.teachly.R
+import pl.edu.ur.teachly.ui.components.other.formatMoney
 import pl.edu.ur.teachly.ui.components.other.InitialsAvatar
 import pl.edu.ur.teachly.ui.components.profile.SubjectChipsRow
 import pl.edu.ur.teachly.ui.models.Tutor
@@ -121,10 +122,10 @@ private fun TutorCardInfo(tutor: Tutor) {
 
 // Price
 @Composable
-fun TutorHourlyRate(price: Int, large: Boolean = false) {
+fun TutorHourlyRate(price: Double, large: Boolean = false) {
     Column(horizontalAlignment = Alignment.End) {
         Text(
-            text = stringResource(R.string.tutor_price_format, price),
+            text = formatMoney(price),
             style = if (large) {
                 MaterialTheme.typography.headlineSmall
             } else {

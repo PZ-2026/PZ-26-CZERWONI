@@ -28,7 +28,7 @@ fun TutorResponse.toUiTutor(
             .sorted(),
     rating = rating,
     reviewCount = reviewCount,
-    pricePerHour = hourlyRate.toInt(),
+    pricePerHour = hourlyRate,
     tags = buildList {
         if (offersOnline) add("Online")
         if (offersInPerson) add("Stacjonarnie")

@@ -20,7 +20,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material3.AlertDialog
+import pl.edu.ur.teachly.ui.components.other.dialog.AppConfirmDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -165,19 +165,16 @@ fun AllReviewsScreen(
     }
 
     showDeleteDialog?.let { review ->
-        AlertDialog(
-            onDismissRequest = { showDeleteDialog = null },
-            title = { Text("Usuń opinię") },
-            text = { Text("Czy na pewno chcesz usunąć swoją opinię?") },
-            confirmButton = {
-                TextButton(onClick = {
-                    viewModel.deleteReview(review.id)
-                    showDeleteDialog = null
-                }) { Text("Usuń", color = colorScheme.error) }
+        AppConfirmDialog(
+            title = "Usuń opinię",
+            message = "Czy na pewno chcesz usunąć swoją opinię?",
+            confirmText = "Usuń",
+            onDismiss = { showDeleteDialog = null },
+            onConfirm = {
+                viewModel.deleteReview(review.id)
+                showDeleteDialog = null
             },
-            dismissButton = {
-                TextButton(onClick = { showDeleteDialog = null }) { Text("Anuluj") }
-            }
+            destructive = true
         )
     }
 }

@@ -154,7 +154,7 @@ fun BookingScreen(
 
                 BookingSummaryBar(
                     tutorName = state.tutor?.let { "${it.firstName} ${it.lastName}" } ?: "",
-                    pricePerHour = state.tutor?.hourlyRate?.toInt() ?: 0,
+                    pricePerHour = state.tutor?.hourlyRate ?: 0.0,
                     selectedDay = state.calendarDays.getOrNull(state.selectedDayIndex)?.first,
                     selectedSlot = state.selectedSlot,
                     selectedDuration = state.selectedDuration,

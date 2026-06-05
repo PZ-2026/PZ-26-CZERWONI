@@ -21,11 +21,11 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import pl.edu.ur.teachly.ui.components.other.dialog.AppContentDialog
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -136,23 +136,19 @@ fun LoginScreen(onBack: () -> Unit, onSuccess: () -> Unit, viewModel: LoginViewM
             }
 
             if (showForgotPasswordDialog) {
-                AlertDialog(
-                    onDismissRequest = { showForgotPasswordDialog = false },
-                    title = { Text(stringResource(R.string.login_forgot_password)) },
-                    text = {
-                        Image(
-                            painter = painterResource(R.drawable.forgot_password),
-                            contentDescription = null,
-                            contentScale = ContentScale.Fit,
-                            modifier = Modifier.fillMaxWidth().height(300.dp)
-                        )
-                    },
-                    confirmButton = {
-                        TextButton(onClick = { showForgotPasswordDialog = false }) {
-                            Text("OK")
-                        }
-                    }
-                )
+                AppContentDialog(
+                    title = stringResource(R.string.login_forgot_password),
+                    onDismiss = { showForgotPasswordDialog = false },
+                    onConfirm = { showForgotPasswordDialog = false },
+                    confirmText = "OK"
+                ) {
+                    Image(
+                        painter = painterResource(R.drawable.forgot_password),
+                        contentDescription = null,
+                        contentScale = ContentScale.Fit,
+                        modifier = Modifier.fillMaxWidth().height(300.dp)
+                    )
+                }
             }
 
             Spacer(Modifier.height(24.dp))

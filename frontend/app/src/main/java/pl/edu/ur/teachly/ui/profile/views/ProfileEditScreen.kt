@@ -51,6 +51,7 @@ import pl.edu.ur.teachly.ui.components.other.ErrorBanner
 import pl.edu.ur.teachly.ui.components.other.HeaderBackground
 import pl.edu.ur.teachly.ui.components.other.InitialsAvatar
 import pl.edu.ur.teachly.ui.components.other.PrimaryButton
+import pl.edu.ur.teachly.ui.components.other.dialog.AppConfirmDialog
 import pl.edu.ur.teachly.ui.profile.viewmodels.ProfileViewModel
 import pl.edu.ur.teachly.ui.theme.AvatarColors
 
@@ -187,23 +188,16 @@ fun ProfileEditScreen(onBack: () -> Unit, onSave: (Boolean) -> Unit, viewModel: 
             editState.pendingDeleteAvatar
 
         if (showConfirmBackDialog) {
-            androidx.compose.material3.AlertDialog(
-                onDismissRequest = { showConfirmBackDialog = false },
-                title = { Text("Niezapisane zmiany") },
-                text = { Text("Masz niezapisane zmiany. Czy na pewno chcesz wyjść bez zapisywania?") },
-                confirmButton = {
-                    TextButton(onClick = {
-                        showConfirmBackDialog = false
-                        onBack()
-                    }) {
-                        Text("Tak, wyjdź", color = colorScheme.error)
-                    }
+            AppConfirmDialog(
+                title = "Niezapisane zmiany",
+                message = "Masz niezapisane zmiany. Czy na pewno chcesz wyjść bez zapisywania?",
+                confirmText = "Tak, wyjdź",
+                onDismiss = { showConfirmBackDialog = false },
+                onConfirm = {
+                    showConfirmBackDialog = false
+                    onBack()
                 },
-                dismissButton = {
-                    TextButton(onClick = { showConfirmBackDialog = false }) {
-                        Text("Anuluj")
-                    }
-                }
+                destructive = true
             )
         }
 

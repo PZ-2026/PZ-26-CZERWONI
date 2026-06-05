@@ -17,7 +17,6 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Payments
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -60,7 +59,8 @@ import pl.edu.ur.teachly.ui.components.other.AppHeader
 import pl.edu.ur.teachly.ui.components.other.ErrorBanner
 import pl.edu.ur.teachly.ui.components.other.HeaderBackground
 import pl.edu.ur.teachly.ui.components.other.PrimaryButton
-import pl.edu.ur.teachly.ui.components.other.dialog.DialogSectionLabel
+import pl.edu.ur.teachly.ui.components.other.dialog.AppFormDialog
+import pl.edu.ur.teachly.ui.components.other.dialog.DialogSectionCard
 import pl.edu.ur.teachly.ui.components.other.dialog.DialogSwitchRow
 import pl.edu.ur.teachly.ui.profile.viewmodels.TutorSetupViewModel
 
@@ -300,56 +300,54 @@ private fun AddSubjectDialog(
 
     val atLeastOneLevel = levelPrimary || levelHighSchool || levelUniversity || levelExamPrep || levelProfessional
 
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text("Dodaj przedmiot") },
-        text = {
-            Column(
-                modifier = Modifier.verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-                if (notAdded.isEmpty()) {
-                    Text(
-                        text = "Wszystkie dostępne przedmioty zostały już dodane.",
-                        style = typography.bodyMedium
-                    )
-                    return@Column
-                }
-
-                DialogSectionLabel("Przedmiot")
+    AppFormDialog(
+        title = "Dodaj przedmiot",
+        onDismiss = onDismiss,
+        onConfirm = {
+            selectedSubject?.let { subject ->
+                onConfirm(
+                    subject.id,
+                    levelPrimary,
+                    levelHighSchool,
+                    levelUniversity,
+                    levelExamPrep,
+                    levelProfessional
+                )
+            }
+        },
+        confirmText = "Dodaj",
+        confirmEnabled = selectedSubject != null && atLeastOneLevel
+    ) {
+        if (notAdded.isEmpty()) {
+            Text(
+                text = "Wszystkie dostępne przedmioty zostały już dodane.",
+                style = typography.bodyMedium
+            )
+        } else {
+            DialogSectionCard(title = "Przedmiot") {
                 SubjectDropdown(
                     subjects = notAdded,
                     selected = selectedSubject,
                     onSelect = { selectedSubject = it }
                 )
-
-                Spacer(modifier = Modifier.height(4.dp))
-                DialogSectionLabel(stringResource(R.string.teaching_levels_dialog_title))
-
-                LevelCheckRow(TeachingLevel.PRIMARY.displayLabel(), levelPrimary) { levelPrimary = it }
-                LevelCheckRow(TeachingLevel.HIGH_SCHOOL.displayLabel(), levelHighSchool) {
-                    levelHighSchool = it
-                }
-                LevelCheckRow(TeachingLevel.UNIVERSITY.displayLabel(), levelUniversity) {
-                    levelUniversity = it
-                }
-                LevelCheckRow(TeachingLevel.EXAM.displayLabel(), levelExamPrep) { levelExamPrep = it }
-                LevelCheckRow(TeachingLevel.PROFESSIONAL.displayLabel(), levelProfessional) {
-                    levelProfessional = it
+            }
+            DialogSectionCard(title = stringResource(R.string.teaching_levels_dialog_title)) {
+                Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                    LevelCheckRow(TeachingLevel.PRIMARY.displayLabel(), levelPrimary) { levelPrimary = it }
+                    LevelCheckRow(TeachingLevel.HIGH_SCHOOL.displayLabel(), levelHighSchool) {
+                        levelHighSchool = it
+                    }
+                    LevelCheckRow(TeachingLevel.UNIVERSITY.displayLabel(), levelUniversity) {
+                        levelUniversity = it
+                    }
+                    LevelCheckRow(TeachingLevel.EXAM.displayLabel(), levelExamPrep) { levelExamPrep = it }
+                    LevelCheckRow(TeachingLevel.PROFESSIONAL.displayLabel(), levelProfessional) {
+                        levelProfessional = it
+                    }
                 }
             }
-        },
-        confirmButton = {
-            TextButton(
-                onClick = {
-                    val s = selectedSubject ?: return@TextButton
-                    onConfirm(s.id, levelPrimary, levelHighSchool, levelUniversity, levelExamPrep, levelProfessional)
-                },
-                enabled = selectedSubject != null && atLeastOneLevel
-            ) { Text("Dodaj") }
-        },
-        dismissButton = { TextButton(onClick = onDismiss) { Text("Anuluj") } }
-    )
+        }
+    }
 }
 
 @Composable

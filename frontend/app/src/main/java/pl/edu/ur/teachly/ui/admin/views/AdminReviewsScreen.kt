@@ -14,7 +14,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material3.AlertDialog
+import pl.edu.ur.teachly.ui.components.other.dialog.AppConfirmDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
@@ -141,21 +141,16 @@ fun AdminReviewsScreen(viewModel: AdminReviewsViewModel = koinViewModel(), showH
     }
 
     confirmDeleteId?.let { reviewId ->
-        AlertDialog(
-            onDismissRequest = { confirmDeleteId = null },
-            title = { Text("Usuń opinię") },
-            text = { Text("Czy na pewno chcesz usunąć tę opinię? Tej operacji nie można cofnąć.") },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        viewModel.deleteReview(reviewId)
-                        confirmDeleteId = null
-                    }
-                ) { Text("Usuń", color = colorScheme.error) }
+        AppConfirmDialog(
+            title = "Usuń opinię",
+            message = "Czy na pewno chcesz usunąć tę opinię? Tej operacji nie można cofnąć.",
+            confirmText = "Usuń",
+            onDismiss = { confirmDeleteId = null },
+            onConfirm = {
+                viewModel.deleteReview(reviewId)
+                confirmDeleteId = null
             },
-            dismissButton = {
-                TextButton(onClick = { confirmDeleteId = null }) { Text("Anuluj") }
-            }
+            destructive = true
         )
     }
 }

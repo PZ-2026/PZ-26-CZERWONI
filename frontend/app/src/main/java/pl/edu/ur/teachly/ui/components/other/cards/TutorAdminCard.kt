@@ -30,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import pl.edu.ur.teachly.data.model.TutorResponse
+import pl.edu.ur.teachly.ui.components.other.formatHourlyRate
 
 @Composable
 fun TutorAdminCard(tutor: TutorResponse, onEdit: () -> Unit, onSchedule: () -> Unit) {
@@ -95,7 +96,7 @@ fun TutorAdminCard(tutor: TutorResponse, onEdit: () -> Unit, onSchedule: () -> U
                         tint = colorScheme.primary
                     )
                 },
-                text = "Stawka: ${tutor.hourlyRate} PLN/h"
+                text = "Stawka: ${formatHourlyRate(tutor.hourlyRate)}"
             )
 
             tutor.bio?.let {

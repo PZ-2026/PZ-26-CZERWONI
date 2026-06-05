@@ -14,11 +14,9 @@ import androidx.compose.foundation.pager.PagerDefaults
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -45,46 +43,38 @@ fun SlottedTimePickerDialog(
     var hour by remember { mutableIntStateOf(initialHour) }
     var minute by remember { mutableIntStateOf(initialMinute) }
 
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(title) },
-        text = {
-            SlottedTimePicker(
-                hour = hour,
-                minute = minute,
-                onHourChange = { hour = it },
-                onMinuteChange = { minute = it }
-            )
-        },
-        confirmButton = {
-            TextButton(onClick = { onConfirm(hour, minute) }) { Text("OK") }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) { Text("Anuluj") }
-        }
-    )
+    AppContentDialog(
+        title = title,
+        onDismiss = onDismiss,
+        onConfirm = { onConfirm(hour, minute) },
+        confirmText = "OK"
+    ) {
+        SlottedTimePicker(
+            hour = hour,
+            minute = minute,
+            onHourChange = { hour = it },
+            onMinuteChange = { minute = it }
+        )
+    }
 }
 
 @Composable
 fun SlottedTimePicker(hour: Int, minute: Int, onHourChange: (Int) -> Unit, onMinuteChange: (Int) -> Unit) {
-    // Huge number of pages for infinite scroll effect (typical real world hack)
     val countMultiplier = 500
     val hourTotalPages = 24 * countMultiplier
-    val minuteTotalPages = MINUTE_OPTIONS.size
 
-    // Starting page remembers chosen hour
     val hourState = rememberPagerState(
         initialPage = (hourTotalPages / 2) + hour,
         pageCount = { hourTotalPages }
     )
 
     val minuteIndex = if (minute == 30) 1 else 0
+    val minuteTotalPages = MINUTE_OPTIONS.size
     val minuteState = rememberPagerState(
         initialPage = (minuteTotalPages / 2) + minuteIndex,
         pageCount = { minuteTotalPages }
     )
 
-    // Synchronization needed because of infinite scroll effect
     LaunchedEffect(hourState.currentPage) {
         onHourChange(hourState.currentPage % 24)
     }
@@ -109,7 +99,7 @@ fun SlottedTimePicker(hour: Int, minute: Int, onHourChange: (Int) -> Unit, onMin
 
         WheelPickerColumn(
             state = minuteState,
-            label = { page -> "%02d".format(MINUTE_OPTIONS[page]) }
+            label = { page -> "%02d".format(MINUTE_OPTIONS[page % MINUTE_OPTIONS.size]) }
         )
     }
 }
@@ -124,8 +114,6 @@ private fun WheelPickerColumn(state: PagerState, label: (Int) -> String) {
         contentPadding = PaddingValues(vertical = 70.dp)
     ) { page ->
         val isSelected = state.currentPage == page
-
-        // Distance from center to animate scale and opacity
         val pageOffset = (
             (state.currentPage - page) + state.currentPageOffsetFraction
             ).absoluteValue
@@ -134,13 +122,11 @@ private fun WheelPickerColumn(state: PagerState, label: (Int) -> String) {
             modifier = Modifier
                 .fillMaxHeight()
                 .graphicsLayer {
-                    // Interpolation: 1.0 (center) -> 0.3 (far)
                     alpha = lerp(
                         start = 0.3f,
                         stop = 1f,
                         fraction = 1f - pageOffset.coerceIn(0f, 1f)
                     )
-                    // Interpolation: 1.2 (center) -> 0.7 (far)
                     val scale = lerp(
                         start = 0.7f,
                         stop = 1.2f,

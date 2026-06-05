@@ -9,7 +9,7 @@ data class Tutor(
     val subjectsWithoutLevel: List<String> = emptyList(),
     val rating: Double,
     val reviewCount: Int,
-    val pricePerHour: Int,
+    val pricePerHour: Double,
     val tags: List<String>,
     val offersOnline: Boolean,
     val offersInPerson: Boolean,
