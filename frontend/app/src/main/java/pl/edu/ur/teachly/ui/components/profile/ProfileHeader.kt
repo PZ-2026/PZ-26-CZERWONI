@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -35,6 +36,7 @@ import pl.edu.ur.teachly.ui.components.other.InitialsAvatar
 import pl.edu.ur.teachly.ui.components.other.rememberDebouncedCallback
 import pl.edu.ur.teachly.ui.profile.viewmodels.StudentProfile
 import pl.edu.ur.teachly.ui.theme.AvatarColor
+import pl.edu.ur.teachly.ui.theme.headerGradientColors
 
 @Composable
 fun ProfileHeader(
@@ -56,15 +58,18 @@ fun ProfileHeader(
             .fillMaxWidth()
             .background(
                 Brush.linearGradient(
-                    colors = listOf(colorScheme.onPrimaryContainer, colorScheme.primary),
+                    colors = headerGradientColors(),
                     start = Offset.Zero,
                     end = Offset(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY)
                 )
             )
-            .padding(horizontal = 24.dp)
-            .padding(top = 28.dp, bottom = 28.dp)
     ) {
-        Column {
+        Column(
+            modifier = Modifier
+                .statusBarsPadding()
+                .padding(horizontal = 24.dp)
+                .padding(top = 28.dp, bottom = 28.dp)
+        ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,

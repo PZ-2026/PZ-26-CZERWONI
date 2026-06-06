@@ -39,6 +39,7 @@ import pl.edu.ur.teachly.ui.components.other.dialog.AvailabilityTimeRangeDialog
 import pl.edu.ur.teachly.ui.components.other.dialog.ConfirmDeleteDialog
 import pl.edu.ur.teachly.ui.components.other.dialog.OverrideDateDialog
 import pl.edu.ur.teachly.ui.models.DAY_NAMES
+import pl.edu.ur.teachly.ui.theme.headerGradientColors
 
 @Composable
 fun AvailabilityScreen(tutorId: Int, onBack: () -> Unit, viewModel: AvailabilityViewModel = koinViewModel()) {
@@ -67,9 +68,7 @@ fun AvailabilityScreen(tutorId: Int, onBack: () -> Unit, viewModel: Availability
             AppHeader(
                 title = "Harmonogram dostępności",
                 subtitle = state.tutorName ?: "Dostosuj swoje godziny pracy",
-                background = HeaderBackground.Diagonal(
-                    listOf(colorScheme.onPrimaryContainer, colorScheme.primary)
-                ),
+                background = HeaderBackground.Diagonal(headerGradientColors()),
                 onBack = onBack
             )
 

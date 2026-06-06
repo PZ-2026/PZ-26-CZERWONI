@@ -181,6 +181,21 @@ class TutorProfileViewModel(
         }
     }
 
+    fun deleteReview(reviewId: Int, tutorId: Int) {
+        viewModelScope.launch {
+            _state.update { it.copy(isSubmittingReview = true, reviewError = null) }
+            reviewRepository.deleteReview(reviewId).fold(
+                onSuccess = {
+                    _state.update { it.copy(isSubmittingReview = false, reviewSubmitSuccess = true) }
+                    loadProfile(tutorId.toString())
+                },
+                onFailure = { e ->
+                    _state.update { it.copy(isSubmittingReview = false, reviewError = e.message) }
+                }
+            )
+        }
+    }
+
     fun clearReviewSuccess() {
         _state.update { it.copy(reviewSubmitSuccess = false) }
     }

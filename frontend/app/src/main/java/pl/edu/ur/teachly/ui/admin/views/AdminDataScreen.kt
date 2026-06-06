@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.PrimaryScrollableTabRow
@@ -34,7 +35,11 @@ fun AdminDataScreen(
             .background(colorScheme.background)
     ) {
         Surface(color = colorScheme.surface, shadowElevation = 2.dp) {
-            Column(modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)) {
+            Column(
+                modifier = Modifier
+                    .statusBarsPadding()
+                    .padding(horizontal = 8.dp, vertical = 8.dp)
+            ) {
                 Text(
                     "Dane",
                     style = typography.titleLarge,

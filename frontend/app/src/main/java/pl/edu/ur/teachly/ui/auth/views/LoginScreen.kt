@@ -52,6 +52,7 @@ import pl.edu.ur.teachly.ui.components.other.ErrorBanner
 import pl.edu.ur.teachly.ui.components.other.HeaderBackground
 import pl.edu.ur.teachly.ui.components.other.PasswordTextField
 import pl.edu.ur.teachly.ui.components.other.PrimaryButton
+import pl.edu.ur.teachly.ui.theme.headerGradientColors
 
 @Composable
 fun LoginScreen(onBack: () -> Unit, onSuccess: () -> Unit, viewModel: LoginViewModel = koinViewModel()) {
@@ -67,12 +68,7 @@ fun LoginScreen(onBack: () -> Unit, onSuccess: () -> Unit, viewModel: LoginViewM
         AppHeader(
             title = stringResource(R.string.login_title),
             subtitle = stringResource(R.string.login_subtitle),
-            background = HeaderBackground.Diagonal(
-                colors = listOf(
-                    colorScheme.onPrimaryContainer,
-                    colorScheme.primary
-                )
-            ),
+            background = HeaderBackground.Diagonal(colors = headerGradientColors()),
             topPadding = 28.dp,
             bottomPadding = 0.dp,
             decorativeCircle = true,

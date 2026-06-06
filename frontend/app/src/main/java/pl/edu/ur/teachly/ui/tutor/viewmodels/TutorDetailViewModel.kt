@@ -130,6 +130,26 @@ class TutorDetailViewModel(
         }
     }
 
+    fun deleteReview(reviewId: Int, tutorId: Int) {
+        viewModelScope.launch {
+            _state.update { it.copy(isSubmittingReview = true, reviewError = null) }
+            reviewRepository.deleteReview(reviewId).fold(
+                onSuccess = {
+                    _state.update {
+                        it.copy(
+                            isSubmittingReview = false,
+                            reviewSubmitSuccess = true
+                        )
+                    }
+                    loadTutor(tutorId.toString())
+                },
+                onFailure = { e ->
+                    _state.update { it.copy(isSubmittingReview = false, reviewError = e.message) }
+                }
+            )
+        }
+    }
+
     fun submitReview(tutorId: Int, rating: Double, comment: String?) {
         viewModelScope.launch {
             val studentId = tokenManager.userIdFlow.first() ?: return@launch

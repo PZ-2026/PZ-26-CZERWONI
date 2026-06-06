@@ -32,6 +32,7 @@ import pl.edu.ur.teachly.ui.components.other.HeaderBackground
 import pl.edu.ur.teachly.ui.components.other.section.SectionHeader
 import pl.edu.ur.teachly.ui.components.other.section.SectionItems
 import pl.edu.ur.teachly.ui.schedule.viewmodels.ScheduleViewModel
+import pl.edu.ur.teachly.ui.theme.headerGradientColors
 
 @Composable
 fun ScheduleScreen(
@@ -58,9 +59,7 @@ fun ScheduleScreen(
             } else {
                 stringResource(R.string.check_your_sessions)
             },
-            background = HeaderBackground.Diagonal(
-                listOf(colorScheme.onPrimaryContainer, colorScheme.primary)
-            ),
+            background = HeaderBackground.Diagonal(headerGradientColors()),
             onBack = onBack
         )
 

@@ -27,6 +27,7 @@ import pl.edu.ur.teachly.ui.components.other.FullScreenError
 import pl.edu.ur.teachly.ui.components.other.HeaderBackground
 import pl.edu.ur.teachly.ui.components.other.MessageSnackbars
 import pl.edu.ur.teachly.ui.lesson.viewmodels.LessonDetailViewModel
+import pl.edu.ur.teachly.ui.theme.headerGradientColors
 
 @Composable
 fun LessonDetailScreen(
@@ -52,9 +53,7 @@ fun LessonDetailScreen(
             AppHeader(
                 title = state.lesson?.subjectName ?: "Lekcja",
                 subtitle = "Szczegóły lekcji",
-                background = HeaderBackground.Diagonal(
-                    listOf(colorScheme.onPrimaryContainer, colorScheme.primary)
-                ),
+                background = HeaderBackground.Diagonal(headerGradientColors()),
                 onBack = onBack
             )
 

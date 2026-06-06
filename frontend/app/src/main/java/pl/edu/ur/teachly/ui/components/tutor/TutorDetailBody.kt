@@ -21,6 +21,7 @@ fun TutorDetailBody(
     canReview: Boolean = false,
     onAddReview: (() -> Unit)? = null,
     onEditReview: ((ReviewResponse) -> Unit)? = null,
+    onDeleteReview: ((ReviewResponse) -> Unit)? = null,
     onSeeAllReviews: (() -> Unit)? = null
 ) {
     Column(
@@ -52,7 +53,8 @@ fun TutorDetailBody(
             canReview = canReview,
             onAddReview = onAddReview,
             onSeeAll = onSeeAllReviews,
-            onEditReview = onEditReview
+            onEditReview = onEditReview,
+            onDeleteReview = onDeleteReview
         )
     }
 }

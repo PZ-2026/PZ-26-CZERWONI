@@ -177,6 +177,23 @@ public class TutorService {
     }
 
     @Transactional
+    public TutorSubjectResponse adminAddSubject(Integer tutorId, TutorSubjectRequest request) {
+        var tutor =
+                tutorRepository
+                        .findById(tutorId)
+                        .orElseThrow(
+                                () ->
+                                        new ResourceNotFoundException(
+                                                "Nie znaleziono szukanego korepetytora"));
+        return addSubject(tutor, request);
+    }
+
+    @Transactional
+    public void adminRemoveSubject(Integer tutorId, Integer tutorSubjectId) {
+        removeSubject(tutorId, tutorSubjectId, false);
+    }
+
+    @Transactional
     public TutorSubjectResponse addMySubject(TutorSubjectRequest request, User currentUser) {
         var tutor =
                 tutorRepository
@@ -185,6 +202,15 @@ public class TutorService {
                                 () ->
                                         new ResourceNotFoundException(
                                                 "Nie znaleziono profilu korepetytora"));
+        return addSubject(tutor, request);
+    }
+
+    private TutorSubjectResponse addSubject(Tutor tutor, TutorSubjectRequest request) {
+        if (tutorSubjectRepository.existsByTutor_UserIdAndSubject_Id(
+                tutor.getUserId(), request.subjectId())) {
+            throw new BusinessValidationException(
+                    "Ten przedmiot jest już przypisany do korepetytora");
+        }
         var subject =
                 subjectRepository
                         .findById(request.subjectId())
@@ -213,7 +239,21 @@ public class TutorService {
         if (!tutorSubject.getTutor().getUserId().equals(currentUser.getId())) {
             throw new AccessDeniedException("Brak uprawnień do usunięcia tego przedmiotu");
         }
-        if (tutorSubjectRepository.findByTutor_UserId(currentUser.getId()).size() <= 1) {
+        removeSubject(currentUser.getId(), tutorSubjectId, false);
+    }
+
+    private void removeSubject(
+            Integer tutorId, Integer tutorSubjectId, boolean skipMinSubjectCheck) {
+        var tutorSubject =
+                tutorSubjectRepository
+                        .findById(tutorSubjectId)
+                        .orElseThrow(
+                                () -> new ResourceNotFoundException("Nie znaleziono przedmiotu"));
+        if (!tutorSubject.getTutor().getUserId().equals(tutorId)) {
+            throw new ResourceNotFoundException("Nie znaleziono przedmiotu");
+        }
+        if (!skipMinSubjectCheck
+                && tutorSubjectRepository.findByTutor_UserId(tutorId).size() <= 1) {
             throw new BusinessValidationException(
                     "Musi pozostać co najmniej jeden prowadzony przedmiot");
         }

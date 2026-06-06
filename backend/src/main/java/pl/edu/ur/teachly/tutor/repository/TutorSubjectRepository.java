@@ -15,6 +15,12 @@ public interface TutorSubjectRepository extends JpaRepository<TutorSubject, Inte
     List<TutorSubject> findByTutor_UserId(@Param("tutorId") Integer tutorId);
 
     @Query(
+            "SELECT COUNT(ts) > 0 FROM TutorSubject ts JOIN ts.tutor t "
+                    + "WHERE t.userId = :tutorId AND ts.subject.id = :subjectId")
+    boolean existsByTutor_UserIdAndSubject_Id(
+            @Param("tutorId") Integer tutorId, @Param("subjectId") Integer subjectId);
+
+    @Query(
             """
                     SELECT ts FROM TutorSubject ts
                     JOIN FETCH ts.subject

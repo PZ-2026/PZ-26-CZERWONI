@@ -73,6 +73,6 @@ val appModule = module {
     viewModel { AdminLessonsViewModel(get()) }
     viewModel { AdminHolidaysViewModel(get()) }
     viewModel { AdminSubjectsViewModel(get()) }
-    viewModel { AdminTutorsViewModel(get()) }
+    viewModel { AdminTutorsViewModel(get(), get()) }
     viewModel { AdminReviewsViewModel(get()) }
 }

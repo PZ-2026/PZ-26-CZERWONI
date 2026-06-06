@@ -75,4 +75,20 @@ public class TutorController {
             @PathVariable Integer id, @Valid @RequestBody TutorRequest request) {
         return tutorService.adminUpdateTutor(id, request);
     }
+
+    @PostMapping("/{tutorId}/admin/subjects")
+    @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasRole('ADMIN')")
+    public TutorSubjectResponse adminAddSubject(
+            @PathVariable Integer tutorId, @Valid @RequestBody TutorSubjectRequest request) {
+        return tutorService.adminAddSubject(tutorId, request);
+    }
+
+    @DeleteMapping("/{tutorId}/admin/subjects/{tutorSubjectId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PreAuthorize("hasRole('ADMIN')")
+    public void adminRemoveSubject(
+            @PathVariable Integer tutorId, @PathVariable Integer tutorSubjectId) {
+        tutorService.adminRemoveSubject(tutorId, tutorSubjectId);
+    }
 }

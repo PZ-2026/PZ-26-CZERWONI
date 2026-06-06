@@ -42,6 +42,7 @@ import pl.edu.ur.teachly.data.model.ReviewResponse
 import pl.edu.ur.teachly.data.model.UserRole
 import pl.edu.ur.teachly.ui.components.other.LogoutButton
 import pl.edu.ur.teachly.ui.components.other.PrimaryButton
+import pl.edu.ur.teachly.ui.components.other.dialog.AppConfirmDialog
 import pl.edu.ur.teachly.ui.components.other.formatDate
 import pl.edu.ur.teachly.ui.components.other.formatHourlyRate
 import pl.edu.ur.teachly.ui.components.other.formatPhoneNumber
@@ -85,11 +86,13 @@ fun TutorProfileScreen(
     val state by viewModel.state.collectAsState()
     var showReviewDialog by rememberSaveable { mutableStateOf(false) }
     var showEditReviewDialog by remember { mutableStateOf<ReviewResponse?>(null) }
+    var showDeleteReviewDialog by remember { mutableStateOf<ReviewResponse?>(null) }
 
     LaunchedEffect(state.reviewSubmitSuccess) {
         if (state.reviewSubmitSuccess) {
             showReviewDialog = false
             showEditReviewDialog = null
+            showDeleteReviewDialog = null
             viewModel.clearReviewSuccess()
         }
     }
@@ -122,6 +125,20 @@ fun TutorProfileScreen(
             onSubmit = { rating, comment ->
                 viewModel.updateReview(review.id, review.tutorId, rating, comment)
             }
+        )
+    }
+
+    showDeleteReviewDialog?.let { review ->
+        AppConfirmDialog(
+            title = "Usuń opinię",
+            message = "Czy na pewno chcesz usunąć swoją opinię?",
+            confirmText = "Usuń",
+            onDismiss = { showDeleteReviewDialog = null },
+            onConfirm = {
+                viewModel.deleteReview(review.id, review.tutorId)
+                showDeleteReviewDialog = null
+            },
+            destructive = true
         )
     }
 
@@ -172,6 +189,11 @@ fun TutorProfileScreen(
                         canReview = state.canReview && !isMyProfile,
                         onAddReview = { showReviewDialog = true },
                         onEditReview = { review -> showEditReviewDialog = review },
+                        onDeleteReview = if (!isMyProfile && state.currentStudentId != null) {
+                            { review -> showDeleteReviewDialog = review }
+                        } else {
+                            null
+                        },
                         onSeeAllReviews = onSeeAllReviews
                     )
 

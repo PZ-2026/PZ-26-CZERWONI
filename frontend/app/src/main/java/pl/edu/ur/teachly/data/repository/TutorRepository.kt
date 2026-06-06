@@ -117,6 +117,31 @@ class TutorRepository(private val api: TutorApiService) {
         Result.failure(Exception("Brak połączenia z serwerem"))
     }
 
+    suspend fun adminAddTutorSubject(
+        tutorId: Int,
+        request: TutorSubjectRequest
+    ): Result<TutorSubjectResponse> = try {
+        val response = api.adminAddTutorSubject(tutorId, request)
+        if (response.isSuccessful) {
+            Result.success(response.body()!!)
+        } else {
+            Result.failure(Exception("Błąd dodawania przedmiotu"))
+        }
+    } catch (e: Exception) {
+        Result.failure(Exception("Brak połączenia z serwerem"))
+    }
+
+    suspend fun adminRemoveTutorSubject(tutorId: Int, tutorSubjectId: Int): Result<Unit> = try {
+        val response = api.adminRemoveTutorSubject(tutorId, tutorSubjectId)
+        if (response.isSuccessful) {
+            Result.success(Unit)
+        } else {
+            Result.failure(Exception("Błąd usuwania przedmiotu"))
+        }
+    } catch (e: Exception) {
+        Result.failure(Exception("Brak połączenia z serwerem"))
+    }
+
     // Recurring availability
     suspend fun getRecurringAvailability(tutorId: Int): Result<List<TutorAvailabilityRecurringResponse>> = try {
         val r = api.getRecurringAvailability(tutorId)

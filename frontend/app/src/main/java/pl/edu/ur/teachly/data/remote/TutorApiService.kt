@@ -83,4 +83,16 @@ interface TutorApiService {
 
     @PUT("api/tutors/{id}/admin")
     suspend fun adminUpdateTutor(@Path("id") id: Int, @Body request: TutorRequest): Response<TutorResponse>
+
+    @POST("api/tutors/{tutorId}/admin/subjects")
+    suspend fun adminAddTutorSubject(
+        @Path("tutorId") tutorId: Int,
+        @Body request: TutorSubjectRequest
+    ): Response<TutorSubjectResponse>
+
+    @DELETE("api/tutors/{tutorId}/admin/subjects/{tutorSubjectId}")
+    suspend fun adminRemoveTutorSubject(
+        @Path("tutorId") tutorId: Int,
+        @Path("tutorSubjectId") tutorSubjectId: Int
+    ): Response<Unit>
 }

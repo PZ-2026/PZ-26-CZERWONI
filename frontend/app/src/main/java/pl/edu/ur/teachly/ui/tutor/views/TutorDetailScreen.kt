@@ -41,6 +41,7 @@ import pl.edu.ur.teachly.data.model.UserRole
 import pl.edu.ur.teachly.ui.components.other.FullScreenError
 import pl.edu.ur.teachly.ui.components.other.MessageSnackbars
 import pl.edu.ur.teachly.ui.components.other.PrimaryButton
+import pl.edu.ur.teachly.ui.components.other.dialog.AppConfirmDialog
 import pl.edu.ur.teachly.ui.components.profile.ProfileHeader
 import pl.edu.ur.teachly.ui.components.tutor.TutorDetailBody
 import pl.edu.ur.teachly.ui.profile.viewmodels.StudentProfile
@@ -61,12 +62,14 @@ fun TutorDetailScreen(
     val state by viewModel.state.collectAsState()
     var showAddDialog by rememberSaveable { mutableStateOf(false) }
     var editingReview by remember { mutableStateOf<ReviewResponse?>(null) }
+    var deletingReview by remember { mutableStateOf<ReviewResponse?>(null) }
     val successMessage = stringResource(R.string.review_submitted_success)
 
     LaunchedEffect(state.reviewSubmitSuccess) {
         if (state.reviewSubmitSuccess) {
             showAddDialog = false
             editingReview = null
+            deletingReview = null
             kotlinx.coroutines.delay(2500)
             viewModel.clearReviewSuccess()
         }
@@ -101,6 +104,21 @@ fun TutorDetailScreen(
                 val id = tutorId.toIntOrNull() ?: return@AddReviewDialog
                 viewModel.updateReview(review.id, id, rating, comment)
             }
+        )
+    }
+
+    deletingReview?.let { review ->
+        AppConfirmDialog(
+            title = "Usuń opinię",
+            message = "Czy na pewno chcesz usunąć swoją opinię?",
+            confirmText = "Usuń",
+            onDismiss = { deletingReview = null },
+            onConfirm = {
+                val id = tutorId.toIntOrNull() ?: return@AppConfirmDialog
+                viewModel.deleteReview(review.id, id)
+                deletingReview = null
+            },
+            destructive = true
         )
     }
 
@@ -148,6 +166,11 @@ fun TutorDetailScreen(
                             reviews = state.reviews.take(3),
                             currentStudentId = state.currentStudentId,
                             onEditReview = { review -> editingReview = review },
+                            onDeleteReview = if (state.currentStudentId != null) {
+                                { review -> deletingReview = review }
+                            } else {
+                                null
+                            },
                             onSeeAllReviews = if (state.reviews.isNotEmpty()) onSeeAllReviews else null,
                             canReview = false
                         )

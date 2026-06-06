@@ -117,7 +117,8 @@ fun ReviewsSection(
     canReview: Boolean = false,
     onAddReview: (() -> Unit)? = null,
     onSeeAll: (() -> Unit)? = null,
-    onEditReview: ((ReviewResponse) -> Unit)? = null
+    onEditReview: ((ReviewResponse) -> Unit)? = null,
+    onDeleteReview: ((ReviewResponse) -> Unit)? = null
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         ProfileSectionTitle(title = stringResource(R.string.reviews_section_title))
@@ -135,6 +136,11 @@ fun ReviewsSection(
                         review = review,
                         onEdit = if (onEditReview != null && review.studentId == currentStudentId) {
                             { onEditReview(review) }
+                        } else {
+                            null
+                        },
+                        onDelete = if (onDeleteReview != null && review.studentId == currentStudentId) {
+                            { onDeleteReview(review) }
                         } else {
                             null
                         }
