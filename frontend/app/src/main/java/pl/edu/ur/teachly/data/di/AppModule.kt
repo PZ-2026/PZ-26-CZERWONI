@@ -4,6 +4,7 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 import pl.edu.ur.teachly.data.local.ReviewPreferencesManager
+import pl.edu.ur.teachly.data.local.SessionManager
 import pl.edu.ur.teachly.data.local.TokenManager
 import pl.edu.ur.teachly.data.repository.AdminRepository
 import pl.edu.ur.teachly.data.repository.AuthRepository
@@ -38,6 +39,7 @@ import pl.edu.ur.teachly.ui.tutor.viewmodels.TutorDetailViewModel
 val appModule = module {
     // Core
     single { TokenManager(androidContext()) }
+    single { SessionManager() }
     single { ReviewPreferencesManager(androidContext()) }
 
     // Repositories

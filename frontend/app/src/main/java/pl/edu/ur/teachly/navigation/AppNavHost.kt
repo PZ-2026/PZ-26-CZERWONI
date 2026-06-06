@@ -19,13 +19,10 @@ import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 import pl.edu.ur.teachly.data.local.TokenManager
+import pl.edu.ur.teachly.data.repository.AuthRepository
 import pl.edu.ur.teachly.ui.admin.views.AdminDashboardScreen
 import pl.edu.ur.teachly.ui.admin.views.AdminDataScreen
-import pl.edu.ur.teachly.ui.admin.views.AdminHolidaysScreen
 import pl.edu.ur.teachly.ui.admin.views.AdminLessonsScreen
-import pl.edu.ur.teachly.ui.admin.views.AdminReviewsScreen
-import pl.edu.ur.teachly.ui.admin.views.AdminSubjectsScreen
-import pl.edu.ur.teachly.ui.admin.views.AdminTutorsScreen
 import pl.edu.ur.teachly.ui.admin.views.AdminUsersScreen
 import pl.edu.ur.teachly.ui.auth.views.LoginScreen
 import pl.edu.ur.teachly.ui.auth.views.RegisterScreen
@@ -55,6 +52,9 @@ fun AppNavHost(
     startDestination: AppRoute = AppRoute.Splash
 ) {
     val onBack = rememberDebouncedPopBackStack(navController)
+    val logoutAction = rememberLogoutAction(navController)
+    val authRepository = koinInject<AuthRepository>()
+    val scope = rememberCoroutineScope()
 
     NavHost(
         navController = navController,
@@ -145,8 +145,8 @@ fun AppNavHost(
                 tutorId = args.tutorId.toString(),
                 onBack = onBack,
                 onBookClick = { navController.navigate(AppRoute.Booking(args.tutorId.toString())) },
-                onSeeAllReviews = {
-                    navController.navigate(AppRoute.AllReviews(args.tutorId, ""))
+                onSeeAllReviews = { tutorName ->
+                    navController.navigate(AppRoute.AllReviews(args.tutorId, tutorName))
                 }
             )
         }
@@ -229,10 +229,10 @@ fun AppNavHost(
                                 navController.navigate(AppRoute.TutorSetup(it, returnToProfile = true))
                             }
                         },
-                        onLogout = { navController.navigateToSplash() },
-                        onSeeAllReviews = {
+                        onLogout = logoutAction,
+                        onSeeAllReviews = { tutorName ->
                             userId?.let {
-                                navController.navigate(AppRoute.AllReviews(it, ""))
+                                navController.navigate(AppRoute.AllReviews(it, tutorName))
                             }
                         },
                         onAvailabilityClick = {
@@ -248,7 +248,7 @@ fun AppNavHost(
                     val profileViewModel: ProfileViewModel = koinViewModel(viewModelStoreOwner = entry)
                     AdminProfileScreen(
                         onBack = onBack,
-                        onLogout = { navController.navigateToSplash() },
+                        onLogout = logoutAction,
                         onEditClick = { navController.navigate(AppRoute.ProfileEdit) },
                         viewModel = profileViewModel
                     )
@@ -259,7 +259,7 @@ fun AppNavHost(
                     StudentProfileScreen(
                         onBack = onBack,
                         onEditClick = { navController.navigate(AppRoute.ProfileEdit) },
-                        onLogout = { navController.navigateToSplash() },
+                        onLogout = logoutAction,
                         viewModel = profileViewModel
                     )
                 }
@@ -275,7 +275,10 @@ fun AppNavHost(
                 onBack = onBack,
                 onSave = { requiresRelogin ->
                     if (requiresRelogin) {
-                        navController.navigateToSplash()
+                        scope.launch {
+                            authRepository.logout()
+                            navController.navigateToSplash()
+                        }
                     } else {
                         onBack()
                     }
@@ -292,8 +295,8 @@ fun AppNavHost(
                 onBack = onBack,
                 onEditClick = {},
                 onLogout = {},
-                onSeeAllReviews = {
-                    navController.navigate(AppRoute.AllReviews(args.tutorId, ""))
+                onSeeAllReviews = { tutorName ->
+                    navController.navigate(AppRoute.AllReviews(args.tutorId, tutorName))
                 }
             )
         }
@@ -343,31 +346,9 @@ fun AppNavHost(
                 initialTab = args.initialTab,
                 initialSubjectTab = args.initialSubjectTab,
                 onTutorSchedule = { tutorId ->
-                    navController.navigate(
-                        AppRoute.TutorAvailability(
-                            tutorId
-                        )
-                    )
+                    navController.navigate(AppRoute.TutorAvailability(tutorId))
                 }
             )
-        }
-
-        composable<AppRoute.AdminHolidays> {
-            AdminHolidaysScreen()
-        }
-
-        composable<AppRoute.AdminSubjects> {
-            AdminSubjectsScreen()
-        }
-
-        composable<AppRoute.AdminTutors> {
-            AdminTutorsScreen(
-                onSchedule = { tutorId -> navController.navigate(AppRoute.TutorAvailability(tutorId)) }
-            )
-        }
-
-        composable<AppRoute.AdminReviews> {
-            AdminReviewsScreen()
         }
     }
 }
@@ -383,13 +364,6 @@ private fun NavHostController.navigateToTutorSetup(tutorId: Int) {
 private fun NavHostController.navigateToHome() {
     navigate(AppRoute.Home) {
         popUpTo<AppRoute.Splash> { inclusive = true }
-        launchSingleTop = true
-    }
-}
-
-fun NavHostController.navigateToSplash() {
-    navigate(AppRoute.Splash) {
-        popUpTo<AppRoute.Home> { inclusive = true }
         launchSingleTop = true
     }
 }

@@ -32,7 +32,8 @@ data class TutorProfileState(
     val reviewError: String? = null,
     val reviewSubmitSuccess: Boolean = false,
     val isLoading: Boolean = true,
-    val error: String? = null
+    val error: String? = null,
+    val loadWarning: String? = null
 )
 
 class TutorProfileViewModel(
@@ -72,6 +73,8 @@ class TutorProfileViewModel(
             val lessonsResult = lessonsDeferred.await()
             val reviewsResult = reviewsDeferred.await()
 
+            val warnings = mutableListOf<String>()
+
             var completedLessons = 0
             var totalEarnings = 0.0
             lessonsResult.fold(
@@ -81,7 +84,9 @@ class TutorProfileViewModel(
                         .filter { it.lessonStatus == LessonStatus.COMPLETED }
                         .sumOf { it.amount }
                 },
-                onFailure = {}
+                onFailure = { e ->
+                    warnings.add(e.message ?: "Nie udało się pobrać lekcji")
+                }
             )
 
             var reviews = emptyList<ReviewResponse>()
@@ -95,7 +100,9 @@ class TutorProfileViewModel(
                         avgRating = reviewList.sumOf { it.rating } / reviewList.size
                     }
                 },
-                onFailure = {}
+                onFailure = { e ->
+                    warnings.add(e.message ?: "Nie udało się pobrać opinii")
+                }
             )
 
             var canReview = false
@@ -108,7 +115,9 @@ class TutorProfileViewModel(
                                 it.tutorId == id && it.lessonStatus == LessonStatus.COMPLETED
                             }
                         },
-                        onFailure = {}
+                        onFailure = { e ->
+                            warnings.add(e.message ?: "Nie udało się sprawdzić uprawnień do opinii")
+                        }
                     )
                 }
             }
@@ -134,7 +143,8 @@ class TutorProfileViewModel(
                     currentStudentId = currentUserId,
                     canReview = canReview,
                     isLoading = false,
-                    error = null
+                    error = null,
+                    loadWarning = warnings.takeIf { it.isNotEmpty() }?.joinToString("\n")
                 )
             }
         }

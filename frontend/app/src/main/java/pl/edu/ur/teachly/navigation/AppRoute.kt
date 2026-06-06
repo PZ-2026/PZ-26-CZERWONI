@@ -89,17 +89,5 @@ sealed interface AppRoute {
     data class AdminData(val initialTab: Int = 0, val initialSubjectTab: Int = 0) : AppRoute
 
     @Serializable
-    data object AdminHolidays : AppRoute
-
-    @Serializable
-    data object AdminSubjects : AppRoute
-
-    @Serializable
-    data object AdminTutors : AppRoute
-
-    @Serializable
     data class AdminTutorEdit(val tutorId: Int) : AppRoute
-
-    @Serializable
-    data object AdminReviews : AppRoute
 }

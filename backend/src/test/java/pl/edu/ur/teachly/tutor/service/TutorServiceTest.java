@@ -14,9 +14,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import pl.edu.ur.teachly.common.exception.BusinessValidationException;
 import pl.edu.ur.teachly.common.exception.ResourceNotFoundException;
 import pl.edu.ur.teachly.review.repository.ReviewRepository;
+import pl.edu.ur.teachly.subject.entity.Subject;
 import pl.edu.ur.teachly.subject.repository.SubjectRepository;
+import pl.edu.ur.teachly.tutor.dto.request.TutorSubjectRequest;
 import pl.edu.ur.teachly.tutor.dto.response.TutorResponse;
 import pl.edu.ur.teachly.tutor.dto.response.TutorSearchResultResponse;
 import pl.edu.ur.teachly.tutor.dto.response.TutorSubjectResponse;
@@ -195,5 +198,76 @@ class TutorServiceTest {
         assertThat(result).isEqualTo(response);
         verify(tutorMapper).updateFromRequest(req, tutor);
         verify(tutorRepository).save(tutor);
+    }
+
+    @Test
+    @DisplayName("adminAddSubject - sukces: dodaje przedmiot korepetytorowi")
+    void adminAddSubject_success() {
+        Tutor tutor = Tutor.builder().userId(1).build();
+        Subject subject = Subject.builder().id(2).subjectName("Fizyka").build();
+        TutorSubjectRequest request =
+                new TutorSubjectRequest(2, true, false, false, false, false);
+        TutorSubject saved =
+                TutorSubject.builder().id(10).tutor(tutor).subject(subject).levelPrimary(true).build();
+        TutorSubjectResponse response =
+                new TutorSubjectResponse(10, 2, "Fizyka", "Kat", true, false, false, false, false);
+
+        when(tutorRepository.findById(1)).thenReturn(Optional.of(tutor));
+        when(tutorSubjectRepository.existsByTutor_UserIdAndSubject_Id(1, 2)).thenReturn(false);
+        when(subjectRepository.findById(2)).thenReturn(Optional.of(subject));
+        when(tutorSubjectRepository.save(org.mockito.ArgumentMatchers.any(TutorSubject.class)))
+                .thenReturn(saved);
+        when(tutorSubjectMapper.toResponse(saved)).thenReturn(response);
+
+        TutorSubjectResponse result = tutorService.adminAddSubject(1, request);
+
+        assertThat(result).isEqualTo(response);
+        verify(tutorSubjectRepository).save(org.mockito.ArgumentMatchers.any(TutorSubject.class));
+    }
+
+    @Test
+    @DisplayName("adminAddSubject - błąd: duplikat przedmiotu")
+    void adminAddSubject_duplicate_throwsException() {
+        Tutor tutor = Tutor.builder().userId(1).build();
+        TutorSubjectRequest request =
+                new TutorSubjectRequest(2, true, false, false, false, false);
+
+        when(tutorRepository.findById(1)).thenReturn(Optional.of(tutor));
+        when(tutorSubjectRepository.existsByTutor_UserIdAndSubject_Id(1, 2)).thenReturn(true);
+
+        assertThatThrownBy(() -> tutorService.adminAddSubject(1, request))
+                .isInstanceOf(BusinessValidationException.class)
+                .hasMessageContaining("już przypisany");
+    }
+
+    @Test
+    @DisplayName("adminRemoveSubject - sukces: usuwa przedmiot")
+    void adminRemoveSubject_success() {
+        Tutor tutor = Tutor.builder().userId(1).build();
+        TutorSubject tutorSubject =
+                TutorSubject.builder().id(10).tutor(tutor).build();
+
+        when(tutorSubjectRepository.findById(10)).thenReturn(Optional.of(tutorSubject));
+        when(tutorSubjectRepository.findByTutor_UserId(1))
+                .thenReturn(List.of(tutorSubject, TutorSubject.builder().id(11).build()));
+
+        tutorService.adminRemoveSubject(1, 10);
+
+        verify(tutorSubjectRepository).delete(tutorSubject);
+    }
+
+    @Test
+    @DisplayName("adminRemoveSubject - błąd: ostatni przedmiot")
+    void adminRemoveSubject_lastSubject_throwsException() {
+        Tutor tutor = Tutor.builder().userId(1).build();
+        TutorSubject tutorSubject =
+                TutorSubject.builder().id(10).tutor(tutor).build();
+
+        when(tutorSubjectRepository.findById(10)).thenReturn(Optional.of(tutorSubject));
+        when(tutorSubjectRepository.findByTutor_UserId(1)).thenReturn(List.of(tutorSubject));
+
+        assertThatThrownBy(() -> tutorService.adminRemoveSubject(1, 10))
+                .isInstanceOf(BusinessValidationException.class)
+                .hasMessageContaining("co najmniej jeden");
     }
 }

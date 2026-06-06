@@ -4,7 +4,20 @@ private val hiddenBottomNavRouteMarkers = listOf(
     "Splash",
     "Login",
     "Register",
-    "TutorSetup"
+    "TutorSetup",
+    "Booking",
+    "BookingConfirm",
+    "LessonDetail",
+    "TutorDetail",
+    "AllReviews",
+    "TutorAvailability",
+    "TutorProfile",
+    "ProfileEdit",
+    "AdminUsers",
+    "AdminLessons",
+    "AdminUserEdit",
+    "AdminLessonEdit",
+    "AdminTutorEdit"
 )
 
 fun shouldShowBottomNav(route: String?): Boolean {

@@ -40,6 +40,7 @@ import org.koin.androidx.compose.koinViewModel
 import pl.edu.ur.teachly.R
 import pl.edu.ur.teachly.data.model.ReviewResponse
 import pl.edu.ur.teachly.data.model.UserRole
+import pl.edu.ur.teachly.ui.components.other.ErrorBanner
 import pl.edu.ur.teachly.ui.components.other.LogoutButton
 import pl.edu.ur.teachly.ui.components.other.PrimaryButton
 import pl.edu.ur.teachly.ui.components.other.dialog.AppConfirmDialog
@@ -66,7 +67,7 @@ fun TutorProfileScreen(
     onEditClick: () -> Unit,
     onTutorSetupClick: () -> Unit = {},
     onLogout: () -> Unit,
-    onSeeAllReviews: () -> Unit = {},
+    onSeeAllReviews: (String) -> Unit = {},
     onAvailabilityClick: () -> Unit = {},
     viewModel: TutorProfileViewModel = koinViewModel(),
     profileViewModel: ProfileViewModel = koinViewModel()
@@ -181,6 +182,9 @@ fun TutorProfileScreen(
                         .padding(horizontal = 24.dp, vertical = 16.dp),
                     verticalArrangement = Arrangement.spacedBy(24.dp)
                 ) {
+                    state.loadWarning?.let { warning ->
+                        ErrorBanner(message = warning)
+                    }
                     TutorStatsSection(stats = state.stats)
                     TutorDetailBody(
                         tutor = t,
@@ -194,7 +198,11 @@ fun TutorProfileScreen(
                         } else {
                             null
                         },
-                        onSeeAllReviews = onSeeAllReviews
+                        onSeeAllReviews = if (state.reviews.size > 3) {
+                            { onSeeAllReviews(t.name) }
+                        } else {
+                            null
+                        }
                     )
 
                     if (isMyProfile) {

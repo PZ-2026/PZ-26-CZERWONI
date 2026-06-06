@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -54,7 +55,7 @@ fun TutorDetailScreen(
     tutorId: String,
     onBack: () -> Unit,
     onBookClick: () -> Unit,
-    onSeeAllReviews: () -> Unit = {},
+    onSeeAllReviews: (String) -> Unit = {},
     viewModel: TutorDetailViewModel = koinViewModel()
 ) {
     LaunchedEffect(tutorId) { viewModel.loadTutor(tutorId) }
@@ -163,7 +164,7 @@ fun TutorDetailScreen(
                     ) {
                         TutorDetailBody(
                             tutor = t,
-                            reviews = state.reviews.take(3),
+                            reviews = state.reviews,
                             currentStudentId = state.currentStudentId,
                             onEditReview = { review -> editingReview = review },
                             onDeleteReview = if (state.currentStudentId != null) {
@@ -171,7 +172,11 @@ fun TutorDetailScreen(
                             } else {
                                 null
                             },
-                            onSeeAllReviews = if (state.reviews.isNotEmpty()) onSeeAllReviews else null,
+                            onSeeAllReviews = if (state.reviews.size > 3) {
+                                { onSeeAllReviews(t.name) }
+                            } else {
+                                null
+                            },
                             canReview = false
                         )
 
@@ -186,7 +191,9 @@ fun TutorDetailScreen(
                     PrimaryButton(
                         text = stringResource(R.string.tutordetail_book_cta),
                         onClick = onBookClick,
-                        modifier = Modifier.padding(horizontal = 24.dp, vertical = 16.dp)
+                        modifier = Modifier
+                            .navigationBarsPadding()
+                            .padding(horizontal = 24.dp, vertical = 16.dp)
                     )
                 }
             }
