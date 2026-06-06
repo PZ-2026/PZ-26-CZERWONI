@@ -1,22 +1,28 @@
 package pl.edu.ur.teachly.ui.components.profile
 
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.Shield
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.MaterialTheme.typography
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -24,6 +30,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -72,12 +79,7 @@ fun ProfileDataCard(title: String, modifier: Modifier = Modifier, content: @Comp
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
-        Text(
-            text = title,
-            style = typography.titleMedium,
-            fontWeight = FontWeight.Bold,
-            color = colorScheme.onBackground
-        )
+        ProfileSectionTitle(title = title)
         Surface(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(16.dp),
@@ -100,6 +102,67 @@ fun ProfileDataDivider() {
 }
 
 private const val CollapsedLevelCount = 2
+
+enum class ProfileSectionActionIcon {
+    Expand,
+    Navigate
+}
+
+@Composable
+fun ProfileSectionFooterAction(
+    label: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    icon: ProfileSectionActionIcon = ProfileSectionActionIcon.Navigate,
+    expanded: Boolean = false
+) {
+    val chevronRotation by animateFloatAsState(
+        targetValue = if (expanded) 180f else 0f,
+        animationSpec = tween(200),
+        label = "sectionActionChevron"
+    )
+    val trailingIcon: ImageVector = when (icon) {
+        ProfileSectionActionIcon.Expand -> Icons.Default.KeyboardArrowDown
+        ProfileSectionActionIcon.Navigate -> Icons.AutoMirrored.Filled.KeyboardArrowRight
+    }
+
+    OutlinedButton(
+        onClick = onClick,
+        modifier = modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(12.dp)
+    ) {
+        Text(
+            text = label,
+            style = typography.labelLarge,
+            fontWeight = FontWeight.Medium
+        )
+        Spacer(Modifier.width(6.dp))
+        Icon(
+            imageVector = trailingIcon,
+            contentDescription = null,
+            modifier = Modifier
+                .size(20.dp)
+                .then(
+                    if (icon == ProfileSectionActionIcon.Expand) {
+                        Modifier.rotate(chevronRotation)
+                    } else {
+                        Modifier
+                    }
+                )
+        )
+    }
+}
+
+@Composable
+fun ProfileSectionTitle(title: String, modifier: Modifier = Modifier) {
+    Text(
+        text = title,
+        style = typography.titleMedium,
+        fontWeight = FontWeight.Bold,
+        color = colorScheme.onBackground,
+        modifier = modifier
+    )
+}
 
 @Composable
 fun SubjectChip(
@@ -216,21 +279,17 @@ fun SubjectsByLevelSection(
             )
         }
         if (canExpand) {
-            TextButton(
+            ProfileSectionFooterAction(
+                label =
+                    if (expanded) {
+                        stringResource(R.string.subjects_see_less)
+                    } else {
+                        stringResource(R.string.subjects_see_more)
+                    },
                 onClick = { expanded = !expanded },
-                modifier = Modifier.padding(start = 4.dp)
-            ) {
-                Text(
-                    text =
-                        if (expanded) {
-                            stringResource(R.string.subjects_see_less)
-                        } else {
-                            stringResource(R.string.subjects_see_more)
-                        },
-                    style = typography.labelLarge,
-                    fontWeight = FontWeight.SemiBold
-                )
-            }
+                icon = ProfileSectionActionIcon.Expand,
+                expanded = expanded
+            )
         }
     }
 }
@@ -264,12 +323,12 @@ fun AdminBadge() {
                     text = stringResource(R.string.full_permission),
                     style = typography.titleSmall,
                     fontWeight = FontWeight.Bold,
-                    color = colorScheme.primary
+                    color = colorScheme.onSurfaceVariant
                 )
                 Text(
                     text = stringResource(R.string.admin_permissions),
                     style = typography.bodySmall,
-                    color = colorScheme.primary
+                    color = colorScheme.onSurfaceVariant
                 )
             }
         }
@@ -279,12 +338,7 @@ fun AdminBadge() {
 @Composable
 fun TutorStatsSection(stats: TutorStats) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Text(
-            text = stringResource(R.string.profile_stats_title),
-            style = typography.titleMedium,
-            fontWeight = FontWeight.Bold,
-            color = colorScheme.onBackground
-        )
+        ProfileSectionTitle(title = stringResource(R.string.profile_stats_title))
         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),

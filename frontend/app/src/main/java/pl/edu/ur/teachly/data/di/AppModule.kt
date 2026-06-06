@@ -55,7 +55,7 @@ val appModule = module {
     viewModel { AvailabilityViewModel(get()) }
     viewModel { LoginViewModel(get()) }
     viewModel { RegisterViewModel(get()) }
-    viewModel { SearchViewModel(get(), get(), get()) }
+    viewModel { SearchViewModel(get(), get()) }
     viewModel { HomeViewModel(get(), get(), get(), get(), get()) }
     viewModel { BookingViewModel(get(), get(), get()) }
     viewModel { ScheduleViewModel(get(), get()) }

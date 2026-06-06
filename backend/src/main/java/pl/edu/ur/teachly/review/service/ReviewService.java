@@ -1,7 +1,9 @@
 package pl.edu.ur.teachly.review.service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import pl.edu.ur.teachly.common.util.SearchQueryUtils;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -113,7 +115,13 @@ public class ReviewService {
     }
 
     @Transactional(readOnly = true)
-    public List<ReviewResponse> getAllReviews() {
-        return reviewRepository.findAll().stream().map(reviewMapper::toResponse).toList();
+    public List<ReviewResponse> searchReviews(String query, Integer rating) {
+        BigDecimal ratingFilter =
+                rating == null ? null : BigDecimal.valueOf(rating).setScale(1);
+        return reviewRepository
+                .searchReviews(SearchQueryUtils.toLikePattern(query), ratingFilter)
+                .stream()
+                .map(reviewMapper::toResponse)
+                .toList();
     }
 }

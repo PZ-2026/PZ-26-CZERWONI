@@ -16,10 +16,10 @@ import pl.edu.ur.teachly.data.model.AdminUserUpdateRequest
 import pl.edu.ur.teachly.data.model.UserResponse
 import pl.edu.ur.teachly.data.model.UserRole
 import pl.edu.ur.teachly.data.repository.UserRepository
+import pl.edu.ur.teachly.ui.util.Debouncer
 
 data class AdminUsersState(
     val users: List<UserResponse> = emptyList(),
-    val filteredUsers: List<UserResponse> = emptyList(),
     val searchQuery: String = "",
     val selectedRole: UserRole? = null,
     val activeFilter: Boolean? = null,
@@ -36,6 +36,7 @@ class AdminUsersViewModel(
 
     private val _state = MutableStateFlow(AdminUsersState())
     val state: StateFlow<AdminUsersState> = _state.asStateFlow()
+    private val searchDebouncer = Debouncer(viewModelScope)
 
     init {
         viewModelScope.launch {
@@ -46,11 +47,12 @@ class AdminUsersViewModel(
 
     fun loadUsers() {
         viewModelScope.launch {
+            val current = _state.value
             _state.update { it.copy(isLoading = true, error = null) }
-            userRepository.getAllUsers().fold(
+            val query = current.searchQuery.trim().takeIf { it.isNotBlank() }
+            userRepository.getAllUsers(query, current.selectedRole, current.activeFilter).fold(
                 onSuccess = { users ->
                     _state.update { it.copy(users = users, isLoading = false) }
-                    applyFilters()
                 },
                 onFailure = { e -> _state.update { it.copy(isLoading = false, error = e.message) } }
             )
@@ -59,33 +61,19 @@ class AdminUsersViewModel(
 
     fun onSearchChange(query: String) {
         _state.update { it.copy(searchQuery = query) }
-        applyFilters()
+        searchDebouncer.submit { loadUsers() }
     }
 
     fun onRoleFilterChange(role: UserRole?) {
         _state.update { it.copy(selectedRole = role) }
-        applyFilters()
+        searchDebouncer.cancel()
+        loadUsers()
     }
 
     fun onActiveFilterChange(activeFilter: Boolean?) {
         _state.update { it.copy(activeFilter = activeFilter) }
-        applyFilters()
-    }
-
-    private fun applyFilters() {
-        val query = _state.value.searchQuery.lowercase()
-        val role = _state.value.selectedRole
-        val activeFilter = _state.value.activeFilter
-        val filtered = _state.value.users.filter { user ->
-            val matchesSearch = query.isEmpty() ||
-                user.firstName.lowercase().contains(query) ||
-                user.lastName.lowercase().contains(query) ||
-                user.email.lowercase().contains(query)
-            val matchesRole = role == null || user.role == role
-            val matchesActive = activeFilter == null || user.isActive == activeFilter
-            matchesSearch && matchesRole && matchesActive
-        }
-        _state.update { it.copy(filteredUsers = filtered) }
+        searchDebouncer.cancel()
+        loadUsers()
     }
 
     fun banUser(userId: Int) {
@@ -96,13 +84,8 @@ class AdminUsersViewModel(
         viewModelScope.launch {
             userRepository.deactivateUser(userId).fold(
                 onSuccess = {
-                    _state.update { s ->
-                        s.copy(
-                            users = s.users.map { if (it.id == userId) it.copy(isActive = false) else it },
-                            successMessage = "Konto użytkownika zostało zablokowane"
-                        )
-                    }
-                    applyFilters()
+                    _state.update { it.copy(successMessage = "Konto użytkownika zostało zablokowane") }
+                    loadUsers()
                 },
                 onFailure = { e -> _state.update { it.copy(error = e.message) } }
             )
@@ -113,13 +96,8 @@ class AdminUsersViewModel(
         viewModelScope.launch {
             userRepository.activateUser(userId).fold(
                 onSuccess = {
-                    _state.update { s ->
-                        s.copy(
-                            users = s.users.map { if (it.id == userId) it.copy(isActive = true) else it },
-                            successMessage = "Konto użytkownika zostało odblokowane"
-                        )
-                    }
-                    applyFilters()
+                    _state.update { it.copy(successMessage = "Konto użytkownika zostało odblokowane") }
+                    loadUsers()
                 },
                 onFailure = { e -> _state.update { it.copy(error = e.message) } }
             )
@@ -139,10 +117,9 @@ class AdminUsersViewModel(
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, error = null) }
 
-            // 1. Obsługa ewentualnego usuwania lub wgrywania awatara przez Admina przed aktualizacją danych profilowych
             if (pendingDeleteAvatar) {
                 userRepository.deleteAvatar(userId).fold(
-                    onSuccess = { user -> },
+                    onSuccess = { },
                     onFailure = { e ->
                         _state.update {
                             it.copy(isLoading = false, error = "Błąd podczas usuwania zdjęcia: ${e.message}")
@@ -161,7 +138,7 @@ class AdminUsersViewModel(
                 val requestFile = file.asRequestBody(mimeType.toMediaTypeOrNull())
                 val body = MultipartBody.Part.createFormData("file", file.name, requestFile)
                 userRepository.uploadAvatar(userId, body).fold(
-                    onSuccess = { user -> },
+                    onSuccess = { },
                     onFailure = { e ->
                         _state.update {
                             it.copy(isLoading = false, error = "Błąd podczas zapisywania zdjęcia: ${e.message}")
@@ -171,17 +148,12 @@ class AdminUsersViewModel(
                 )
             }
 
-            // 2. Aktualizacja pozostałych danych
             userRepository.adminUpdateUser(userId, request).fold(
-                onSuccess = { updated ->
-                    _state.update { s ->
-                        s.copy(
-                            users = s.users.map { if (it.id == userId) updated else it },
-                            isLoading = false,
-                            successMessage = "Dane użytkownika zostały zaktualizowane"
-                        )
+                onSuccess = {
+                    _state.update {
+                        it.copy(isLoading = false, successMessage = "Dane użytkownika zostały zaktualizowane")
                     }
-                    applyFilters()
+                    loadUsers()
                 },
                 onFailure = { e -> _state.update { it.copy(isLoading = false, error = e.message) } }
             )

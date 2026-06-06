@@ -13,10 +13,8 @@ import androidx.compose.material.icons.filled.Wifi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.MaterialTheme.typography
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,6 +25,9 @@ import androidx.compose.ui.unit.dp
 import pl.edu.ur.teachly.R
 import pl.edu.ur.teachly.data.model.ReviewResponse
 import pl.edu.ur.teachly.ui.components.other.PrimaryButton
+import pl.edu.ur.teachly.ui.components.profile.ProfileSectionActionIcon
+import pl.edu.ur.teachly.ui.components.profile.ProfileSectionFooterAction
+import pl.edu.ur.teachly.ui.components.profile.ProfileSectionTitle
 import pl.edu.ur.teachly.ui.models.Tutor
 import pl.edu.ur.teachly.ui.review.views.ReviewCard
 
@@ -101,10 +102,8 @@ fun TutorBioSection(tutor: Tutor) {
 @Composable
 fun DetailSection(title: String, content: @Composable () -> Unit) {
     Column(modifier = Modifier.padding(bottom = 24.dp)) {
-        Text(
-            text = title,
-            style = typography.titleMedium,
-            color = colorScheme.onBackground,
+        ProfileSectionTitle(
+            title = title,
             modifier = Modifier.padding(bottom = 12.dp)
         )
         content()
@@ -121,27 +120,7 @@ fun ReviewsSection(
     onEditReview: ((ReviewResponse) -> Unit)? = null
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = stringResource(R.string.reviews_section_title),
-                style = typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                color = colorScheme.onBackground
-            )
-            if (reviews.size > 3 && onSeeAll != null) {
-                TextButton(onClick = onSeeAll) {
-                    Text(
-                        text = stringResource(R.string.reviews_see_all_btn),
-                        style = typography.labelMedium,
-                        color = colorScheme.primary
-                    )
-                }
-            }
-        }
+        ProfileSectionTitle(title = stringResource(R.string.reviews_section_title))
 
         if (reviews.isEmpty()) {
             Text(
@@ -163,13 +142,11 @@ fun ReviewsSection(
                 }
             }
             if (reviews.size > 3 && onSeeAll != null) {
-                OutlinedButton(
+                ProfileSectionFooterAction(
+                    label = stringResource(R.string.reviews_see_all_btn),
                     onClick = onSeeAll,
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp)
-                ) {
-                    Text(stringResource(R.string.reviews_see_all_btn))
-                }
+                    icon = ProfileSectionActionIcon.Navigate
+                )
             }
         }
 

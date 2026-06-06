@@ -7,6 +7,7 @@ import pl.edu.ur.teachly.data.model.TutorAvailabilityRecurringRequest
 import pl.edu.ur.teachly.data.model.TutorAvailabilityRecurringResponse
 import pl.edu.ur.teachly.data.model.TutorRequest
 import pl.edu.ur.teachly.data.model.TutorResponse
+import pl.edu.ur.teachly.data.model.TutorSearchResultResponse
 import pl.edu.ur.teachly.data.model.TutorSelfProfileRequest
 import pl.edu.ur.teachly.data.model.TutorSubjectRequest
 import pl.edu.ur.teachly.data.model.TutorSubjectResponse
@@ -14,8 +15,22 @@ import pl.edu.ur.teachly.data.remote.TutorApiService
 
 class TutorRepository(private val api: TutorApiService) {
 
-    suspend fun getAllTutors(): Result<List<TutorResponse>> = try {
-        val response = api.getAllTutors()
+    suspend fun searchTutors(
+        query: String? = null,
+        subject: String? = null
+    ): Result<List<TutorSearchResultResponse>> = try {
+        val response = api.searchTutors(query, subject)
+        if (response.isSuccessful) {
+            Result.success(response.body()!!)
+        } else {
+            Result.failure(Exception("Błąd wyszukiwania korepetytorów"))
+        }
+    } catch (e: Exception) {
+        Result.failure(Exception("Brak połączenia z serwerem"))
+    }
+
+    suspend fun getAllTutors(query: String? = null): Result<List<TutorResponse>> = try {
+        val response = api.getAllTutors(query)
         if (response.isSuccessful) {
             Result.success(response.body()!!)
         } else {

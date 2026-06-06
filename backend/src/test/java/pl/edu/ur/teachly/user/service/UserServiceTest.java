@@ -100,11 +100,11 @@ class UserServiceTest {
                         null,
                         null);
 
-        when(userRepository.findAll()).thenReturn(List.of(u1, u2));
+        when(userRepository.searchUsers(null, null, null)).thenReturn(List.of(u1, u2));
         when(userMapper.toResponse(u1)).thenReturn(r1);
         when(userMapper.toResponse(u2)).thenReturn(r2);
 
-        List<UserResponse> result = userService.getAllUsers();
+        List<UserResponse> result = userService.searchUsers(null, null, null);
 
         assertThat(result).containsExactly(r1, r2);
     }
@@ -112,9 +112,9 @@ class UserServiceTest {
     @Test
     @DisplayName("getAllUsers – zwraca pustą listę gdy brak użytkowników")
     void getAllUsers_empty_returnsEmptyList() {
-        when(userRepository.findAll()).thenReturn(List.of());
+        when(userRepository.searchUsers(null, null, null)).thenReturn(List.of());
 
-        assertThat(userService.getAllUsers()).isEmpty();
+        assertThat(userService.searchUsers(null, null, null)).isEmpty();
     }
 
     // ─── deactivateUser ───────────────────────────────────────────────────────

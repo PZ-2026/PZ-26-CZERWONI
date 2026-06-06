@@ -7,6 +7,7 @@ import pl.edu.ur.teachly.data.model.TutorAvailabilityRecurringRequest
 import pl.edu.ur.teachly.data.model.TutorAvailabilityRecurringResponse
 import pl.edu.ur.teachly.data.model.TutorRequest
 import pl.edu.ur.teachly.data.model.TutorResponse
+import pl.edu.ur.teachly.data.model.TutorSearchResultResponse
 import pl.edu.ur.teachly.data.model.TutorSelfProfileRequest
 import pl.edu.ur.teachly.data.model.TutorSubjectRequest
 import pl.edu.ur.teachly.data.model.TutorSubjectResponse
@@ -21,8 +22,14 @@ import retrofit2.http.Query
 
 interface TutorApiService {
 
+    @GET("api/tutors/search")
+    suspend fun searchTutors(
+        @Query("q") query: String? = null,
+        @Query("subject") subject: String? = null
+    ): Response<List<TutorSearchResultResponse>>
+
     @GET("api/tutors")
-    suspend fun getAllTutors(): Response<List<TutorResponse>>
+    suspend fun getAllTutors(@Query("q") query: String? = null): Response<List<TutorResponse>>
 
     @GET("api/tutors/{id}")
     suspend fun getTutorById(@Path("id") id: Int): Response<TutorResponse>

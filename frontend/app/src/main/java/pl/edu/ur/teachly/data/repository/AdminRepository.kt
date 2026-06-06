@@ -17,8 +17,11 @@ class AdminRepository(private val api: AdminApiService) {
         Result.failure(Exception("Brak połączenia z serwerem"))
     }
 
-    suspend fun getAllReviews(): Result<List<ReviewResponse>> = try {
-        val response = api.getAllReviews()
+    suspend fun getAllReviews(
+        query: String? = null,
+        rating: Int? = null
+    ): Result<List<ReviewResponse>> = try {
+        val response = api.getAllReviews(query, rating)
         if (response.isSuccessful) {
             Result.success(response.body()!!)
         } else {

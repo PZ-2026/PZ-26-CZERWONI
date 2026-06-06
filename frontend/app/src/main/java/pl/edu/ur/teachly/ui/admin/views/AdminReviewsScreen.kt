@@ -21,7 +21,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -116,14 +115,14 @@ fun AdminReviewsScreen(viewModel: AdminReviewsViewModel = koinViewModel(), showH
                     contentAlignment = Alignment.Center
                 ) { CircularProgressIndicator() }
 
-                state.filteredReviews.isEmpty() -> EmptyListState(message = "Brak opinii")
+                state.reviews.isEmpty() -> EmptyListState(message = "Brak opinii")
 
                 else -> LazyColumn(
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(16.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    items(state.filteredReviews) { review ->
+                    items(state.reviews) { review ->
                         ReviewAdminCard(
                             review = review,
                             onDelete = { confirmDeleteId = review.id }

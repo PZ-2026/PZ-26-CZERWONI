@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
@@ -14,7 +15,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import pl.edu.ur.teachly.common.exception.ResourceNotFoundException;
+import pl.edu.ur.teachly.review.repository.ReviewRepository;
+import pl.edu.ur.teachly.subject.repository.SubjectRepository;
 import pl.edu.ur.teachly.tutor.dto.response.TutorResponse;
+import pl.edu.ur.teachly.tutor.dto.response.TutorSearchResultResponse;
 import pl.edu.ur.teachly.tutor.dto.response.TutorSubjectResponse;
 import pl.edu.ur.teachly.tutor.entity.Tutor;
 import pl.edu.ur.teachly.tutor.entity.TutorSubject;
@@ -32,13 +36,15 @@ class TutorServiceTest {
     @Mock private TutorMapper tutorMapper;
     @Mock private TutorSubjectRepository tutorSubjectRepository;
     @Mock private TutorSubjectMapper tutorSubjectMapper;
+    @Mock private SubjectRepository subjectRepository;
+    @Mock private ReviewRepository reviewRepository;
 
     @InjectMocks private TutorService tutorService;
 
     @Test
     @DisplayName("getAllTutors - zwraca listę aktywnych korepetytorów")
     void getAllTutors_returnsList() {
-        Tutor t1 = Tutor.builder().user(User.builder().isActive(true).build()).build();
+        Tutor t1 = Tutor.builder().userId(1).user(User.builder().isActive(true).build()).build();
         TutorResponse r1 =
                 new TutorResponse(
                         1,
@@ -52,12 +58,51 @@ class TutorServiceTest {
                         true,
                         true);
 
-        when(tutorRepository.findByUser_IsActiveTrue()).thenReturn(List.of(t1));
+        when(tutorRepository.searchActiveTutors(null, null)).thenReturn(List.of(t1));
         when(tutorMapper.toResponse(t1)).thenReturn(r1);
 
-        List<TutorResponse> result = tutorService.getAllTutors();
+        List<TutorResponse> result = tutorService.getAllTutors(null);
 
         assertThat(result).containsExactly(r1);
+    }
+
+    @Test
+    @DisplayName("searchTutors - zwraca wyniki z przedmiotami i statystykami opinii")
+    void searchTutors_returnsEnrichedResults() {
+        Tutor t1 = Tutor.builder().userId(1).user(User.builder().isActive(true).build()).build();
+        TutorResponse r1 =
+                new TutorResponse(
+                        1,
+                        "Test",
+                        "Test",
+                        "test@test.com",
+                        "123",
+                        "url",
+                        "Bio",
+                        java.math.BigDecimal.TEN,
+                        true,
+                        true);
+        TutorSubject ts = TutorSubject.builder().tutor(t1).build();
+        TutorSubjectResponse tsr =
+                new TutorSubjectResponse(
+                        1, 1, "Matematyka", "Kat", true, false, false, false, false);
+
+        when(tutorRepository.searchActiveTutors("%jan%", null)).thenReturn(List.of(t1));
+        when(tutorMapper.toResponse(t1)).thenReturn(r1);
+        when(tutorSubjectRepository.findByTutor_UserIdIn(List.of(1))).thenReturn(List.of(ts));
+        when(tutorSubjectMapper.toResponse(ts)).thenReturn(tsr);
+        when(reviewRepository.findRatingStatsByTutorIds(List.of(1)))
+                .thenReturn(
+                        Collections.singletonList(
+                                new Object[] {1, java.math.BigDecimal.valueOf(4.5), 2L}));
+
+        List<TutorSearchResultResponse> result = tutorService.searchTutors("Jan", null);
+
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0).tutor()).isEqualTo(r1);
+        assertThat(result.get(0).subjects()).containsExactly(tsr);
+        assertThat(result.get(0).averageRating()).isEqualTo(4.5);
+        assertThat(result.get(0).reviewCount()).isEqualTo(2);
     }
 
     @Test

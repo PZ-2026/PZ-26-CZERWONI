@@ -3,6 +3,7 @@ package pl.edu.ur.teachly.lesson.service;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Stream;
@@ -11,9 +12,11 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import pl.edu.ur.teachly.common.enums.LessonFormat;
 import pl.edu.ur.teachly.common.enums.LessonStatus;
 import pl.edu.ur.teachly.common.enums.PaymentStatus;
 import pl.edu.ur.teachly.common.enums.UserRole;
+import pl.edu.ur.teachly.common.util.SearchQueryUtils;
 import pl.edu.ur.teachly.common.exception.BusinessValidationException;
 import pl.edu.ur.teachly.common.exception.ResourceNotFoundException;
 import pl.edu.ur.teachly.common.exception.SlotNotAvailableException;
@@ -162,8 +165,23 @@ public class LessonService {
     }
 
     @Transactional(readOnly = true)
-    public List<LessonResponse> getAllLessons() {
-        return lessonRepository.findAll().stream().map(lessonMapper::toResponse).toList();
+    public List<LessonResponse> searchLessons(
+            String query,
+            LessonStatus status,
+            PaymentStatus paymentStatus,
+            LessonFormat format,
+            Boolean upcoming) {
+        return lessonRepository
+                .searchLessons(
+                        SearchQueryUtils.toLikePattern(query),
+                        status,
+                        paymentStatus,
+                        format,
+                        upcoming,
+                        LocalDate.now())
+                .stream()
+                .map(lessonMapper::toResponse)
+                .toList();
     }
 
     @Transactional

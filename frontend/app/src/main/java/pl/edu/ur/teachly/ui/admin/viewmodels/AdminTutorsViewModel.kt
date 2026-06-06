@@ -10,10 +10,10 @@ import kotlinx.coroutines.launch
 import pl.edu.ur.teachly.data.model.TutorRequest
 import pl.edu.ur.teachly.data.model.TutorResponse
 import pl.edu.ur.teachly.data.repository.TutorRepository
+import pl.edu.ur.teachly.ui.util.Debouncer
 
 data class AdminTutorsState(
     val tutors: List<TutorResponse> = emptyList(),
-    val filteredTutors: List<TutorResponse> = emptyList(),
     val searchQuery: String = "",
     val isLoading: Boolean = true,
     val error: String? = null,
@@ -24,6 +24,7 @@ class AdminTutorsViewModel(private val tutorRepository: TutorRepository) : ViewM
 
     private val _state = MutableStateFlow(AdminTutorsState())
     val state: StateFlow<AdminTutorsState> = _state.asStateFlow()
+    private val searchDebouncer = Debouncer(viewModelScope)
 
     init {
         loadTutors()
@@ -31,10 +32,12 @@ class AdminTutorsViewModel(private val tutorRepository: TutorRepository) : ViewM
 
     fun loadTutors() {
         viewModelScope.launch {
+            val current = _state.value
             _state.update { it.copy(isLoading = true, error = null) }
-            tutorRepository.getAllTutors().fold(
+            val query = current.searchQuery.trim().takeIf { it.isNotBlank() }
+            tutorRepository.getAllTutors(query).fold(
                 onSuccess = { tutors ->
-                    _state.update { it.copy(tutors = tutors, filteredTutors = tutors, isLoading = false) }
+                    _state.update { it.copy(tutors = tutors, isLoading = false) }
                 },
                 onFailure = { e -> _state.update { it.copy(isLoading = false, error = e.message) } }
             )
@@ -43,27 +46,15 @@ class AdminTutorsViewModel(private val tutorRepository: TutorRepository) : ViewM
 
     fun onSearchChange(query: String) {
         _state.update { it.copy(searchQuery = query) }
-        val q = query.lowercase()
-        val filtered = _state.value.tutors.filter { tutor ->
-            q.isEmpty() ||
-                tutor.firstName.lowercase().contains(q) ||
-                tutor.lastName.lowercase().contains(q) ||
-                tutor.email.lowercase().contains(q)
-        }
-        _state.update { it.copy(filteredTutors = filtered) }
+        searchDebouncer.submit { loadTutors() }
     }
 
     fun updateTutor(tutorId: Int, request: TutorRequest) {
         viewModelScope.launch {
             tutorRepository.adminUpdateTutor(tutorId, request).fold(
-                onSuccess = { updated ->
-                    _state.update { s ->
-                        s.copy(
-                            tutors = s.tutors.map { if (it.id == tutorId) updated else it },
-                            successMessage = "Dane korepetytora zostały zaktualizowane"
-                        )
-                    }
-                    onSearchChange(_state.value.searchQuery)
+                onSuccess = {
+                    _state.update { it.copy(successMessage = "Dane korepetytora zostały zaktualizowane") }
+                    loadTutors()
                 },
                 onFailure = { e -> _state.update { it.copy(error = e.message) } }
             )

@@ -208,10 +208,10 @@ class ReviewServiceTest {
     @Test
     @DisplayName("getAllReviews - zwraca wszystkie opinie")
     void getAllReviews_returnsList() {
-        when(reviewRepository.findAll()).thenReturn(List.of(review));
+        when(reviewRepository.searchReviews(null, null)).thenReturn(List.of(review));
         when(reviewMapper.toResponse(review)).thenReturn(reviewResponse);
 
-        List<ReviewResponse> result = reviewService.getAllReviews();
+        List<ReviewResponse> result = reviewService.searchReviews(null, null);
 
         assertThat(result).containsExactly(reviewResponse);
     }

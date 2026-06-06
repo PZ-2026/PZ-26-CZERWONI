@@ -79,14 +79,14 @@ fun AdminTutorsScreen(
                     contentAlignment = Alignment.Center
                 ) { CircularProgressIndicator() }
 
-                state.filteredTutors.isEmpty() -> EmptyListState(message = "Brak korepetytorów")
+                state.tutors.isEmpty() -> EmptyListState(message = "Brak korepetytorów")
 
                 else -> LazyColumn(
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(16.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    items(state.filteredTutors) { tutor ->
+                    items(state.tutors) { tutor ->
                         TutorAdminCard(
                             tutor = tutor,
                             onEdit = { showEditDialog = tutor },

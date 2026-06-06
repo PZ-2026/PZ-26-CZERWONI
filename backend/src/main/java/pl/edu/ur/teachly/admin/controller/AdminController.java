@@ -24,8 +24,10 @@ public class AdminController {
     }
 
     @GetMapping("/reviews")
-    public List<ReviewResponse> getAllReviews() {
-        return reviewService.getAllReviews();
+    public List<ReviewResponse> getAllReviews(
+            @RequestParam(required = false) String q,
+            @RequestParam(required = false) Integer rating) {
+        return reviewService.searchReviews(q, rating);
     }
 
     @DeleteMapping("/reviews/{id}")

@@ -8,6 +8,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import pl.edu.ur.teachly.common.enums.UserRole;
 import pl.edu.ur.teachly.user.dto.request.AdminUserUpdateRequest;
 import pl.edu.ur.teachly.user.dto.request.UserUpdateRequest;
 import pl.edu.ur.teachly.user.dto.response.UserResponse;
@@ -22,8 +23,11 @@ public class UserController {
 
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public List<UserResponse> getAllUsers() {
-        return userService.getAllUsers();
+    public List<UserResponse> getAllUsers(
+            @RequestParam(required = false) String q,
+            @RequestParam(required = false) UserRole role,
+            @RequestParam(required = false) Boolean active) {
+        return userService.searchUsers(q, role, active);
     }
 
     @GetMapping("/{id}")

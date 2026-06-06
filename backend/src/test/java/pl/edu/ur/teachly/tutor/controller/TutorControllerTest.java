@@ -16,6 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import pl.edu.ur.teachly.tutor.dto.response.TutorResponse;
+import pl.edu.ur.teachly.tutor.dto.response.TutorSearchResultResponse;
 import pl.edu.ur.teachly.tutor.dto.response.TutorSubjectResponse;
 import pl.edu.ur.teachly.tutor.service.TutorService;
 
@@ -37,7 +38,7 @@ class TutorControllerTest {
     @Test
     @DisplayName("GET /api/tutors - zwraca listę")
     void getAllTutors() throws Exception {
-        when(tutorService.getAllTutors())
+        when(tutorService.getAllTutors(null))
                 .thenReturn(
                         List.of(
                                 new TutorResponse(
@@ -54,7 +55,17 @@ class TutorControllerTest {
 
         mockMvc.perform(get("/api/tutors")).andExpect(status().isOk());
 
-        verify(tutorService).getAllTutors();
+        verify(tutorService).getAllTutors(null);
+    }
+
+    @Test
+    @DisplayName("GET /api/tutors/search - zwraca wyniki wyszukiwania")
+    void searchTutors() throws Exception {
+        when(tutorService.searchTutors(null, null)).thenReturn(List.of());
+
+        mockMvc.perform(get("/api/tutors/search")).andExpect(status().isOk());
+
+        verify(tutorService).searchTutors(null, null);
     }
 
     @Test

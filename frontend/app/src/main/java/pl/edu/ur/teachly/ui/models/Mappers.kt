@@ -6,7 +6,15 @@ import java.time.LocalTime
 import pl.edu.ur.teachly.data.model.LessonResponse
 import pl.edu.ur.teachly.data.model.ReviewResponse
 import pl.edu.ur.teachly.data.model.TutorResponse
+import pl.edu.ur.teachly.data.model.TutorSearchResultResponse
 import pl.edu.ur.teachly.data.model.TutorSubjectResponse
+
+fun TutorSearchResultResponse.toUiTutor(): Tutor =
+    tutor.toUiTutor(
+        tutorSubjects = subjects,
+        rating = averageRating,
+        reviewCount = reviewCount
+    )
 
 fun TutorResponse.toUiTutor(
     tutorSubjects: List<TutorSubjectResponse> = emptyList(),

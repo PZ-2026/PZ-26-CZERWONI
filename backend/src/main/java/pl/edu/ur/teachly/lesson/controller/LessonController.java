@@ -7,6 +7,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import pl.edu.ur.teachly.common.enums.LessonFormat;
+import pl.edu.ur.teachly.common.enums.LessonStatus;
+import pl.edu.ur.teachly.common.enums.PaymentStatus;
 import pl.edu.ur.teachly.lesson.dto.request.AdminLessonUpdateRequest;
 import pl.edu.ur.teachly.lesson.dto.request.LessonRequest;
 import pl.edu.ur.teachly.lesson.dto.request.LessonStatusRequest;
@@ -25,8 +28,13 @@ public class LessonController {
 
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public List<LessonResponse> getAllLessons() {
-        return lessonService.getAllLessons();
+    public List<LessonResponse> getAllLessons(
+            @RequestParam(required = false) String q,
+            @RequestParam(required = false) LessonStatus status,
+            @RequestParam(required = false) PaymentStatus paymentStatus,
+            @RequestParam(required = false) LessonFormat format,
+            @RequestParam(required = false) Boolean upcoming) {
+        return lessonService.searchLessons(q, status, paymentStatus, format, upcoming);
     }
 
     @PostMapping("/student/{studentId}")

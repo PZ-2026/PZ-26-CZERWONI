@@ -14,6 +14,15 @@ public interface TutorSubjectRepository extends JpaRepository<TutorSubject, Inte
     @Query("SELECT ts FROM TutorSubject ts JOIN ts.tutor t WHERE t.userId = :tutorId")
     List<TutorSubject> findByTutor_UserId(@Param("tutorId") Integer tutorId);
 
+    @Query(
+            """
+                    SELECT ts FROM TutorSubject ts
+                    JOIN FETCH ts.subject
+                    JOIN ts.tutor t
+                    WHERE t.userId IN :tutorIds
+                    """)
+    List<TutorSubject> findByTutor_UserIdIn(@Param("tutorIds") List<Integer> tutorIds);
+
     // TutorSubject JOIN Subject JOIN SubjectCategory
     @Query(
             """

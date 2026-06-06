@@ -13,6 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import pl.edu.ur.teachly.common.exception.BusinessValidationException;
 import pl.edu.ur.teachly.common.exception.ResourceNotFoundException;
+import pl.edu.ur.teachly.common.enums.UserRole;
+import pl.edu.ur.teachly.common.util.SearchQueryUtils;
 import pl.edu.ur.teachly.user.dto.request.AdminUserUpdateRequest;
 import pl.edu.ur.teachly.user.dto.request.UserUpdateRequest;
 import pl.edu.ur.teachly.user.dto.response.UserResponse;
@@ -39,8 +41,12 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public List<UserResponse> getAllUsers() {
-        return userRepository.findAll().stream().map(userMapper::toResponse).toList();
+    public List<UserResponse> searchUsers(String query, UserRole role, Boolean active) {
+        return userRepository
+                .searchUsers(SearchQueryUtils.toLikePattern(query), role, active)
+                .stream()
+                .map(userMapper::toResponse)
+                .toList();
     }
 
     @Transactional

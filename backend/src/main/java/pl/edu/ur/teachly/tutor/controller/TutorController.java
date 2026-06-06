@@ -11,6 +11,7 @@ import pl.edu.ur.teachly.tutor.dto.request.TutorRequest;
 import pl.edu.ur.teachly.tutor.dto.request.TutorSelfProfileRequest;
 import pl.edu.ur.teachly.tutor.dto.request.TutorSubjectRequest;
 import pl.edu.ur.teachly.tutor.dto.response.TutorResponse;
+import pl.edu.ur.teachly.tutor.dto.response.TutorSearchResultResponse;
 import pl.edu.ur.teachly.tutor.dto.response.TutorSubjectResponse;
 import pl.edu.ur.teachly.tutor.service.TutorService;
 import pl.edu.ur.teachly.user.entity.User;
@@ -21,9 +22,16 @@ import pl.edu.ur.teachly.user.entity.User;
 public class TutorController {
     private final TutorService tutorService;
 
+    @GetMapping("/search")
+    public List<TutorSearchResultResponse> searchTutors(
+            @RequestParam(required = false) String q,
+            @RequestParam(required = false) String subject) {
+        return tutorService.searchTutors(q, subject);
+    }
+
     @GetMapping
-    public List<TutorResponse> getAllTutors() {
-        return tutorService.getAllTutors();
+    public List<TutorResponse> getAllTutors(@RequestParam(required = false) String q) {
+        return tutorService.getAllTutors(q);
     }
 
     @GetMapping("/{id}")

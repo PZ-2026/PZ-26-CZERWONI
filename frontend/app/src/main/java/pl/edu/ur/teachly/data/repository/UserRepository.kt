@@ -3,6 +3,7 @@ package pl.edu.ur.teachly.data.repository
 import okhttp3.MultipartBody
 import pl.edu.ur.teachly.data.model.AdminUserUpdateRequest
 import pl.edu.ur.teachly.data.model.UserResponse
+import pl.edu.ur.teachly.data.model.UserRole
 import pl.edu.ur.teachly.data.model.UserUpdateRequest
 import pl.edu.ur.teachly.data.remote.UserApiService
 
@@ -19,8 +20,12 @@ class UserRepository(private val api: UserApiService) {
         Result.failure(Exception("Brak połączenia z serwerem"))
     }
 
-    suspend fun getAllUsers(): Result<List<UserResponse>> = try {
-        val response = api.getAllUsers()
+    suspend fun getAllUsers(
+        query: String? = null,
+        role: UserRole? = null,
+        active: Boolean? = null
+    ): Result<List<UserResponse>> = try {
+        val response = api.getAllUsers(query, role, active)
         if (response.isSuccessful) {
             Result.success(response.body()!!)
         } else {

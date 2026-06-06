@@ -1,8 +1,11 @@
 package pl.edu.ur.teachly.data.repository
 
 import pl.edu.ur.teachly.data.model.AdminLessonUpdateRequest
+import pl.edu.ur.teachly.data.model.LessonFormat
 import pl.edu.ur.teachly.data.model.LessonRequest
 import pl.edu.ur.teachly.data.model.LessonResponse
+import pl.edu.ur.teachly.data.model.LessonStatus
+import pl.edu.ur.teachly.data.model.PaymentStatus
 import pl.edu.ur.teachly.data.model.LessonStatusRequest
 import pl.edu.ur.teachly.data.model.PaymentStatusRequest
 import pl.edu.ur.teachly.data.model.StudentNotesRequest
@@ -11,8 +14,14 @@ import pl.edu.ur.teachly.data.remote.LessonApiService
 
 class LessonRepository(private val api: LessonApiService) {
 
-    suspend fun getAllLessons(): Result<List<LessonResponse>> = try {
-        val response = api.getAllLessons()
+    suspend fun getAllLessons(
+        query: String? = null,
+        status: LessonStatus? = null,
+        paymentStatus: PaymentStatus? = null,
+        format: LessonFormat? = null,
+        upcoming: Boolean? = null
+    ): Result<List<LessonResponse>> = try {
+        val response = api.getAllLessons(query, status, paymentStatus, format, upcoming)
         if (response.isSuccessful) {
             Result.success(response.body()!!)
         } else {

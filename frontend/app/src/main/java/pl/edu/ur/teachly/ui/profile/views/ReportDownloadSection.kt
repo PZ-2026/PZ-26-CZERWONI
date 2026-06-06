@@ -2,6 +2,13 @@ package pl.edu.ur.teachly.ui.profile.views
 
 import android.content.Intent
 import android.widget.Toast
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -10,7 +17,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -25,6 +31,7 @@ import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.ChevronLeft
 import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.DropdownMenuItem
@@ -43,12 +50,15 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -268,18 +278,23 @@ fun ReportDownloadSection(viewModel: ProfileViewModel, modifier: Modifier = Modi
 
     val colorScheme = MaterialTheme.colorScheme
     val typography = MaterialTheme.typography
+    val currentReportTypeName = reportTypes.firstOrNull { it.first == selectedReportKey }?.second ?: ""
+    val collapsedSummary = remember(currentReportTypeName, rangeLabel) {
+        val period = rangeLabel.removePrefix("Zakres: ").removePrefix("Dzień: ")
+        "$currentReportTypeName · $period"
+    }
+
+    var sectionExpanded by rememberSaveable { mutableStateOf(false) }
+    val chevronRotation by animateFloatAsState(
+        targetValue = if (sectionExpanded) 180f else 0f,
+        animationSpec = tween(200),
+        label = "reportSectionChevron"
+    )
 
     Column(
         modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
-        Text(
-            text = "Raporty i Statystyki",
-            style = typography.titleMedium,
-            fontWeight = FontWeight.Bold,
-            color = colorScheme.onBackground
-        )
-
         Surface(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(16.dp),
@@ -287,11 +302,53 @@ fun ReportDownloadSection(viewModel: ProfileViewModel, modifier: Modifier = Modi
             shadowElevation = 2.dp,
             border = BorderStroke(1.dp, colorScheme.outline.copy(alpha = 0.35f))
         ) {
-            Column(
-                modifier = Modifier.padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                val currentReportTypeName = reportTypes.firstOrNull { it.first == selectedReportKey }?.second ?: ""
+            Column {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
+                        .clickable(role = Role.Button) { sectionExpanded = !sectionExpanded }
+                        .padding(horizontal = 16.dp, vertical = 14.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = "Raporty i statystyki",
+                            style = typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = colorScheme.onBackground
+                        )
+                        if (!sectionExpanded) {
+                            Text(
+                                text = collapsedSummary,
+                                style = typography.bodySmall,
+                                color = colorScheme.onSurfaceVariant,
+                                modifier = Modifier.padding(top = 2.dp)
+                            )
+                        }
+                    }
+                    Icon(
+                        imageVector = Icons.Default.KeyboardArrowDown,
+                        contentDescription = if (sectionExpanded) "Zwiń" else "Rozwiń",
+                        tint = colorScheme.onSurfaceVariant,
+                        modifier = Modifier
+                            .size(24.dp)
+                            .rotate(chevronRotation)
+                    )
+                }
+
+                AnimatedVisibility(
+                    visible = sectionExpanded,
+                    enter = expandVertically(animationSpec = tween(200)) + fadeIn(animationSpec = tween(200)),
+                    exit = shrinkVertically(animationSpec = tween(200)) + fadeOut(animationSpec = tween(150))
+                ) {
+                    Column {
+                        HorizontalDivider(color = colorScheme.outline.copy(alpha = 0.25f))
+                        Column(
+                            modifier = Modifier.padding(16.dp),
+                            verticalArrangement = Arrangement.spacedBy(16.dp)
+                        ) {
                 ExposedDropdownMenuBox(
                     expanded = reportTypeExpanded,
                     onExpandedChange = { reportTypeExpanded = !reportTypeExpanded }
@@ -484,6 +541,9 @@ fun ReportDownloadSection(viewModel: ProfileViewModel, modifier: Modifier = Modi
                         }
                     }
                 )
+                        }
+                    }
+                }
             }
         }
     }

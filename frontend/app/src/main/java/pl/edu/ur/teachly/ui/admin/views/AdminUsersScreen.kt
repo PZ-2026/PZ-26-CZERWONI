@@ -10,8 +10,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme.colorScheme
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -113,14 +111,14 @@ fun AdminUsersScreen(viewModel: AdminUsersViewModel = koinViewModel(), initialRo
                     CircularProgressIndicator()
                 }
 
-                state.filteredUsers.isEmpty() -> EmptyListState(message = "Brak użytkowników")
+                state.users.isEmpty() -> EmptyListState(message = "Brak użytkowników")
 
                 else -> LazyColumn(
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(16.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    items(state.filteredUsers) { user ->
+                    items(state.users) { user ->
                         val isCurrentUser = user.id == state.currentUserId
                         UserAdminCard(
                             user = user,
