@@ -127,4 +127,11 @@ class ReviewControllerTest {
         mockMvc.perform(delete("/api/reviews/1")).andExpect(status().isNoContent());
         verify(reviewService).deleteReview(eq(1), eq(1));
     }
+
+    @Test
+    void getStudentReviews() throws Exception {
+        when(reviewService.getStudentReviews(1)).thenReturn(List.of());
+        mockMvc.perform(get("/api/reviews/student/1")).andExpect(status().isOk());
+        verify(reviewService).getStudentReviews(1);
+    }
 }

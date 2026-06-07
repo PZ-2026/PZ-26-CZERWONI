@@ -17,13 +17,10 @@ import androidx.compose.material.icons.filled.AlternateEmail
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Phone
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
+import pl.edu.ur.teachly.ui.components.other.dialog.AppConfirmDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.MaterialTheme.typography
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
@@ -48,7 +45,7 @@ import pl.edu.ur.teachly.R
 import pl.edu.ur.teachly.data.model.ReviewResponse
 import pl.edu.ur.teachly.ui.components.other.EmptyListState
 import pl.edu.ur.teachly.ui.components.other.FullScreenError
-import pl.edu.ur.teachly.ui.components.other.PrimaryButton
+import pl.edu.ur.teachly.ui.components.other.LogoutButton
 import pl.edu.ur.teachly.ui.components.other.cards.StatCard
 import pl.edu.ur.teachly.ui.components.other.formatDate
 import pl.edu.ur.teachly.ui.components.other.formatPhoneNumber
@@ -115,24 +112,16 @@ fun StudentProfileScreen(
     }
 
     deletingReview?.let { review ->
-        AlertDialog(
-            onDismissRequest = { deletingReview = null },
-            title = { Text("Usuń recenzję") },
-            text = {
-                Text("Czy na pewno chcesz usunąć opinię o ${review.tutorFirstName} ${review.tutorLastName}?")
+        AppConfirmDialog(
+            title = "Usuń recenzję",
+            message = "Czy na pewno chcesz usunąć opinię o ${review.tutorFirstName} ${review.tutorLastName}?",
+            confirmText = "Usuń",
+            onDismiss = { deletingReview = null },
+            onConfirm = {
+                myReviewsViewModel.deleteReview(review.id)
+                deletingReview = null
             },
-            confirmButton = {
-                Button(
-                    onClick = {
-                        myReviewsViewModel.deleteReview(review.id)
-                        deletingReview = null
-                    },
-                    colors = ButtonDefaults.buttonColors(containerColor = colorScheme.error)
-                ) { Text("Usuń") }
-            },
-            dismissButton = {
-                OutlinedButton(onClick = { deletingReview = null }) { Text("Anuluj") }
-            }
+            destructive = true
         )
     }
 
@@ -142,7 +131,10 @@ fun StudentProfileScreen(
             contentAlignment = Alignment.Center
         ) { CircularProgressIndicator() }
 
-        profile.error != null -> FullScreenError(message = profile.error!!)
+        profile.error != null -> FullScreenError(
+            message = profile.error!!,
+            onLogout = onLogout
+        )
 
         else -> Column(
             modifier = Modifier
@@ -273,7 +265,7 @@ private fun ProfileTab(
 
         ReportDownloadSection(viewModel = viewModel)
 
-        PrimaryButton(
+        LogoutButton(
             text = stringResource(R.string.logout),
             onClick = onLogout,
             modifier = Modifier.padding(bottom = 32.dp, top = 8.dp)

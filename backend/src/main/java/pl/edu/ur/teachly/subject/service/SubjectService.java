@@ -17,6 +17,12 @@ import pl.edu.ur.teachly.subject.mapper.SubjectMapper;
 import pl.edu.ur.teachly.subject.repository.SubjectCategoryRepository;
 import pl.edu.ur.teachly.subject.repository.SubjectRepository;
 
+/**
+ * Serwis zarządzający przedmiotami i ich kategoriami.
+ *
+ * <p>Przedmioty są przypisane do kategorii. Usunięcie kategorii jest zablokowane, gdy posiada ona
+ * przypisane przedmioty.
+ */
 @Service
 @RequiredArgsConstructor
 public class SubjectService {
@@ -25,11 +31,23 @@ public class SubjectService {
     private final SubjectMapper subjectMapper;
     private final SubjectCategoryMapper categoryMapper;
 
+    /**
+     * Zwraca listę wszystkich przedmiotów.
+     *
+     * @return lista przedmiotów
+     */
     @Transactional(readOnly = true)
     public List<SubjectResponse> getAllSubjects() {
         return subjectRepository.findAll().stream().map(subjectMapper::toResponse).toList();
     }
 
+    /**
+     * Dodaje nowy przedmiot przypisany do wskazanej kategorii.
+     *
+     * @param request dane nowego przedmiotu
+     * @return zapisany przedmiot
+     * @throws ResourceNotFoundException gdy kategoria nie istnieje
+     */
     @Transactional
     public SubjectResponse addSubject(SubjectRequest request) {
         SubjectCategory category =
@@ -45,6 +63,14 @@ public class SubjectService {
         return subjectMapper.toResponse(subjectRepository.save(subject));
     }
 
+    /**
+     * Aktualizuje dane przedmiotu.
+     *
+     * @param id identyfikator przedmiotu
+     * @param request nowe dane przedmiotu
+     * @return zaktualizowany przedmiot
+     * @throws ResourceNotFoundException gdy przedmiot lub kategoria nie istnieje
+     */
     @Transactional
     public SubjectResponse updateSubject(Integer id, SubjectRequest request) {
         Subject subject =
@@ -66,6 +92,12 @@ public class SubjectService {
         return subjectMapper.toResponse(subjectRepository.save(subject));
     }
 
+    /**
+     * Usuwa przedmiot o podanym identyfikatorze.
+     *
+     * @param id identyfikator przedmiotu
+     * @throws ResourceNotFoundException gdy przedmiot nie istnieje
+     */
     @Transactional
     public void deleteSubject(Integer id) {
         if (!subjectRepository.existsById(id)) {
@@ -74,17 +106,36 @@ public class SubjectService {
         subjectRepository.deleteById(id);
     }
 
+    /**
+     * Zwraca listę wszystkich kategorii przedmiotów.
+     *
+     * @return lista kategorii
+     */
     @Transactional(readOnly = true)
     public List<SubjectCategoryResponse> getAllCategories() {
         return categoryRepository.findAll().stream().map(categoryMapper::toResponse).toList();
     }
 
+    /**
+     * Dodaje nową kategorię przedmiotów.
+     *
+     * @param request dane nowej kategorii
+     * @return zapisana kategoria
+     */
     @Transactional
     public SubjectCategoryResponse addSubjectCategory(SubjectCategoryRequest request) {
         SubjectCategory category = categoryMapper.toEntity(request);
         return categoryMapper.toResponse(categoryRepository.save(category));
     }
 
+    /**
+     * Aktualizuje nazwę kategorii przedmiotów.
+     *
+     * @param id identyfikator kategorii
+     * @param request nowa nazwa kategorii
+     * @return zaktualizowana kategoria
+     * @throws ResourceNotFoundException gdy kategoria nie istnieje
+     */
     @Transactional
     public SubjectCategoryResponse updateSubjectCategory(
             Integer id, SubjectCategoryRequest request) {
@@ -99,6 +150,14 @@ public class SubjectService {
         return categoryMapper.toResponse(categoryRepository.save(category));
     }
 
+    /**
+     * Usuwa kategorię przedmiotów. Usunięcie jest blokowane, gdy kategoria posiada przypisane
+     * przedmioty.
+     *
+     * @param id identyfikator kategorii
+     * @throws ResourceNotFoundException gdy kategoria nie istnieje
+     * @throws BusinessValidationException gdy do kategorii są przypisane przedmioty
+     */
     @Transactional
     public void deleteSubjectCategory(Integer id) {
         if (!categoryRepository.existsById(id)) {

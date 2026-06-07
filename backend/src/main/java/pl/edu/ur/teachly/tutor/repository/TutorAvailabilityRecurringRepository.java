@@ -7,6 +7,11 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import pl.edu.ur.teachly.tutor.entity.TutorAvailabilityRecurring;
 
+/**
+ * Repozytorium JPA dla encji {@link TutorAvailabilityRecurring}.
+ *
+ * <p>Umożliwia pobieranie cyklicznych slotów dostępności przypisanych do konkretnego korepetytora.
+ */
 @Repository
 public interface TutorAvailabilityRecurringRepository
         extends JpaRepository<TutorAvailabilityRecurring, Integer> {

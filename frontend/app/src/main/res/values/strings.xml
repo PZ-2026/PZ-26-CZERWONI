@@ -8,6 +8,8 @@
     <string name="cd_hide_password">Ukryj hasło</string>
     <string name="splash_logo_description">Logo Teachly</string>
     <string name="cd_edit_profile">Edytuj profil</string>
+    <string name="cd_edit_tutor_profile">Edytuj profil korepetytora</string>
+    <string name="cd_tutor_schedule">Harmonogram dostępności</string>
 
     <!-- Shared -->
     <string name="divider_or">lub</string>
@@ -65,8 +67,32 @@
     <string name="tutor_lessons_count">Lekcje</string>
     <string name="tutor_profile_subjects_title">Nauczam</string>
 
+    <!-- Teaching levels (audience / educational stage) -->
+    <string name="teaching_levels_dialog_title">Dla kogo prowadzisz zajęcia? (wybierz co najmniej jeden)</string>
+    <string name="teaching_level_primary">Szkoła podstawowa</string>
+    <string name="teaching_level_high_school">Liceum / technikum</string>
+    <string name="teaching_level_university">Studia</string>
+    <string name="teaching_level_exam">Przygotowanie do egzaminów</string>
+    <string name="teaching_level_professional">Kursy zawodowe</string>
+    <string name="teaching_level_primary_short">Szkoła podst.</string>
+    <string name="teaching_level_high_school_short">Liceum</string>
+    <string name="teaching_level_university_short">Studia</string>
+    <string name="teaching_level_exam_short">Egzaminy</string>
+    <string name="teaching_level_professional_short">Kursy zawodowe</string>
+    <string name="teaching_level_other">Inne przedmioty</string>
+    <string name="subjects_see_more">Zobacz więcej</string>
+    <string name="subjects_see_less">Zobacz mniej</string>
+    <string name="subjects_more_count">+%d</string>
+
+    <!-- Tutor setup validation -->
+    <string name="tutor_setup_rate_min">Stawka musi wynosić co najmniej 1 PLN</string>
+    <string name="tutor_setup_rate_invalid">Podaj prawidłową stawkę godzinową</string>
+    <string name="tutor_setup_lesson_format_required">Wybierz co najmniej jedną formę zajęć (online lub stacjonarnie)</string>
+    <string name="tutor_setup_subjects_required">Dodaj co najmniej jeden prowadzony przedmiot</string>
+    <string name="tutor_setup_cannot_remove_last_subject">Musi pozostać co najmniej jeden prowadzony przedmiot</string>
+
     <!-- TutorCard -->
-    <string name="tutor_price_format">%1$d zł</string>
+    <string name="tutor_price_format">%1$s zł</string>
     <string name="tutor_per_hour">/godz</string>
     <string name="tutor_rating_format">★ %1$.1f</string>
     <string name="tutor_reviews_format">(%1$d opinii)</string>

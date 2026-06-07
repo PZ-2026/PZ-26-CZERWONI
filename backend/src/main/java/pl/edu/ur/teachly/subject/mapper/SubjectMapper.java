@@ -6,6 +6,12 @@ import pl.edu.ur.teachly.subject.dto.request.SubjectRequest;
 import pl.edu.ur.teachly.subject.dto.response.SubjectResponse;
 import pl.edu.ur.teachly.subject.entity.Subject;
 
+/**
+ * Mapper MapStruct konwertujący między encją {@link Subject} a jej DTO.
+ *
+ * <p>Mapuje zagnieżdżone pola kategorii ({@code category.id}, {@code category.categoryName}) na
+ * płaskie pola odpowiedzi {@link SubjectResponse}.
+ */
 @Mapper(componentModel = "spring")
 public interface SubjectMapper {
     @Mapping(source = "category.id", target = "categoryId")

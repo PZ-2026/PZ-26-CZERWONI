@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import pl.edu.ur.teachly.common.enums.UserRole;
 
+/** Żądanie administracyjnej aktualizacji danych konta użytkownika. */
 public record AdminUserUpdateRequest(
         @NotBlank(message = "Imię nie może być puste")
                 @Size(max = 50, message = "Imię nie może przekraczać 50 znaków")

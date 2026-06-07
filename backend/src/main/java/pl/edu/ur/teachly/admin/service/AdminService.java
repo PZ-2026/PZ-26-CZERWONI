@@ -13,6 +13,12 @@ import pl.edu.ur.teachly.subject.repository.SubjectCategoryRepository;
 import pl.edu.ur.teachly.subject.repository.SubjectRepository;
 import pl.edu.ur.teachly.user.repository.UserRepository;
 
+/**
+ * Serwis dostarczający zagregowane statystyki systemu dla panelu administratora.
+ *
+ * <p>Zbiera dane z repozytoriów użytkowników, lekcji, przedmiotów, dni wolnych i opinii, a
+ * następnie zwraca je w postaci jednego obiektu odpowiedzi.
+ */
 @Service
 @RequiredArgsConstructor
 public class AdminService {
@@ -23,6 +29,15 @@ public class AdminService {
     private final HolidayRepository holidayRepository;
     private final ReviewRepository reviewRepository;
 
+    /**
+     * Zwraca zagregowane statystyki systemu.
+     *
+     * <p>Zlicza użytkowników z podziałem na role (student, korepetytor, admin), lekcje z podziałem
+     * na statusy (oczekująca, potwierdzona, zakończona, anulowana) oraz łączną liczbę przedmiotów,
+     * kategorii, dni wolnych i opinii.
+     *
+     * @return obiekt ze wszystkimi statystykami systemu
+     */
     @Transactional(readOnly = true)
     public AdminStatsResponse getStats() {
         int totalStudents = 0;

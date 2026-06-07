@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -37,9 +38,11 @@ import androidx.compose.ui.unit.dp
 import org.koin.androidx.compose.koinViewModel
 import pl.edu.ur.teachly.R
 import pl.edu.ur.teachly.data.model.ReviewResponse
+import pl.edu.ur.teachly.data.model.UserRole
 import pl.edu.ur.teachly.ui.components.other.FullScreenError
 import pl.edu.ur.teachly.ui.components.other.MessageSnackbars
 import pl.edu.ur.teachly.ui.components.other.PrimaryButton
+import pl.edu.ur.teachly.ui.components.other.dialog.AppConfirmDialog
 import pl.edu.ur.teachly.ui.components.profile.ProfileHeader
 import pl.edu.ur.teachly.ui.components.tutor.TutorDetailBody
 import pl.edu.ur.teachly.ui.profile.viewmodels.StudentProfile
@@ -52,7 +55,7 @@ fun TutorDetailScreen(
     tutorId: String,
     onBack: () -> Unit,
     onBookClick: () -> Unit,
-    onSeeAllReviews: () -> Unit = {},
+    onSeeAllReviews: (String) -> Unit = {},
     viewModel: TutorDetailViewModel = koinViewModel()
 ) {
     LaunchedEffect(tutorId) { viewModel.loadTutor(tutorId) }
@@ -60,12 +63,14 @@ fun TutorDetailScreen(
     val state by viewModel.state.collectAsState()
     var showAddDialog by rememberSaveable { mutableStateOf(false) }
     var editingReview by remember { mutableStateOf<ReviewResponse?>(null) }
+    var deletingReview by remember { mutableStateOf<ReviewResponse?>(null) }
     val successMessage = stringResource(R.string.review_submitted_success)
 
     LaunchedEffect(state.reviewSubmitSuccess) {
         if (state.reviewSubmitSuccess) {
             showAddDialog = false
             editingReview = null
+            deletingReview = null
             kotlinx.coroutines.delay(2500)
             viewModel.clearReviewSuccess()
         }
@@ -103,6 +108,21 @@ fun TutorDetailScreen(
         )
     }
 
+    deletingReview?.let { review ->
+        AppConfirmDialog(
+            title = "Usuń opinię",
+            message = "Czy na pewno chcesz usunąć swoją opinię?",
+            confirmText = "Usuń",
+            onDismiss = { deletingReview = null },
+            onConfirm = {
+                val id = tutorId.toIntOrNull() ?: return@AppConfirmDialog
+                viewModel.deleteReview(review.id, id)
+                deletingReview = null
+            },
+            destructive = true
+        )
+    }
+
     Box(modifier = Modifier.fillMaxSize()) {
         when {
             state.isLoading -> Box(
@@ -131,6 +151,7 @@ fun TutorDetailScreen(
                     ProfileHeader(
                         profile = profile,
                         avatarColor = AvatarColors[avatarIndex % AvatarColors.size],
+                        role = UserRole.TUTOR,
                         onBack = onBack
                     )
 
@@ -143,10 +164,19 @@ fun TutorDetailScreen(
                     ) {
                         TutorDetailBody(
                             tutor = t,
-                            reviews = state.reviews.take(3),
+                            reviews = state.reviews,
                             currentStudentId = state.currentStudentId,
                             onEditReview = { review -> editingReview = review },
-                            onSeeAllReviews = if (state.reviews.isNotEmpty()) onSeeAllReviews else null,
+                            onDeleteReview = if (state.currentStudentId != null) {
+                                { review -> deletingReview = review }
+                            } else {
+                                null
+                            },
+                            onSeeAllReviews = if (state.reviews.size > 3) {
+                                { onSeeAllReviews(t.name) }
+                            } else {
+                                null
+                            },
                             canReview = false
                         )
 
@@ -161,7 +191,9 @@ fun TutorDetailScreen(
                     PrimaryButton(
                         text = stringResource(R.string.tutordetail_book_cta),
                         onClick = onBookClick,
-                        modifier = Modifier.padding(horizontal = 24.dp, vertical = 16.dp)
+                        modifier = Modifier
+                            .navigationBarsPadding()
+                            .padding(horizontal = 24.dp, vertical = 16.dp)
                     )
                 }
             }

@@ -7,6 +7,12 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import pl.edu.ur.teachly.subject.entity.Subject;
 
+/**
+ * Repozytorium JPA dla encji {@link Subject}.
+ *
+ * <p>Dostarcza metodę do pobierania przedmiotów przypisanych do danej kategorii — używaną przy
+ * walidacji przed usunięciem kategorii.
+ */
 @Repository
 public interface SubjectRepository extends JpaRepository<Subject, Integer> {
 

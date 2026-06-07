@@ -49,6 +49,7 @@ import pl.edu.ur.teachly.ui.components.other.cards.StatCard
 import pl.edu.ur.teachly.ui.components.other.section.SectionHeader
 import pl.edu.ur.teachly.ui.components.other.section.SectionItems
 import pl.edu.ur.teachly.ui.home.viewmodels.HomeViewModel
+import pl.edu.ur.teachly.ui.theme.headerGradientColors
 import pl.edu.ur.teachly.ui.review.views.PendingReviewFormDialog
 import pl.edu.ur.teachly.ui.review.views.PendingReviewsSummaryDialog
 
@@ -131,9 +132,7 @@ fun HomeScreen(
                 } else {
                     stringResource(R.string.home_tutor_subtitle)
                 },
-                background = HeaderBackground.Diagonal(
-                    listOf(colorScheme.onPrimaryContainer, colorScheme.primary)
-                ),
+                background = HeaderBackground.Diagonal(headerGradientColors()),
                 showLogo = true
             )
 

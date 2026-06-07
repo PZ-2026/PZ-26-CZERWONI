@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -20,7 +21,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material3.AlertDialog
+import pl.edu.ur.teachly.ui.components.other.dialog.AppConfirmDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -28,7 +29,6 @@ import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -46,6 +46,7 @@ import org.koin.androidx.compose.koinViewModel
 import pl.edu.ur.teachly.R
 import pl.edu.ur.teachly.data.model.ReviewResponse
 import pl.edu.ur.teachly.ui.components.other.formatDate
+import pl.edu.ur.teachly.ui.components.other.rememberDebouncedCallback
 import pl.edu.ur.teachly.ui.review.viewmodels.AllReviewsViewModel
 
 @Composable
@@ -76,10 +77,12 @@ fun AllReviewsScreen(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
+                .statusBarsPadding()
                 .padding(horizontal = 8.dp, vertical = 4.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            IconButton(onClick = onBack) {
+            val debouncedBack = rememberDebouncedCallback(onClick = onBack)
+            IconButton(onClick = debouncedBack) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = stringResource(R.string.cd_back),
@@ -163,19 +166,16 @@ fun AllReviewsScreen(
     }
 
     showDeleteDialog?.let { review ->
-        AlertDialog(
-            onDismissRequest = { showDeleteDialog = null },
-            title = { Text("Usuń opinię") },
-            text = { Text("Czy na pewno chcesz usunąć swoją opinię?") },
-            confirmButton = {
-                TextButton(onClick = {
-                    viewModel.deleteReview(review.id)
-                    showDeleteDialog = null
-                }) { Text("Usuń", color = colorScheme.error) }
+        AppConfirmDialog(
+            title = "Usuń opinię",
+            message = "Czy na pewno chcesz usunąć swoją opinię?",
+            confirmText = "Usuń",
+            onDismiss = { showDeleteDialog = null },
+            onConfirm = {
+                viewModel.deleteReview(review.id)
+                showDeleteDialog = null
             },
-            dismissButton = {
-                TextButton(onClick = { showDeleteDialog = null }) { Text("Anuluj") }
-            }
+            destructive = true
         )
     }
 }

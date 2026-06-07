@@ -47,9 +47,9 @@ class AdminControllerTest {
 
     @Test
     void getAllReviews() throws Exception {
-        when(reviewService.getAllReviews()).thenReturn(List.of());
+        when(reviewService.searchReviews(null, null)).thenReturn(List.of());
         mockMvc.perform(get("/api/admin/reviews")).andExpect(status().isOk());
-        verify(reviewService).getAllReviews();
+        verify(reviewService).searchReviews(null, null);
     }
 
     @Test

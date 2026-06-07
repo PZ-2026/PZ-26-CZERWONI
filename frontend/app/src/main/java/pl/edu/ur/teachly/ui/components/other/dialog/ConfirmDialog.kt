@@ -1,11 +1,5 @@
 package pl.edu.ur.teachly.ui.components.other.dialog
 
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.MaterialTheme.colorScheme
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 
 data class ConfirmConfig(
@@ -18,30 +12,15 @@ data class ConfirmConfig(
 
 @Composable
 fun ConfirmDialog(config: ConfirmConfig, onDismiss: () -> Unit) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(config.title) },
-        text = { Text(config.message) },
-        confirmButton = {
-            Button(
-                onClick = {
-                    config.action()
-                    onDismiss()
-                },
-                colors = if (config.destructive) {
-                    ButtonDefaults.buttonColors(
-                        containerColor = colorScheme.error,
-                        contentColor = colorScheme.onError
-                    )
-                } else {
-                    ButtonDefaults.buttonColors()
-                }
-            ) {
-                Text(config.confirmLabel)
-            }
+    AppConfirmDialog(
+        title = config.title,
+        message = config.message,
+        confirmText = config.confirmLabel,
+        onDismiss = onDismiss,
+        onConfirm = {
+            config.action()
+            onDismiss()
         },
-        dismissButton = {
-            OutlinedButton(onClick = onDismiss) { Text("Anuluj") }
-        }
+        destructive = config.destructive
     )
 }

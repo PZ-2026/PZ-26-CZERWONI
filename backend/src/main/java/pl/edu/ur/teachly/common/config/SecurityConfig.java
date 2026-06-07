@@ -19,6 +19,13 @@ import pl.edu.ur.teachly.common.security.CustomAccessDeniedHandler;
 import pl.edu.ur.teachly.common.security.CustomAuthenticationEntryPoint;
 import pl.edu.ur.teachly.common.security.JwtAuthFilter;
 
+/**
+ * Główna konfiguracja Spring Security dla aplikacji Teachly.
+ *
+ * <p>Wyłącza sesje (stateless), konfiguruje CORS, rejestruje filtr JWT oraz definiuje reguły
+ * autoryzacji dla publicznych i chronionych endpointów. Bezpieczeństwo na poziomie metod jest
+ * włączone przez {@link EnableMethodSecurity}.
+ */
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -30,8 +37,18 @@ public class SecurityConfig {
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
 
+    /**
+     * Definiuje łańcuch filtrów bezpieczeństwa.
+     *
+     * <p>Ścieżki {@code /api/auth/**} i {@code /uploads/**} są publicznie dostępne. Pozostałe
+     * żądania wymagają uwierzytelnienia przez token JWT.
+     *
+     * @param http konfiguracja HTTP Security
+     * @return skonfigurowany {@link SecurityFilterChain}
+     * @throws Exception w przypadku błędu konfiguracji
+     */
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(
@@ -53,6 +70,11 @@ public class SecurityConfig {
         return http.build();
     }
 
+    /**
+     * Konfiguruje politykę CORS zezwalającą na żądania z dowolnego źródła.
+     *
+     * @return źródło konfiguracji CORS
+     */
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();

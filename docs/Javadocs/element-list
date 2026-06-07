@@ -10,6 +10,8 @@ pl.edu.ur.teachly.common.config
 pl.edu.ur.teachly.common.enums
 pl.edu.ur.teachly.common.exception
 pl.edu.ur.teachly.common.security
+pl.edu.ur.teachly.common.util
+pl.edu.ur.teachly.config
 pl.edu.ur.teachly.holiday.controller
 pl.edu.ur.teachly.holiday.dto.request
 pl.edu.ur.teachly.holiday.dto.response
@@ -39,6 +41,7 @@ pl.edu.ur.teachly.subject.entity
 pl.edu.ur.teachly.subject.mapper
 pl.edu.ur.teachly.subject.repository
 pl.edu.ur.teachly.subject.service
+pl.edu.ur.teachly.support
 pl.edu.ur.teachly.tutor.controller
 pl.edu.ur.teachly.tutor.dto.request
 pl.edu.ur.teachly.tutor.dto.response

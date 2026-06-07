@@ -109,4 +109,30 @@ class HolidayServiceTest {
         assertThatThrownBy(() -> holidayService.deleteHoliday(99))
                 .isInstanceOf(ResourceNotFoundException.class);
     }
+
+    @Test
+    @DisplayName("updateHoliday - błąd: święto nie istnieje")
+    void updateHoliday_notFound_throwsException() {
+        HolidayRequest req = new HolidayRequest(LocalDate.now(), "Test");
+        when(holidayRepository.findById(99)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> holidayService.updateHoliday(99, req))
+                .isInstanceOf(ResourceNotFoundException.class);
+    }
+
+    @Test
+    @DisplayName("updateHoliday - błąd: nowa data już istnieje")
+    void updateHoliday_duplicateDate_throwsException() {
+        LocalDate oldDate = LocalDate.of(2025, 12, 24);
+        LocalDate newDate = LocalDate.of(2025, 12, 25);
+        HolidayRequest req = new HolidayRequest(newDate, "Zmiana");
+        Holiday holiday = new Holiday();
+        holiday.setHolidayDate(oldDate);
+
+        when(holidayRepository.findById(1)).thenReturn(Optional.of(holiday));
+        when(holidayRepository.existsByHolidayDate(newDate)).thenReturn(true);
+
+        assertThatThrownBy(() -> holidayService.updateHoliday(1, req))
+                .isInstanceOf(BusinessValidationException.class);
+    }
 }

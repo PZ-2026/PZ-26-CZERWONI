@@ -9,6 +9,12 @@ import pl.edu.ur.teachly.tutor.dto.response.TutorAvailabilityRecurringResponse;
 import pl.edu.ur.teachly.tutor.entity.TutorAvailabilityOverride;
 import pl.edu.ur.teachly.tutor.entity.TutorAvailabilityRecurring;
 
+/**
+ * Mapper MapStruct konwertujący między encjami dostępności korepetytora a ich DTO.
+ *
+ * <p>Obsługuje zarówno wpisy cykliczne ({@link TutorAvailabilityRecurring}) jak i jednorazowe
+ * nadpisania ({@link TutorAvailabilityOverride}).
+ */
 @Mapper(componentModel = "spring")
 public interface TutorAvailabilityMapper {
     @Mapping(target = "id", ignore = true)

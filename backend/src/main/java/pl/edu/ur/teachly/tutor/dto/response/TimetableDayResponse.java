@@ -7,6 +7,12 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Odpowiedź reprezentująca dostępne terminy korepetytora w konkretnym dniu.
+ *
+ * <p>Jeśli {@code availableSlots} jest pustą listą, korepetytor jest w tym dniu niedostępny
+ * (święto, brak dostępności cyklicznej lub nadpisanie blokujące cały dzień).
+ */
 @Data
 @Builder
 @NoArgsConstructor

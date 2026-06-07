@@ -6,6 +6,7 @@ import retrofit2.Response
 import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface AdminApiService {
 
@@ -13,7 +14,10 @@ interface AdminApiService {
     suspend fun getStats(): Response<AdminStatsResponse>
 
     @GET("api/admin/reviews")
-    suspend fun getAllReviews(): Response<List<ReviewResponse>>
+    suspend fun getAllReviews(
+        @Query("q") query: String? = null,
+        @Query("rating") rating: Int? = null
+    ): Response<List<ReviewResponse>>
 
     @DELETE("api/admin/reviews/{id}")
     suspend fun deleteReview(@Path("id") reviewId: Int): Response<Unit>

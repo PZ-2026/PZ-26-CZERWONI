@@ -32,7 +32,8 @@ data class TutorProfileState(
     val reviewError: String? = null,
     val reviewSubmitSuccess: Boolean = false,
     val isLoading: Boolean = true,
-    val error: String? = null
+    val error: String? = null,
+    val loadWarning: String? = null
 )
 
 class TutorProfileViewModel(
@@ -45,10 +46,14 @@ class TutorProfileViewModel(
     private val _state = MutableStateFlow(TutorProfileState())
     val state: StateFlow<TutorProfileState> = _state.asStateFlow()
 
+    private var hasLoaded = false
+
     fun loadProfile(tutorId: String) {
         val id = tutorId.toIntOrNull() ?: return
         viewModelScope.launch {
-            _state.update { it.copy(isLoading = true, error = null) }
+            if (!hasLoaded) {
+                _state.update { it.copy(isLoading = true, error = null) }
+            }
 
             val tutorResponse = tutorRepository.getTutorById(id).getOrElse { e ->
                 _state.update { it.copy(isLoading = false, error = e.message) }
@@ -56,9 +61,7 @@ class TutorProfileViewModel(
             }
 
             val subjectsDeferred = async {
-                tutorRepository.getTutorSubjects(id)
-                    .getOrDefault(emptyList())
-                    .map { it.subjectName }
+                tutorRepository.getTutorSubjects(id).getOrDefault(emptyList())
             }
             val lessonsDeferred = async { lessonRepository.getTutorLessons(id) }
             val reviewsDeferred = async { reviewRepository.getTutorReviews(id) }
@@ -66,9 +69,11 @@ class TutorProfileViewModel(
             val currentUserId = tokenManager.userIdFlow.first()
             val currentRole = tokenManager.roleFlow.first()
 
-            val subjects = subjectsDeferred.await()
+            val tutorSubjects = subjectsDeferred.await()
             val lessonsResult = lessonsDeferred.await()
             val reviewsResult = reviewsDeferred.await()
+
+            val warnings = mutableListOf<String>()
 
             var completedLessons = 0
             var totalEarnings = 0.0
@@ -79,7 +84,9 @@ class TutorProfileViewModel(
                         .filter { it.lessonStatus == LessonStatus.COMPLETED }
                         .sumOf { it.amount }
                 },
-                onFailure = {}
+                onFailure = { e ->
+                    warnings.add(e.message ?: "Nie udało się pobrać lekcji")
+                }
             )
 
             var reviews = emptyList<ReviewResponse>()
@@ -93,7 +100,9 @@ class TutorProfileViewModel(
                         avgRating = reviewList.sumOf { it.rating } / reviewList.size
                     }
                 },
-                onFailure = {}
+                onFailure = { e ->
+                    warnings.add(e.message ?: "Nie udało się pobrać opinii")
+                }
             )
 
             var canReview = false
@@ -106,15 +115,18 @@ class TutorProfileViewModel(
                                 it.tutorId == id && it.lessonStatus == LessonStatus.COMPLETED
                             }
                         },
-                        onFailure = {}
+                        onFailure = { e ->
+                            warnings.add(e.message ?: "Nie udało się sprawdzić uprawnień do opinii")
+                        }
                     )
                 }
             }
 
+            hasLoaded = true
             _state.update {
                 it.copy(
                     tutor = tutorResponse.toUiTutor(
-                        subjects = subjects,
+                        tutorSubjects = tutorSubjects,
                         rating = avgRating,
                         reviewCount = reviewsCount,
                         lessonCount = completedLessons
@@ -130,7 +142,9 @@ class TutorProfileViewModel(
                     reviews = reviews,
                     currentStudentId = currentUserId,
                     canReview = canReview,
-                    isLoading = false
+                    isLoading = false,
+                    error = null,
+                    loadWarning = warnings.takeIf { it.isNotEmpty() }?.joinToString("\n")
                 )
             }
         }
@@ -169,6 +183,21 @@ class TutorProfileViewModel(
                             reviewSubmitSuccess = true
                         )
                     }
+                },
+                onFailure = { e ->
+                    _state.update { it.copy(isSubmittingReview = false, reviewError = e.message) }
+                }
+            )
+        }
+    }
+
+    fun deleteReview(reviewId: Int, tutorId: Int) {
+        viewModelScope.launch {
+            _state.update { it.copy(isSubmittingReview = true, reviewError = null) }
+            reviewRepository.deleteReview(reviewId).fold(
+                onSuccess = {
+                    _state.update { it.copy(isSubmittingReview = false, reviewSubmitSuccess = true) }
+                    loadProfile(tutorId.toString())
                 },
                 onFailure = { e ->
                     _state.update { it.copy(isSubmittingReview = false, reviewError = e.message) }

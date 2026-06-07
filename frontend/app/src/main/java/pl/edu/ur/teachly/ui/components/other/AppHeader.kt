@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -85,12 +86,17 @@ fun AppHeader(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
+                .statusBarsPadding()
                 .padding(horizontal = 20.dp)
-                .padding(top = topPadding, bottom = bottomPadding)
+                .padding(
+                    top = if (onBack != null) 12.dp else topPadding,
+                    bottom = bottomPadding
+                )
         ) {
             if (onBack != null) {
+                val debouncedBack = rememberDebouncedCallback(onClick = onBack)
                 IconButton(
-                    onClick = onBack,
+                    onClick = debouncedBack,
                     modifier = Modifier
                         .size(36.dp)
                         .background(

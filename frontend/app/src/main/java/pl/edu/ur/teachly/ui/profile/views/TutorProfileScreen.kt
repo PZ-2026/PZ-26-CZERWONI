@@ -16,7 +16,6 @@ import androidx.compose.material.icons.filled.AttachMoney
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Phone
-import androidx.compose.material.icons.filled.Wifi
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.MaterialTheme.typography
@@ -41,8 +40,12 @@ import org.koin.androidx.compose.koinViewModel
 import pl.edu.ur.teachly.R
 import pl.edu.ur.teachly.data.model.ReviewResponse
 import pl.edu.ur.teachly.data.model.UserRole
+import pl.edu.ur.teachly.ui.components.other.ErrorBanner
+import pl.edu.ur.teachly.ui.components.other.LogoutButton
 import pl.edu.ur.teachly.ui.components.other.PrimaryButton
+import pl.edu.ur.teachly.ui.components.other.dialog.AppConfirmDialog
 import pl.edu.ur.teachly.ui.components.other.formatDate
+import pl.edu.ur.teachly.ui.components.other.formatHourlyRate
 import pl.edu.ur.teachly.ui.components.other.formatPhoneNumber
 import pl.edu.ur.teachly.ui.components.profile.ProfileDataCard
 import pl.edu.ur.teachly.ui.components.profile.ProfileDataDivider
@@ -64,7 +67,7 @@ fun TutorProfileScreen(
     onEditClick: () -> Unit,
     onTutorSetupClick: () -> Unit = {},
     onLogout: () -> Unit,
-    onSeeAllReviews: () -> Unit = {},
+    onSeeAllReviews: (String) -> Unit = {},
     onAvailabilityClick: () -> Unit = {},
     viewModel: TutorProfileViewModel = koinViewModel(),
     profileViewModel: ProfileViewModel = koinViewModel()
@@ -84,11 +87,13 @@ fun TutorProfileScreen(
     val state by viewModel.state.collectAsState()
     var showReviewDialog by rememberSaveable { mutableStateOf(false) }
     var showEditReviewDialog by remember { mutableStateOf<ReviewResponse?>(null) }
+    var showDeleteReviewDialog by remember { mutableStateOf<ReviewResponse?>(null) }
 
     LaunchedEffect(state.reviewSubmitSuccess) {
         if (state.reviewSubmitSuccess) {
             showReviewDialog = false
             showEditReviewDialog = null
+            showDeleteReviewDialog = null
             viewModel.clearReviewSuccess()
         }
     }
@@ -124,6 +129,20 @@ fun TutorProfileScreen(
         )
     }
 
+    showDeleteReviewDialog?.let { review ->
+        AppConfirmDialog(
+            title = "Usuń opinię",
+            message = "Czy na pewno chcesz usunąć swoją opinię?",
+            confirmText = "Usuń",
+            onDismiss = { showDeleteReviewDialog = null },
+            onConfirm = {
+                viewModel.deleteReview(review.id, review.tutorId)
+                showDeleteReviewDialog = null
+            },
+            destructive = true
+        )
+    }
+
     when {
         state.isLoading -> Box(
             modifier = Modifier.fillMaxSize(),
@@ -152,7 +171,8 @@ fun TutorProfileScreen(
                     role = UserRole.TUTOR,
                     onBack = onBack,
                     onEditClick = if (isMyProfile) onEditClick else null,
-                    onCalendarClick = if (isMyProfile) onAvailabilityClick else null
+                    onCalendarClick = if (isMyProfile) onAvailabilityClick else null,
+                    onTutorSetupClick = if (isMyProfile) onTutorSetupClick else null
                 )
 
                 Column(
@@ -162,6 +182,9 @@ fun TutorProfileScreen(
                         .padding(horizontal = 24.dp, vertical = 16.dp),
                     verticalArrangement = Arrangement.spacedBy(24.dp)
                 ) {
+                    state.loadWarning?.let { warning ->
+                        ErrorBanner(message = warning)
+                    }
                     TutorStatsSection(stats = state.stats)
                     TutorDetailBody(
                         tutor = t,
@@ -170,7 +193,16 @@ fun TutorProfileScreen(
                         canReview = state.canReview && !isMyProfile,
                         onAddReview = { showReviewDialog = true },
                         onEditReview = { review -> showEditReviewDialog = review },
-                        onSeeAllReviews = onSeeAllReviews
+                        onDeleteReview = if (!isMyProfile && state.currentStudentId != null) {
+                            { review -> showDeleteReviewDialog = review }
+                        } else {
+                            null
+                        },
+                        onSeeAllReviews = if (state.reviews.size > 3) {
+                            { onSeeAllReviews(t.name) }
+                        } else {
+                            null
+                        }
                     )
 
                     if (isMyProfile) {
@@ -195,13 +227,7 @@ fun TutorProfileScreen(
                             ProfileInfoRow(
                                 icon = Icons.Default.AttachMoney,
                                 label = stringResource(R.string.hourly_rate),
-                                value = stringResource(R.string.hourly_rate_value, t.pricePerHour)
-                            )
-                            ProfileDataDivider()
-                            ProfileInfoRow(
-                                icon = Icons.Default.Wifi,
-                                label = stringResource(R.string.lesson_format),
-                                value = t.tags.joinToString(" / ")
+                                value = formatHourlyRate(t.pricePerHour)
                             )
                             val formattedDate = remember(profile.createdAt) {
                                 try {
@@ -235,13 +261,7 @@ fun TutorProfileScreen(
                     if (isMyProfile) {
                         ReportDownloadSection(viewModel = profileViewModel)
 
-                        PrimaryButton(
-                            text = "Edytuj profil korepetytora",
-                            onClick = onTutorSetupClick,
-                            modifier = Modifier.padding(bottom = 8.dp)
-                        )
-
-                        PrimaryButton(
+                        LogoutButton(
                             text = stringResource(R.string.profile_logout),
                             onClick = onLogout,
                             modifier = Modifier.padding(bottom = 24.dp)
@@ -282,7 +302,7 @@ fun TutorProfileScreen(
                         modifier = Modifier.padding(horizontal = 32.dp)
                     )
                     Spacer(Modifier.height(16.dp))
-                    PrimaryButton(
+                    LogoutButton(
                         text = stringResource(R.string.profile_logout),
                         onClick = onLogout,
                         modifier = Modifier.padding(horizontal = 32.dp)

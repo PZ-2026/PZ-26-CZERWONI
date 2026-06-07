@@ -38,6 +38,7 @@ import pl.edu.ur.teachly.ui.components.other.AppHeader
 import pl.edu.ur.teachly.ui.components.other.ErrorBanner
 import pl.edu.ur.teachly.ui.components.other.FullScreenError
 import pl.edu.ur.teachly.ui.components.other.HeaderBackground
+import pl.edu.ur.teachly.ui.theme.headerGradientColors
 
 @Composable
 fun BookingScreen(
@@ -69,9 +70,7 @@ fun BookingScreen(
             subtitle = state.tutor?.let {
                 stringResource(R.string.tutor_name, it.firstName, it.lastName)
             } ?: "",
-            background = HeaderBackground.Diagonal(
-                listOf(colorScheme.onPrimaryContainer, colorScheme.primary)
-            ),
+            background = HeaderBackground.Diagonal(headerGradientColors()),
             onBack = onBack
         )
 
@@ -154,7 +153,7 @@ fun BookingScreen(
 
                 BookingSummaryBar(
                     tutorName = state.tutor?.let { "${it.firstName} ${it.lastName}" } ?: "",
-                    pricePerHour = state.tutor?.hourlyRate?.toInt() ?: 0,
+                    pricePerHour = state.tutor?.hourlyRate ?: 0.0,
                     selectedDay = state.calendarDays.getOrNull(state.selectedDayIndex)?.first,
                     selectedSlot = state.selectedSlot,
                     selectedDuration = state.selectedDuration,

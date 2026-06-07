@@ -133,14 +133,14 @@ fun AdminLessonsScreen(viewModel: AdminLessonsViewModel = koinViewModel(), initi
                     CircularProgressIndicator()
                 }
 
-                state.filteredLessons.isEmpty() -> EmptyListState(message = "Brak lekcji")
+                state.lessons.isEmpty() -> EmptyListState(message = "Brak lekcji")
 
                 else -> LazyColumn(
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(16.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    items(state.filteredLessons) { lesson ->
+                    items(state.lessons) { lesson ->
                         LessonAdminCard(lesson = lesson, onEdit = { showEditDialog = lesson })
                     }
                 }

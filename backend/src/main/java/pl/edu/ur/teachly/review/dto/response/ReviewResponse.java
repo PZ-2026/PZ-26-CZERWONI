@@ -3,6 +3,7 @@ package pl.edu.ur.teachly.review.dto.response;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+/** Odpowiedź z danymi opinii, zawierająca informacje o autorze i ocenianym korepetytorze. */
 public record ReviewResponse(
         Integer id,
 

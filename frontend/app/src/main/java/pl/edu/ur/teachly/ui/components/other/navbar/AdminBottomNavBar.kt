@@ -26,8 +26,7 @@ fun AdminBottomNavBar(navController: NavController, modifier: Modifier = Modifie
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val routeStr = navBackStackEntry?.destination?.route ?: ""
 
-    // Hide on Auth screens
-    if (routeStr.contains("Splash") || routeStr.contains("Login") || routeStr.contains("Register")) {
+    if (!shouldShowBottomNav(routeStr)) {
         return
     }
 

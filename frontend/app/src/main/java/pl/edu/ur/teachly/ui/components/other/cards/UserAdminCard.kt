@@ -28,13 +28,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import pl.edu.ur.teachly.data.model.UserResponse
 import pl.edu.ur.teachly.ui.components.other.badges.UserRoleBadge
 import pl.edu.ur.teachly.ui.components.other.formatPhoneNumber
 
 @Composable
-fun UserAdminCard(user: UserResponse, onEdit: () -> Unit, onBanToggle: () -> Unit) {
+fun UserAdminCard(
+    user: UserResponse,
+    onEdit: () -> Unit,
+    onBanToggle: () -> Unit,
+    canEdit: Boolean = true,
+    canToggleBan: Boolean = true
+) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
@@ -50,35 +57,42 @@ fun UserAdminCard(user: UserResponse, onEdit: () -> Unit, onBanToggle: () -> Uni
         Column(modifier = Modifier.padding(16.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Row(
+                    modifier = Modifier.weight(1f),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     Text(
                         text = "${user.firstName} ${user.lastName}",
+                        modifier = Modifier.weight(1f, fill = false),
                         style = typography.titleMedium,
                         fontWeight = FontWeight.Bold,
-                        color = colorScheme.onSurface
+                        color = colorScheme.onSurface,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                     UserRoleBadge(user.role)
                 }
                 Row {
-                    IconButton(onClick = onEdit) {
-                        Icon(
-                            Icons.Default.Edit,
-                            contentDescription = "Edytuj",
-                            tint = colorScheme.primary
-                        )
+                    if (canEdit) {
+                        IconButton(onClick = onEdit) {
+                            Icon(
+                                Icons.Default.Edit,
+                                contentDescription = "Edytuj",
+                                tint = colorScheme.primary
+                            )
+                        }
                     }
-                    IconButton(onClick = onBanToggle) {
-                        Icon(
-                            if (user.isActive) Icons.Default.Block else Icons.Default.LockOpen,
-                            contentDescription = if (user.isActive) "Zablokuj" else "Odblokuj",
-                            tint = if (user.isActive) colorScheme.error else colorScheme.primary
-                        )
+                    if (canToggleBan) {
+                        IconButton(onClick = onBanToggle) {
+                            Icon(
+                                if (user.isActive) Icons.Default.Block else Icons.Default.LockOpen,
+                                contentDescription = if (user.isActive) "Zablokuj" else "Odblokuj",
+                                tint = if (user.isActive) colorScheme.error else colorScheme.primary
+                            )
+                        }
                     }
                 }
             }

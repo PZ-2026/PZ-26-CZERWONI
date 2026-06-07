@@ -13,12 +13,24 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import pl.edu.ur.teachly.user.repository.UserRepository;
 
+/**
+ * Konfiguracja komponentów uwierzytelniania Spring Security.
+ *
+ * <p>Rejestruje beany: {@link UserDetailsService} (ładowanie użytkownika po e-mailu), {@link
+ * AuthenticationProvider} (weryfikacja hasła BCrypt), {@link AuthenticationManager} oraz {@link
+ * PasswordEncoder}.
+ */
 @Configuration
 @RequiredArgsConstructor
 public class ApplicationConfig {
 
     private final UserRepository userRepository;
 
+    /**
+     * Tworzy {@link UserDetailsService} ładujący użytkownika z bazy danych po adresie e-mail.
+     *
+     * @return implementacja UserDetailsService
+     */
     @Bean
     public UserDetailsService userDetailsService() {
         return username ->
@@ -28,6 +40,11 @@ public class ApplicationConfig {
                                 () -> new UsernameNotFoundException("Nie znaleziono użytkownika"));
     }
 
+    /**
+     * Tworzy {@link AuthenticationProvider} oparty na DAO z enkoderem BCrypt.
+     *
+     * @return skonfigurowany dostawca uwierzytelnienia
+     */
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider =
@@ -36,11 +53,24 @@ public class ApplicationConfig {
         return authProvider;
     }
 
+    /**
+     * Eksponuje {@link AuthenticationManager} jako bean Spring.
+     *
+     * @param config konfiguracja uwierzytelnienia
+     * @return menedżer uwierzytelnienia
+     * @throws Exception w przypadku błędu konfiguracji
+     */
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) {
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config)
+            throws Exception {
         return config.getAuthenticationManager();
     }
 
+    /**
+     * Tworzy enkoder haseł oparty na algorytmie BCrypt.
+     *
+     * @return enkoder BCrypt
+     */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();

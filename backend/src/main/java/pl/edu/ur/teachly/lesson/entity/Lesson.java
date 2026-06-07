@@ -16,6 +16,12 @@ import pl.edu.ur.teachly.subject.entity.Subject;
 import pl.edu.ur.teachly.tutor.entity.Tutor;
 import pl.edu.ur.teachly.user.entity.User;
 
+/**
+ * Encja reprezentująca rezerwację lekcji między uczniem a korepetytorem.
+ *
+ * <p>Lekcja jest powiązana z konkretnym korepetytorem, uczniem i przedmiotem. Kwota jest obliczana
+ * w momencie tworzenia lekcji na podstawie stawki godzinowej korepetytora i czasu trwania lekcji.
+ */
 @Entity
 @Table(name = "lessons")
 @EntityListeners(AuditingEntityListener.class)
@@ -25,6 +31,7 @@ import pl.edu.ur.teachly.user.entity.User;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Lesson {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -65,6 +72,7 @@ public class Lesson {
     @Column(name = "student_notes", columnDefinition = "TEXT")
     private String studentNotes;
 
+    /** Kwota za lekcję w PLN obliczona proporcjonalnie do czasu trwania i stawki godzinowej. */
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal amount;
 

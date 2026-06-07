@@ -7,6 +7,16 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import pl.edu.ur.teachly.common.enums.UserRole;
 
+/**
+ * Żądanie rejestracji nowego użytkownika.
+ *
+ * @param userRole rola nowego użytkownika (STUDENT lub TUTOR; ADMIN jest zablokowany)
+ * @param firstName imię
+ * @param lastName nazwisko
+ * @param email adres e-mail (unikalny w systemie)
+ * @param phoneNumber numer telefonu — dokładnie 9 cyfr (unikalny w systemie)
+ * @param password hasło — minimum 8 znaków
+ */
 public record RegisterRequest(
         @NotNull(message = "Rola nie może być pusta") UserRole userRole,
         @NotBlank(message = "Imię nie może być puste") @Size(max = 50) String firstName,

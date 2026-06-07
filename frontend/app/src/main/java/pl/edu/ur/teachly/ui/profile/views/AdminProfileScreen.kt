@@ -30,7 +30,7 @@ import org.koin.androidx.compose.koinViewModel
 import pl.edu.ur.teachly.R
 import pl.edu.ur.teachly.data.model.UserRole
 import pl.edu.ur.teachly.ui.components.other.FullScreenError
-import pl.edu.ur.teachly.ui.components.other.PrimaryButton
+import pl.edu.ur.teachly.ui.components.other.LogoutButton
 import pl.edu.ur.teachly.ui.components.other.formatDate
 import pl.edu.ur.teachly.ui.components.other.formatPhoneNumber
 import pl.edu.ur.teachly.ui.components.profile.AdminBadge
@@ -68,7 +68,10 @@ fun AdminProfileScreen(
             contentAlignment = Alignment.Center
         ) { CircularProgressIndicator() }
 
-        profile.error != null -> FullScreenError(message = profile.error!!)
+        profile.error != null -> FullScreenError(
+            message = profile.error!!,
+            onLogout = onLogout
+        )
 
         else -> Column(
             modifier = Modifier
@@ -141,7 +144,7 @@ fun AdminProfileScreen(
 
                 ReportDownloadSection(viewModel = viewModel)
 
-                PrimaryButton(
+                LogoutButton(
                     text = stringResource(R.string.logout),
                     onClick = onLogout,
                     modifier = Modifier.padding(bottom = 32.dp, top = 8.dp)

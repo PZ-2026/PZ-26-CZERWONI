@@ -6,6 +6,11 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.math.BigDecimal;
 
+/**
+ * Żądanie dodania lub aktualizacji opinii o korepetytorze.
+ *
+ * <p>Ocena musi mieścić się w przedziale 1.0–5.0.
+ */
 public record ReviewRequest(
         @NotNull(message = "Tutor jest wymagany") Integer tutorId,
         @NotNull(message = "Ocena jest wymagana")

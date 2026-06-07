@@ -31,6 +31,7 @@ import pl.edu.ur.teachly.data.model.PaymentStatus
 import pl.edu.ur.teachly.data.model.UserRole
 import pl.edu.ur.teachly.ui.components.other.badges.LessonStatusBadge
 import pl.edu.ur.teachly.ui.components.other.formatDate
+import pl.edu.ur.teachly.ui.components.other.formatMoney
 import pl.edu.ur.teachly.ui.models.LessonDetail
 
 @Composable
@@ -102,7 +103,7 @@ fun InfoCard(lesson: LessonDetail, userRole: UserRole) {
                 PaymentStatus.PENDING -> "Nieopłacone"
                 PaymentStatus.CANCELLED -> "Anulowane"
             }
-            DetailRow(Icons.Default.CreditCard, "${lesson.amount} zł | $payLabel")
+            DetailRow(Icons.Default.CreditCard, "${formatMoney(lesson.amount, alwaysShowDecimals = true)} | $payLabel")
         }
     }
 }

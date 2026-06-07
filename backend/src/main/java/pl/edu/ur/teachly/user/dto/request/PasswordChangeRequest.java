@@ -3,6 +3,7 @@ package pl.edu.ur.teachly.user.dto.request;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
+/** Żądanie zmiany hasła przez użytkownika — wymaga podania aktualnego hasła. */
 public record PasswordChangeRequest(
         @NotBlank(message = "Aktualne hasło jest wymagane") String currentPassword,
         @NotBlank(message = "Nowe hasło nie może być puste")

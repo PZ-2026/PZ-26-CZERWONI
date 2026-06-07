@@ -6,6 +6,7 @@ import pl.edu.ur.teachly.subject.dto.request.SubjectCategoryRequest;
 import pl.edu.ur.teachly.subject.dto.response.SubjectCategoryResponse;
 import pl.edu.ur.teachly.subject.entity.SubjectCategory;
 
+/** Mapper MapStruct konwertujący między encją {@link SubjectCategory} a jej DTO. */
 @Mapper(componentModel = "spring")
 public interface SubjectCategoryMapper {
     SubjectCategoryResponse toResponse(SubjectCategory category);

@@ -2,20 +2,16 @@ package pl.edu.ur.teachly.ui.search.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import pl.edu.ur.teachly.data.repository.ReviewRepository
 import pl.edu.ur.teachly.data.repository.SubjectRepository
 import pl.edu.ur.teachly.data.repository.TutorRepository
 import pl.edu.ur.teachly.ui.models.Tutor
 import pl.edu.ur.teachly.ui.models.toUiTutor
+import pl.edu.ur.teachly.ui.util.Debouncer
 
 data class SearchUiState(
     val query: String = "",
@@ -28,110 +24,76 @@ data class SearchUiState(
 
 class SearchViewModel(
     private val tutorRepository: TutorRepository,
-    private val subjectRepository: SubjectRepository,
-    private val reviewRepository: ReviewRepository
+    private val subjectRepository: SubjectRepository
 ) : ViewModel() {
 
-    private val allTutorsFlow = MutableStateFlow<List<Tutor>>(emptyList())
-    private val queryFlow = MutableStateFlow("")
-    private val activeSubjectFlow = MutableStateFlow("Wszystkie")
-    private val subjectsFlow = MutableStateFlow<List<String>>(listOf("Wszystkie"))
-    private val isLoadingFlow = MutableStateFlow(true)
-    private val errorFlow = MutableStateFlow<String?>(null)
-
-    val uiState: StateFlow<SearchUiState> = combine(
-        combine(queryFlow, activeSubjectFlow) { q, s -> q to s },
-        combine(allTutorsFlow, subjectsFlow) { t, s -> t to s },
-        combine(isLoadingFlow, errorFlow) { l, e -> l to e }
-    ) { (query, subject), (tutors, subjects), (isLoading, error) ->
-        val filtered = tutors.filter { tutor ->
-            (subject == "Wszystkie" || tutor.subjects.contains(subject)) &&
-                (query.isBlank() || tutor.name.contains(query, ignoreCase = true))
-        }
-        SearchUiState(
-            query = query,
-            activeSubject = subject,
-            tutors = filtered,
-            subjects = subjects,
-            isLoading = isLoading,
-            error = error
-        )
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
-        initialValue = SearchUiState()
-    )
+    private val _state = MutableStateFlow(SearchUiState())
+    val uiState: StateFlow<SearchUiState> = _state.asStateFlow()
+    private val searchDebouncer = Debouncer(viewModelScope)
 
     init {
-        loadData()
+        loadSubjects()
+        searchTutors()
     }
 
-    private fun loadData() {
+    private fun loadSubjects() {
         viewModelScope.launch {
-            isLoadingFlow.value = true
-            errorFlow.value = null
-
-            tutorRepository.getAllTutors().fold(
-                onSuccess = { tutors ->
-                    try {
-                        allTutorsFlow.value = coroutineScope {
-                            tutors.map { tutor ->
-                                async {
-                                    val subjectsDeferred = async {
-                                        tutorRepository.getTutorSubjects(tutor.id)
-                                            .getOrDefault(emptyList())
-                                            .map { it.subjectName }
-                                    }
-                                    val reviewsDeferred = async {
-                                        reviewRepository.getTutorReviews(tutor.id)
-                                            .getOrDefault(emptyList())
-                                    }
-                                    val subjects = subjectsDeferred.await()
-                                    val reviews = reviewsDeferred.await()
-                                    val avgRating = if (reviews.isEmpty()) {
-                                        0.0
-                                    } else {
-                                        reviews.sumOf { it.rating } / reviews.size
-                                    }
-                                    tutor.toUiTutor(
-                                        subjects = subjects,
-                                        rating = (avgRating * 10).toLong() / 10.0,
-                                        reviewCount = reviews.size
-                                    )
-                                }
-                            }.awaitAll()
-                        }
-                    } catch (e: Exception) {
-                        errorFlow.value = e.message
-                    }
-                },
-                onFailure = { e -> errorFlow.value = e.message }
-            )
-
             subjectRepository.getAllSubjects().fold(
                 onSuccess = { subjects ->
-                    subjectsFlow.value = listOf("Wszystkie") + subjects.map { it.subjectName }
+                    _state.update {
+                        it.copy(subjects = listOf("Wszystkie") + subjects.map { subject -> subject.subjectName })
+                    }
                 },
                 onFailure = { }
             )
+        }
+    }
 
-            isLoadingFlow.value = false
+    private fun searchTutors() {
+        viewModelScope.launch {
+            val current = _state.value
+            _state.update { it.copy(isLoading = true, error = null) }
+
+            val subjectFilter =
+                current.activeSubject.takeIf { it.isNotBlank() && it != "Wszystkie" }
+            val queryFilter = current.query.trim().takeIf { it.isNotBlank() }
+
+            tutorRepository.searchTutors(queryFilter, subjectFilter).fold(
+                onSuccess = { results ->
+                    _state.update {
+                        it.copy(
+                            tutors = results.map { result -> result.toUiTutor() },
+                            isLoading = false
+                        )
+                    }
+                },
+                onFailure = { e ->
+                    _state.update { it.copy(isLoading = false, error = e.message) }
+                }
+            )
         }
     }
 
     fun onQueryChange(newQuery: String) {
-        queryFlow.value = newQuery
+        _state.update { it.copy(query = newQuery) }
+        searchDebouncer.submit { searchTutors() }
     }
 
     fun onSubjectSelect(newSubject: String) {
-        activeSubjectFlow.value = newSubject
+        _state.update { it.copy(activeSubject = newSubject) }
+        searchDebouncer.cancel()
+        searchTutors()
     }
 
     fun clearQuery() {
-        queryFlow.value = ""
+        _state.update { it.copy(query = "") }
+        searchDebouncer.cancel()
+        searchTutors()
     }
 
     fun refresh() {
-        loadData()
+        loadSubjects()
+        searchDebouncer.cancel()
+        searchTutors()
     }
 }

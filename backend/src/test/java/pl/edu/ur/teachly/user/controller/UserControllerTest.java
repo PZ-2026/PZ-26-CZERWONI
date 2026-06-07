@@ -9,6 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,11 +18,17 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.method.annotation.AuthenticationPrincipalArgumentResolver;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import pl.edu.ur.teachly.common.enums.UserRole;
+import pl.edu.ur.teachly.user.dto.request.AdminUserUpdateRequest;
 import pl.edu.ur.teachly.user.dto.request.UserUpdateRequest;
 import pl.edu.ur.teachly.user.dto.response.UserResponse;
+import pl.edu.ur.teachly.user.entity.User;
 import pl.edu.ur.teachly.user.service.UserService;
 
 @ExtendWith(MockitoExtension.class)
@@ -35,14 +42,30 @@ class UserControllerTest {
 
     @InjectMocks private UserController userController;
 
+    private User currentUser;
+
     @BeforeEach
     void setUp() {
-        mockMvc = MockMvcBuilders.standaloneSetup(userController).build();
+        currentUser = User.builder().id(2).userRole(UserRole.ADMIN).isActive(true).build();
+        UsernamePasswordAuthenticationToken auth =
+                new UsernamePasswordAuthenticationToken(
+                        currentUser, null, currentUser.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(auth);
+
+        mockMvc =
+                MockMvcBuilders.standaloneSetup(userController)
+                        .setCustomArgumentResolvers(new AuthenticationPrincipalArgumentResolver())
+                        .build();
+    }
+
+    @AfterEach
+    void tearDown() {
+        SecurityContextHolder.clearContext();
     }
 
     @Test
     void getAllUsers() throws Exception {
-        when(userService.getAllUsers()).thenReturn(List.of());
+        when(userService.searchUsers(null, null, null)).thenReturn(List.of());
         mockMvc.perform(get("/api/users")).andExpect(status().isOk());
     }
 
@@ -73,6 +96,71 @@ class UserControllerTest {
     @Test
     void deactivateUser() throws Exception {
         mockMvc.perform(delete("/api/users/1")).andExpect(status().isNoContent());
-        verify(userService).deactivateUser(1);
+        verify(userService).deactivateUser(eq(1), any());
+    }
+
+    @Test
+    void activateUser() throws Exception {
+        mockMvc.perform(patch("/api/users/1/activate")).andExpect(status().isNoContent());
+        verify(userService).activateUser(eq(1), any());
+    }
+
+    @Test
+    void adminUpdateUser() throws Exception {
+        AdminUserUpdateRequest req =
+                new AdminUserUpdateRequest("A", "B", "a@b.pl", "123456789", UserRole.STUDENT);
+        when(userService.adminUpdateUser(eq(1), any(), any()))
+                .thenReturn(
+                        new UserResponse(
+                                1,
+                                "A",
+                                "B",
+                                "a@b.pl",
+                                "123456789",
+                                null,
+                                UserRole.STUDENT,
+                                true,
+                                null,
+                                null));
+
+        mockMvc.perform(
+                        put("/api/users/1/admin")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(req)))
+                .andExpect(status().isOk());
+        verify(userService).adminUpdateUser(eq(1), any(), any());
+    }
+
+    @Test
+    void uploadAvatar() throws Exception {
+        MockMultipartFile file =
+                new MockMultipartFile("file", "avatar.jpg", "image/jpeg", new byte[100]);
+        when(userService.uploadAvatar(eq(1), any()))
+                .thenReturn(
+                        new UserResponse(
+                                1,
+                                "A",
+                                "B",
+                                "C",
+                                "D",
+                                "/uploads/avatars/x.jpg",
+                                UserRole.STUDENT,
+                                true,
+                                null,
+                                null));
+
+        mockMvc.perform(multipart("/api/users/1/avatar").file(file)).andExpect(status().isOk());
+        verify(userService).uploadAvatar(eq(1), any());
+    }
+
+    @Test
+    void deleteAvatar() throws Exception {
+        when(userService.deleteAvatar(1))
+                .thenReturn(
+                        new UserResponse(
+                                1, "A", "B", "C", "D", null, UserRole.STUDENT, true, null, null));
+
+        mockMvc.perform(delete("/api/users/1/avatar")).andExpect(status().isOk());
+        verify(userService).deleteAvatar(1);
     }
 }
