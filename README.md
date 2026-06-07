@@ -272,7 +272,7 @@ Dokumentacja generowana jest w `backend/build/docs/javadoc/index.html`.
 
 ### Uruchomienie z Dockerem
 
-> [!TIP] Zalecane rozwiązanie.
+> Zalecane rozwiązanie.
 
 <details>
 <summary><strong>Rozwiń</strong></summary>
@@ -374,7 +374,7 @@ cd backend
 
 Domyślnie frontend łączy się z adresem `http://10.0.2.2:8080/` (emulator Android). Istnieje możliwość zmiany adresu połączenia.
 
-> [!TIP] W pliku `frontend/local.properties` ustaw adres backendu (jedna z opcji):
+> W pliku `frontend/local.properties` ustaw adres backendu (jedna z opcji):
 
 ```properties
 # Emulator Android (backend lokalny)
