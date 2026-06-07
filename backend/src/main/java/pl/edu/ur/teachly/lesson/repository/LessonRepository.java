@@ -12,18 +12,21 @@ import pl.edu.ur.teachly.common.enums.LessonStatus;
 import pl.edu.ur.teachly.common.enums.PaymentStatus;
 import pl.edu.ur.teachly.lesson.entity.Lesson;
 
+/**
+ * Repozytorium JPA dla encji {@link Lesson}.
+ *
+ * <p>Zawiera zapytania do pobierania lekcji ucznia i korepetytora, wykrywania konfliktów terminów
+ * oraz wyszukiwania z wielokryterialnym filtrowaniem dla panelu administratora.
+ */
 @Repository
 public interface LessonRepository extends JpaRepository<Lesson, Integer> {
 
-    // Lesson JOIN Tutor
     @Query("SELECT l FROM Lesson l JOIN l.tutor t WHERE t.userId = :tutorId")
     List<Lesson> findByTutor_UserId(@Param("tutorId") Integer tutorId);
 
-    // Lesson JOIN User (student)
     @Query("SELECT l FROM Lesson l JOIN l.student s WHERE s.id = :studentId")
     List<Lesson> findByStudent_Id(@Param("studentId") Integer studentId);
 
-    // Lesson JOIN Tutor
     @Query(
             """
                     SELECT l FROM Lesson l
@@ -34,7 +37,6 @@ public interface LessonRepository extends JpaRepository<Lesson, Integer> {
     List<Lesson> findByTutor_UserIdAndLessonDate(
             @Param("tutorId") Integer tutorId, @Param("lessonDate") LocalDate lessonDate);
 
-    // Lesson JOIN User (student) JOIN Tutor
     @Query(
             """
                     SELECT COUNT(l) > 0 FROM Lesson l
@@ -49,7 +51,6 @@ public interface LessonRepository extends JpaRepository<Lesson, Integer> {
             @Param("tutorId") Integer tutorId,
             @Param("status") LessonStatus status);
 
-    // Lesson JOIN Tutor
     @Query(
             """
                     SELECT l FROM Lesson l
@@ -64,7 +65,6 @@ public interface LessonRepository extends JpaRepository<Lesson, Integer> {
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate);
 
-    // Lesson JOIN User (student)
     @Query(
             """
                     SELECT l FROM Lesson l
@@ -79,7 +79,6 @@ public interface LessonRepository extends JpaRepository<Lesson, Integer> {
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate);
 
-    // Lesson for Admin
     @Query(
             """
                     SELECT l FROM Lesson l

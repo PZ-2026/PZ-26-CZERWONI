@@ -16,6 +16,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import pl.edu.ur.teachly.user.entity.User;
 
+/**
+ * Kontroler REST obsługujący generowanie raportów PDF.
+ *
+ * <p>Ścieżka bazowa: {@code /api/reports}. Każdy zalogowany użytkownik może wygenerować własny
+ * raport — zakres dostępnych typów zależy od jego roli.
+ */
 @RestController
 @RequestMapping("/api/reports")
 @RequiredArgsConstructor
@@ -23,6 +29,16 @@ public class ReportController {
 
     private final ReportService reportService;
 
+    /**
+     * Generuje i pobiera raport PDF dla zalogowanego użytkownika.
+     *
+     * @param startDate data początkowa zakresu (format ISO: yyyy-MM-dd)
+     * @param endDate data końcowa zakresu (format ISO: yyyy-MM-dd)
+     * @param type typ raportu (LESSONS, REVENUE, EXPENSES itp.); domyślnie LESSONS
+     * @param includeFields lista pól do uwzględnienia; {@code null} oznacza wszystkie pola
+     * @param user aktualnie zalogowany użytkownik
+     * @return odpowiedź HTTP z plikiem PDF jako załącznikiem
+     */
     @GetMapping("/my")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> getMyReport(

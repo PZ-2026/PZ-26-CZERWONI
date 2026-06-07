@@ -12,6 +12,7 @@ import pl.edu.ur.teachly.common.enums.LessonFormat;
 import pl.edu.ur.teachly.common.enums.LessonStatus;
 import pl.edu.ur.teachly.common.enums.PaymentStatus;
 
+/** Żądanie administracyjnej aktualizacji danych lekcji bez ograniczeń reguł biznesowych. */
 public record AdminLessonUpdateRequest(
         @NotNull(message = "Data lekcji jest wymagana") LocalDate lessonDate,
         @NotNull(message = "Godzina rozpoczęcia jest wymagana") LocalTime timeFrom,

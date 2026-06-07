@@ -9,6 +9,12 @@ import org.springframework.stereotype.Repository;
 import pl.edu.ur.teachly.common.enums.UserRole;
 import pl.edu.ur.teachly.user.entity.User;
 
+/**
+ * Repozytorium JPA dla encji {@link User}.
+ *
+ * <p>Zawiera zapytania JPQL do wyszukiwania użytkowników po e-mailu, numerze telefonu oraz
+ * filtrowania z obsługą wzorca LIKE (case-insensitive).
+ */
 @Repository
 public interface UserRepository extends JpaRepository<User, Integer> {
 

@@ -13,8 +13,6 @@ private val hiddenBottomNavRouteMarkers = listOf(
     "TutorAvailability",
     "TutorProfile",
     "ProfileEdit",
-    "AdminUsers",
-    "AdminLessons",
     "AdminUserEdit",
     "AdminLessonEdit",
     "AdminTutorEdit"

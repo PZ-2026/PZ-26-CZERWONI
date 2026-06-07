@@ -24,6 +24,20 @@ import pl.edu.ur.teachly.tutor.repository.TutorAvailabilityOverrideRepository;
 import pl.edu.ur.teachly.tutor.repository.TutorAvailabilityRecurringRepository;
 import pl.edu.ur.teachly.tutor.repository.TutorRepository;
 
+/**
+ * Serwis generujący plan dostępnych terminów korepetytora w zadanym przedziale dat.
+ *
+ * <p>Algorytm dla każdego dnia z zakresu:
+ *
+ * <ol>
+ *   <li>Jeśli dzień jest świętem — brak terminów.
+ *   <li>Jeśli istnieje jednorazowe nadpisanie ({@code override}) — użyj jego godzin (lub brak
+ *       terminów, gdy brak godzin).
+ *   <li>W przeciwnym razie użyj wpisów cyklicznych ({@code recurring}) pasujących do dnia tygodnia.
+ *   <li>Odejmij terminy zajęte przez potwierdzone lekcje oraz lekcje oczekujące bieżącego ucznia.
+ *   <li>Odfiltruj sloty z przeszłości oraz krótsze niż 30 minut.
+ * </ol>
+ */
 @Service
 @RequiredArgsConstructor
 public class TimetableService {
@@ -34,6 +48,19 @@ public class TimetableService {
     private final LessonRepository lessonRepository;
     private final TutorRepository tutorRepository;
 
+    /**
+     * Generuje plan wolnych terminów korepetytora dla podanego zakresu dat.
+     *
+     * <p>Jeśli korepetytor jest nieaktywny, zwracana jest pusta lista. Lekcje oczekujące bieżącego
+     * ucznia są traktowane jako zajęte — dzięki temu uczeń widzi swoje własne rezerwacje jako
+     * blokujące termin.
+     *
+     * @param tutorId identyfikator korepetytora
+     * @param fromDate początek zakresu dat (włącznie)
+     * @param toDate koniec zakresu dat (włącznie)
+     * @param currentStudentId identyfikator zalogowanego ucznia ({@code null} jeśli nie dotyczy)
+     * @return lista obiektów dziennych z dostępnymi slotami godzinowymi
+     */
     public List<TimetableDayResponse> getTimetable(
             Integer tutorId, LocalDate fromDate, LocalDate toDate, Integer currentStudentId) {
 
@@ -146,6 +173,17 @@ public class TimetableService {
         return timetable;
     }
 
+    /**
+     * Odejmuje zajęty przedział lekcji od listy wolnych bloków czasowych.
+     *
+     * <p>Blok, który nie pokrywa się z lekcją, jest przepuszczany bez zmian. Blok częściowo pokryty
+     * jest dzielony — pozostają fragmenty przed i po lekcji.
+     *
+     * @param blocks lista wolnych slotów do przycięcia
+     * @param lessonStart godzina rozpoczęcia lekcji
+     * @param lessonEnd godzina zakończenia lekcji
+     * @return zaktualizowana lista wolnych slotów po odjęciu lekcji
+     */
     private List<TimeSlot> subtractLesson(
             List<TimeSlot> blocks, LocalTime lessonStart, LocalTime lessonEnd) {
         List<TimeSlot> updatedBlocks = new ArrayList<>();

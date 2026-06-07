@@ -9,6 +9,12 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import pl.edu.ur.teachly.holiday.entity.Holiday;
 
+/**
+ * Repozytorium JPA dla encji {@link Holiday}.
+ *
+ * <p>Umożliwia sprawdzenie unikalności daty oraz pobieranie dni wolnych z podanego przedziału dat
+ * (używane przez {@code TimetableService}).
+ */
 @Repository
 public interface HolidayRepository extends JpaRepository<Holiday, Integer> {
 

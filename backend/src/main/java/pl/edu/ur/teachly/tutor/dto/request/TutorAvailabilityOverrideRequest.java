@@ -5,6 +5,12 @@ import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+/**
+ * Żądanie dodania jednorazowego nadpisania dostępności korepetytora.
+ *
+ * <p>Pola {@code timeFrom} i {@code timeTo} są opcjonalne — ich brak oznacza zablokowanie całego
+ * dnia (korepetytor niedostępny).
+ */
 public record TutorAvailabilityOverrideRequest(
         @NotNull(message = "Data jest wymagana") LocalDate overrideDate,
         LocalTime timeFrom,

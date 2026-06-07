@@ -7,6 +7,12 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import pl.edu.ur.teachly.tutor.entity.Tutor;
 
+/**
+ * Repozytorium JPA dla encji {@link Tutor}.
+ *
+ * <p>Zawiera zapytanie do wyszukiwania aktywnych korepetytorów z opcjonalnym filtrowaniem po frazie
+ * (imię, nazwisko, e-mail) oraz po nazwie przedmiotu.
+ */
 @Repository
 public interface TutorRepository extends JpaRepository<Tutor, Integer> {
 

@@ -21,7 +21,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import pl.edu.ur.teachly.tutor.dto.request.TutorSubjectRequest;
 import pl.edu.ur.teachly.tutor.dto.response.TutorResponse;
-import pl.edu.ur.teachly.tutor.dto.response.TutorSearchResultResponse;
 import pl.edu.ur.teachly.tutor.dto.response.TutorSubjectResponse;
 import pl.edu.ur.teachly.tutor.service.TutorService;
 
@@ -114,8 +113,7 @@ class TutorControllerTest {
     @Test
     @DisplayName("POST /api/tutors/{tutorId}/admin/subjects - dodaje przedmiot")
     void adminAddSubject() throws Exception {
-        TutorSubjectRequest request =
-                new TutorSubjectRequest(2, true, false, false, false, false);
+        TutorSubjectRequest request = new TutorSubjectRequest(2, true, false, false, false, false);
         TutorSubjectResponse response =
                 new TutorSubjectResponse(10, 2, "Fizyka", "Kat", true, false, false, false, false);
 
@@ -133,7 +131,8 @@ class TutorControllerTest {
     @Test
     @DisplayName("DELETE /api/tutors/{tutorId}/admin/subjects/{id} - usuwa przedmiot")
     void adminRemoveSubject() throws Exception {
-        mockMvc.perform(delete("/api/tutors/1/admin/subjects/10")).andExpect(status().isNoContent());
+        mockMvc.perform(delete("/api/tutors/1/admin/subjects/10"))
+                .andExpect(status().isNoContent());
 
         verify(tutorService).adminRemoveSubject(1, 10);
     }

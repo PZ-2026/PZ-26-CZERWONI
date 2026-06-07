@@ -7,6 +7,12 @@ import pl.edu.ur.teachly.tutor.dto.request.TutorRequest;
 import pl.edu.ur.teachly.tutor.dto.response.TutorResponse;
 import pl.edu.ur.teachly.tutor.entity.Tutor;
 
+/**
+ * Mapper MapStruct konwertujący między encją {@link Tutor} a jej DTO.
+ *
+ * <p>Mapuje zagnieżdżone pola powiązanego {@link pl.edu.ur.teachly.user.entity.User} (imię,
+ * nazwisko, e-mail, telefon, awatar) na płaskie pola odpowiedzi {@link TutorResponse}.
+ */
 @Mapper(componentModel = "spring")
 public interface TutorMapper {
     @Mapping(source = "userId", target = "id")

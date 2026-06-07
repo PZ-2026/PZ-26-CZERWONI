@@ -1,5 +1,6 @@
 package pl.edu.ur.teachly.tutor.dto.response;
 
+/** Odpowiedź z danymi przedmiotu korepetytora wraz z obsługiwanymi poziomami nauczania. */
 public record TutorSubjectResponse(
         Integer id,
         Integer subjectId,

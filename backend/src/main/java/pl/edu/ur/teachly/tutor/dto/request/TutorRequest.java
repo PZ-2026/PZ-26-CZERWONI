@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.math.BigDecimal;
 
+/** Żądanie administracyjnej aktualizacji profilu korepetytora. */
 public record TutorRequest(
         @Size(max = 2000, message = "Opis nie może przekraczać 2000 znaków") String bio,
         @NotNull(message = "Stawka godzinowa jest wymagana")

@@ -7,6 +7,12 @@ import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+/**
+ * Żądanie dodania cyklicznego slotu dostępności korepetytora.
+ *
+ * <p>Dzień tygodnia zgodnie z ISO: 1 = poniedziałek, 7 = niedziela. Pole {@code dateTo} jest
+ * opcjonalne — brak wartości oznacza dostępność bezterminową.
+ */
 public record TutorAvailabilityRecurringRequest(
         @NotNull(message = "Dzień tygodnia jest wymagany")
                 @Min(

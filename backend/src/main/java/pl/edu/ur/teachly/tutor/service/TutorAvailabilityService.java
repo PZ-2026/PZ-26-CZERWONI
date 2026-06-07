@@ -18,6 +18,18 @@ import pl.edu.ur.teachly.tutor.repository.TutorAvailabilityOverrideRepository;
 import pl.edu.ur.teachly.tutor.repository.TutorAvailabilityRecurringRepository;
 import pl.edu.ur.teachly.tutor.repository.TutorRepository;
 
+/**
+ * Serwis zarządzający dostępnością korepetytorów.
+ *
+ * <p>Obsługuje dwa typy dostępności:
+ *
+ * <ul>
+ *   <li><b>Cykliczna</b> ({@code recurring}) — powtarza się co tydzień w określonym dniu i
+ *       godzinach.
+ *   <li><b>Jednorazowa</b> ({@code override}) — nadpisuje cykliczną dostępność na konkretną datę
+ *       (może blokować dzień lub definiować niestandardowe godziny).
+ * </ul>
+ */
 @Service
 @RequiredArgsConstructor
 public class TutorAvailabilityService {
@@ -26,6 +38,12 @@ public class TutorAvailabilityService {
     private final TutorRepository tutorRepository;
     private final TutorAvailabilityMapper mapper;
 
+    /**
+     * Zwraca cykliczne sloty dostępności korepetytora.
+     *
+     * @param tutorId identyfikator korepetytora
+     * @return lista wpisów cyklicznej dostępności
+     */
     @Transactional(readOnly = true)
     public List<TutorAvailabilityRecurringResponse> getRecurringByTutor(Integer tutorId) {
         return recurringRepository.findByTutor_UserId(tutorId).stream()
@@ -33,6 +51,14 @@ public class TutorAvailabilityService {
                 .toList();
     }
 
+    /**
+     * Dodaje nowy cykliczny slot dostępności dla korepetytora.
+     *
+     * @param tutorId identyfikator korepetytora
+     * @param request dane nowego slotu
+     * @return zapisany slot cykliczny
+     * @throws ResourceNotFoundException gdy korepetytor nie istnieje
+     */
     @Transactional
     public TutorAvailabilityRecurringResponse addRecurring(
             Integer tutorId, TutorAvailabilityRecurringRequest request) {
@@ -48,6 +74,14 @@ public class TutorAvailabilityService {
         return mapper.toResponse(recurringRepository.save(entity));
     }
 
+    /**
+     * Usuwa cykliczny slot dostępności. Tylko właściciel może usunąć swój wpis.
+     *
+     * @param id identyfikator slotu cyklicznego
+     * @param tutorId identyfikator korepetytora (weryfikacja właścicielstwa)
+     * @throws ResourceNotFoundException gdy slot nie istnieje
+     * @throws AccessDeniedException gdy korepetytor nie jest właścicielem slotu
+     */
     @Transactional
     public void deleteRecurring(Integer id, Integer tutorId) {
         TutorAvailabilityRecurring slot =
@@ -63,6 +97,12 @@ public class TutorAvailabilityService {
         recurringRepository.deleteById(id);
     }
 
+    /**
+     * Zwraca jednorazowe nadpisania dostępności korepetytora.
+     *
+     * @param tutorId identyfikator korepetytora
+     * @return lista nadpisań dostępności
+     */
     @Transactional(readOnly = true)
     public List<TutorAvailabilityOverrideResponse> getOverridesByTutor(Integer tutorId) {
         return overrideRepository.findByTutor_UserId(tutorId).stream()
@@ -70,6 +110,14 @@ public class TutorAvailabilityService {
                 .toList();
     }
 
+    /**
+     * Dodaje jednorazowe nadpisanie dostępności korepetytora na konkretną datę.
+     *
+     * @param tutorId identyfikator korepetytora
+     * @param request dane nadpisania
+     * @return zapisane nadpisanie
+     * @throws ResourceNotFoundException gdy korepetytor nie istnieje
+     */
     @Transactional
     public TutorAvailabilityOverrideResponse addOverride(
             Integer tutorId, TutorAvailabilityOverrideRequest request) {
@@ -85,6 +133,14 @@ public class TutorAvailabilityService {
         return mapper.toResponse(overrideRepository.save(entity));
     }
 
+    /**
+     * Usuwa jednorazowe nadpisanie dostępności. Tylko właściciel może usunąć swój wpis.
+     *
+     * @param id identyfikator nadpisania
+     * @param tutorId identyfikator korepetytora (weryfikacja właścicielstwa)
+     * @throws ResourceNotFoundException gdy nadpisanie nie istnieje
+     * @throws AccessDeniedException gdy korepetytor nie jest właścicielem wpisu
+     */
     @Transactional
     public void deleteOverride(Integer id, Integer tutorId) {
         TutorAvailabilityOverride slot =

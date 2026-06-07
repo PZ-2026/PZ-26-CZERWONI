@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
+/** Żądanie dodania lub aktualizacji przedmiotu. */
 public record SubjectRequest(
         @NotBlank(message = "Nazwa przedmiotu nie może być pusta")
                 @Size(max = 100, message = "Nazwa przedmiotu nie może przekraczać 100 znaków")

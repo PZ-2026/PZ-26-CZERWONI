@@ -3,6 +3,7 @@ package pl.edu.ur.teachly.user.dto.response;
 import java.time.LocalDateTime;
 import pl.edu.ur.teachly.common.enums.UserRole;
 
+/** Odpowiedź z danymi publicznymi konta użytkownika. */
 public record UserResponse(
         Integer id,
         String firstName,

@@ -3,6 +3,11 @@ package pl.edu.ur.teachly.subject.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+/**
+ * Encja kategorii przedmiotów (np. "Matematyka", "Języki obce").
+ *
+ * <p>Kategorii nie można usunąć, gdy posiada przypisane przedmioty.
+ */
 @Entity
 @Table(name = "subject_categories")
 @Getter
@@ -11,6 +16,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SubjectCategory {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;

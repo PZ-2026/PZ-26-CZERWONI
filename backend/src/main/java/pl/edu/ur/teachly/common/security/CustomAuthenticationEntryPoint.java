@@ -9,6 +9,13 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
+/**
+ * Punkt wejścia obsługujący brak uwierzytelnienia (HTTP 401).
+ *
+ * <p>Przekazuje wyjątek {@link AuthenticationException} do Spring MVC {@link
+ * HandlerExceptionResolver}, dzięki czemu odpowiedź jest generowana przez {@code
+ * GlobalExceptionHandler} w spójnym formacie JSON (ProblemDetail).
+ */
 @Component
 public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
@@ -19,6 +26,13 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
         this.resolver = resolver;
     }
 
+    /**
+     * Obsługuje brak uwierzytelnienia, delegując wyjątek do resolvera wyjątków Spring MVC.
+     *
+     * @param request żądanie HTTP
+     * @param response odpowiedź HTTP
+     * @param authException wyjątek uwierzytelnienia
+     */
     @Override
     public void commence(
             @NonNull HttpServletRequest request,

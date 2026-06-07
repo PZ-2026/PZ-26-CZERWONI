@@ -15,12 +15,27 @@ import pl.edu.ur.teachly.user.dto.response.UserResponse;
 import pl.edu.ur.teachly.user.entity.User;
 import pl.edu.ur.teachly.user.service.UserService;
 
+/**
+ * Kontroler REST obsługujący endpointy zarządzania użytkownikami.
+ *
+ * <p>Ścieżka bazowa: {@code /api/users}. Dostęp do poszczególnych operacji jest ograniczony rolami
+ * — część endpointów jest dostępna wyłącznie dla administratora, część dla właściciela konta lub
+ * administratora.
+ */
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
 
+    /**
+     * Zwraca listę użytkowników z opcjonalnym filtrowaniem. Dostępne tylko dla ADMIN.
+     *
+     * @param q fraza wyszukiwania (imię, nazwisko, e-mail)
+     * @param role filtr roli
+     * @param active filtr stanu aktywności
+     * @return lista użytkowników spełniających kryteria
+     */
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
     public List<UserResponse> getAllUsers(
@@ -30,12 +45,25 @@ public class UserController {
         return userService.searchUsers(q, role, active);
     }
 
+    /**
+     * Zwraca dane użytkownika o podanym identyfikatorze. Dostępne dla ADMIN lub właściciela konta.
+     *
+     * @param id identyfikator użytkownika
+     * @return dane użytkownika
+     */
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN') or authentication.principal.id == #id")
     public UserResponse getUserById(@PathVariable Integer id) {
         return userService.getUserById(id);
     }
 
+    /**
+     * Aktualizuje profil użytkownika. Dostępne dla ADMIN lub właściciela konta.
+     *
+     * @param id identyfikator użytkownika
+     * @param request nowe dane profilu
+     * @return zaktualizowane dane użytkownika
+     */
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN') or authentication.principal.id == #id")
     public UserResponse updateUserProfile(
@@ -43,6 +71,14 @@ public class UserController {
         return userService.updateUserProfile(id, request);
     }
 
+    /**
+     * Aktualizuje dane użytkownika przez administratora. Dostępne tylko dla ADMIN.
+     *
+     * @param id identyfikator użytkownika do edycji
+     * @param request nowe dane użytkownika
+     * @param currentUser aktualnie zalogowany administrator
+     * @return zaktualizowane dane użytkownika
+     */
     @PutMapping("/{id}/admin")
     @PreAuthorize("hasRole('ADMIN')")
     public UserResponse adminUpdateUser(
@@ -52,6 +88,12 @@ public class UserController {
         return userService.adminUpdateUser(id, request, currentUser);
     }
 
+    /**
+     * Aktywuje konto użytkownika. Dostępne tylko dla ADMIN.
+     *
+     * @param id identyfikator użytkownika
+     * @param currentUser aktualnie zalogowany administrator
+     */
     @PatchMapping("/{id}/activate")
     @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -59,6 +101,12 @@ public class UserController {
         userService.activateUser(id, currentUser);
     }
 
+    /**
+     * Blokuje (dezaktywuje) konto użytkownika. Dostępne tylko dla ADMIN.
+     *
+     * @param id identyfikator użytkownika
+     * @param currentUser aktualnie zalogowany administrator
+     */
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -67,6 +115,13 @@ public class UserController {
         userService.deactivateUser(id, currentUser);
     }
 
+    /**
+     * Przesyła awatar użytkownika. Dostępne dla ADMIN lub właściciela konta.
+     *
+     * @param id identyfikator użytkownika
+     * @param file przesłany plik obrazu (JPG lub PNG, max 5 MB)
+     * @return zaktualizowane dane użytkownika z nowym URL awatara
+     */
     @PostMapping(value = "/{id}/avatar", consumes = "multipart/form-data")
     @PreAuthorize("hasRole('ADMIN') or authentication.principal.id == #id")
     public UserResponse uploadAvatar(
@@ -74,6 +129,12 @@ public class UserController {
         return userService.uploadAvatar(id, file);
     }
 
+    /**
+     * Usuwa awatar użytkownika. Dostępne dla ADMIN lub właściciela konta.
+     *
+     * @param id identyfikator użytkownika
+     * @return zaktualizowane dane użytkownika bez awatara
+     */
     @DeleteMapping("/{id}/avatar")
     @PreAuthorize("hasRole('ADMIN') or authentication.principal.id == #id")
     public UserResponse deleteAvatar(@PathVariable Integer id) {

@@ -7,18 +7,21 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import pl.edu.ur.teachly.review.entity.Review;
 
+/**
+ * Repozytorium JPA dla encji {@link Review}.
+ *
+ * <p>Zawiera zapytania do pobierania opinii korepetytora i ucznia, obliczania średniej oceny oraz
+ * wyszukiwania z filtrowaniem dla panelu administratora.
+ */
 @Repository
 public interface ReviewRepository extends JpaRepository<Review, Integer> {
 
-    // Review JOIN Tutor
     @Query("SELECT r FROM Review r JOIN r.tutor t WHERE t.userId = :tutorId")
     List<Review> findByTutor_UserId(@Param("tutorId") Integer tutorId);
 
-    // Review JOIN User (student)
     @Query("SELECT r FROM Review r JOIN r.student s WHERE s.id = :studentId")
     List<Review> findByStudent_Id(@Param("studentId") Integer studentId);
 
-    // Review JOIN Tutor
     @Query("SELECT AVG(r.rating) FROM Review r JOIN r.tutor t WHERE t.userId = :tutorId")
     java.math.BigDecimal findAverageRatingByTutorId(@Param("tutorId") Integer tutorId);
 

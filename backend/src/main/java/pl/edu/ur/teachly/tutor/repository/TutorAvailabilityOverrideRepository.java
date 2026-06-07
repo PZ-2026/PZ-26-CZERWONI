@@ -8,6 +8,12 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import pl.edu.ur.teachly.tutor.entity.TutorAvailabilityOverride;
 
+/**
+ * Repozytorium JPA dla encji {@link TutorAvailabilityOverride}.
+ *
+ * <p>Umożliwia pobieranie jednorazowych nadpisań dostępności korepetytora dla wskazanego
+ * korepetytora i zakresu dat — używane przez {@code TimetableService}.
+ */
 @Repository
 public interface TutorAvailabilityOverrideRepository
         extends JpaRepository<TutorAvailabilityOverride, Integer> {

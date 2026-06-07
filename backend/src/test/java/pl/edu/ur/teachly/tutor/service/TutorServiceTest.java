@@ -205,10 +205,14 @@ class TutorServiceTest {
     void adminAddSubject_success() {
         Tutor tutor = Tutor.builder().userId(1).build();
         Subject subject = Subject.builder().id(2).subjectName("Fizyka").build();
-        TutorSubjectRequest request =
-                new TutorSubjectRequest(2, true, false, false, false, false);
+        TutorSubjectRequest request = new TutorSubjectRequest(2, true, false, false, false, false);
         TutorSubject saved =
-                TutorSubject.builder().id(10).tutor(tutor).subject(subject).levelPrimary(true).build();
+                TutorSubject.builder()
+                        .id(10)
+                        .tutor(tutor)
+                        .subject(subject)
+                        .levelPrimary(true)
+                        .build();
         TutorSubjectResponse response =
                 new TutorSubjectResponse(10, 2, "Fizyka", "Kat", true, false, false, false, false);
 
@@ -229,8 +233,7 @@ class TutorServiceTest {
     @DisplayName("adminAddSubject - błąd: duplikat przedmiotu")
     void adminAddSubject_duplicate_throwsException() {
         Tutor tutor = Tutor.builder().userId(1).build();
-        TutorSubjectRequest request =
-                new TutorSubjectRequest(2, true, false, false, false, false);
+        TutorSubjectRequest request = new TutorSubjectRequest(2, true, false, false, false, false);
 
         when(tutorRepository.findById(1)).thenReturn(Optional.of(tutor));
         when(tutorSubjectRepository.existsByTutor_UserIdAndSubject_Id(1, 2)).thenReturn(true);
@@ -244,8 +247,7 @@ class TutorServiceTest {
     @DisplayName("adminRemoveSubject - sukces: usuwa przedmiot")
     void adminRemoveSubject_success() {
         Tutor tutor = Tutor.builder().userId(1).build();
-        TutorSubject tutorSubject =
-                TutorSubject.builder().id(10).tutor(tutor).build();
+        TutorSubject tutorSubject = TutorSubject.builder().id(10).tutor(tutor).build();
 
         when(tutorSubjectRepository.findById(10)).thenReturn(Optional.of(tutorSubject));
         when(tutorSubjectRepository.findByTutor_UserId(1))
@@ -260,8 +262,7 @@ class TutorServiceTest {
     @DisplayName("adminRemoveSubject - błąd: ostatni przedmiot")
     void adminRemoveSubject_lastSubject_throwsException() {
         Tutor tutor = Tutor.builder().userId(1).build();
-        TutorSubject tutorSubject =
-                TutorSubject.builder().id(10).tutor(tutor).build();
+        TutorSubject tutorSubject = TutorSubject.builder().id(10).tutor(tutor).build();
 
         when(tutorSubjectRepository.findById(10)).thenReturn(Optional.of(tutorSubject));
         when(tutorSubjectRepository.findByTutor_UserId(1)).thenReturn(List.of(tutorSubject));

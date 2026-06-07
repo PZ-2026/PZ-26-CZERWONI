@@ -524,7 +524,8 @@ class LessonServiceTest {
     void getAllLessons_success() {
         Lesson lesson = new Lesson();
         LessonResponse response = mock(LessonResponse.class);
-        when(lessonRepository.searchLessons(null, null, null, null, null, java.time.LocalDate.now()))
+        when(lessonRepository.searchLessons(
+                        null, null, null, null, null, java.time.LocalDate.now()))
                 .thenReturn(List.of(lesson));
         when(lessonMapper.toResponse(lesson)).thenReturn(response);
 

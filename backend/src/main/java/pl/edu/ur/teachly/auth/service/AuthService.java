@@ -20,6 +20,12 @@ import pl.edu.ur.teachly.user.entity.User;
 import pl.edu.ur.teachly.user.mapper.UserMapper;
 import pl.edu.ur.teachly.user.repository.UserRepository;
 
+/**
+ * Serwis obsługujący rejestrację i logowanie użytkowników.
+ *
+ * <p>Po pomyślnej rejestracji lub uwierzytelnieniu zwraca token JWT oraz podstawowe dane
+ * użytkownika potrzebne aplikacji klienckiej.
+ */
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -30,6 +36,18 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final TutorRepository tutorRepository;
 
+    /**
+     * Rejestruje nowego użytkownika w systemie.
+     *
+     * <p>Rejestracja jako administrator jest zablokowana. Jeśli podany adres e-mail lub numer
+     * telefonu jest już zajęty, zgłaszany jest wyjątek walidacji. Dla roli {@link UserRole#TUTOR}
+     * automatycznie tworzony jest profil korepetytora.
+     *
+     * @param request dane rejestracji
+     * @return token JWT oraz rola i identyfikator nowego użytkownika
+     * @throws BusinessValidationException gdy e-mail lub telefon są już zajęte, albo gdy próbuje
+     *     się zarejestrować jako ADMIN
+     */
     @Transactional
     public AuthResponse register(RegisterRequest request) {
 
@@ -70,6 +88,13 @@ public class AuthService {
         return new AuthResponse(jwtToken, user.getUserRole(), user.getId());
     }
 
+    /**
+     * Uwierzytelnia użytkownika na podstawie adresu e-mail i hasła.
+     *
+     * @param request dane logowania
+     * @return token JWT oraz rola i identyfikator zalogowanego użytkownika
+     * @throws org.springframework.security.core.AuthenticationException gdy dane są nieprawidłowe
+     */
     @Transactional(readOnly = true)
     public AuthResponse login(LoginRequest request) {
         Authentication authentication =

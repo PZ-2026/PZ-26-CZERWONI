@@ -28,6 +28,13 @@ import pl.edu.ur.teachly.tutor.repository.TutorRepository;
 import pl.edu.ur.teachly.tutor.repository.TutorSubjectRepository;
 import pl.edu.ur.teachly.user.entity.User;
 
+/**
+ * Serwis zarządzający profilami korepetytorów i ich ofertą przedmiotową.
+ *
+ * <p>Obsługuje wyszukiwanie aktywnych korepetytorów (z filtrowaniem po frazie i przedmiocie),
+ * aktualizację profilu przez samego korepetytora oraz administracyjne zarządzanie przedmiotami i
+ * danymi profilu.
+ */
 @Service
 @RequiredArgsConstructor
 public class TutorService {
@@ -38,11 +45,25 @@ public class TutorService {
     private final SubjectRepository subjectRepository;
     private final ReviewRepository reviewRepository;
 
+    /**
+     * Zwraca listę wszystkich aktywnych korepetytorów z opcjonalnym filtrowaniem po frazie.
+     *
+     * @param query fraza wyszukiwania (imię, nazwisko, e-mail)
+     * @return lista aktywnych korepetytorów
+     */
     @Transactional(readOnly = true)
     public List<TutorResponse> getAllTutors(String query) {
         return findActiveTutors(query, null).stream().map(tutorMapper::toResponse).toList();
     }
 
+    /**
+     * Wyszukuje aktywnych korepetytorów i wzbogaca wyniki o listę przedmiotów oraz statystyki ocen
+     * (średnia i liczba opinii).
+     *
+     * @param query fraza wyszukiwania (imię, nazwisko, e-mail)
+     * @param subject filtr po nazwie przedmiotu
+     * @return lista wyników wyszukiwania korepetytorów z ocenami
+     */
     @Transactional(readOnly = true)
     public List<TutorSearchResultResponse> searchTutors(String query, String subject) {
         var tutors = findActiveTutors(query, subject);
@@ -59,9 +80,7 @@ public class TutorService {
                         tutor -> {
                             var tutorId = tutor.getUserId();
                             var subjects =
-                                    subjectsByTutorId
-                                            .getOrDefault(tutorId, List.of())
-                                            .stream()
+                                    subjectsByTutorId.getOrDefault(tutorId, List.of()).stream()
                                             .map(tutorSubjectMapper::toResponse)
                                             .toList();
                             var stats = ratingStatsByTutorId.get(tutorId);
@@ -109,6 +128,13 @@ public class TutorService {
 
     private record RatingStats(Double averageRating, Integer reviewCount) {}
 
+    /**
+     * Zwraca profil aktywnego korepetytora.
+     *
+     * @param tutorId identyfikator korepetytora
+     * @return dane korepetytora
+     * @throws ResourceNotFoundException gdy korepetytor nie istnieje lub jest nieaktywny
+     */
     @Transactional(readOnly = true)
     public TutorResponse getTutorById(Integer tutorId) {
         return tutorRepository
@@ -121,6 +147,13 @@ public class TutorService {
                                         "Nie znaleziono szukanego korepetytora"));
     }
 
+    /**
+     * Zwraca listę przedmiotów prowadzonych przez aktywnego korepetytora.
+     *
+     * @param tutorId identyfikator korepetytora
+     * @return lista przedmiotów z poziomami nauczania
+     * @throws ResourceNotFoundException gdy korepetytor nie istnieje lub jest nieaktywny
+     */
     @Transactional(readOnly = true)
     public List<TutorSubjectResponse> getTutorSubjects(Integer tutorId) {
         tutorRepository
@@ -139,6 +172,14 @@ public class TutorService {
         return tutor.getUser() != null && Boolean.TRUE.equals(tutor.getUser().getIsActive());
     }
 
+    /**
+     * Aktualizuje profil korepetytora przez administratora bez ograniczeń walidacyjnych.
+     *
+     * @param tutorId identyfikator korepetytora
+     * @param request nowe dane profilu
+     * @return zaktualizowany profil korepetytora
+     * @throws ResourceNotFoundException gdy korepetytor nie istnieje
+     */
     @Transactional
     public TutorResponse adminUpdateTutor(Integer tutorId, TutorRequest request) {
         var tutor =
@@ -152,6 +193,15 @@ public class TutorService {
         return tutorMapper.toResponse(tutorRepository.save(tutor));
     }
 
+    /**
+     * Aktualizuje własny profil korepetytora. Wymaga co najmniej jednej formy zajęć i co najmniej
+     * jednego przypisanego przedmiotu.
+     *
+     * @param request nowe dane profilu (bio, stawka, formy zajęć)
+     * @param currentUser zalogowany korepetytor
+     * @return zaktualizowany profil korepetytora
+     * @throws BusinessValidationException gdy brak formy zajęć lub brak przedmiotów
+     */
     @Transactional
     public TutorResponse updateMyProfile(TutorSelfProfileRequest request, User currentUser) {
         if (!Boolean.TRUE.equals(request.offersOnline())
@@ -176,6 +226,14 @@ public class TutorService {
         return tutorMapper.toResponse(tutorRepository.save(tutor));
     }
 
+    /**
+     * Dodaje przedmiot do oferty korepetytora przez administratora.
+     *
+     * @param tutorId identyfikator korepetytora
+     * @param request dane przedmiotu i poziomów nauczania
+     * @return dodany przedmiot korepetytora
+     * @throws ResourceNotFoundException gdy korepetytor nie istnieje
+     */
     @Transactional
     public TutorSubjectResponse adminAddSubject(Integer tutorId, TutorSubjectRequest request) {
         var tutor =
@@ -188,11 +246,25 @@ public class TutorService {
         return addSubject(tutor, request);
     }
 
+    /**
+     * Usuwa przedmiot z oferty korepetytora przez administratora.
+     *
+     * @param tutorId identyfikator korepetytora
+     * @param tutorSubjectId identyfikator wpisu przedmiotu
+     */
     @Transactional
     public void adminRemoveSubject(Integer tutorId, Integer tutorSubjectId) {
         removeSubject(tutorId, tutorSubjectId, false);
     }
 
+    /**
+     * Dodaje przedmiot do własnej oferty zalogowanego korepetytora.
+     *
+     * @param request dane przedmiotu i poziomów nauczania
+     * @param currentUser zalogowany korepetytor
+     * @return dodany przedmiot korepetytora
+     * @throws BusinessValidationException gdy przedmiot jest już przypisany
+     */
     @Transactional
     public TutorSubjectResponse addMySubject(TutorSubjectRequest request, User currentUser) {
         var tutor =
@@ -229,6 +301,14 @@ public class TutorService {
         return tutorSubjectMapper.toResponse(tutorSubjectRepository.save(tutorSubject));
     }
 
+    /**
+     * Usuwa przedmiot z własnej oferty zalogowanego korepetytora. Nie można usunąć ostatniego
+     * przedmiotu.
+     *
+     * @param tutorSubjectId identyfikator wpisu przedmiotu
+     * @param currentUser zalogowany korepetytor
+     * @throws AccessDeniedException gdy przedmiot nie należy do zalogowanego korepetytora
+     */
     @Transactional
     public void removeMySubject(Integer tutorSubjectId, User currentUser) {
         var tutorSubject =

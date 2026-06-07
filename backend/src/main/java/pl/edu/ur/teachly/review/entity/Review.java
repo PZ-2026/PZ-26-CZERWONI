@@ -10,6 +10,13 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import pl.edu.ur.teachly.tutor.entity.Tutor;
 import pl.edu.ur.teachly.user.entity.User;
 
+/**
+ * Encja opinii wystawionej korepetytorowi przez ucznia.
+ *
+ * <p>Każdy uczeń może wystawić danemu korepetytorowi tylko jedną opinię, i tylko po odbyciu co
+ * najmniej jednej zakończonej lekcji. Ocena przechowywana jest jako liczba dziesiętna z jednym
+ * miejscem po przecinku (np. 4.5).
+ */
 @Entity
 @Table(name = "reviews")
 @EntityListeners(AuditingEntityListener.class)
@@ -19,6 +26,7 @@ import pl.edu.ur.teachly.user.entity.User;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Review {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -31,6 +39,7 @@ public class Review {
     @JoinColumn(name = "user_id", nullable = false)
     private User student;
 
+    /** Ocena w skali 1.0–5.0 z krokiem 0.5. */
     @Column(nullable = false, precision = 2, scale = 1)
     private BigDecimal rating;
 

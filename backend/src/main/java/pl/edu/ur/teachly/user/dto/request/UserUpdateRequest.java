@@ -4,6 +4,12 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
+/**
+ * Żądanie aktualizacji profilu użytkownika przez samego użytkownika.
+ *
+ * <p>Pole {@code password} jest opcjonalne — pominięcie lub pusta wartość oznacza brak zmiany
+ * hasła.
+ */
 public record UserUpdateRequest(
         @NotBlank(message = "Imię nie może być puste") @Size(max = 50) String firstName,
         @NotBlank(message = "Nazwisko nie może być puste") @Size(max = 50) String lastName,

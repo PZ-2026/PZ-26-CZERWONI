@@ -43,7 +43,10 @@ class LessonControllerTest {
                         post("/api/lessons/student/1")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(
-                                        "{\"tutorId\":2,\"subjectId\":1,\"lessonDate\":\"2025-01-01\",\"timeFrom\":\"10:00\",\"timeTo\":\"11:00\",\"format\":\"ONLINE\"}"))
+                                        "{\"tutorId\":2,\"subjectId\":1,"
+                                                + "\"lessonDate\":\"2025-01-01\","
+                                                + "\"timeFrom\":\"10:00\",\"timeTo\":\"11:00\","
+                                                + "\"format\":\"ONLINE\"}"))
                 .andExpect(status().isCreated());
     }
 
