@@ -188,4 +188,33 @@ class SubjectServiceTest {
         assertThat(category.getCategoryName()).isEqualTo("Języki obce");
         verify(categoryRepository).save(category);
     }
+
+    @Test
+    @DisplayName("updateSubject - błąd: przedmiot nie istnieje")
+    void updateSubject_notFound_throwsException() {
+        SubjectRequest req = new SubjectRequest("Fizyka", 1);
+        when(subjectRepository.findById(99)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> subjectService.updateSubject(99, req))
+                .isInstanceOf(ResourceNotFoundException.class);
+    }
+
+    @Test
+    @DisplayName("updateSubjectCategory - błąd: kategoria nie istnieje")
+    void updateSubjectCategory_notFound_throwsException() {
+        SubjectCategoryRequest req = new SubjectCategoryRequest("Języki obce");
+        when(categoryRepository.findById(99)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> subjectService.updateSubjectCategory(99, req))
+                .isInstanceOf(ResourceNotFoundException.class);
+    }
+
+    @Test
+    @DisplayName("deleteSubjectCategory - błąd: kategoria nie istnieje")
+    void deleteSubjectCategory_notFound_throwsException() {
+        when(categoryRepository.existsById(99)).thenReturn(false);
+
+        assertThatThrownBy(() -> subjectService.deleteSubjectCategory(99))
+                .isInstanceOf(ResourceNotFoundException.class);
+    }
 }

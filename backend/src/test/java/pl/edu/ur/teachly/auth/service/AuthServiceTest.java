@@ -14,6 +14,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -23,6 +24,7 @@ import pl.edu.ur.teachly.auth.dto.response.AuthResponse;
 import pl.edu.ur.teachly.common.enums.UserRole;
 import pl.edu.ur.teachly.common.exception.BusinessValidationException;
 import pl.edu.ur.teachly.common.security.JwtService;
+import pl.edu.ur.teachly.tutor.repository.TutorRepository;
 import pl.edu.ur.teachly.user.entity.User;
 import pl.edu.ur.teachly.user.mapper.UserMapper;
 import pl.edu.ur.teachly.user.repository.UserRepository;
@@ -36,6 +38,7 @@ class AuthServiceTest {
     @Mock private PasswordEncoder passwordEncoder;
     @Mock private JwtService jwtService;
     @Mock private AuthenticationManager authenticationManager;
+    @Mock private TutorRepository tutorRepository;
 
     @InjectMocks private AuthService authService;
 
@@ -145,6 +148,37 @@ class AuthServiceTest {
         assertThat(user.getPasswordHash()).isEqualTo("bcrypt-hash");
     }
 
+    @Test
+    @DisplayName("register – sukces: tworzy profil korepetytora dla roli TUTOR")
+    void register_tutorRole_createsTutorProfile() {
+        RegisterRequest tutorRequest =
+                new RegisterRequest(
+                        UserRole.TUTOR,
+                        "Jan",
+                        "Kowalski",
+                        "tutor@example.com",
+                        "123456789",
+                        "haslo123");
+        User user =
+                User.builder()
+                        .id(2)
+                        .email("tutor@example.com")
+                        .phoneNumber("123456789")
+                        .userRole(UserRole.TUTOR)
+                        .build();
+
+        when(userRepository.findByEmailOrPhoneNumber(any(), any())).thenReturn(Optional.empty());
+        when(userMapper.toEntity(tutorRequest)).thenReturn(user);
+        when(passwordEncoder.encode("haslo123")).thenReturn("hashed");
+        when(userRepository.save(user)).thenReturn(user);
+        when(jwtService.generateToken(user)).thenReturn("jwt-token");
+
+        AuthResponse response = authService.register(tutorRequest);
+
+        assertThat(response.role()).isEqualTo(UserRole.TUTOR);
+        verify(tutorRepository).save(any());
+    }
+
     // ─── login ──────────────────────────────────────────────────────────────
 
     @Test
@@ -164,5 +198,17 @@ class AuthServiceTest {
 
         assertThat(response.token()).isEqualTo("jwt-token");
         assertThat(response.role()).isEqualTo(UserRole.STUDENT);
+    }
+
+    @Test
+    @DisplayName("login – błąd: nieprawidłowe dane")
+    void login_invalidCredentials_throwsBadCredentialsException() {
+        LoginRequest loginRequest = new LoginRequest("jan@example.com", "zle-haslo");
+
+        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
+                .thenThrow(new BadCredentialsException("Bad credentials"));
+
+        assertThatThrownBy(() -> authService.login(loginRequest))
+                .isInstanceOf(BadCredentialsException.class);
     }
 }

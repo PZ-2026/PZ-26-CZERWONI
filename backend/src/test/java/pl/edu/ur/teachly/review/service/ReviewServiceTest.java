@@ -17,6 +17,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.access.AccessDeniedException;
 import pl.edu.ur.teachly.common.enums.LessonStatus;
 import pl.edu.ur.teachly.common.exception.BusinessValidationException;
 import pl.edu.ur.teachly.common.exception.ResourceNotFoundException;
@@ -137,6 +138,58 @@ class ReviewServiceTest {
     }
 
     @Test
+    @DisplayName("addReview - błąd: duplikat opinii")
+    void addReview_duplicate_throwsBusinessValidationException() {
+        when(userRepository.findById(1)).thenReturn(Optional.of(student));
+        when(tutorRepository.findById(2)).thenReturn(Optional.of(tutor));
+        when(reviewRepository.existsByStudentAndTutor(1, 2)).thenReturn(true);
+
+        assertThatThrownBy(() -> reviewService.addReview(1, reviewRequest))
+                .isInstanceOf(BusinessValidationException.class)
+                .hasMessageContaining("Już wystawiłeś opinię");
+    }
+
+    @Test
+    @DisplayName("updateReview - błąd: brak uprawnień")
+    void updateReview_accessDenied_throwsException() {
+        when(reviewRepository.findById(1)).thenReturn(Optional.of(review));
+
+        assertThatThrownBy(() -> reviewService.updateReview(1, reviewRequest, 99))
+                .isInstanceOf(AccessDeniedException.class)
+                .hasMessageContaining("Brak uprawnień");
+    }
+
+    @Test
+    @DisplayName("deleteReview - błąd: brak uprawnień")
+    void deleteReview_accessDenied_throwsException() {
+        when(reviewRepository.findById(1)).thenReturn(Optional.of(review));
+
+        assertThatThrownBy(() -> reviewService.deleteReview(1, 99))
+                .isInstanceOf(AccessDeniedException.class)
+                .hasMessageContaining("Brak uprawnień");
+    }
+
+    @Test
+    @DisplayName("deleteReviewAdmin - sukces: usuwa opinię")
+    void deleteReviewAdmin_success() {
+        when(reviewRepository.existsById(1)).thenReturn(true);
+
+        reviewService.deleteReviewAdmin(1);
+
+        verify(reviewRepository).deleteById(1);
+    }
+
+    @Test
+    @DisplayName("deleteReviewAdmin - błąd: opinia nie istnieje")
+    void deleteReviewAdmin_notFound_throwsResourceNotFoundException() {
+        when(reviewRepository.existsById(99)).thenReturn(false);
+
+        assertThatThrownBy(() -> reviewService.deleteReviewAdmin(99))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessageContaining("opinii");
+    }
+
+    @Test
     @DisplayName("updateReview - sukces: aktualizuje opinię")
     void updateReview_success() {
         ReviewRequest updateRequest =
@@ -212,6 +265,18 @@ class ReviewServiceTest {
         when(reviewMapper.toResponse(review)).thenReturn(reviewResponse);
 
         List<ReviewResponse> result = reviewService.searchReviews(null, null);
+
+        assertThat(result).containsExactly(reviewResponse);
+    }
+
+    @Test
+    @DisplayName("searchReviews - filtruje po ocenie")
+    void searchReviews_withRatingFilter() {
+        when(reviewRepository.searchReviews(null, BigDecimal.valueOf(5.0).setScale(1)))
+                .thenReturn(List.of(review));
+        when(reviewMapper.toResponse(review)).thenReturn(reviewResponse);
+
+        List<ReviewResponse> result = reviewService.searchReviews(null, 5);
 
         assertThat(result).containsExactly(reviewResponse);
     }

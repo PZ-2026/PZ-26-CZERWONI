@@ -14,11 +14,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.access.AccessDeniedException;
 import pl.edu.ur.teachly.common.exception.BusinessValidationException;
 import pl.edu.ur.teachly.common.exception.ResourceNotFoundException;
 import pl.edu.ur.teachly.review.repository.ReviewRepository;
 import pl.edu.ur.teachly.subject.entity.Subject;
 import pl.edu.ur.teachly.subject.repository.SubjectRepository;
+import pl.edu.ur.teachly.tutor.dto.request.TutorSelfProfileRequest;
 import pl.edu.ur.teachly.tutor.dto.request.TutorSubjectRequest;
 import pl.edu.ur.teachly.tutor.dto.response.TutorResponse;
 import pl.edu.ur.teachly.tutor.dto.response.TutorSearchResultResponse;
@@ -109,6 +111,43 @@ class TutorServiceTest {
     }
 
     @Test
+    @DisplayName("searchTutors - pusta lista gdy brak wyników")
+    void searchTutors_empty_returnsEmptyList() {
+        when(tutorRepository.searchActiveTutors(null, null)).thenReturn(List.of());
+
+        assertThat(tutorService.searchTutors(null, null)).isEmpty();
+    }
+
+    @Test
+    @DisplayName("searchTutors - brak statystyk opinii zwraca zera")
+    void searchTutors_noStats_returnsZeros() {
+        Tutor t1 = Tutor.builder().userId(1).user(User.builder().isActive(true).build()).build();
+        TutorResponse r1 =
+                new TutorResponse(
+                        1,
+                        "Test",
+                        "Test",
+                        "test@test.com",
+                        "123",
+                        "url",
+                        "Bio",
+                        java.math.BigDecimal.TEN,
+                        true,
+                        true);
+
+        when(tutorRepository.searchActiveTutors(null, null)).thenReturn(List.of(t1));
+        when(tutorMapper.toResponse(t1)).thenReturn(r1);
+        when(tutorSubjectRepository.findByTutor_UserIdIn(List.of(1))).thenReturn(List.of());
+        when(reviewRepository.findRatingStatsByTutorIds(List.of(1))).thenReturn(List.of());
+
+        List<TutorSearchResultResponse> result = tutorService.searchTutors(null, null);
+
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0).averageRating()).isZero();
+        assertThat(result.get(0).reviewCount()).isZero();
+    }
+
+    @Test
     @DisplayName("getTutorById - sukces: zwraca korepetytora")
     void getTutorById_found_returnsResponse() {
         Tutor t1 = Tutor.builder().user(User.builder().isActive(true).build()).build();
@@ -139,6 +178,16 @@ class TutorServiceTest {
         when(tutorRepository.findById(99)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> tutorService.getTutorById(99))
+                .isInstanceOf(ResourceNotFoundException.class);
+    }
+
+    @Test
+    @DisplayName("getTutorById - błąd: korepetytor nieaktywny")
+    void getTutorById_inactive_throwsException() {
+        Tutor inactive = Tutor.builder().user(User.builder().isActive(false).build()).build();
+        when(tutorRepository.findById(1)).thenReturn(Optional.of(inactive));
+
+        assertThatThrownBy(() -> tutorService.getTutorById(1))
                 .isInstanceOf(ResourceNotFoundException.class);
     }
 
@@ -201,6 +250,160 @@ class TutorServiceTest {
     }
 
     @Test
+    @DisplayName("adminUpdateTutor - błąd: korepetytor nie istnieje")
+    void adminUpdateTutor_notFound_throwsException() {
+        pl.edu.ur.teachly.tutor.dto.request.TutorRequest req =
+                new pl.edu.ur.teachly.tutor.dto.request.TutorRequest(
+                        "Bio", java.math.BigDecimal.valueOf(100), true, true);
+
+        when(tutorRepository.findById(99)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> tutorService.adminUpdateTutor(99, req))
+                .isInstanceOf(ResourceNotFoundException.class);
+    }
+
+    @Test
+    @DisplayName("updateMyProfile - sukces")
+    void updateMyProfile_success() {
+        User currentUser = User.builder().id(1).build();
+        TutorSelfProfileRequest req =
+                new TutorSelfProfileRequest(
+                        "Nowe bio", java.math.BigDecimal.valueOf(120), true, false);
+        Tutor tutor = Tutor.builder().userId(1).build();
+        TutorResponse response =
+                new TutorResponse(
+                        1,
+                        "A",
+                        "B",
+                        "a@b.com",
+                        "123",
+                        "url",
+                        "Nowe bio",
+                        java.math.BigDecimal.valueOf(120),
+                        true,
+                        false);
+
+        when(tutorSubjectRepository.findByTutor_UserId(1))
+                .thenReturn(List.of(TutorSubject.builder().id(10).build()));
+        when(tutorRepository.findById(1)).thenReturn(Optional.of(tutor));
+        when(tutorRepository.save(tutor)).thenReturn(tutor);
+        when(tutorMapper.toResponse(tutor)).thenReturn(response);
+
+        TutorResponse result = tutorService.updateMyProfile(req, currentUser);
+
+        assertThat(result).isEqualTo(response);
+        assertThat(tutor.getBio()).isEqualTo("Nowe bio");
+    }
+
+    @Test
+    @DisplayName("updateMyProfile - błąd: brak formy zajęć")
+    void updateMyProfile_noLessonFormat_throwsException() {
+        User currentUser = User.builder().id(1).build();
+        TutorSelfProfileRequest req =
+                new TutorSelfProfileRequest("Bio", java.math.BigDecimal.valueOf(100), false, false);
+
+        assertThatThrownBy(() -> tutorService.updateMyProfile(req, currentUser))
+                .isInstanceOf(BusinessValidationException.class)
+                .hasMessageContaining("formę zajęć");
+    }
+
+    @Test
+    @DisplayName("updateMyProfile - błąd: brak przedmiotów")
+    void updateMyProfile_noSubjects_throwsException() {
+        User currentUser = User.builder().id(1).build();
+        TutorSelfProfileRequest req =
+                new TutorSelfProfileRequest("Bio", java.math.BigDecimal.valueOf(100), true, false);
+
+        when(tutorSubjectRepository.findByTutor_UserId(1)).thenReturn(List.of());
+
+        assertThatThrownBy(() -> tutorService.updateMyProfile(req, currentUser))
+                .isInstanceOf(BusinessValidationException.class)
+                .hasMessageContaining("przedmiot");
+    }
+
+    @Test
+    @DisplayName("addMySubject - sukces")
+    void addMySubject_success() {
+        User currentUser = User.builder().id(1).build();
+        Tutor tutor = Tutor.builder().userId(1).build();
+        Subject subject = Subject.builder().id(2).subjectName("Chemia").build();
+        TutorSubjectRequest request = new TutorSubjectRequest(2, true, false, false, false, false);
+        TutorSubject saved = TutorSubject.builder().id(10).tutor(tutor).subject(subject).build();
+        TutorSubjectResponse response =
+                new TutorSubjectResponse(10, 2, "Chemia", "Kat", true, false, false, false, false);
+
+        when(tutorRepository.findById(1)).thenReturn(Optional.of(tutor));
+        when(tutorSubjectRepository.existsByTutor_UserIdAndSubject_Id(1, 2)).thenReturn(false);
+        when(subjectRepository.findById(2)).thenReturn(Optional.of(subject));
+        when(tutorSubjectRepository.save(org.mockito.ArgumentMatchers.any(TutorSubject.class)))
+                .thenReturn(saved);
+        when(tutorSubjectMapper.toResponse(saved)).thenReturn(response);
+
+        TutorSubjectResponse result = tutorService.addMySubject(request, currentUser);
+
+        assertThat(result).isEqualTo(response);
+    }
+
+    @Test
+    @DisplayName("removeMySubject - sukces")
+    void removeMySubject_success() {
+        User currentUser = User.builder().id(1).build();
+        Tutor tutor = Tutor.builder().userId(1).build();
+        TutorSubject tutorSubject = TutorSubject.builder().id(10).tutor(tutor).build();
+
+        when(tutorSubjectRepository.findById(10)).thenReturn(Optional.of(tutorSubject));
+        when(tutorSubjectRepository.findByTutor_UserId(1))
+                .thenReturn(List.of(tutorSubject, TutorSubject.builder().id(11).build()));
+
+        tutorService.removeMySubject(10, currentUser);
+
+        verify(tutorSubjectRepository).delete(tutorSubject);
+    }
+
+    @Test
+    @DisplayName("removeMySubject - błąd: brak uprawnień")
+    void removeMySubject_accessDenied_throwsException() {
+        User currentUser = User.builder().id(2).build();
+        Tutor tutor = Tutor.builder().userId(1).build();
+        TutorSubject tutorSubject = TutorSubject.builder().id(10).tutor(tutor).build();
+
+        when(tutorSubjectRepository.findById(10)).thenReturn(Optional.of(tutorSubject));
+
+        assertThatThrownBy(() -> tutorService.removeMySubject(10, currentUser))
+                .isInstanceOf(AccessDeniedException.class);
+    }
+
+    @Test
+    @DisplayName("addMySubject - błąd: duplikat przedmiotu")
+    void addMySubject_duplicate_throwsException() {
+        User currentUser = User.builder().id(1).build();
+        Tutor tutor = Tutor.builder().userId(1).build();
+        TutorSubjectRequest request = new TutorSubjectRequest(2, true, false, false, false, false);
+
+        when(tutorRepository.findById(1)).thenReturn(Optional.of(tutor));
+        when(tutorSubjectRepository.existsByTutor_UserIdAndSubject_Id(1, 2)).thenReturn(true);
+
+        assertThatThrownBy(() -> tutorService.addMySubject(request, currentUser))
+                .isInstanceOf(BusinessValidationException.class)
+                .hasMessageContaining("już przypisany");
+    }
+
+    @Test
+    @DisplayName("adminAddSubject - błąd: przedmiot nie istnieje")
+    void adminAddSubject_subjectNotFound_throwsException() {
+        Tutor tutor = Tutor.builder().userId(1).build();
+        TutorSubjectRequest request = new TutorSubjectRequest(99, true, false, false, false, false);
+
+        when(tutorRepository.findById(1)).thenReturn(Optional.of(tutor));
+        when(tutorSubjectRepository.existsByTutor_UserIdAndSubject_Id(1, 99)).thenReturn(false);
+        when(subjectRepository.findById(99)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> tutorService.adminAddSubject(1, request))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessageContaining("przedmiotu");
+    }
+
+    @Test
     @DisplayName("adminAddSubject - sukces: dodaje przedmiot korepetytorowi")
     void adminAddSubject_success() {
         Tutor tutor = Tutor.builder().userId(1).build();
@@ -241,6 +444,43 @@ class TutorServiceTest {
         assertThatThrownBy(() -> tutorService.adminAddSubject(1, request))
                 .isInstanceOf(BusinessValidationException.class)
                 .hasMessageContaining("już przypisany");
+    }
+
+    @Test
+    @DisplayName("updateMyProfile - błąd: profil korepetytora nie istnieje")
+    void updateMyProfile_notFound_throwsException() {
+        User currentUser = User.builder().id(1).build();
+        TutorSelfProfileRequest req =
+                new TutorSelfProfileRequest("Bio", java.math.BigDecimal.valueOf(100), true, false);
+
+        when(tutorSubjectRepository.findByTutor_UserId(1))
+                .thenReturn(List.of(TutorSubject.builder().id(10).build()));
+        when(tutorRepository.findById(1)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> tutorService.updateMyProfile(req, currentUser))
+                .isInstanceOf(ResourceNotFoundException.class);
+    }
+
+    @Test
+    @DisplayName("removeMySubject - błąd: przedmiot nie istnieje")
+    void removeMySubject_notFound_throwsException() {
+        User currentUser = User.builder().id(1).build();
+        when(tutorSubjectRepository.findById(99)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> tutorService.removeMySubject(99, currentUser))
+                .isInstanceOf(ResourceNotFoundException.class);
+    }
+
+    @Test
+    @DisplayName("adminRemoveSubject - błąd: przedmiot należy do innego korepetytora")
+    void adminRemoveSubject_wrongTutor_throwsException() {
+        Tutor tutor = Tutor.builder().userId(2).build();
+        TutorSubject tutorSubject = TutorSubject.builder().id(10).tutor(tutor).build();
+
+        when(tutorSubjectRepository.findById(10)).thenReturn(Optional.of(tutorSubject));
+
+        assertThatThrownBy(() -> tutorService.adminRemoveSubject(1, 10))
+                .isInstanceOf(ResourceNotFoundException.class);
     }
 
     @Test

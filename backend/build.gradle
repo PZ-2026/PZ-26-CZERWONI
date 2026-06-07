@@ -53,17 +53,12 @@ dependencies {
     implementation files('libs/report-library.jar')
     // Tests
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation platform('org.testcontainers:testcontainers-bom:1.20.6')
-    testImplementation 'org.testcontainers:junit-jupiter'
-    testImplementation 'org.testcontainers:postgresql'
+    testImplementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 tasks.named('test') {
     useJUnitPlatform()
-    systemProperty(
-            'testcontainers.postgres.image',
-            findProperty('testcontainersPostgresImage') ?: 'postgres:18-alpine')
     systemProperty(
             'test.jwt.secret-key',
             findProperty('testJwtSecretKey')
@@ -80,6 +75,16 @@ jacocoTestReport {
         xml.required = true
         html.required = true
     }
+    classDirectories.setFrom(
+        sourceSets.main.output.collect {
+            fileTree(dir: it, exclude: [
+                '**/mapper/**',
+                'pl/edu/ur/teachly/config/**',
+                'pl/edu/ur/teachly/common/config/**',
+                'pl/edu/ur/teachly/TeachlyApplication.class',
+            ])
+        }
+    )
 }
 
 // Automatization when compiling
