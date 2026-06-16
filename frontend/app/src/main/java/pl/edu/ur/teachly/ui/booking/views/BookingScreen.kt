@@ -86,9 +86,15 @@ fun BookingScreen(
                         .verticalScroll(rememberScrollState())
                         .padding(horizontal = 24.dp, vertical = 20.dp)
                 ) {
+                    val now = java.time.LocalTime.now()
+                    val today = java.time.LocalDate.now()
                     val availabilityColors = state.calendarDays.map { (_, date) ->
-                        val slotsCount =
-                            state.timetableByDate[date.toString()]?.count { it.isAvailable } ?: 0
+                        val slots = state.timetableByDate[date.toString()] ?: emptyList()
+                        val slotsCount = if (date == today) {
+                            slots.count { it.isAvailable && !java.time.LocalTime.parse(it.time).isBefore(now) }
+                        } else {
+                            slots.count { it.isAvailable }
+                        }
                         when {
                             slotsCount >= 6 -> colorScheme.secondary
                             slotsCount in 3..5 -> colorScheme.tertiary

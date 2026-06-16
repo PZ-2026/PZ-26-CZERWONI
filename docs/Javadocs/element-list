@@ -25,6 +25,7 @@ pl.edu.ur.teachly.lesson.dto.response
 pl.edu.ur.teachly.lesson.entity
 pl.edu.ur.teachly.lesson.mapper
 pl.edu.ur.teachly.lesson.repository
+pl.edu.ur.teachly.lesson.scheduler
 pl.edu.ur.teachly.lesson.service
 pl.edu.ur.teachly.report
 pl.edu.ur.teachly.review.controller
@@ -41,7 +42,6 @@ pl.edu.ur.teachly.subject.entity
 pl.edu.ur.teachly.subject.mapper
 pl.edu.ur.teachly.subject.repository
 pl.edu.ur.teachly.subject.service
-pl.edu.ur.teachly.support
 pl.edu.ur.teachly.tutor.controller
 pl.edu.ur.teachly.tutor.dto.request
 pl.edu.ur.teachly.tutor.dto.response

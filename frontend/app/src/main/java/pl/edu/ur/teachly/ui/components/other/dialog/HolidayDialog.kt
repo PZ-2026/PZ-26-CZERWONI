@@ -33,7 +33,7 @@ fun HolidayDialog(
     onDismiss: () -> Unit,
     onSave: (String, String?) -> Unit
 ) {
-    var date by remember { mutableStateOf(initialDate) }
+    var date by remember { mutableStateOf(initialDate.ifBlank { LocalDate.now().toString() }) }
     var description by remember { mutableStateOf(initialDescription) }
     var showDatePicker by remember { mutableStateOf(false) }
 
