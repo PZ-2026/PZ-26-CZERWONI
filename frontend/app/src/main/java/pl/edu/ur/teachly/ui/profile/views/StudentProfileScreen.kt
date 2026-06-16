@@ -221,7 +221,7 @@ private fun ProfileTab(
                     value = profile.email
                 )
             }
-            val phone = formatPhoneNumber(profile.phoneNumber.toString())
+            val phone = profile.phoneNumber?.takeIf { it.isNotBlank() }?.let { formatPhoneNumber(it) }.orEmpty()
             if (phone.isNotBlank()) {
                 ProfileDataDivider()
                 ProfileInfoRow(

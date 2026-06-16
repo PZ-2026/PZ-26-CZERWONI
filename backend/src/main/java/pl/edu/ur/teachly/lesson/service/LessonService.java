@@ -86,6 +86,10 @@ public class LessonService {
         if (tutor.getUser() == null || !Boolean.TRUE.equals(tutor.getUser().getIsActive())) {
             throw new BusinessValidationException("Korepetytor jest niedostępny");
         }
+        if (request.format() == LessonFormat.IN_PERSON && !Boolean.TRUE.equals(tutor.getOffersInPerson())
+                || request.format() == LessonFormat.ONLINE && !Boolean.TRUE.equals(tutor.getOffersOnline())) {
+            throw new BusinessValidationException("Korepetytor nie oferuje wybranego formatu zajęć");
+        }
         var subject =
                 subjectRepository
                         .findById(request.subjectId())

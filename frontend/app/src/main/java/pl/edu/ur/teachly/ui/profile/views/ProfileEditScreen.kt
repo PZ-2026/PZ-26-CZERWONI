@@ -178,7 +178,7 @@ fun ProfileEditScreen(onBack: () -> Unit, onSave: (Boolean) -> Unit, viewModel: 
         val isDirty = editState.firstName.trim() != profile.firstName.trim() ||
             editState.lastName.trim() != profile.lastName.trim() ||
             editState.email.trim() != profile.email.trim() ||
-            editState.phoneNumber.trim() != (profile.phoneNumber ?: "").trim() ||
+            editState.phoneNumber.filter { it.isDigit() } != (profile.phoneNumber ?: "").filter { it.isDigit() } ||
             editState.password.isNotEmpty() ||
             editState.pendingAvatarFile != null ||
             editState.pendingDeleteAvatar
