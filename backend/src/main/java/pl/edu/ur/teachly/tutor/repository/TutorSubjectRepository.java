@@ -44,4 +44,12 @@ public interface TutorSubjectRepository extends JpaRepository<TutorSubject, Inte
             WHERE c.id = :categoryId
             """)
     List<TutorSubject> findBySubjectCategoryId(@Param("categoryId") Integer categoryId);
+
+    /**
+     * Sprawdza, czy dany przedmiot jest przypisany do co najmniej jednego korepetytora.
+     *
+     * @param subjectId identyfikator przedmiotu
+     * @return {@code true} jeśli przedmiot ma co najmniej jedno powiązanie z korepetytorem
+     */
+    boolean existsBySubjectId(Integer subjectId);
 }

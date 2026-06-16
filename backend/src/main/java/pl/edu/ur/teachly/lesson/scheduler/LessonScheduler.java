@@ -29,6 +29,12 @@ public class LessonScheduler {
 
     private static final ZoneId ZONE = ZoneId.of("Europe/Warsaw");
 
+    /**
+     * Anuluje lekcje oczekujące, których planowany czas rozpoczęcia już minął.
+     *
+     * <p>Uruchamiane co 60 sekund. Lekcja w statusie {@code PENDING} wymaga potwierdzenia przez
+     * korepetytora przed jej rozpoczęciem — brak potwierdzenia skutkuje automatycznym anulowaniem.
+     */
     @Scheduled(fixedDelay = 60_000)
     @Transactional
     public void cancelExpiredPendingLessons() {
