@@ -183,8 +183,20 @@ class ProfileViewModel(
                 _editState.update { it.copy(isLoading = false, error = "Imię nie może być puste") }
                 return@launch
             }
+            if (!isValidName(state.firstName.trim())) {
+                _editState.update {
+                    it.copy(isLoading = false, error = "Imię może zawierać tylko litery, spacje i myślniki")
+                }
+                return@launch
+            }
             if (state.lastName.trim().isBlank()) {
                 _editState.update { it.copy(isLoading = false, error = "Nazwisko nie może być puste") }
+                return@launch
+            }
+            if (!isValidName(state.lastName.trim())) {
+                _editState.update {
+                    it.copy(isLoading = false, error = "Nazwisko może zawierać tylko litery, spacje i myślniki")
+                }
                 return@launch
             }
             if (state.email.trim().isBlank() ||
@@ -201,6 +213,12 @@ class ProfileViewModel(
             if (state.password.isNotBlank() && state.password.length < 8) {
                 _editState.update {
                     it.copy(isLoading = false, error = "Hasło musi mieć co najmniej 8 znaków")
+                }
+                return@launch
+            }
+            if (state.password.isNotBlank() && state.password.any { it.isWhitespace() }) {
+                _editState.update {
+                    it.copy(isLoading = false, error = "Hasło nie może zawierać spacji")
                 }
                 return@launch
             }
@@ -352,4 +370,6 @@ class ProfileViewModel(
             )
         }
     }
+
+    private fun isValidName(name: String) = name.all { it.isLetter() || it == ' ' || it == '-' || it == '\'' }
 }

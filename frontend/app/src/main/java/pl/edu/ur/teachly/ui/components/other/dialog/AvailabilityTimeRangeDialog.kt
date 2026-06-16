@@ -12,7 +12,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import pl.edu.ur.teachly.R
 import pl.edu.ur.teachly.data.model.TutorAvailabilityRecurringResponse
 
 private fun hasOverlap(timeFrom: String, timeTo: String, slots: List<TutorAvailabilityRecurringResponse>): Boolean =
@@ -42,7 +44,7 @@ fun AvailabilityTimeRangeDialog(
 
     if (showFromPicker) {
         SlottedTimePickerDialog(
-            title = "Godzina rozpoczęcia",
+            title = stringResource(R.string.time_picker_start),
             initialHour = fromHour,
             initialMinute = fromMinute,
             onDismiss = { showFromPicker = false },
@@ -56,7 +58,7 @@ fun AvailabilityTimeRangeDialog(
 
     if (showToPicker) {
         SlottedTimePickerDialog(
-            title = "Godzina zakończenia",
+            title = stringResource(R.string.time_picker_end),
             initialHour = toHour,
             initialMinute = toMinute,
             onDismiss = { showToPicker = false },
@@ -69,18 +71,18 @@ fun AvailabilityTimeRangeDialog(
     }
 
     AppFormDialog(
-        title = "Dodaj dostępność",
+        title = stringResource(R.string.dialog_add_availability),
         subtitle = dayName,
         onDismiss = onDismiss,
         onConfirm = { onSave(timeFrom, timeTo) },
-        confirmText = "Dodaj",
+        confirmText = stringResource(R.string.btn_add),
         confirmEnabled = canSave
     ) {
         DialogSectionCard {
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 DialogPickerField(
                     value = timeFrom,
-                    label = "Od",
+                    label = stringResource(R.string.field_from),
                     onClick = { showFromPicker = true },
                     modifier = Modifier.weight(1f),
                     leadingIcon = { Icon(Icons.Default.Schedule, null) },
@@ -88,7 +90,7 @@ fun AvailabilityTimeRangeDialog(
                 )
                 DialogPickerField(
                     value = timeTo,
-                    label = "Do",
+                    label = stringResource(R.string.field_to),
                     onClick = { showToPicker = true },
                     modifier = Modifier.weight(1f),
                     leadingIcon = { Icon(Icons.Default.Schedule, null) },
@@ -96,9 +98,9 @@ fun AvailabilityTimeRangeDialog(
                 )
             }
             if (!rangeValid) {
-                DialogErrorText("Godzina zakończenia musi być późniejsza od rozpoczęcia")
+                DialogErrorText(stringResource(R.string.error_time_range_invalid))
             } else if (overlaps) {
-                DialogErrorText("Ten przedział pokrywa się z istniejącym")
+                DialogErrorText(stringResource(R.string.error_time_range_overlap))
             }
         }
     }

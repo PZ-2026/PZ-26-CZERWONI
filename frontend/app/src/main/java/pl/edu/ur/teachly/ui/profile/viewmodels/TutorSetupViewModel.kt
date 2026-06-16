@@ -41,9 +41,14 @@ data class TutorSetupState(
 
     /**
      * Miasto jest wymagane tylko gdy korepetytor oferuje zajęcia stacjonarne; nazwa musi mieć od 2
-     * do 50 znaków.
+     * do 50 znaków i zawierać tylko litery, spacje i myślniki.
      */
-    val hasCityIfInPerson: Boolean = !offersInPerson || city.trim().length in 2..50
+    val hasCityIfInPerson: Boolean =
+        !offersInPerson ||
+            (
+                city.trim().length in 2..50 &&
+                    city.trim().all { it.isLetter() || it == ' ' || it == '-' || it == '\'' }
+                )
 
     val isFormValid: Boolean =
         isHourlyRateValid && hasLessonFormat && hasSubjects && hasCityIfInPerson
@@ -186,7 +191,12 @@ class TutorSetupViewModel(
         }
         !state.hasLessonFormat ->
             "Wybierz co najmniej jedną formę zajęć (online lub stacjonarnie)"
-        !state.hasCityIfInPerson -> "Podaj miasto zajęć stacjonarnych (2–50 znaków)"
+        !state.hasCityIfInPerson ->
+            if (state.city.trim().length !in 2..50) {
+                "Podaj miasto zajęć stacjonarnych (2–50 znaków)"
+            } else {
+                "Nazwa miasta może zawierać tylko litery, spacje i myślniki"
+            }
         !state.hasSubjects -> "Dodaj co najmniej jeden prowadzony przedmiot"
         else -> "Uzupełnij wymagane pola profilu"
     }

@@ -40,6 +40,11 @@ class AdminSubjectsViewModel(private val subjectRepository: SubjectRepository) :
     }
 
     fun addSubject(name: String, categoryId: Int) {
+        val error = validateSubjectName(name, "przedmiotu")
+        if (error != null) {
+            _state.update { it.copy(error = error) }
+            return
+        }
         viewModelScope.launch {
             subjectRepository.addSubject(SubjectRequest(name, categoryId)).fold(
                 onSuccess = { subject ->
@@ -53,6 +58,11 @@ class AdminSubjectsViewModel(private val subjectRepository: SubjectRepository) :
     }
 
     fun updateSubject(id: Int, name: String, categoryId: Int) {
+        val error = validateSubjectName(name, "przedmiotu")
+        if (error != null) {
+            _state.update { it.copy(error = error) }
+            return
+        }
         viewModelScope.launch {
             subjectRepository.updateSubject(id, SubjectRequest(name, categoryId)).fold(
                 onSuccess = { updated ->
@@ -87,6 +97,11 @@ class AdminSubjectsViewModel(private val subjectRepository: SubjectRepository) :
     }
 
     fun addCategory(name: String) {
+        val error = validateSubjectName(name, "kategorii")
+        if (error != null) {
+            _state.update { it.copy(error = error) }
+            return
+        }
         viewModelScope.launch {
             subjectRepository.addCategory(SubjectCategoryRequest(name)).fold(
                 onSuccess = { category ->
@@ -100,6 +115,11 @@ class AdminSubjectsViewModel(private val subjectRepository: SubjectRepository) :
     }
 
     fun updateCategory(id: Int, name: String) {
+        val error = validateSubjectName(name, "kategorii")
+        if (error != null) {
+            _state.update { it.copy(error = error) }
+            return
+        }
         viewModelScope.launch {
             subjectRepository.updateCategory(id, SubjectCategoryRequest(name)).fold(
                 onSuccess = { updated ->
@@ -135,5 +155,15 @@ class AdminSubjectsViewModel(private val subjectRepository: SubjectRepository) :
 
     fun clearMessage() {
         _state.update { it.copy(error = null, successMessage = null) }
+    }
+
+    private fun validateSubjectName(name: String, kind: String): String? {
+        val trimmed = name.trim()
+        if (trimmed.isBlank()) return "Nazwa $kind nie może być pusta"
+        if (trimmed.length > 100) return "Nazwa $kind nie może przekraczać 100 znaków"
+        if (!trimmed.all { it.isLetterOrDigit() || it in " -().,/:;+#&" }) {
+            return "Nazwa $kind zawiera niedozwolone znaki"
+        }
+        return null
     }
 }

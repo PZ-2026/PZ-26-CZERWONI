@@ -51,14 +51,7 @@ fun ScheduleScreen(
     Column(modifier = Modifier.fillMaxSize()) {
         AppHeader(
             title = stringResource(R.string.schedule),
-            subtitle =
-            if (state.userRole == pl.edu.ur.teachly.data.model.UserRole.STUDENT ||
-                state.userRole == pl.edu.ur.teachly.data.model.UserRole.ADMIN
-            ) {
-                stringResource(R.string.check_your_lessons)
-            } else {
-                stringResource(R.string.check_your_sessions)
-            },
+            subtitle = stringResource(R.string.check_your_lessons),
             background = HeaderBackground.Diagonal(headerGradientColors()),
             onBack = onBack
         )

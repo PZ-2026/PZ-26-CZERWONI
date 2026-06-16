@@ -112,6 +112,14 @@ class AdminUsersViewModel(private val userRepository: UserRepository, private va
             _state.update { it.copy(error = "Nie możesz edytować własnego konta z panelu administratora") }
             return
         }
+        if (!isValidName(request.firstName.trim())) {
+            _state.update { it.copy(error = "Imię może zawierać tylko litery, spacje i myślniki") }
+            return
+        }
+        if (!isValidName(request.lastName.trim())) {
+            _state.update { it.copy(error = "Nazwisko może zawierać tylko litery, spacje i myślniki") }
+            return
+        }
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, error = null) }
 
@@ -161,4 +169,6 @@ class AdminUsersViewModel(private val userRepository: UserRepository, private va
     fun clearMessage() {
         _state.update { it.copy(error = null, successMessage = null) }
     }
+
+    private fun isValidName(name: String) = name.all { it.isLetter() || it == ' ' || it == '-' || it == '\'' }
 }
