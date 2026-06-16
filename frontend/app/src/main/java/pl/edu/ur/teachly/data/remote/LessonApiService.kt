@@ -5,8 +5,8 @@ import pl.edu.ur.teachly.data.model.LessonFormat
 import pl.edu.ur.teachly.data.model.LessonRequest
 import pl.edu.ur.teachly.data.model.LessonResponse
 import pl.edu.ur.teachly.data.model.LessonStatus
-import pl.edu.ur.teachly.data.model.PaymentStatus
 import pl.edu.ur.teachly.data.model.LessonStatusRequest
+import pl.edu.ur.teachly.data.model.PaymentStatus
 import pl.edu.ur.teachly.data.model.PaymentStatusRequest
 import pl.edu.ur.teachly.data.model.StudentNotesRequest
 import pl.edu.ur.teachly.data.model.TutorNotesRequest

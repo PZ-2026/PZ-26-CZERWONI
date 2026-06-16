@@ -9,9 +9,9 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import pl.edu.ur.teachly.data.local.TokenManager
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
+import pl.edu.ur.teachly.data.local.TokenManager
 import pl.edu.ur.teachly.data.model.AdminUserUpdateRequest
 import pl.edu.ur.teachly.data.model.UserResponse
 import pl.edu.ur.teachly.data.model.UserRole
@@ -29,10 +29,8 @@ data class AdminUsersState(
     val successMessage: String? = null
 )
 
-class AdminUsersViewModel(
-    private val userRepository: UserRepository,
-    private val tokenManager: TokenManager
-) : ViewModel() {
+class AdminUsersViewModel(private val userRepository: UserRepository, private val tokenManager: TokenManager) :
+    ViewModel() {
 
     private val _state = MutableStateFlow(AdminUsersState())
     val state: StateFlow<AdminUsersState> = _state.asStateFlow()
@@ -114,6 +112,14 @@ class AdminUsersViewModel(
             _state.update { it.copy(error = "Nie możesz edytować własnego konta z panelu administratora") }
             return
         }
+        if (!isValidName(request.firstName.trim())) {
+            _state.update { it.copy(error = "Imię może zawierać tylko litery, spacje i myślniki") }
+            return
+        }
+        if (!isValidName(request.lastName.trim())) {
+            _state.update { it.copy(error = "Nazwisko może zawierać tylko litery, spacje i myślniki") }
+            return
+        }
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, error = null) }
 
@@ -163,4 +169,6 @@ class AdminUsersViewModel(
     fun clearMessage() {
         _state.update { it.copy(error = null, successMessage = null) }
     }
+
+    private fun isValidName(name: String) = name.all { it.isLetter() || it == ' ' || it == '-' || it == '\'' }
 }

@@ -50,11 +50,7 @@ fun PrimaryButton(
 }
 
 @Composable
-fun LogoutButton(
-    text: String,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
+fun LogoutButton(text: String, onClick: () -> Unit, modifier: Modifier = Modifier) {
     Button(
         onClick = onClick,
         modifier = modifier

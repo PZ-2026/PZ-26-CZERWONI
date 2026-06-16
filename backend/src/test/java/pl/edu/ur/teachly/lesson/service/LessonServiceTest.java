@@ -82,7 +82,13 @@ class LessonServiceTest {
     }
 
     private Tutor tutor(int id, User user) {
-        return Tutor.builder().userId(id).user(user).hourlyRate(BigDecimal.valueOf(50)).build();
+        return Tutor.builder()
+                .userId(id)
+                .user(user)
+                .hourlyRate(BigDecimal.valueOf(50))
+                .offersOnline(true)
+                .offersInPerson(true)
+                .build();
     }
 
     private LessonRequest validRequest() {
@@ -121,6 +127,7 @@ class LessonServiceTest {
                             2,
                             "Adam",
                             "Nowak",
+                            null,
                             null,
                             1,
                             "Jan",
@@ -400,6 +407,24 @@ class LessonServiceTest {
             mockSecurityContext(studentUserRole());
             assertThatThrownBy(() -> lessonService.changeLessonStatus(1, req))
                     .isInstanceOf(IllegalStateException.class);
+        }
+
+        @Test
+        @DisplayName("PENDING → CONFIRMED: kolizja z inną potwierdzoną lekcją rzuca wyjątek")
+        void pendingToConfirmed_slotTaken_throws() {
+            Lesson lesson = buildLesson(LessonStatus.PENDING);
+            LessonStatusRequest req = new LessonStatusRequest(LessonStatus.CONFIRMED, null);
+
+            when(lessonRepository.findById(1)).thenReturn(Optional.of(lesson));
+            when(lessonRepository.existsConflictingLesson(
+                            eq(10), any(), any(), any(), eq(LessonStatus.CONFIRMED)))
+                    .thenReturn(true);
+
+            mockSecurityContext(tutorUserRole());
+            assertThatThrownBy(() -> lessonService.changeLessonStatus(1, req))
+                    .isInstanceOf(SlotNotAvailableException.class);
+
+            assertThat(lesson.getLessonStatus()).isEqualTo(LessonStatus.PENDING);
         }
 
         @Test

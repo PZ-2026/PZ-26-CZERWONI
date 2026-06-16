@@ -126,6 +126,37 @@ public interface LessonRepository extends JpaRepository<Lesson, Integer> {
             @Param("timeTo") LocalTime timeTo,
             @Param("cancelledStatus") LessonStatus cancelledStatus);
 
+    /**
+     * Zwraca lekcje o danym statusie, których czas rozpoczęcia już minął.
+     *
+     * <p>Lekcja jest uznana za przeterminowaną, gdy data jest wcześniejsza niż dzisiaj lub data
+     * jest dzisiejsza i czas rozpoczęcia jest nie późniejszy niż podana chwila bieżąca.
+     *
+     * @param status status lekcji do przeszukania
+     * @param today aktualna data (strefa Warsaw)
+     * @param nowTime aktualna godzina (strefa Warsaw)
+     * @return lista przeterminowanych lekcji o podanym statusie
+     */
+    @Query(
+            """
+                    SELECT l FROM Lesson l
+                    WHERE l.lessonStatus = :status
+                      AND (l.lessonDate < :today
+                           OR (l.lessonDate = :today AND l.timeFrom <= :nowTime))
+                    """)
+    List<Lesson> findExpiredByStatus(
+            @Param("status") LessonStatus status,
+            @Param("today") LocalDate today,
+            @Param("nowTime") LocalTime nowTime);
+
+    /**
+     * Sprawdza, czy istnieje co najmniej jedna lekcja powiązana z danym przedmiotem.
+     *
+     * @param subjectId identyfikator przedmiotu
+     * @return {@code true} jeśli przedmiot jest używany w co najmniej jednej lekcji
+     */
+    boolean existsBySubjectId(Integer subjectId);
+
     @Query("SELECT l.lessonStatus, COUNT(l) FROM Lesson l GROUP BY l.lessonStatus")
     List<Object[]> countGroupedByStatus();
 

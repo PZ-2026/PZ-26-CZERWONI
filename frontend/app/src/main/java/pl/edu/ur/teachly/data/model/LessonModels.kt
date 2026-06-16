@@ -38,6 +38,7 @@ data class LessonResponse(
     val tutorFirstName: String,
     val tutorLastName: String,
     val tutorAvatarUrl: String?,
+    val tutorCity: String?,
     val studentId: Int,
     val studentFirstName: String,
     val studentLastName: String,

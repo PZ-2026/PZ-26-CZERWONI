@@ -1,5 +1,6 @@
 package pl.edu.ur.teachly.ui.home.views
 
+import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
@@ -15,8 +16,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.MaterialTheme.typography
@@ -44,14 +45,16 @@ import pl.edu.ur.teachly.data.model.UserRole
 import pl.edu.ur.teachly.ui.components.other.AppHeader
 import pl.edu.ur.teachly.ui.components.other.FullScreenError
 import pl.edu.ur.teachly.ui.components.other.HeaderBackground
+import pl.edu.ur.teachly.ui.components.other.LoadingBox
 import pl.edu.ur.teachly.ui.components.other.PrimaryButton
 import pl.edu.ur.teachly.ui.components.other.cards.StatCard
 import pl.edu.ur.teachly.ui.components.other.section.SectionHeader
 import pl.edu.ur.teachly.ui.components.other.section.SectionItems
 import pl.edu.ur.teachly.ui.home.viewmodels.HomeViewModel
-import pl.edu.ur.teachly.ui.theme.headerGradientColors
+import pl.edu.ur.teachly.ui.models.ScheduledClass
 import pl.edu.ur.teachly.ui.review.views.PendingReviewFormDialog
 import pl.edu.ur.teachly.ui.review.views.PendingReviewsSummaryDialog
+import pl.edu.ur.teachly.ui.theme.headerGradientColors
 
 @Composable
 fun HomeScreen(
@@ -62,6 +65,7 @@ fun HomeScreen(
     val state by viewModel.uiState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
     val successMessage = stringResource(R.string.review_submitted_success)
+    val confirmedBadgeColor = colorScheme.primary
 
     val lifecycleOwner = LocalLifecycleOwner.current
     LaunchedEffect(lifecycleOwner.lifecycle) {
@@ -137,10 +141,7 @@ fun HomeScreen(
             )
 
             when {
-                state.isLoading -> Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) { CircularProgressIndicator() }
+                state.isLoading -> LoadingBox()
 
                 state.error != null -> FullScreenError(message = state.error!!)
 
@@ -196,53 +197,27 @@ fun HomeScreen(
                         )
                     }
 
-                    item {
-                        SectionHeader(
-                            title = stringResource(R.string.confirmed),
-                            count = state.upcomingConfirmed.size,
-                            expanded = state.confirmedExpanded,
-                            badgeColor = colorScheme.primary,
-                            onToggle = viewModel::toggleConfirmed
-                        )
-                    }
-                    item {
-                        AnimatedVisibility(
-                            visible = state.confirmedExpanded,
-                            enter = expandVertically(),
-                            exit = shrinkVertically()
-                        ) {
-                            SectionItems(
-                                classes = state.upcomingConfirmed,
-                                userRole = state.userRole,
-                                emptyText = stringResource(R.string.no_confirmed_lessons),
-                                onLessonClick = onLessonClick
-                            )
-                        }
-                    }
+                    expandableLessonSection(
+                        titleRes = R.string.confirmed,
+                        classes = state.upcomingConfirmed,
+                        userRole = state.userRole,
+                        expanded = state.confirmedExpanded,
+                        badgeColor = confirmedBadgeColor,
+                        emptyTextRes = R.string.no_confirmed_lessons,
+                        onToggle = viewModel::toggleConfirmed,
+                        onLessonClick = onLessonClick
+                    )
 
-                    item {
-                        SectionHeader(
-                            title = stringResource(R.string.pending),
-                            count = state.upcomingPending.size,
-                            expanded = state.pendingExpanded,
-                            badgeColor = Color(0xFFF59E0B),
-                            onToggle = viewModel::togglePending
-                        )
-                    }
-                    item {
-                        AnimatedVisibility(
-                            visible = state.pendingExpanded,
-                            enter = expandVertically(),
-                            exit = shrinkVertically()
-                        ) {
-                            SectionItems(
-                                classes = state.upcomingPending,
-                                userRole = state.userRole,
-                                emptyText = stringResource(R.string.no_pending_lessons),
-                                onLessonClick = onLessonClick
-                            )
-                        }
-                    }
+                    expandableLessonSection(
+                        titleRes = R.string.pending,
+                        classes = state.upcomingPending,
+                        userRole = state.userRole,
+                        expanded = state.pendingExpanded,
+                        badgeColor = Color(0xFFF59E0B),
+                        emptyTextRes = R.string.no_pending_lessons,
+                        onToggle = viewModel::togglePending,
+                        onLessonClick = onLessonClick
+                    )
                 }
             }
         }
@@ -258,6 +233,46 @@ fun HomeScreen(
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimary,
                 shape = RoundedCornerShape(14.dp)
+            )
+        }
+    }
+}
+
+/**
+ * Rozwijalna sekcja listy lekcji na ekranie głównym: nagłówek [SectionHeader] z licznikiem oraz
+ * animowana lista [SectionItems]. Wydzielona, aby uniknąć powtarzania identycznej struktury dla
+ * lekcji potwierdzonych i oczekujących.
+ */
+private fun LazyListScope.expandableLessonSection(
+    @StringRes titleRes: Int,
+    classes: List<ScheduledClass>,
+    userRole: UserRole,
+    expanded: Boolean,
+    badgeColor: Color,
+    @StringRes emptyTextRes: Int,
+    onToggle: () -> Unit,
+    onLessonClick: (lessonId: Int) -> Unit
+) {
+    item {
+        SectionHeader(
+            title = stringResource(titleRes),
+            count = classes.size,
+            expanded = expanded,
+            badgeColor = badgeColor,
+            onToggle = onToggle
+        )
+    }
+    item {
+        AnimatedVisibility(
+            visible = expanded,
+            enter = expandVertically(),
+            exit = shrinkVertically()
+        ) {
+            SectionItems(
+                classes = classes,
+                userRole = userRole,
+                emptyText = stringResource(emptyTextRes),
+                onLessonClick = onLessonClick
             )
         }
     }

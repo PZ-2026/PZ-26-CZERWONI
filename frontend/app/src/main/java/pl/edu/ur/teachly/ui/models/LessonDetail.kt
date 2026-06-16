@@ -13,6 +13,7 @@ data class LessonDetail(
     val tutorFirstName: String,
     val tutorLastName: String,
     val tutorAvatarUrl: String? = null,
+    val tutorCity: String? = null,
     val studentId: Int,
     val studentFirstName: String,
     val studentLastName: String,

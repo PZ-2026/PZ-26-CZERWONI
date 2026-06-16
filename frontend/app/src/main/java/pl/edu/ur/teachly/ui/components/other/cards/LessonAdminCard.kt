@@ -13,6 +13,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Payments
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Schedule
@@ -30,6 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import java.time.LocalDate
+import pl.edu.ur.teachly.data.model.LessonFormat
 import pl.edu.ur.teachly.data.model.LessonResponse
 import pl.edu.ur.teachly.ui.components.other.badges.LessonStatusBadge
 import pl.edu.ur.teachly.ui.components.other.badges.PaymentStatusBadge
@@ -120,6 +122,21 @@ fun LessonAdminCard(lesson: LessonResponse, onEdit: () -> Unit) {
                 },
                 text = "${lesson.timeFrom.take(5)}–${lesson.timeTo.take(5)}"
             )
+
+            if (lesson.format == LessonFormat.IN_PERSON && !lesson.tutorCity.isNullOrBlank()) {
+                Spacer(Modifier.height(6.dp))
+                CardInfoRow(
+                    icon = {
+                        Icon(
+                            Icons.Default.LocationOn,
+                            null,
+                            modifier = Modifier.size(16.dp),
+                            tint = colorScheme.primary
+                        )
+                    },
+                    text = lesson.tutorCity
+                )
+            }
 
             Spacer(Modifier.height(6.dp))
 

@@ -16,5 +16,6 @@ data class Tutor(
     val nearestSlots: List<String>,
     val bio: String = "",
     val lessonCount: Int = 0,
-    val avatarUrl: String? = null
+    val avatarUrl: String? = null,
+    val city: String? = null
 )

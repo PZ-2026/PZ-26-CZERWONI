@@ -12,6 +12,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import pl.edu.ur.teachly.R
 import pl.edu.ur.teachly.ui.components.other.authTextFieldColors
 
 @Composable
@@ -30,7 +32,7 @@ fun CategoryDialog(title: String, initialName: String, onDismiss: () -> Unit, on
             OutlinedTextField(
                 value = name,
                 onValueChange = { if (it.length <= DialogValidation.MAX_LABEL_LENGTH) name = it },
-                label = { Text("Nazwa") },
+                label = { Text(stringResource(R.string.field_name)) },
                 leadingIcon = { Icon(Icons.Default.Edit, null) },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,

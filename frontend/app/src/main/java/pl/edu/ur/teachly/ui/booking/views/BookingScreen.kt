@@ -7,7 +7,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,13 +14,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -38,6 +35,7 @@ import pl.edu.ur.teachly.ui.components.other.AppHeader
 import pl.edu.ur.teachly.ui.components.other.ErrorBanner
 import pl.edu.ur.teachly.ui.components.other.FullScreenError
 import pl.edu.ur.teachly.ui.components.other.HeaderBackground
+import pl.edu.ur.teachly.ui.components.other.LoadingBox
 import pl.edu.ur.teachly.ui.theme.headerGradientColors
 
 @Composable
@@ -75,10 +73,7 @@ fun BookingScreen(
         )
 
         when {
-            state.isLoading -> Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) { CircularProgressIndicator() }
+            state.isLoading -> LoadingBox()
 
             state.error != null -> FullScreenError(message = state.error!!)
 
@@ -91,9 +86,15 @@ fun BookingScreen(
                         .verticalScroll(rememberScrollState())
                         .padding(horizontal = 24.dp, vertical = 20.dp)
                 ) {
+                    val now = java.time.LocalTime.now()
+                    val today = java.time.LocalDate.now()
                     val availabilityColors = state.calendarDays.map { (_, date) ->
-                        val slotsCount =
-                            state.timetableByDate[date.toString()]?.count { it.isAvailable } ?: 0
+                        val slots = state.timetableByDate[date.toString()] ?: emptyList()
+                        val slotsCount = if (date == today) {
+                            slots.count { it.isAvailable && !java.time.LocalTime.parse(it.time).isBefore(now) }
+                        } else {
+                            slots.count { it.isAvailable }
+                        }
                         when {
                             slotsCount >= 6 -> colorScheme.secondary
                             slotsCount in 3..5 -> colorScheme.tertiary

@@ -18,7 +18,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import java.time.LocalDate
+import pl.edu.ur.teachly.R
 import pl.edu.ur.teachly.ui.components.other.authTextFieldColors
 import pl.edu.ur.teachly.ui.components.other.formatDate
 
@@ -31,7 +33,7 @@ fun HolidayDialog(
     onDismiss: () -> Unit,
     onSave: (String, String?) -> Unit
 ) {
-    var date by remember { mutableStateOf(initialDate) }
+    var date by remember { mutableStateOf(initialDate.ifBlank { LocalDate.now().toString() }) }
     var description by remember { mutableStateOf(initialDescription) }
     var showDatePicker by remember { mutableStateOf(false) }
 
@@ -44,7 +46,7 @@ fun HolidayDialog(
     }
     val datePickerState = rememberDatePickerState(initialSelectedDateMillis = initialDateMillis)
     val descriptionError = if (description.length > DialogValidation.MAX_LABEL_LENGTH) {
-        "Opis nie może przekraczać ${DialogValidation.MAX_LABEL_LENGTH} znaków"
+        stringResource(R.string.error_description_too_long, DialogValidation.MAX_LABEL_LENGTH)
     } else {
         null
     }
@@ -62,10 +64,10 @@ fun HolidayDialog(
                             .toString()
                     }
                     showDatePicker = false
-                }) { Text("OK") }
+                }) { Text(stringResource(R.string.btn_ok)) }
             },
             dismissButton = {
-                TextButton(onClick = { showDatePicker = false }) { Text("Anuluj") }
+                TextButton(onClick = { showDatePicker = false }) { Text(stringResource(R.string.cancel)) }
             }
         ) {
             DatePicker(state = datePickerState)
@@ -81,15 +83,15 @@ fun HolidayDialog(
         DialogSectionCard {
             DialogPickerField(
                 value = formatDate(LocalDate.parse(date)),
-                label = "Data",
+                label = stringResource(R.string.field_date),
                 onClick = { showDatePicker = true },
                 trailingIcon = Icons.Default.CalendarMonth,
-                trailingIconDescription = "Wybierz datę"
+                trailingIconDescription = stringResource(R.string.cd_pick_date)
             )
             OutlinedTextField(
                 value = description,
                 onValueChange = { if (it.length <= DialogValidation.MAX_LABEL_LENGTH) description = it },
-                label = { Text("Opis (opcjonalnie)") },
+                label = { Text(stringResource(R.string.field_description_optional)) },
                 leadingIcon = { Icon(Icons.Default.Info, null) },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,

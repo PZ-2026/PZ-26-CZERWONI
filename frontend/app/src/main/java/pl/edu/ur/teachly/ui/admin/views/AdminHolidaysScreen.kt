@@ -14,8 +14,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import pl.edu.ur.teachly.ui.components.other.dialog.AppConfirmDialog
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme.colorScheme
@@ -37,8 +35,10 @@ import pl.edu.ur.teachly.ui.components.admin.AdminScreenHeader
 import pl.edu.ur.teachly.ui.components.other.EmptyListState
 import pl.edu.ur.teachly.ui.components.other.ExpandableFilterSection
 import pl.edu.ur.teachly.ui.components.other.FilterChips
+import pl.edu.ur.teachly.ui.components.other.LoadingBox
 import pl.edu.ur.teachly.ui.components.other.MessageSnackbars
 import pl.edu.ur.teachly.ui.components.other.cards.HolidayCard
+import pl.edu.ur.teachly.ui.components.other.dialog.AppConfirmDialog
 import pl.edu.ur.teachly.ui.components.other.dialog.HolidayDialog
 
 @Composable
@@ -90,10 +90,7 @@ fun AdminHolidaysScreen(viewModel: AdminHolidaysViewModel = koinViewModel(), sho
             }
 
             when {
-                state.isLoading -> Box(
-                    Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) { CircularProgressIndicator() }
+                state.isLoading -> LoadingBox()
 
                 state.holidays.isEmpty() -> EmptyListState(message = "Brak zdefiniowanych świąt")
 

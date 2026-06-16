@@ -13,16 +13,14 @@ object ApiErrorParser {
         null
     }
 
-    fun toException(response: Response<*>, fallback: String): Exception =
-        Exception(parseDetail(response) ?: fallback)
+    fun toException(response: Response<*>, fallback: String): Exception = Exception(parseDetail(response) ?: fallback)
 }
 
-fun <T> Response<T>.toResult(fallback: String): Result<T> =
-    if (isSuccessful) {
-        Result.success(body()!!)
-    } else {
-        Result.failure(ApiErrorParser.toException(this, fallback))
-    }
+fun <T> Response<T>.toResult(fallback: String): Result<T> = if (isSuccessful) {
+    Result.success(body()!!)
+} else {
+    Result.failure(ApiErrorParser.toException(this, fallback))
+}
 
 inline fun <T> apiCall(
     fallback: String,

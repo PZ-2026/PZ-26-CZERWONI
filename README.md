@@ -107,7 +107,7 @@ Bezpieczeństwo opiera się na bezstanowej sesji JWT. Każde żądanie (poza `/a
 | Metoda | Endpoint                                        | Opis                                  | Dostęp          |
 |--------|-------------------------------------------------|---------------------------------------|-----------------|
 | GET    | `/api/tutors`                                   | Lista aktywnych korepetytorów         | Publiczny       |
-| GET    | `/api/tutors/search`                            | Wyszukiwanie z ocenami i przedmiotami | Publiczny       |
+| GET    | `/api/tutors/search`                            | Wyszukiwanie z ocenami i przedmiotami (query params: `q`, `subject`, `city`) | Publiczny       |
 | GET    | `/api/tutors/{id}`                              | Profil korepetytora                   | Publiczny       |
 | GET    | `/api/tutors/{id}/subjects`                     | Przedmioty korepetytora               | Publiczny       |
 | PUT    | `/api/tutors/me`                                | Edycja własnego profilu               | TUTOR           |

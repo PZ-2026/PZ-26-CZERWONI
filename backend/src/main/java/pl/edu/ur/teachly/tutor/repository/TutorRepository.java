@@ -29,8 +29,11 @@ public interface TutorRepository extends JpaRepository<Tutor, Integer> {
                       AND (:subjectName IS NULL OR EXISTS (
                            SELECT 1 FROM TutorSubject ts JOIN ts.subject s
                            WHERE ts.tutor = t AND LOWER(s.subjectName) = :subjectName))
+                      AND (:city IS NULL OR LOWER(t.city) LIKE :city ESCAPE '\\')
                     ORDER BY u.lastName, u.firstName
                     """)
     List<Tutor> searchActiveTutors(
-            @Param("pattern") String pattern, @Param("subjectName") String subjectName);
+            @Param("pattern") String pattern,
+            @Param("subjectName") String subjectName,
+            @Param("city") String city);
 }

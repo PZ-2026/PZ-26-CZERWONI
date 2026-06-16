@@ -346,4 +346,42 @@
     <string name="user_inactive">Nieaktywny</string>
     <string name="admin_users_count">%1$d użytkowników</string>
     <string name="admin_lessons_count">%1$d lekcji</string>
+
+    <!-- Common buttons -->
+    <string name="btn_ok">OK</string>
+    <string name="btn_add">Dodaj</string>
+
+    <!-- Common field labels -->
+    <string name="field_name">Nazwa</string>
+    <string name="field_date">Data</string>
+    <string name="field_description_optional">Opis (opcjonalnie)</string>
+    <string name="field_from">Od</string>
+    <string name="field_to">Do</string>
+    <string name="field_hours_section">Godziny</string>
+    <string name="field_all_day">Cały dzień</string>
+
+    <!-- Availability / override dialogs -->
+    <string name="dialog_add_availability">Dodaj dostępność</string>
+    <string name="dialog_add_unavailability">Dodaj niedostępność</string>
+    <string name="time_picker_start">Godzina rozpoczęcia</string>
+    <string name="time_picker_end">Godzina zakończenia</string>
+    <string name="cd_pick_date">Wybierz datę</string>
+
+    <!-- Confirm-delete dialog -->
+    <string name="dialog_confirm_delete_title">Potwierdź usunięcie</string>
+
+    <!-- Subject / category dialog -->
+    <string name="dialog_select_category">Wybierz kategorię</string>
+
+    <!-- Validation errors (new) -->
+    <string name="error_first_name_invalid">Imię może zawierać tylko litery, spacje i myślniki</string>
+    <string name="error_last_name_invalid">Nazwisko może zawierać tylko litery, spacje i myślniki</string>
+    <string name="error_password_spaces">Hasło nie może zawierać spacji</string>
+    <string name="error_city_invalid">Nazwa miasta może zawierać tylko litery, spacje i myślniki</string>
+    <string name="tutor_setup_city_length">Podaj miasto zajęć stacjonarnych (2–50 znaków)</string>
+    <string name="error_subject_name_invalid">Nazwa przedmiotu zawiera niedozwolone znaki</string>
+    <string name="error_category_name_invalid">Nazwa kategorii zawiera niedozwolone znaki</string>
+    <string name="error_time_range_invalid">Godzina zakończenia musi być późniejsza od rozpoczęcia</string>
+    <string name="error_time_range_overlap">Ten przedział pokrywa się z istniejącym</string>
+    <string name="error_description_too_long">Opis nie może przekraczać %1$d znaków</string>
 </resources>

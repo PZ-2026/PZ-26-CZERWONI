@@ -2,7 +2,6 @@ package pl.edu.ur.teachly.ui.admin.views
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,6 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyGridScope
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -29,7 +29,6 @@ import androidx.compose.material.icons.filled.School
 import androidx.compose.material.icons.filled.Shield
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Text
@@ -39,11 +38,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import org.koin.androidx.compose.koinViewModel
 import pl.edu.ur.teachly.navigation.AppRoute
 import pl.edu.ur.teachly.ui.admin.viewmodels.AdminDashboardViewModel
 import pl.edu.ur.teachly.ui.components.admin.AdminScreenHeader
+import pl.edu.ur.teachly.ui.components.other.LoadingBox
 import pl.edu.ur.teachly.ui.components.other.cards.DashboardCard
 
 @Composable
@@ -63,10 +64,7 @@ fun AdminDashboardScreen(viewModel: AdminDashboardViewModel = koinViewModel(), o
         )
 
         when {
-            state.isLoading -> Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) { CircularProgressIndicator() }
+            state.isLoading -> LoadingBox()
 
             state.error != null -> Column(
                 modifier = Modifier.fillMaxSize(),
@@ -87,17 +85,7 @@ fun AdminDashboardScreen(viewModel: AdminDashboardViewModel = koinViewModel(), o
                         .padding(16.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    Text(
-                        "Użytkownicy",
-                        style = typography.titleMedium,
-                        fontWeight = FontWeight.Bold
-                    )
-                    LazyVerticalGrid(
-                        columns = GridCells.Fixed(2),
-                        modifier = Modifier.heightIn(max = 300.dp),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp),
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
+                    DashboardStatsSection(title = "Użytkownicy") {
                         item {
                             DashboardCard(
                                 "Wszyscy",
@@ -140,13 +128,7 @@ fun AdminDashboardScreen(viewModel: AdminDashboardViewModel = koinViewModel(), o
                         }
                     }
 
-                    Text("Lekcje", style = typography.titleMedium, fontWeight = FontWeight.Bold)
-                    LazyVerticalGrid(
-                        columns = GridCells.Fixed(2),
-                        modifier = Modifier.heightIn(max = 300.dp),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp),
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
+                    DashboardStatsSection(title = "Lekcje") {
                         item {
                             DashboardCard(
                                 "Wszystkie",
@@ -189,13 +171,7 @@ fun AdminDashboardScreen(viewModel: AdminDashboardViewModel = koinViewModel(), o
                         }
                     }
 
-                    Text("Platforma", style = typography.titleMedium, fontWeight = FontWeight.Bold)
-                    LazyVerticalGrid(
-                        columns = GridCells.Fixed(2),
-                        modifier = Modifier.heightIn(max = 240.dp),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp),
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
+                    DashboardStatsSection(title = "Platforma", maxHeight = 240.dp) {
                         item {
                             DashboardCard(
                                 "Przedmioty",
@@ -257,4 +233,25 @@ fun AdminDashboardScreen(viewModel: AdminDashboardViewModel = koinViewModel(), o
             }
         }
     }
+}
+
+/**
+ * Sekcja statystyk panelu administratora: nagłówek wraz z dwukolumnową siatką kart [DashboardCard].
+ * Wydzielona, aby uniknąć powtarzania identycznej konfiguracji [LazyVerticalGrid] dla każdej grupy
+ * statystyk.
+ *
+ * @param title nagłówek sekcji
+ * @param maxHeight maksymalna wysokość siatki
+ * @param content zawartość siatki (elementy `item { ... }`)
+ */
+@Composable
+private fun DashboardStatsSection(title: String, maxHeight: Dp = 300.dp, content: LazyGridScope.() -> Unit) {
+    Text(title, style = typography.titleMedium, fontWeight = FontWeight.Bold)
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(2),
+        modifier = Modifier.heightIn(max = maxHeight),
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+        content = content
+    )
 }

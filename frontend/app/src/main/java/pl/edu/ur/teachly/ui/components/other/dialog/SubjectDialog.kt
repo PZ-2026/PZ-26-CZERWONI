@@ -19,6 +19,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import pl.edu.ur.teachly.R
 import pl.edu.ur.teachly.data.model.SubjectCategoryResponse
 import pl.edu.ur.teachly.ui.components.other.authTextFieldColors
 
@@ -37,7 +39,8 @@ fun SubjectDialog(
     var expanded by remember { mutableStateOf(false) }
     val selectedCategory = categories.find { it.id == categoryId }
     val nameError = DialogValidation.labelNameError(name, "Nazwa przedmiotu")
-    val categoryError = if (categoryId <= 0) "Wybierz kategorię" else null
+    val selectCategoryText = stringResource(R.string.dialog_select_category)
+    val categoryError = if (categoryId <= 0) selectCategoryText else null
     val isValid = DialogValidation.isLabelNameValid(name) && categoryId > 0
 
     AppFormDialog(
@@ -50,7 +53,7 @@ fun SubjectDialog(
             OutlinedTextField(
                 value = name,
                 onValueChange = { if (it.length <= DialogValidation.MAX_LABEL_LENGTH) name = it },
-                label = { Text("Nazwa przedmiotu") },
+                label = { Text(stringResource(R.string.admin_subjects_field_name)) },
                 leadingIcon = { Icon(Icons.Default.School, null) },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
@@ -65,10 +68,10 @@ fun SubjectDialog(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 OutlinedTextField(
-                    value = selectedCategory?.categoryName ?: "Wybierz kategorię",
+                    value = selectedCategory?.categoryName ?: selectCategoryText,
                     onValueChange = {},
                     readOnly = true,
-                    label = { Text("Kategoria") },
+                    label = { Text(stringResource(R.string.admin_subjects_field_category)) },
                     leadingIcon = { Icon(Icons.Default.Category, null) },
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
                     modifier = Modifier

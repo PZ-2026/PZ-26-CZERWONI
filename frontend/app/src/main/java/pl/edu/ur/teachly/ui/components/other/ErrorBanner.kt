@@ -29,19 +29,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import androidx.navigation.findNavController
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 import pl.edu.ur.teachly.R
 import pl.edu.ur.teachly.data.repository.AuthRepository
 import pl.edu.ur.teachly.navigation.navigateToSplash
-import androidx.navigation.findNavController
 
 @Composable
-fun FullScreenError(
-    message: String,
-    modifier: Modifier = Modifier,
-    onLogout: (() -> Unit)? = null
-) {
+fun FullScreenError(message: String, modifier: Modifier = Modifier, onLogout: (() -> Unit)? = null) {
     val authRepository = koinInject<AuthRepository>()
     val scope = rememberCoroutineScope()
     val view = LocalView.current

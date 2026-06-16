@@ -1,7 +1,9 @@
 package pl.edu.ur.teachly.common.config;
 
+import java.util.Arrays;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -38,6 +40,14 @@ public class SecurityConfig {
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
 
     /**
+     * Lista dozwolonych źródeł CORS (rozdzielona przecinkami). Konfigurowalna przez właściwość
+     * {@code application.cors.allowed-origins}; domyślnie tylko localhost (środowisko
+     * deweloperskie).
+     */
+    @Value("${application.cors.allowed-origins:http://localhost,http://localhost:8080}")
+    private String allowedOrigins;
+
+    /**
      * Definiuje łańcuch filtrów bezpieczeństwa.
      *
      * <p>Ścieżki {@code /api/auth/**} i {@code /uploads/**} są publicznie dostępne. Pozostałe
@@ -71,18 +81,23 @@ public class SecurityConfig {
     }
 
     /**
-     * Konfiguruje politykę CORS zezwalającą na żądania z dowolnego źródła.
+     * Konfiguruje politykę CORS ograniczoną do skonfigurowanej listy źródeł.
+     *
+     * <p>Uwierzytelnianie opiera się na tokenie JWT w nagłówku {@code Authorization} (a nie na
+     * ciasteczkach), dlatego {@code allowCredentials} jest wyłączone — eliminuje to antywzorzec
+     * „wildcard + poświadczenia".
      *
      * @return źródło konfiguracji CORS
      */
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(List.of("*"));
+        configuration.setAllowedOrigins(
+                Arrays.stream(allowedOrigins.split(",")).map(String::trim).toList());
         configuration.setAllowedMethods(
                 List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
-        configuration.setAllowedHeaders(List.of("*"));
-        configuration.setAllowCredentials(true);
+        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+        configuration.setAllowCredentials(false);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;

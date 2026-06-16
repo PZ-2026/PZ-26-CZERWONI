@@ -21,10 +21,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneOffset
+import pl.edu.ur.teachly.R
 import pl.edu.ur.teachly.ui.components.other.formatDate
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -64,17 +66,17 @@ fun OverrideDateDialog(onDismiss: () -> Unit, onSave: (date: String, timeFrom: S
                             .toString()
                     }
                     showDatePicker = false
-                }) { Text("OK") }
+                }) { Text(stringResource(R.string.btn_ok)) }
             },
             dismissButton = {
-                TextButton(onClick = { showDatePicker = false }) { Text("Anuluj") }
+                TextButton(onClick = { showDatePicker = false }) { Text(stringResource(R.string.cancel)) }
             }
         ) { DatePicker(state = datePickerState) }
     }
 
     if (showFromPicker) {
         SlottedTimePickerDialog(
-            title = "Godzina rozpoczęcia",
+            title = stringResource(R.string.time_picker_start),
             initialHour = fromHour,
             initialMinute = fromMinute,
             onDismiss = { showFromPicker = false },
@@ -88,7 +90,7 @@ fun OverrideDateDialog(onDismiss: () -> Unit, onSave: (date: String, timeFrom: S
 
     if (showToPicker) {
         SlottedTimePickerDialog(
-            title = "Godzina zakończenia",
+            title = stringResource(R.string.time_picker_end),
             initialHour = toHour,
             initialMinute = toMinute,
             onDismiss = { showToPicker = false },
@@ -101,7 +103,7 @@ fun OverrideDateDialog(onDismiss: () -> Unit, onSave: (date: String, timeFrom: S
     }
 
     AppFormDialog(
-        title = "Dodaj niedostępność",
+        title = stringResource(R.string.dialog_add_unavailability),
         onDismiss = onDismiss,
         onConfirm = {
             onSave(
@@ -110,29 +112,29 @@ fun OverrideDateDialog(onDismiss: () -> Unit, onSave: (date: String, timeFrom: S
                 if (allDay) null else timeTo
             )
         },
-        confirmText = "Dodaj",
+        confirmText = stringResource(R.string.btn_add),
         confirmEnabled = canSave
     ) {
         DialogSectionCard {
             DialogPickerField(
                 value = runCatching { formatDate(LocalDate.parse(selectedDate)) }.getOrDefault(selectedDate),
-                label = "Data",
+                label = stringResource(R.string.field_date),
                 onClick = { showDatePicker = true },
                 trailingIcon = Icons.Default.CalendarMonth,
-                trailingIconDescription = "Wybierz datę"
+                trailingIconDescription = stringResource(R.string.cd_pick_date)
             )
         }
 
         HorizontalDivider(color = colorScheme.outline.copy(alpha = 0.35f))
 
-        DialogSectionCard(title = "Godziny") {
-            DialogSwitchRow("Cały dzień", allDay) { allDay = it }
+        DialogSectionCard(title = stringResource(R.string.field_hours_section)) {
+            DialogSwitchRow(stringResource(R.string.field_all_day), allDay) { allDay = it }
 
             if (!allDay) {
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     DialogPickerField(
                         value = timeFrom,
-                        label = "Od",
+                        label = stringResource(R.string.field_from),
                         onClick = { showFromPicker = true },
                         modifier = Modifier.weight(1f),
                         leadingIcon = { Icon(Icons.Default.Schedule, null) },
@@ -140,7 +142,7 @@ fun OverrideDateDialog(onDismiss: () -> Unit, onSave: (date: String, timeFrom: S
                     )
                     DialogPickerField(
                         value = timeTo,
-                        label = "Do",
+                        label = stringResource(R.string.field_to),
                         onClick = { showToPicker = true },
                         modifier = Modifier.weight(1f),
                         leadingIcon = { Icon(Icons.Default.Schedule, null) },
@@ -148,7 +150,7 @@ fun OverrideDateDialog(onDismiss: () -> Unit, onSave: (date: String, timeFrom: S
                     )
                 }
                 if (!rangeValid) {
-                    DialogErrorText("Godzina zakończenia musi być późniejsza od rozpoczęcia")
+                    DialogErrorText(stringResource(R.string.error_time_range_invalid))
                 }
             }
         }

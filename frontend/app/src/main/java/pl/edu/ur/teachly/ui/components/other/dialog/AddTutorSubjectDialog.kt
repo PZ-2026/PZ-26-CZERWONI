@@ -32,10 +32,10 @@ import androidx.compose.ui.unit.dp
 import pl.edu.ur.teachly.R
 import pl.edu.ur.teachly.data.model.SubjectResponse
 import pl.edu.ur.teachly.data.model.TutorSubjectResponse
+import pl.edu.ur.teachly.ui.components.other.authTextFieldColors
 import pl.edu.ur.teachly.ui.models.TeachingLevel
 import pl.edu.ur.teachly.ui.models.activeTeachingLevels
 import pl.edu.ur.teachly.ui.models.displayLabel
-import pl.edu.ur.teachly.ui.components.other.authTextFieldColors
 import pl.edu.ur.teachly.ui.models.shortLabel
 
 @Composable

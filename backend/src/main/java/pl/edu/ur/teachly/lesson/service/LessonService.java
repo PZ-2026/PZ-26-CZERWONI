@@ -5,6 +5,7 @@ import java.math.RoundingMode;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
@@ -86,6 +87,13 @@ public class LessonService {
         if (tutor.getUser() == null || !Boolean.TRUE.equals(tutor.getUser().getIsActive())) {
             throw new BusinessValidationException("Korepetytor jest niedostępny");
         }
+        if (request.format() == LessonFormat.IN_PERSON
+                        && !Boolean.TRUE.equals(tutor.getOffersInPerson())
+                || request.format() == LessonFormat.ONLINE
+                        && !Boolean.TRUE.equals(tutor.getOffersOnline())) {
+            throw new BusinessValidationException(
+                    "Korepetytor nie oferuje wybranego formatu zajęć");
+        }
         var subject =
                 subjectRepository
                         .findById(request.subjectId())
@@ -99,7 +107,7 @@ public class LessonService {
         }
 
         if (LocalDateTime.of(request.lessonDate(), request.timeFrom())
-                .isBefore(LocalDateTime.now())) {
+                .isBefore(LocalDateTime.now(ZoneId.of("Europe/Warsaw")))) {
             throw new IllegalArgumentException("Nie można zarezerwować lekcji w przeszłości");
         }
 
@@ -291,6 +299,8 @@ public class LessonService {
      * @throws ResourceNotFoundException gdy lekcja nie istnieje
      * @throws AccessDeniedException gdy wywołujący nie jest uczestnikiem lekcji
      * @throws IllegalStateException gdy przejście między stanami jest niedozwolone
+     * @throws SlotNotAvailableException gdy zatwierdzany termin koliduje z inną potwierdzoną lekcją
+     *     korepetytora
      */
     @Transactional
     public LessonResponse changeLessonStatus(Integer lessonId, LessonStatusRequest request) {
@@ -325,8 +335,23 @@ public class LessonService {
             }
         }
 
+        if (currentStatus == LessonStatus.PENDING && newStatus == LessonStatus.CONFIRMED) {
+            boolean slotTaken =
+                    lessonRepository.existsConflictingLesson(
+                            lesson.getTutor().getUserId(),
+                            lesson.getLessonDate(),
+                            lesson.getTimeFrom(),
+                            lesson.getTimeTo(),
+                            LessonStatus.CONFIRMED);
+            if (slotTaken) {
+                throw new SlotNotAvailableException(
+                        "Korepetytor ma już potwierdzoną lekcję w tym czasie");
+            }
+        }
+
         lesson.setLessonStatus(newStatus);
-        if (request.tutorNotes() != null) {
+        if (request.tutorNotes() != null
+                && (currentUserRole == UserRole.TUTOR || currentUserRole == UserRole.ADMIN)) {
             lesson.setTutorNotes(request.tutorNotes());
         }
         return lessonMapper.toResponse(lessonRepository.save(lesson));
@@ -351,7 +376,7 @@ public class LessonService {
                                 () ->
                                         new ResourceNotFoundException(
                                                 "Nie znaleziono szukanej lekcji"));
-        if (!lesson.getStudent().getId().equals(callerId)) {
+        if (lesson.getStudent() == null || !lesson.getStudent().getId().equals(callerId)) {
             throw new AccessDeniedException("Brak uprawnień do edycji notatek tej lekcji");
         }
         lesson.setStudentNotes(request.studentNotes());
@@ -377,7 +402,7 @@ public class LessonService {
                                 () ->
                                         new ResourceNotFoundException(
                                                 "Nie znaleziono szukanej lekcji"));
-        if (!lesson.getTutor().getUserId().equals(callerId)) {
+        if (lesson.getTutor() == null || !lesson.getTutor().getUserId().equals(callerId)) {
             throw new AccessDeniedException("Brak uprawnień do edycji notatek tej lekcji");
         }
         lesson.setTutorNotes(request.tutorNotes());
@@ -447,7 +472,8 @@ public class LessonService {
         }
 
         if (next == LessonStatus.COMPLETED
-                && LocalDateTime.now().isBefore(lessonStart.plusMinutes(30))) {
+                && LocalDateTime.now(ZoneId.of("Europe/Warsaw"))
+                        .isBefore(lessonStart.plusMinutes(30))) {
             throw new IllegalStateException(
                     "Lekcja może zostać oznaczona jako zakończona dopiero po upływie 30 minut od rozpoczęcia");
         }

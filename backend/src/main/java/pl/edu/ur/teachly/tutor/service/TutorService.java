@@ -53,7 +53,7 @@ public class TutorService {
      */
     @Transactional(readOnly = true)
     public List<TutorResponse> getAllTutors(String query) {
-        return findActiveTutors(query, null).stream().map(tutorMapper::toResponse).toList();
+        return findActiveTutors(query, null, null).stream().map(tutorMapper::toResponse).toList();
     }
 
     /**
@@ -62,11 +62,12 @@ public class TutorService {
      *
      * @param query fraza wyszukiwania (imię, nazwisko, e-mail)
      * @param subject filtr po nazwie przedmiotu
+     * @param city filtr po mieście korepetytora
      * @return lista wyników wyszukiwania korepetytorów z ocenami
      */
     @Transactional(readOnly = true)
-    public List<TutorSearchResultResponse> searchTutors(String query, String subject) {
-        var tutors = findActiveTutors(query, subject);
+    public List<TutorSearchResultResponse> searchTutors(String query, String subject, String city) {
+        var tutors = findActiveTutors(query, subject, city);
         if (tutors.isEmpty()) {
             return List.of();
         }
@@ -93,9 +94,11 @@ public class TutorService {
                 .toList();
     }
 
-    private List<Tutor> findActiveTutors(String query, String subject) {
+    private List<Tutor> findActiveTutors(String query, String subject, String city) {
         return tutorRepository.searchActiveTutors(
-                SearchQueryUtils.toLikePattern(query), SearchQueryUtils.normalizeLower(subject));
+                SearchQueryUtils.toLikePattern(query),
+                SearchQueryUtils.normalizeLower(subject),
+                SearchQueryUtils.toLikePattern(city));
     }
 
     private Map<Integer, List<TutorSubject>> loadSubjectsByTutorId(List<Integer> tutorIds) {
@@ -173,15 +176,21 @@ public class TutorService {
     }
 
     /**
-     * Aktualizuje profil korepetytora przez administratora bez ograniczeń walidacyjnych.
+     * Aktualizuje profil korepetytora przez administratora. Waliduje obecność miasta gdy
+     * korepetytor oferuje zajęcia stacjonarne.
      *
      * @param tutorId identyfikator korepetytora
      * @param request nowe dane profilu
      * @return zaktualizowany profil korepetytora
+     * @throws BusinessValidationException gdy zajęcia stacjonarne bez podanego miasta
      * @throws ResourceNotFoundException gdy korepetytor nie istnieje
      */
     @Transactional
     public TutorResponse adminUpdateTutor(Integer tutorId, TutorRequest request) {
+        if (Boolean.TRUE.equals(request.offersInPerson())
+                && (request.city() == null || request.city().isBlank())) {
+            throw new BusinessValidationException("Podaj miasto zajęć stacjonarnych");
+        }
         var tutor =
                 tutorRepository
                         .findById(tutorId)
@@ -209,6 +218,10 @@ public class TutorService {
             throw new BusinessValidationException(
                     "Wybierz co najmniej jedną formę zajęć (online lub stacjonarnie)");
         }
+        if (Boolean.TRUE.equals(request.offersInPerson())
+                && (request.city() == null || request.city().isBlank())) {
+            throw new BusinessValidationException("Podaj miasto zajęć stacjonarnych");
+        }
         if (tutorSubjectRepository.findByTutor_UserId(currentUser.getId()).isEmpty()) {
             throw new BusinessValidationException("Dodaj co najmniej jeden prowadzony przedmiot");
         }
@@ -223,6 +236,7 @@ public class TutorService {
         tutor.setHourlyRate(request.hourlyRate());
         tutor.setOffersOnline(request.offersOnline());
         tutor.setOffersInPerson(request.offersInPerson());
+        tutor.setCity(request.city() == null ? null : request.city().trim());
         return tutorMapper.toResponse(tutorRepository.save(tutor));
     }
 

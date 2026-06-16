@@ -3,6 +3,8 @@ package pl.edu.ur.teachly.tutor.service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -150,14 +152,25 @@ public class TimetableService {
                 freeBlocks = subtractLesson(freeBlocks, lesson.getTimeFrom(), lesson.getTimeTo());
             }
 
-            final LocalTime minTime =
-                    currentDate.equals(LocalDate.now())
-                            ? LocalDateTime.now().toLocalTime()
-                            : LocalTime.MIDNIGHT;
+            final LocalTime minTime;
+            ZoneId zone = ZoneId.of("Europe/Warsaw");
+            if (currentDate.equals(LocalDate.now(zone))) {
+                LocalTime now =
+                        LocalDateTime.now(zone).toLocalTime().truncatedTo(ChronoUnit.MINUTES);
+                int remainder = now.getMinute() % 30;
+                minTime = remainder == 0 ? now : now.plusMinutes(30 - remainder);
+            } else {
+                minTime = LocalTime.MIDNIGHT;
+            }
 
             freeBlocks =
                     freeBlocks.stream()
-                            .filter(b -> b.getTimeFrom().isAfter(minTime))
+                            .map(
+                                    b ->
+                                            b.getTimeFrom().isBefore(minTime)
+                                                    ? new TimeSlot(minTime, b.getTimeTo())
+                                                    : b)
+                            .filter(b -> b.getTimeFrom().isBefore(b.getTimeTo()))
                             .filter(
                                     b ->
                                             java.time.Duration.between(

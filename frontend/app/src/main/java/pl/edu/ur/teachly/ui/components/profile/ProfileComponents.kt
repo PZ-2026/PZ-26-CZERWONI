@@ -101,7 +101,7 @@ fun ProfileDataDivider() {
     )
 }
 
-private const val CollapsedLevelCount = 2
+private const val COLLAPSED_LEVEL_COUNT = 2
 
 enum class ProfileSectionActionIcon {
     Expand,
@@ -165,20 +165,16 @@ fun ProfileSectionTitle(title: String, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun SubjectChip(
-    modifier: Modifier = Modifier,
-    text: String,
-    isOverflow: Boolean = false,
-) {
+fun SubjectChip(modifier: Modifier = Modifier, text: String, isOverflow: Boolean = false) {
     Surface(
         modifier = modifier,
         shape = RoundedCornerShape(16.dp),
         color =
-            if (isOverflow) {
-                colorScheme.surfaceVariant
-            } else {
-                colorScheme.primaryContainer
-            }
+        if (isOverflow) {
+            colorScheme.surfaceVariant
+        } else {
+            colorScheme.primaryContainer
+        }
     ) {
         Text(
             text = text,
@@ -191,11 +187,7 @@ fun SubjectChip(
 }
 
 @Composable
-fun SubjectChipsRow(
-    modifier: Modifier = Modifier,
-    subjects: List<String>,
-    maxVisible: Int? = null,
-) {
+fun SubjectChipsRow(modifier: Modifier = Modifier, subjects: List<String>, maxVisible: Int? = null) {
     val visibleSubjects =
         if (maxVisible != null) {
             subjects.take(maxVisible)
@@ -227,10 +219,7 @@ fun SubjectChipsRow(
 }
 
 @Composable
-private fun SubjectLevelCard(
-    title: String,
-    subjectNames: List<String>
-) {
+private fun SubjectLevelCard(title: String, subjectNames: List<String>) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(14.dp),
@@ -255,24 +244,24 @@ private fun SubjectLevelCard(
 fun SubjectsByLevelSection(
     modifier: Modifier = Modifier,
     groups: List<SubjectsByLevelGroup>,
-    otherSubjects: List<String> = emptyList(),
+    otherSubjects: List<String> = emptyList()
 ) {
     var expanded by rememberSaveable { mutableStateOf(false) }
 
     val hasOtherSubjects = otherSubjects.isNotEmpty()
     val totalBlocks = groups.size + if (hasOtherSubjects) 1 else 0
-    val canExpand = totalBlocks > CollapsedLevelCount
+    val canExpand = totalBlocks > COLLAPSED_LEVEL_COUNT
 
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(10.dp)) {
         groups.forEachIndexed { index, group ->
-            if (expanded || index < CollapsedLevelCount) {
+            if (expanded || index < COLLAPSED_LEVEL_COUNT) {
                 SubjectLevelCard(
                     title = group.level.displayLabel(),
                     subjectNames = group.subjectNames
                 )
             }
         }
-        if (hasOtherSubjects && (expanded || groups.size < CollapsedLevelCount)) {
+        if (hasOtherSubjects && (expanded || groups.size < COLLAPSED_LEVEL_COUNT)) {
             SubjectLevelCard(
                 title = stringResource(R.string.teaching_level_other),
                 subjectNames = otherSubjects
@@ -281,11 +270,11 @@ fun SubjectsByLevelSection(
         if (canExpand) {
             ProfileSectionFooterAction(
                 label =
-                    if (expanded) {
-                        stringResource(R.string.subjects_see_less)
-                    } else {
-                        stringResource(R.string.subjects_see_more)
-                    },
+                if (expanded) {
+                    stringResource(R.string.subjects_see_less)
+                } else {
+                    stringResource(R.string.subjects_see_more)
+                },
                 onClick = { expanded = !expanded },
                 icon = ProfileSectionActionIcon.Expand,
                 expanded = expanded

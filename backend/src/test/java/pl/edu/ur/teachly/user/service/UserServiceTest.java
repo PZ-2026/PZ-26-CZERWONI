@@ -436,6 +436,21 @@ class UserServiceTest {
     }
 
     @Test
+    @DisplayName("uploadAvatar – błąd: poprawny Content-Type, ale zawartość nie jest obrazem")
+    void uploadAvatar_fakeImageSignature_throwsIllegalArgumentException() {
+        User user = User.builder().id(1).build();
+        MockMultipartFile fakeImage =
+                new MockMultipartFile(
+                        "file", "avatar.jpg", "image/jpeg", "to nie jest obraz".getBytes());
+
+        when(userRepository.findById(1)).thenReturn(Optional.of(user));
+
+        assertThatThrownBy(() -> userService.uploadAvatar(1, fakeImage))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("nie jest prawidłowym obrazem");
+    }
+
+    @Test
     @DisplayName("uploadAvatar – błąd: użytkownik nie istnieje")
     void uploadAvatar_userNotFound_throwsResourceNotFoundException() {
         MockMultipartFile file =
@@ -451,7 +466,11 @@ class UserServiceTest {
     void uploadAvatar_success_jpeg() throws Exception {
         User user = User.builder().id(1).avatarUrl(null).build();
         MockMultipartFile file =
-                new MockMultipartFile("file", "avatar.jpg", "image/jpeg", new byte[] {1, 2, 3});
+                new MockMultipartFile(
+                        "file",
+                        "avatar.jpg",
+                        "image/jpeg",
+                        new byte[] {(byte) 0xFF, (byte) 0xD8, (byte) 0xFF, 0});
         UserResponse response =
                 new UserResponse(
                         1,
@@ -481,7 +500,11 @@ class UserServiceTest {
     void uploadAvatar_success_png() {
         User user = User.builder().id(1).build();
         MockMultipartFile file =
-                new MockMultipartFile("file", "avatar.png", "image/png", new byte[] {1, 2, 3});
+                new MockMultipartFile(
+                        "file",
+                        "avatar.png",
+                        "image/png",
+                        new byte[] {(byte) 0x89, 0x50, 0x4E, 0x47});
         UserResponse response =
                 new UserResponse(
                         1, "A", "B", "a@b.com", "123", null, UserRole.STUDENT, true, null, null);
@@ -505,7 +528,11 @@ class UserServiceTest {
 
         User user = User.builder().id(1).avatarUrl("/uploads/avatars/old.jpg").build();
         MockMultipartFile file =
-                new MockMultipartFile("file", "new.jpg", "image/jpg", new byte[] {1, 2, 3});
+                new MockMultipartFile(
+                        "file",
+                        "new.jpg",
+                        "image/jpg",
+                        new byte[] {(byte) 0xFF, (byte) 0xD8, (byte) 0xFF, 0});
         UserResponse response =
                 new UserResponse(
                         1, "A", "B", "a@b.com", "123", null, UserRole.STUDENT, true, null, null);

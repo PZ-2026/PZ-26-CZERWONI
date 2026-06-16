@@ -19,8 +19,18 @@ import pl.edu.ur.teachly.common.enums.UserRole;
  */
 public record RegisterRequest(
         @NotNull(message = "Rola nie może być pusta") UserRole userRole,
-        @NotBlank(message = "Imię nie może być puste") @Size(max = 50) String firstName,
-        @NotBlank(message = "Nazwisko nie może być puste") @Size(max = 50) String lastName,
+        @NotBlank(message = "Imię nie może być puste")
+                @Size(max = 50)
+                @Pattern(
+                        regexp = "[\\p{L} '\\-]+",
+                        message = "Imię może zawierać tylko litery, spacje i myślniki")
+                String firstName,
+        @NotBlank(message = "Nazwisko nie może być puste")
+                @Size(max = 50)
+                @Pattern(
+                        regexp = "[\\p{L} '\\-]+",
+                        message = "Nazwisko może zawierać tylko litery, spacje i myślniki")
+                String lastName,
         @NotBlank(message = "Email nie może być pusty")
                 @Email(message = "Nieprawidłowy format email")
                 @Size(max = 100)
@@ -30,4 +40,5 @@ public record RegisterRequest(
                 String phoneNumber,
         @NotBlank(message = "Hasło nie może być puste")
                 @Size(min = 8, message = "Hasło musi mieć co najmniej 8 znaków")
+                @Pattern(regexp = "\\S+", message = "Hasło nie może zawierać spacji")
                 String password) {}

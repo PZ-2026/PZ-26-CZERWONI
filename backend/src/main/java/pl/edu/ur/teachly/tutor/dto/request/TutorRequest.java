@@ -3,6 +3,7 @@ package pl.edu.ur.teachly.tutor.dto.request;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import java.math.BigDecimal;
 
@@ -18,4 +19,9 @@ public record TutorRequest(
                 BigDecimal hourlyRate,
         @NotNull(message = "Informacja o lekcjach online jest wymagana") Boolean offersOnline,
         @NotNull(message = "Informacja o lekcjach stacjonarnych jest wymagana")
-                Boolean offersInPerson) {}
+                Boolean offersInPerson,
+        @Size(min = 2, max = 50, message = "Nazwa miasta musi mieć od 2 do 50 znaków")
+                @Pattern(
+                        regexp = "[\\p{L} '\\-]+",
+                        message = "Nazwa miasta może zawierać tylko litery, spacje i myślniki")
+                String city) {}

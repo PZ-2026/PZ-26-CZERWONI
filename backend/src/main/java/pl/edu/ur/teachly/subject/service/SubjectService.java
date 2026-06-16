@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.edu.ur.teachly.common.exception.BusinessValidationException;
 import pl.edu.ur.teachly.common.exception.ResourceNotFoundException;
+import pl.edu.ur.teachly.lesson.repository.LessonRepository;
 import pl.edu.ur.teachly.subject.dto.request.SubjectCategoryRequest;
 import pl.edu.ur.teachly.subject.dto.request.SubjectRequest;
 import pl.edu.ur.teachly.subject.dto.response.SubjectCategoryResponse;
@@ -16,6 +17,7 @@ import pl.edu.ur.teachly.subject.mapper.SubjectCategoryMapper;
 import pl.edu.ur.teachly.subject.mapper.SubjectMapper;
 import pl.edu.ur.teachly.subject.repository.SubjectCategoryRepository;
 import pl.edu.ur.teachly.subject.repository.SubjectRepository;
+import pl.edu.ur.teachly.tutor.repository.TutorSubjectRepository;
 
 /**
  * Serwis zarządzający przedmiotami i ich kategoriami.
@@ -28,6 +30,8 @@ import pl.edu.ur.teachly.subject.repository.SubjectRepository;
 public class SubjectService {
     private final SubjectRepository subjectRepository;
     private final SubjectCategoryRepository categoryRepository;
+    private final TutorSubjectRepository tutorSubjectRepository;
+    private final LessonRepository lessonRepository;
     private final SubjectMapper subjectMapper;
     private final SubjectCategoryMapper categoryMapper;
 
@@ -95,13 +99,26 @@ public class SubjectService {
     /**
      * Usuwa przedmiot o podanym identyfikatorze.
      *
+     * <p>Usunięcie jest blokowane, gdy przedmiot jest przypisany do korepetytora lub figuruje w co
+     * najmniej jednej lekcji.
+     *
      * @param id identyfikator przedmiotu
      * @throws ResourceNotFoundException gdy przedmiot nie istnieje
+     * @throws BusinessValidationException gdy przedmiot jest w użyciu przez korepetytorów lub
+     *     lekcje
      */
     @Transactional
     public void deleteSubject(Integer id) {
         if (!subjectRepository.existsById(id)) {
             throw new ResourceNotFoundException("Nie znaleziono przedmiotu do usunięcia");
+        }
+        if (tutorSubjectRepository.existsBySubjectId(id)) {
+            throw new BusinessValidationException(
+                    "Nie można usunąć przedmiotu, ponieważ jest przypisany do korepetytorów");
+        }
+        if (lessonRepository.existsBySubjectId(id)) {
+            throw new BusinessValidationException(
+                    "Nie można usunąć przedmiotu, ponieważ istnieją lekcje z tym przedmiotem");
         }
         subjectRepository.deleteById(id);
     }

@@ -61,9 +61,10 @@ class TutorServiceTest {
                         "Bio",
                         java.math.BigDecimal.TEN,
                         true,
-                        true);
+                        true,
+                        "Kraków");
 
-        when(tutorRepository.searchActiveTutors(null, null)).thenReturn(List.of(t1));
+        when(tutorRepository.searchActiveTutors(null, null, null)).thenReturn(List.of(t1));
         when(tutorMapper.toResponse(t1)).thenReturn(r1);
 
         List<TutorResponse> result = tutorService.getAllTutors(null);
@@ -86,13 +87,14 @@ class TutorServiceTest {
                         "Bio",
                         java.math.BigDecimal.TEN,
                         true,
-                        true);
+                        true,
+                        "Kraków");
         TutorSubject ts = TutorSubject.builder().tutor(t1).build();
         TutorSubjectResponse tsr =
                 new TutorSubjectResponse(
                         1, 1, "Matematyka", "Kat", true, false, false, false, false);
 
-        when(tutorRepository.searchActiveTutors("%jan%", null)).thenReturn(List.of(t1));
+        when(tutorRepository.searchActiveTutors("%jan%", null, null)).thenReturn(List.of(t1));
         when(tutorMapper.toResponse(t1)).thenReturn(r1);
         when(tutorSubjectRepository.findByTutor_UserIdIn(List.of(1))).thenReturn(List.of(ts));
         when(tutorSubjectMapper.toResponse(ts)).thenReturn(tsr);
@@ -101,7 +103,7 @@ class TutorServiceTest {
                         Collections.singletonList(
                                 new Object[] {1, java.math.BigDecimal.valueOf(4.5), 2L}));
 
-        List<TutorSearchResultResponse> result = tutorService.searchTutors("Jan", null);
+        List<TutorSearchResultResponse> result = tutorService.searchTutors("Jan", null, null);
 
         assertThat(result).hasSize(1);
         assertThat(result.get(0).tutor()).isEqualTo(r1);
@@ -113,9 +115,9 @@ class TutorServiceTest {
     @Test
     @DisplayName("searchTutors - pusta lista gdy brak wyników")
     void searchTutors_empty_returnsEmptyList() {
-        when(tutorRepository.searchActiveTutors(null, null)).thenReturn(List.of());
+        when(tutorRepository.searchActiveTutors(null, null, null)).thenReturn(List.of());
 
-        assertThat(tutorService.searchTutors(null, null)).isEmpty();
+        assertThat(tutorService.searchTutors(null, null, null)).isEmpty();
     }
 
     @Test
@@ -133,14 +135,15 @@ class TutorServiceTest {
                         "Bio",
                         java.math.BigDecimal.TEN,
                         true,
-                        true);
+                        true,
+                        "Kraków");
 
-        when(tutorRepository.searchActiveTutors(null, null)).thenReturn(List.of(t1));
+        when(tutorRepository.searchActiveTutors(null, null, null)).thenReturn(List.of(t1));
         when(tutorMapper.toResponse(t1)).thenReturn(r1);
         when(tutorSubjectRepository.findByTutor_UserIdIn(List.of(1))).thenReturn(List.of());
         when(reviewRepository.findRatingStatsByTutorIds(List.of(1))).thenReturn(List.of());
 
-        List<TutorSearchResultResponse> result = tutorService.searchTutors(null, null);
+        List<TutorSearchResultResponse> result = tutorService.searchTutors(null, null, null);
 
         assertThat(result).hasSize(1);
         assertThat(result.get(0).averageRating()).isZero();
@@ -162,7 +165,8 @@ class TutorServiceTest {
                         "Bio",
                         java.math.BigDecimal.TEN,
                         true,
-                        true);
+                        true,
+                        "Kraków");
 
         when(tutorRepository.findById(1)).thenReturn(Optional.of(t1));
         when(tutorMapper.toResponse(t1)).thenReturn(r1);
@@ -224,7 +228,7 @@ class TutorServiceTest {
         Tutor tutor = new Tutor();
         pl.edu.ur.teachly.tutor.dto.request.TutorRequest req =
                 new pl.edu.ur.teachly.tutor.dto.request.TutorRequest(
-                        "Bio", java.math.BigDecimal.valueOf(100), true, true);
+                        "Bio", java.math.BigDecimal.valueOf(100), true, true, "Kraków");
         TutorResponse response =
                 new TutorResponse(
                         1,
@@ -236,7 +240,8 @@ class TutorServiceTest {
                         "Bio",
                         java.math.BigDecimal.valueOf(100),
                         true,
-                        true);
+                        true,
+                        "Kraków");
 
         when(tutorRepository.findById(1)).thenReturn(Optional.of(tutor));
         when(tutorRepository.save(tutor)).thenReturn(tutor);
@@ -254,7 +259,7 @@ class TutorServiceTest {
     void adminUpdateTutor_notFound_throwsException() {
         pl.edu.ur.teachly.tutor.dto.request.TutorRequest req =
                 new pl.edu.ur.teachly.tutor.dto.request.TutorRequest(
-                        "Bio", java.math.BigDecimal.valueOf(100), true, true);
+                        "Bio", java.math.BigDecimal.valueOf(100), true, true, "Kraków");
 
         when(tutorRepository.findById(99)).thenReturn(Optional.empty());
 
@@ -263,12 +268,24 @@ class TutorServiceTest {
     }
 
     @Test
+    @DisplayName("adminUpdateTutor - błąd: stacjonarnie bez miasta")
+    void adminUpdateTutor_inPersonWithoutCity_throwsException() {
+        pl.edu.ur.teachly.tutor.dto.request.TutorRequest req =
+                new pl.edu.ur.teachly.tutor.dto.request.TutorRequest(
+                        "Bio", java.math.BigDecimal.valueOf(100), false, true, null);
+
+        assertThatThrownBy(() -> tutorService.adminUpdateTutor(1, req))
+                .isInstanceOf(pl.edu.ur.teachly.common.exception.BusinessValidationException.class)
+                .hasMessageContaining("miasto");
+    }
+
+    @Test
     @DisplayName("updateMyProfile - sukces")
     void updateMyProfile_success() {
         User currentUser = User.builder().id(1).build();
         TutorSelfProfileRequest req =
                 new TutorSelfProfileRequest(
-                        "Nowe bio", java.math.BigDecimal.valueOf(120), true, false);
+                        "Nowe bio", java.math.BigDecimal.valueOf(120), true, false, null);
         Tutor tutor = Tutor.builder().userId(1).build();
         TutorResponse response =
                 new TutorResponse(
@@ -281,7 +298,8 @@ class TutorServiceTest {
                         "Nowe bio",
                         java.math.BigDecimal.valueOf(120),
                         true,
-                        false);
+                        false,
+                        null);
 
         when(tutorSubjectRepository.findByTutor_UserId(1))
                 .thenReturn(List.of(TutorSubject.builder().id(10).build()));
@@ -296,11 +314,46 @@ class TutorServiceTest {
     }
 
     @Test
+    @DisplayName("updateMyProfile - błąd: zajęcia stacjonarne bez miasta")
+    void updateMyProfile_inPersonWithoutCity_throwsException() {
+        User currentUser = User.builder().id(1).build();
+        TutorSelfProfileRequest req =
+                new TutorSelfProfileRequest(
+                        "Bio", java.math.BigDecimal.valueOf(100), false, true, "  ");
+
+        assertThatThrownBy(() -> tutorService.updateMyProfile(req, currentUser))
+                .isInstanceOf(BusinessValidationException.class)
+                .hasMessageContaining("miasto");
+    }
+
+    @Test
+    @DisplayName("updateMyProfile - sukces: zajęcia stacjonarne z miastem (trim)")
+    void updateMyProfile_inPersonWithCity_setsTrimmedCity() {
+        User currentUser = User.builder().id(1).build();
+        TutorSelfProfileRequest req =
+                new TutorSelfProfileRequest(
+                        "Bio", java.math.BigDecimal.valueOf(100), false, true, "  Kraków  ");
+        Tutor tutor = Tutor.builder().userId(1).build();
+
+        when(tutorSubjectRepository.findByTutor_UserId(1))
+                .thenReturn(List.of(TutorSubject.builder().id(10).build()));
+        when(tutorRepository.findById(1)).thenReturn(Optional.of(tutor));
+        when(tutorRepository.save(tutor)).thenReturn(tutor);
+        when(tutorMapper.toResponse(tutor)).thenReturn(null);
+
+        tutorService.updateMyProfile(req, currentUser);
+
+        assertThat(tutor.getCity()).isEqualTo("Kraków");
+        assertThat(tutor.getOffersInPerson()).isTrue();
+    }
+
+    @Test
     @DisplayName("updateMyProfile - błąd: brak formy zajęć")
     void updateMyProfile_noLessonFormat_throwsException() {
         User currentUser = User.builder().id(1).build();
         TutorSelfProfileRequest req =
-                new TutorSelfProfileRequest("Bio", java.math.BigDecimal.valueOf(100), false, false);
+                new TutorSelfProfileRequest(
+                        "Bio", java.math.BigDecimal.valueOf(100), false, false, null);
 
         assertThatThrownBy(() -> tutorService.updateMyProfile(req, currentUser))
                 .isInstanceOf(BusinessValidationException.class)
@@ -312,7 +365,8 @@ class TutorServiceTest {
     void updateMyProfile_noSubjects_throwsException() {
         User currentUser = User.builder().id(1).build();
         TutorSelfProfileRequest req =
-                new TutorSelfProfileRequest("Bio", java.math.BigDecimal.valueOf(100), true, false);
+                new TutorSelfProfileRequest(
+                        "Bio", java.math.BigDecimal.valueOf(100), true, false, null);
 
         when(tutorSubjectRepository.findByTutor_UserId(1)).thenReturn(List.of());
 
@@ -451,7 +505,8 @@ class TutorServiceTest {
     void updateMyProfile_notFound_throwsException() {
         User currentUser = User.builder().id(1).build();
         TutorSelfProfileRequest req =
-                new TutorSelfProfileRequest("Bio", java.math.BigDecimal.valueOf(100), true, false);
+                new TutorSelfProfileRequest(
+                        "Bio", java.math.BigDecimal.valueOf(100), true, false, null);
 
         when(tutorSubjectRepository.findByTutor_UserId(1))
                 .thenReturn(List.of(TutorSubject.builder().id(10).build()));

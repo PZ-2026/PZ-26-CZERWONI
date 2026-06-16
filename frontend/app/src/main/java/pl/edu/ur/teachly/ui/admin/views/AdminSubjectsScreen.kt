@@ -14,7 +14,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme.colorScheme
@@ -39,6 +38,7 @@ import pl.edu.ur.teachly.data.model.SubjectResponse
 import pl.edu.ur.teachly.ui.admin.viewmodels.AdminSubjectsViewModel
 import pl.edu.ur.teachly.ui.components.admin.AdminScreenHeader
 import pl.edu.ur.teachly.ui.components.other.EmptyListState
+import pl.edu.ur.teachly.ui.components.other.LoadingBox
 import pl.edu.ur.teachly.ui.components.other.MessageSnackbars
 import pl.edu.ur.teachly.ui.components.other.cards.CategoryCard
 import pl.edu.ur.teachly.ui.components.other.cards.SubjectCard
@@ -111,10 +111,7 @@ fun AdminSubjectsScreen(
             }
 
             when {
-                state.isLoading -> Box(
-                    Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) { CircularProgressIndicator() }
+                state.isLoading -> LoadingBox()
 
                 selectedTab == 0 && state.subjects.isEmpty() ->
                     EmptyListState(message = "Brak przedmiotów")
@@ -242,7 +239,8 @@ fun AdminSubjectsScreen(
     showDeleteCategoryDialog?.let { category ->
         AppConfirmDialog(
             title = "Usuń kategorię",
-            message = "Czy na pewno chcesz usunąć: ${category.categoryName}? Najpierw usuń wszystkie przypisane przedmioty.",
+            message = "Czy na pewno chcesz usunąć: ${category.categoryName}?" +
+                " Najpierw usuń wszystkie przypisane przedmioty.",
             confirmText = "Usuń",
             onDismiss = { showDeleteCategoryDialog = null },
             onConfirm = {
