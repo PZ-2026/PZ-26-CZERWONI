@@ -16,7 +16,6 @@ import androidx.compose.material.icons.filled.AttachMoney
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Phone
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Text
@@ -41,6 +40,7 @@ import pl.edu.ur.teachly.R
 import pl.edu.ur.teachly.data.model.ReviewResponse
 import pl.edu.ur.teachly.data.model.UserRole
 import pl.edu.ur.teachly.ui.components.other.ErrorBanner
+import pl.edu.ur.teachly.ui.components.other.LoadingBox
 import pl.edu.ur.teachly.ui.components.other.LogoutButton
 import pl.edu.ur.teachly.ui.components.other.PrimaryButton
 import pl.edu.ur.teachly.ui.components.other.dialog.AppConfirmDialog
@@ -144,10 +144,7 @@ fun TutorProfileScreen(
     }
 
     when {
-        state.isLoading -> Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) { CircularProgressIndicator() }
+        state.isLoading -> LoadingBox()
 
         state.tutor != null -> {
             val t = state.tutor!!

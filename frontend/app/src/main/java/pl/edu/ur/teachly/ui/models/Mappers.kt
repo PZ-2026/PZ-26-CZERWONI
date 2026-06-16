@@ -39,14 +39,17 @@ fun TutorResponse.toUiTutor(
     pricePerHour = hourlyRate,
     tags = buildList {
         if (offersOnline) add("Online")
-        if (offersInPerson) add("Stacjonarnie")
+        if (offersInPerson) add(
+            city?.takeIf { it.isNotBlank() }?.let { "Stacjonarnie · $it" } ?: "Stacjonarnie"
+        )
     },
     offersOnline = offersOnline,
     offersInPerson = offersInPerson,
     nearestSlots = emptyList(),
     bio = bio ?: "",
     lessonCount = lessonCount,
-    avatarUrl = avatarUrl?.takeIf { it != "null" }
+    avatarUrl = avatarUrl?.takeIf { it != "null" },
+    city = city
 )
 
 fun LessonResponse.toScheduledClass(): ScheduledClass = ScheduledClass(
@@ -84,6 +87,7 @@ fun LessonResponse.toUiLessonDetail(): LessonDetail = LessonDetail(
     tutorFirstName = tutorFirstName,
     tutorLastName = tutorLastName,
     tutorAvatarUrl = tutorAvatarUrl?.takeIf { it != "null" },
+    tutorCity = tutorCity,
     studentId = studentId,
     studentFirstName = studentFirstName,
     studentLastName = studentLastName,

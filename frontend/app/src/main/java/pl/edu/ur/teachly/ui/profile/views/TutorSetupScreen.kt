@@ -3,7 +3,6 @@ package pl.edu.ur.teachly.ui.profile.views
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,6 +14,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Payments
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -163,6 +163,25 @@ fun TutorSetupScreen(
                     style = typography.bodySmall,
                     color = colorScheme.error,
                     modifier = Modifier.padding(start = 4.dp)
+                )
+            }
+
+            if (state.offersInPerson) {
+                OutlinedTextField(
+                    value = state.city,
+                    onValueChange = { if (it.length <= 100) viewModel.onCityChange(it) },
+                    label = { Text("Miasto zajęć stacjonarnych") },
+                    placeholder = { Text("np. Kraków") },
+                    leadingIcon = { Icon(Icons.Default.LocationOn, contentDescription = null) },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                    isError = !state.hasCityIfInPerson,
+                    supportingText =
+                        if (!state.hasCityIfInPerson) {
+                            { Text("Podaj miasto zajęć stacjonarnych") }
+                        } else {
+                            null
+                        }
                 )
             }
 

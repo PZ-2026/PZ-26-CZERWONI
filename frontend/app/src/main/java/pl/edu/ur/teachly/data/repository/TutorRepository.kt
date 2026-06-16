@@ -19,9 +19,10 @@ class TutorRepository(private val api: TutorApiService) {
 
     suspend fun searchTutors(
         query: String? = null,
-        subject: String? = null
+        subject: String? = null,
+        city: String? = null
     ): Result<List<TutorSearchResultResponse>> =
-        apiCall("Błąd wyszukiwania korepetytorów") { api.searchTutors(query, subject) }
+        apiCall("Błąd wyszukiwania korepetytorów") { api.searchTutors(query, subject, city) }
 
     suspend fun getAllTutors(query: String? = null): Result<List<TutorResponse>> =
         apiCall("Błąd pobierania korepetytorów") { api.getAllTutors(query) }

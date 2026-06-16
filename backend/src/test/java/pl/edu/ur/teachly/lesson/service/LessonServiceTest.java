@@ -122,6 +122,7 @@ class LessonServiceTest {
                             "Adam",
                             "Nowak",
                             null,
+                            null,
                             1,
                             "Jan",
                             "Kowalski",

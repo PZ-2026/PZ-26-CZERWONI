@@ -17,7 +17,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -40,6 +39,7 @@ import pl.edu.ur.teachly.R
 import pl.edu.ur.teachly.data.model.ReviewResponse
 import pl.edu.ur.teachly.data.model.UserRole
 import pl.edu.ur.teachly.ui.components.other.FullScreenError
+import pl.edu.ur.teachly.ui.components.other.LoadingBox
 import pl.edu.ur.teachly.ui.components.other.MessageSnackbars
 import pl.edu.ur.teachly.ui.components.other.PrimaryButton
 import pl.edu.ur.teachly.ui.components.other.dialog.AppConfirmDialog
@@ -125,10 +125,7 @@ fun TutorDetailScreen(
 
     Box(modifier = Modifier.fillMaxSize()) {
         when {
-            state.isLoading -> Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) { CircularProgressIndicator() }
+            state.isLoading -> LoadingBox()
 
             state.error != null -> FullScreenError(message = state.error!!)
 

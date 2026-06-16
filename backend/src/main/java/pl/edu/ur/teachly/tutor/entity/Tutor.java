@@ -42,4 +42,10 @@ public class Tutor {
     @Column(name = "offers_in_person", nullable = false)
     @Builder.Default
     private Boolean offersInPerson = false;
+
+    /**
+     * Miasto, w którym korepetytor prowadzi zajęcia stacjonarne (null dla zajęć wyłącznie online).
+     */
+    @Column(name = "city", length = 100)
+    private String city;
 }

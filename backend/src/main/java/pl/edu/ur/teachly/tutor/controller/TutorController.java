@@ -34,13 +34,15 @@ public class TutorController {
      *
      * @param q fraza wyszukiwania (imię, nazwisko)
      * @param subject filtr po nazwie przedmiotu
+     * @param city filtr po mieście korepetytora
      * @return lista wyników z ocenami i przedmiotami
      */
     @GetMapping("/search")
     public List<TutorSearchResultResponse> searchTutors(
             @RequestParam(required = false) String q,
-            @RequestParam(required = false) String subject) {
-        return tutorService.searchTutors(q, subject);
+            @RequestParam(required = false) String subject,
+            @RequestParam(required = false) String city) {
+        return tutorService.searchTutors(q, subject, city);
     }
 
     /**

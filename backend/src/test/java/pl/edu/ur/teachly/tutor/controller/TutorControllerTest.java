@@ -90,7 +90,8 @@ class TutorControllerTest {
                                         "Bio",
                                         java.math.BigDecimal.TEN,
                                         true,
-                                        true)));
+                                        true,
+                                        "Kraków")));
 
         mockMvc.perform(get("/api/tutors")).andExpect(status().isOk());
 
@@ -100,11 +101,11 @@ class TutorControllerTest {
     @Test
     @DisplayName("GET /api/tutors/search - zwraca wyniki wyszukiwania")
     void searchTutors() throws Exception {
-        when(tutorService.searchTutors(null, null)).thenReturn(List.of());
+        when(tutorService.searchTutors(null, null, null)).thenReturn(List.of());
 
         mockMvc.perform(get("/api/tutors/search")).andExpect(status().isOk());
 
-        verify(tutorService).searchTutors(null, null);
+        verify(tutorService).searchTutors(null, null, null);
     }
 
     @Test
@@ -122,7 +123,8 @@ class TutorControllerTest {
                                 "Bio",
                                 java.math.BigDecimal.TEN,
                                 true,
-                                true));
+                                true,
+                                "Kraków"));
 
         mockMvc.perform(get("/api/tutors/1")).andExpect(status().isOk());
 
@@ -186,7 +188,8 @@ class TutorControllerTest {
                                 "Bio",
                                 java.math.BigDecimal.valueOf(80),
                                 true,
-                                false));
+                                false,
+                                null));
 
         mockMvc.perform(
                         put("/api/tutors/1/admin")
@@ -214,7 +217,8 @@ class TutorControllerTest {
                                 "Nowe bio",
                                 java.math.BigDecimal.valueOf(120),
                                 true,
-                                false));
+                                false,
+                                null));
 
         mockMvc.perform(put("/api/tutors/me").contentType(MediaType.APPLICATION_JSON).content(body))
                 .andExpect(status().isOk());

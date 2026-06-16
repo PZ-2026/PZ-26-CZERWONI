@@ -23,4 +23,5 @@ public record TutorSelfProfileRequest(
                 BigDecimal hourlyRate,
         @NotNull(message = "Informacja o lekcjach online jest wymagana") Boolean offersOnline,
         @NotNull(message = "Informacja o lekcjach stacjonarnych jest wymagana")
-                Boolean offersInPerson) {}
+                Boolean offersInPerson,
+        @Size(max = 100, message = "Nazwa miasta nie może przekraczać 100 znaków") String city) {}

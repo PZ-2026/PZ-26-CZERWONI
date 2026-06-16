@@ -8,6 +8,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Payments
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
@@ -45,11 +46,14 @@ fun TutorEditDialog(
     var hourlyRate by remember { mutableStateOf(DialogValidation.formatEditableDecimal(tutor.hourlyRate)) }
     var offersOnline by remember { mutableStateOf(tutor.offersOnline) }
     var offersInPerson by remember { mutableStateOf(tutor.offersInPerson) }
+    var city by remember { mutableStateOf(tutor.city ?: "") }
 
     val hourlyRateError = DialogValidation.hourlyRateError(hourlyRate)
     val lessonFormatError = DialogValidation.lessonFormatError(offersOnline, offersInPerson)
+    val hasCityIfInPerson = !offersInPerson || city.isNotBlank()
     val isValid = DialogValidation.isHourlyRateValid(hourlyRate) &&
         (offersOnline || offersInPerson) &&
+        hasCityIfInPerson &&
         subjects.isNotEmpty()
 
     AppFormDialog(
@@ -62,7 +66,8 @@ fun TutorEditDialog(
                     bio = bio.trim().ifBlank { null },
                     hourlyRate = DialogValidation.parseDecimal(hourlyRate)!!,
                     offersOnline = offersOnline,
-                    offersInPerson = offersInPerson
+                    offersInPerson = offersInPerson,
+                    city = if (offersInPerson) city.trim().ifBlank { null } else null
                 )
             )
         },
@@ -110,6 +115,22 @@ fun TutorEditDialog(
                 DialogSwitchRow("Zajęcia stacjonarne", offersInPerson) { offersInPerson = it }
             }
             lessonFormatError?.let { DialogErrorText(it) }
+            if (offersInPerson) {
+                OutlinedTextField(
+                    value = city,
+                    onValueChange = { if (it.length <= 100) city = it },
+                    label = { Text("Miasto zajęć stacjonarnych") },
+                    leadingIcon = { Icon(Icons.Default.LocationOn, null) },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                    shape = DialogFieldShape,
+                    colors = authTextFieldColors(),
+                    isError = !hasCityIfInPerson,
+                    supportingText = if (!hasCityIfInPerson) {
+                        { Text("Podaj miasto zajęć stacjonarnych") }
+                    } else null
+                )
+            }
         }
 
         DialogSectionCard(title = "Prowadzone przedmioty") {

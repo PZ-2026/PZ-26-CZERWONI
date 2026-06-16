@@ -11,6 +11,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.CreditCard
+import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material.icons.filled.School
@@ -96,6 +97,9 @@ fun InfoCard(lesson: LessonDetail, userRole: UserRole) {
                 LessonFormat.IN_PERSON -> "Stacjonarnie"
             }
             DetailRow(Icons.Default.School, formatLabel)
+            if (lesson.format == LessonFormat.IN_PERSON && !lesson.tutorCity.isNullOrBlank()) {
+                DetailRow(Icons.Default.LocationOn, lesson.tutorCity)
+            }
 
             // Amount + payment status
             val payLabel = when (lesson.paymentStatus) {

@@ -18,6 +18,7 @@ public interface LessonMapper {
     @Mapping(source = "tutor.user.firstName", target = "tutorFirstName")
     @Mapping(source = "tutor.user.lastName", target = "tutorLastName")
     @Mapping(source = "tutor.user.avatarUrl", target = "tutorAvatarUrl")
+    @Mapping(source = "tutor.city", target = "tutorCity")
     @Mapping(source = "student.id", target = "studentId")
     @Mapping(source = "student.firstName", target = "studentFirstName")
     @Mapping(source = "student.lastName", target = "studentLastName")

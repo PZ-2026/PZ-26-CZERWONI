@@ -17,6 +17,7 @@ public record LessonResponse(
         String tutorFirstName,
         String tutorLastName,
         String tutorAvatarUrl,
+        String tutorCity,
 
         // Student
         Integer studentId,

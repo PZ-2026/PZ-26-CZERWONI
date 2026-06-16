@@ -25,7 +25,8 @@ interface TutorApiService {
     @GET("api/tutors/search")
     suspend fun searchTutors(
         @Query("q") query: String? = null,
-        @Query("subject") subject: String? = null
+        @Query("subject") subject: String? = null,
+        @Query("city") city: String? = null
     ): Response<List<TutorSearchResultResponse>>
 
     @GET("api/tutors")

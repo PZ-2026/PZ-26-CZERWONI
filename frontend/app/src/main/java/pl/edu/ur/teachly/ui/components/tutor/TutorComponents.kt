@@ -44,9 +44,11 @@ fun TutorLessonFormatSection(tutor: Tutor) {
                 )
             }
             if (tutor.offersInPerson) {
+                val inPersonLabel = stringResource(R.string.in_person)
                 LessonFormatChip(
                     icon = Icons.Default.LocationOn,
-                    label = stringResource(R.string.in_person)
+                    label = tutor.city?.takeIf { it.isNotBlank() }
+                        ?.let { "$inPersonLabel · $it" } ?: inPersonLabel
                 )
             }
         }

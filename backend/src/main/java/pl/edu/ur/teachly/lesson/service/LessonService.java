@@ -326,7 +326,8 @@ public class LessonService {
         }
 
         lesson.setLessonStatus(newStatus);
-        if (request.tutorNotes() != null) {
+        if (request.tutorNotes() != null
+                && (currentUserRole == UserRole.TUTOR || currentUserRole == UserRole.ADMIN)) {
             lesson.setTutorNotes(request.tutorNotes());
         }
         return lessonMapper.toResponse(lessonRepository.save(lesson));
@@ -351,7 +352,7 @@ public class LessonService {
                                 () ->
                                         new ResourceNotFoundException(
                                                 "Nie znaleziono szukanej lekcji"));
-        if (!lesson.getStudent().getId().equals(callerId)) {
+        if (lesson.getStudent() == null || !lesson.getStudent().getId().equals(callerId)) {
             throw new AccessDeniedException("Brak uprawnień do edycji notatek tej lekcji");
         }
         lesson.setStudentNotes(request.studentNotes());
@@ -377,7 +378,7 @@ public class LessonService {
                                 () ->
                                         new ResourceNotFoundException(
                                                 "Nie znaleziono szukanej lekcji"));
-        if (!lesson.getTutor().getUserId().equals(callerId)) {
+        if (lesson.getTutor() == null || !lesson.getTutor().getUserId().equals(callerId)) {
             throw new AccessDeniedException("Brak uprawnień do edycji notatek tej lekcji");
         }
         lesson.setTutorNotes(request.tutorNotes());

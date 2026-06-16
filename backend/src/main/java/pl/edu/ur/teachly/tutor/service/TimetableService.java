@@ -157,7 +157,12 @@ public class TimetableService {
 
             freeBlocks =
                     freeBlocks.stream()
-                            .filter(b -> b.getTimeFrom().isAfter(minTime))
+                            .map(
+                                    b ->
+                                            b.getTimeFrom().isBefore(minTime)
+                                                    ? new TimeSlot(minTime, b.getTimeTo())
+                                                    : b)
+                            .filter(b -> b.getTimeFrom().isBefore(b.getTimeTo()))
                             .filter(
                                     b ->
                                             java.time.Duration.between(
