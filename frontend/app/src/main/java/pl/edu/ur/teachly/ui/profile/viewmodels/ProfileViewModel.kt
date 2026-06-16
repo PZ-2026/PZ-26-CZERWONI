@@ -114,6 +114,9 @@ class ProfileViewModel(
 
     fun startEditing() {
         viewModelScope.launch {
+            if (!hasLoaded) {
+                loadProfile()
+            }
             val p = _profile.first { !it.isLoading }
             _editState.value = ProfileEditState(
                 firstName = p.firstName,
@@ -191,7 +194,7 @@ class ProfileViewModel(
                 return@launch
             }
             val digitsPhone = state.phoneNumber.filter { it.isDigit() }
-            if (digitsPhone.length != 9) {
+            if (digitsPhone.isNotEmpty() && digitsPhone.length != 9) {
                 _editState.update { it.copy(isLoading = false, error = "Numer telefonu musi składać się z 9 cyfr") }
                 return@launch
             }
@@ -236,7 +239,7 @@ class ProfileViewModel(
                 firstName = state.firstName.trim(),
                 lastName = state.lastName.trim(),
                 email = state.email.trim(),
-                phoneNumber = digitsPhone,
+                phoneNumber = digitsPhone.ifEmpty { null },
                 password = state.password.takeIf { it.isNotBlank() },
                 avatarUrl = updatedAvatarUrl
             )

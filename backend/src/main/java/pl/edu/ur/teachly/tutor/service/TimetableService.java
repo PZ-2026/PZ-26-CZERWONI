@@ -3,6 +3,7 @@ package pl.edu.ur.teachly.tutor.service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -152,8 +153,9 @@ public class TimetableService {
             }
 
             final LocalTime minTime;
-            if (currentDate.equals(LocalDate.now())) {
-                LocalTime now = LocalDateTime.now().toLocalTime().truncatedTo(ChronoUnit.MINUTES);
+            ZoneId zone = ZoneId.of("Europe/Warsaw");
+            if (currentDate.equals(LocalDate.now(zone))) {
+                LocalTime now = LocalDateTime.now(zone).toLocalTime().truncatedTo(ChronoUnit.MINUTES);
                 int remainder = now.getMinute() % 30;
                 minTime = remainder == 0 ? now : now.plusMinutes(30 - remainder);
             } else {

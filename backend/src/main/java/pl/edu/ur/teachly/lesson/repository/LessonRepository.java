@@ -126,6 +126,18 @@ public interface LessonRepository extends JpaRepository<Lesson, Integer> {
             @Param("timeTo") LocalTime timeTo,
             @Param("cancelledStatus") LessonStatus cancelledStatus);
 
+    @Query(
+            """
+                    SELECT l FROM Lesson l
+                    WHERE l.lessonStatus = :status
+                      AND (l.lessonDate < :today
+                           OR (l.lessonDate = :today AND l.timeFrom <= :nowTime))
+                    """)
+    List<Lesson> findExpiredByStatus(
+            @Param("status") LessonStatus status,
+            @Param("today") LocalDate today,
+            @Param("nowTime") LocalTime nowTime);
+
     @Query("SELECT l.lessonStatus, COUNT(l) FROM Lesson l GROUP BY l.lessonStatus")
     List<Object[]> countGroupedByStatus();
 
