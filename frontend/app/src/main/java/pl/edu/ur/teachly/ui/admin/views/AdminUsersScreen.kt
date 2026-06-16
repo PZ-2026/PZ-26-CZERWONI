@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -29,6 +28,7 @@ import pl.edu.ur.teachly.ui.components.admin.AdminSearchBar
 import pl.edu.ur.teachly.ui.components.other.EmptyListState
 import pl.edu.ur.teachly.ui.components.other.ExpandableFilterSection
 import pl.edu.ur.teachly.ui.components.other.FilterChips
+import pl.edu.ur.teachly.ui.components.other.LoadingBox
 import pl.edu.ur.teachly.ui.components.other.MessageSnackbars
 import pl.edu.ur.teachly.ui.components.other.cards.UserAdminCard
 import pl.edu.ur.teachly.ui.components.other.dialog.AdminUserEditDialog
@@ -104,12 +104,7 @@ fun AdminUsersScreen(viewModel: AdminUsersViewModel = koinViewModel(), initialRo
             }
 
             when {
-                state.isLoading -> Box(
-                    Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator()
-                }
+                state.isLoading -> LoadingBox()
 
                 state.users.isEmpty() -> EmptyListState(message = "Brak użytkowników")
 

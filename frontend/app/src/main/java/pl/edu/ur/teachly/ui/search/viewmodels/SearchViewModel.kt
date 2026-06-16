@@ -16,6 +16,7 @@ import pl.edu.ur.teachly.ui.util.Debouncer
 data class SearchUiState(
     val query: String = "",
     val activeSubject: String = "Wszystkie",
+    val city: String = "",
     val tutors: List<Tutor> = emptyList(),
     val subjects: List<String> = listOf("Wszystkie"),
     val isLoading: Boolean = true,
@@ -57,8 +58,9 @@ class SearchViewModel(
             val subjectFilter =
                 current.activeSubject.takeIf { it.isNotBlank() && it != "Wszystkie" }
             val queryFilter = current.query.trim().takeIf { it.isNotBlank() }
+            val cityFilter = current.city.trim().takeIf { it.isNotBlank() }
 
-            tutorRepository.searchTutors(queryFilter, subjectFilter).fold(
+            tutorRepository.searchTutors(queryFilter, subjectFilter, cityFilter).fold(
                 onSuccess = { results ->
                     _state.update {
                         it.copy(
@@ -83,6 +85,11 @@ class SearchViewModel(
         _state.update { it.copy(activeSubject = newSubject) }
         searchDebouncer.cancel()
         searchTutors()
+    }
+
+    fun onCityChange(newCity: String) {
+        _state.update { it.copy(city = newCity) }
+        searchDebouncer.submit { searchTutors() }
     }
 
     fun clearQuery() {

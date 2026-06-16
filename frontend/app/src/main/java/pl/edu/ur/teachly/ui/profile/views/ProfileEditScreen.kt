@@ -16,13 +16,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme.colorScheme
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -30,12 +25,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import com.canhub.cropper.CropImageContract
@@ -50,6 +43,8 @@ import pl.edu.ur.teachly.ui.components.other.AppHeader
 import pl.edu.ur.teachly.ui.components.other.ErrorBanner
 import pl.edu.ur.teachly.ui.components.other.HeaderBackground
 import pl.edu.ur.teachly.ui.components.other.InitialsAvatar
+import pl.edu.ur.teachly.ui.components.other.hasCustomAvatar
+import pl.edu.ur.teachly.ui.components.other.uriToFile
 import pl.edu.ur.teachly.ui.components.other.PrimaryButton
 import pl.edu.ur.teachly.ui.components.other.dialog.AppConfirmDialog
 import pl.edu.ur.teachly.ui.profile.viewmodels.ProfileViewModel
@@ -297,101 +292,49 @@ fun ProfileEditScreen(onBack: () -> Unit, onSave: (Boolean) -> Unit, viewModel: 
     }
 
     if (showPickerDialog) {
-        Dialog(onDismissRequest = { showPickerDialog = false }) {
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = colorScheme.surface)
-            ) {
-                Column(
-                    modifier = Modifier.padding(16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    Text(
-                        text = "Wybierz opcję",
-                        style = androidx.compose.material3.MaterialTheme.typography.titleMedium,
-                        color = colorScheme.onSurface
-                    )
-                    PrimaryButton(
-                        text = "Zrób zdjęcie",
-                        onClick = {
-                            showPickerDialog = false
-                            val permission = Manifest.permission.CAMERA
-                            if (ContextCompat.checkSelfPermission(context, permission) ==
-                                PackageManager.PERMISSION_GRANTED
-                            ) {
-                                try {
-                                    val file = File.createTempFile("avatar_capture_", ".jpg", context.cacheDir)
-                                    val uri = FileProvider.getUriForFile(
-                                        context,
-                                        "${context.packageName}.provider",
-                                        file
-                                    )
-                                    tempCameraFile = file
-                                    tempCameraUri = uri
-                                    cameraLauncher.launch(uri)
-                                } catch (e: Exception) {
-                                    e.printStackTrace()
-                                }
-                            } else {
-                                permissionLauncher.launch(permission)
-                            }
-                        }
-                    )
-                    PrimaryButton(
-                        text = "Wybierz z galerii",
-                        onClick = {
-                            showPickerDialog = false
-                            galleryLauncher.launch("image/*")
-                        }
-                    )
-                    val currentAvatarUrl =
-                        editState.localAvatarUrl ?: if (editState.pendingDeleteAvatar) null else profile.avatarUrl
-                    val hasCustomAvatar = !currentAvatarUrl.isNullOrBlank() &&
-                        !currentAvatarUrl.equals("null", ignoreCase = true) &&
-                        !currentAvatarUrl.contains("/null", ignoreCase = true) &&
-                        !currentAvatarUrl.endsWith("/uploads/avatars/", ignoreCase = true) &&
-                        currentAvatarUrl.contains("/")
-                    if (hasCustomAvatar) {
-                        PrimaryButton(
-                            text = "Usuń zdjęcie",
-                            onClick = {
-                                showPickerDialog = false
-                                viewModel.setPendingDeleteAvatar()
-                                Toast.makeText(
-                                    context,
-                                    "Zdjęcie oznaczone do usunięcia (zapisz zmiany, aby zatwierdzić)",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
-                        )
-                    }
-                    TextButton(
-                        onClick = { showPickerDialog = false }
-                    ) {
-                        Text("Anuluj", color = colorScheme.primary)
-                    }
-                }
-            }
-        }
-    }
-}
+        val currentAvatarUrl =
+            editState.localAvatarUrl ?: if (editState.pendingDeleteAvatar) null else profile.avatarUrl
+        val hasCustomAvatar = hasCustomAvatar(currentAvatarUrl)
 
-private fun uriToFile(context: android.content.Context, uri: Uri): File? {
-    return try {
-        val inputStream = context.contentResolver.openInputStream(uri) ?: return null
-        val tempFile = File.createTempFile("avatar_upload_", ".jpg", context.cacheDir)
-        tempFile.outputStream().use { outputStream ->
-            inputStream.use { input ->
-                input.copyTo(outputStream)
+        AvatarPickerDialog(
+            hasCustomAvatar = hasCustomAvatar,
+            onDismiss = { showPickerDialog = false },
+            onTakePhoto = {
+                showPickerDialog = false
+                val permission = Manifest.permission.CAMERA
+                if (ContextCompat.checkSelfPermission(context, permission) ==
+                    PackageManager.PERMISSION_GRANTED
+                ) {
+                    try {
+                        val file = File.createTempFile("avatar_capture_", ".jpg", context.cacheDir)
+                        val uri = FileProvider.getUriForFile(
+                            context,
+                            "${context.packageName}.provider",
+                            file
+                        )
+                        tempCameraFile = file
+                        tempCameraUri = uri
+                        cameraLauncher.launch(uri)
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                } else {
+                    permissionLauncher.launch(permission)
+                }
+            },
+            onPickFromGallery = {
+                showPickerDialog = false
+                galleryLauncher.launch("image/*")
+            },
+            onDeleteAvatar = {
+                showPickerDialog = false
+                viewModel.setPendingDeleteAvatar()
+                Toast.makeText(
+                    context,
+                    "Zdjęcie oznaczone do usunięcia (zapisz zmiany, aby zatwierdzić)",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
-        }
-        tempFile
-    } catch (e: Exception) {
-        e.printStackTrace()
-        null
+        )
     }
 }

@@ -7,18 +7,15 @@ import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -39,8 +36,9 @@ import pl.edu.ur.teachly.data.model.UserResponse
 import pl.edu.ur.teachly.data.model.UserRole
 import pl.edu.ur.teachly.ui.components.other.InitialsAvatar
 import pl.edu.ur.teachly.ui.components.other.PhoneVisualTransformation
-import pl.edu.ur.teachly.ui.components.other.PrimaryButton
 import pl.edu.ur.teachly.ui.components.other.authTextFieldColors
+import pl.edu.ur.teachly.ui.components.other.hasCustomAvatar
+import pl.edu.ur.teachly.ui.components.other.uriToFile
 import pl.edu.ur.teachly.ui.theme.AvatarColors
 
 @Composable
@@ -272,114 +270,45 @@ fun AdminUserEditDialog(
     }
 
     if (showPickerDialog) {
-        androidx.compose.ui.window.Dialog(
-            onDismissRequest = { showPickerDialog = false },
-            properties = androidx.compose.ui.window.DialogProperties(usePlatformDefaultWidth = false)
-        ) {
-            androidx.compose.material3.Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 24.dp)
-                    .widthIn(max = 400.dp),
-                shape = androidx.compose.foundation.shape.RoundedCornerShape(24.dp),
-                colors = androidx.compose.material3.CardDefaults.cardColors(
-                    containerColor = androidx.compose.material3.MaterialTheme.colorScheme.surface
-                ),
-                border = androidx.compose.foundation.BorderStroke(
-                    1.dp,
-                    androidx.compose.material3.MaterialTheme.colorScheme.outline.copy(alpha = 0.45f)
-                ),
-                elevation = androidx.compose.material3.CardDefaults.cardElevation(8.dp)
-            ) {
-                Column(
-                    modifier = Modifier.padding(20.dp),
-                    horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    Text(
-                        text = "Zdjęcie profilowe",
-                        style = androidx.compose.material3.MaterialTheme.typography.titleLarge,
-                        fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
-                        color = androidx.compose.material3.MaterialTheme.colorScheme.onSurface
-                    )
-                    Text(
-                        text = "Wybierz źródło zdjęcia",
-                        style = androidx.compose.material3.MaterialTheme.typography.bodySmall,
-                        color = androidx.compose.material3.MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    PrimaryButton(
-                        text = "Zrób zdjęcie",
-                        onClick = {
-                            showPickerDialog = false
-                            val permission = Manifest.permission.CAMERA
-                            if (ContextCompat.checkSelfPermission(context, permission) ==
-                                PackageManager.PERMISSION_GRANTED
-                            ) {
-                                try {
-                                    val file = File.createTempFile("avatar_capture_", ".jpg", context.cacheDir)
-                                    val uri = FileProvider.getUriForFile(
-                                        context,
-                                        "${context.packageName}.provider",
-                                        file
-                                    )
-                                    tempCameraFile = file
-                                    tempCameraUri = uri
-                                    cameraLauncher.launch(uri)
-                                } catch (e: java.lang.Exception) {
-                                    e.printStackTrace()
-                                }
-                            } else {
-                                permissionLauncher.launch(permission)
-                            }
-                        }
-                    )
-                    PrimaryButton(
-                        text = "Wybierz z galerii",
-                        onClick = {
-                            showPickerDialog = false
-                            galleryLauncher.launch("image/*")
-                        }
-                    )
-                    val currentAvatarUrl = localAvatarUrl ?: if (pendingDeleteAvatar) null else user.avatarUrl
-                    val hasCustomAvatar = !currentAvatarUrl.isNullOrBlank() &&
-                        !currentAvatarUrl.equals("null", ignoreCase = true) &&
-                        !currentAvatarUrl.contains("/null", ignoreCase = true) &&
-                        !currentAvatarUrl.endsWith("/uploads/avatars/", ignoreCase = true) &&
-                        currentAvatarUrl.contains("/")
-                    if (hasCustomAvatar) {
-                        PrimaryButton(
-                            text = "Usuń zdjęcie",
-                            onClick = {
-                                showPickerDialog = false
-                                pendingAvatarFile = null
-                                pendingDeleteAvatar = true
-                                localAvatarUrl = null
-                            }
-                        )
-                    }
-                    TextButton(
-                        onClick = { showPickerDialog = false }
-                    ) {
-                        Text("Anuluj", color = androidx.compose.material3.MaterialTheme.colorScheme.primary)
-                    }
-                }
-            }
-        }
-    }
-}
+        val currentAvatarUrl = localAvatarUrl ?: if (pendingDeleteAvatar) null else user.avatarUrl
+        val hasCustomAvatar = hasCustomAvatar(currentAvatarUrl)
 
-private fun uriToFile(context: android.content.Context, uri: Uri): File? {
-    return try {
-        val inputStream = context.contentResolver.openInputStream(uri) ?: return null
-        val tempFile = File.createTempFile("avatar_upload_", ".jpg", context.cacheDir)
-        tempFile.outputStream().use { outputStream ->
-            inputStream.use { input ->
-                input.copyTo(outputStream)
+        AvatarSourcePickerDialog(
+            hasCustomAvatar = hasCustomAvatar,
+            onDismiss = { showPickerDialog = false },
+            onTakePhoto = {
+                showPickerDialog = false
+                val permission = Manifest.permission.CAMERA
+                if (ContextCompat.checkSelfPermission(context, permission) ==
+                    PackageManager.PERMISSION_GRANTED
+                ) {
+                    try {
+                        val file = File.createTempFile("avatar_capture_", ".jpg", context.cacheDir)
+                        val uri = FileProvider.getUriForFile(
+                            context,
+                            "${context.packageName}.provider",
+                            file
+                        )
+                        tempCameraFile = file
+                        tempCameraUri = uri
+                        cameraLauncher.launch(uri)
+                    } catch (e: java.lang.Exception) {
+                        e.printStackTrace()
+                    }
+                } else {
+                    permissionLauncher.launch(permission)
+                }
+            },
+            onPickFromGallery = {
+                showPickerDialog = false
+                galleryLauncher.launch("image/*")
+            },
+            onDeleteAvatar = {
+                showPickerDialog = false
+                pendingAvatarFile = null
+                pendingDeleteAvatar = true
+                localAvatarUrl = null
             }
-        }
-        tempFile
-    } catch (e: Exception) {
-        e.printStackTrace()
-        null
+        )
     }
 }

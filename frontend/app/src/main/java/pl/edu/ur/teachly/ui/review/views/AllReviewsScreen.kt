@@ -21,8 +21,8 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Star
+import pl.edu.ur.teachly.ui.components.other.LoadingBox
 import pl.edu.ur.teachly.ui.components.other.dialog.AppConfirmDialog
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme.colorScheme
@@ -107,10 +107,7 @@ fun AllReviewsScreen(
         }
 
         when {
-            state.isLoading -> Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) { CircularProgressIndicator() }
+            state.isLoading -> LoadingBox()
 
             state.reviews.isEmpty() -> Box(
                 modifier = Modifier.fillMaxSize(),

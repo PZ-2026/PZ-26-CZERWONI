@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Text
@@ -29,6 +28,7 @@ import pl.edu.ur.teachly.R
 import pl.edu.ur.teachly.ui.components.other.AppHeader
 import pl.edu.ur.teachly.ui.components.other.FullScreenError
 import pl.edu.ur.teachly.ui.components.other.HeaderBackground
+import pl.edu.ur.teachly.ui.components.other.LoadingBox
 import pl.edu.ur.teachly.ui.components.other.section.SectionHeader
 import pl.edu.ur.teachly.ui.components.other.section.SectionItems
 import pl.edu.ur.teachly.ui.schedule.viewmodels.ScheduleViewModel
@@ -64,10 +64,7 @@ fun ScheduleScreen(
         )
 
         when {
-            state.isLoading -> Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) { CircularProgressIndicator() }
+            state.isLoading -> LoadingBox()
 
             state.error != null -> FullScreenError(message = state.error!!)
 

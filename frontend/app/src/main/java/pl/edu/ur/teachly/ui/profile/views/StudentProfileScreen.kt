@@ -2,7 +2,6 @@ package pl.edu.ur.teachly.ui.profile.views
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -18,7 +17,6 @@ import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Phone
 import pl.edu.ur.teachly.ui.components.other.dialog.AppConfirmDialog
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.PrimaryTabRow
@@ -33,7 +31,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -45,6 +42,7 @@ import pl.edu.ur.teachly.R
 import pl.edu.ur.teachly.data.model.ReviewResponse
 import pl.edu.ur.teachly.ui.components.other.EmptyListState
 import pl.edu.ur.teachly.ui.components.other.FullScreenError
+import pl.edu.ur.teachly.ui.components.other.LoadingBox
 import pl.edu.ur.teachly.ui.components.other.LogoutButton
 import pl.edu.ur.teachly.ui.components.other.cards.StatCard
 import pl.edu.ur.teachly.ui.components.other.formatDate
@@ -126,10 +124,7 @@ fun StudentProfileScreen(
     }
 
     when {
-        profile.isLoading -> Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) { CircularProgressIndicator() }
+        profile.isLoading -> LoadingBox()
 
         profile.error != null -> FullScreenError(
             message = profile.error!!,
@@ -281,10 +276,7 @@ private fun MyReviewsTab(
     onDeleteReview: (ReviewResponse) -> Unit
 ) {
     when {
-        isLoading -> Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) { CircularProgressIndicator() }
+        isLoading -> LoadingBox()
 
         reviews.isEmpty() -> EmptyListState(message = stringResource(R.string.my_reviews_empty))
 
