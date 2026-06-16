@@ -41,32 +41,20 @@ public class ReportController {
      */
     @GetMapping("/my")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<?> getMyReport(
+    public ResponseEntity<byte[]> getMyReport(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
             @RequestParam(required = false, defaultValue = "LESSONS") String type,
             @RequestParam(required = false) List<String> includeFields,
             @AuthenticationPrincipal User user) {
-        try {
-            byte[] pdfBytes =
-                    reportService.generateReport(user, startDate, endDate, type, includeFields);
+        byte[] pdfBytes =
+                reportService.generateReport(user, startDate, endDate, type, includeFields);
 
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_PDF);
-            headers.setContentDispositionFormData(
-                    "attachment", "raport_" + startDate + "_" + endDate + ".pdf");
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        headers.setContentDispositionFormData(
+                "attachment", "raport_" + startDate + "_" + endDate + ".pdf");
 
-            return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .contentType(MediaType.TEXT_PLAIN)
-                    .body(
-                            ("Błąd generowania raportu: "
-                                            + e.getMessage()
-                                            + "\n"
-                                            + java.util.Arrays.toString(e.getStackTrace()))
-                                    .getBytes());
-        }
+        return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
     }
 }

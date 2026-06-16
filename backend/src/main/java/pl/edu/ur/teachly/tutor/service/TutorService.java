@@ -176,11 +176,13 @@ public class TutorService {
     }
 
     /**
-     * Aktualizuje profil korepetytora przez administratora bez ograniczeń walidacyjnych.
+     * Aktualizuje profil korepetytora przez administratora. Waliduje obecność miasta gdy
+     * korepetytor oferuje zajęcia stacjonarne.
      *
      * @param tutorId identyfikator korepetytora
      * @param request nowe dane profilu
      * @return zaktualizowany profil korepetytora
+     * @throws BusinessValidationException gdy zajęcia stacjonarne bez podanego miasta
      * @throws ResourceNotFoundException gdy korepetytor nie istnieje
      */
     @Transactional

@@ -50,7 +50,7 @@ fun TutorEditDialog(
 
     val hourlyRateError = DialogValidation.hourlyRateError(hourlyRate)
     val lessonFormatError = DialogValidation.lessonFormatError(offersOnline, offersInPerson)
-    val hasCityIfInPerson = !offersInPerson || city.isNotBlank()
+    val hasCityIfInPerson = !offersInPerson || city.trim().length in 2..50
     val isValid = DialogValidation.isHourlyRateValid(hourlyRate) &&
         (offersOnline || offersInPerson) &&
         hasCityIfInPerson &&
@@ -118,7 +118,7 @@ fun TutorEditDialog(
             if (offersInPerson) {
                 OutlinedTextField(
                     value = city,
-                    onValueChange = { if (it.length <= 100) city = it },
+                    onValueChange = { if (it.length <= 50) city = it },
                     label = { Text("Miasto zajęć stacjonarnych") },
                     leadingIcon = { Icon(Icons.Default.LocationOn, null) },
                     modifier = Modifier.fillMaxWidth(),
@@ -127,7 +127,7 @@ fun TutorEditDialog(
                     colors = authTextFieldColors(),
                     isError = !hasCityIfInPerson,
                     supportingText = if (!hasCityIfInPerson) {
-                        { Text("Podaj miasto zajęć stacjonarnych") }
+                        { Text("Podaj miasto (2–50 znaków)") }
                     } else null
                 )
             }

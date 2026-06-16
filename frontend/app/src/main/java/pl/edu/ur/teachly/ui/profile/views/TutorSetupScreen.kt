@@ -169,7 +169,7 @@ fun TutorSetupScreen(
             if (state.offersInPerson) {
                 OutlinedTextField(
                     value = state.city,
-                    onValueChange = { if (it.length <= 100) viewModel.onCityChange(it) },
+                    onValueChange = { if (it.length <= 50) viewModel.onCityChange(it) },
                     label = { Text("Miasto zajęć stacjonarnych") },
                     placeholder = { Text("np. Kraków") },
                     leadingIcon = { Icon(Icons.Default.LocationOn, contentDescription = null) },
@@ -178,7 +178,7 @@ fun TutorSetupScreen(
                     isError = !state.hasCityIfInPerson,
                     supportingText =
                         if (!state.hasCityIfInPerson) {
-                            { Text("Podaj miasto zajęć stacjonarnych") }
+                            { Text("Podaj miasto (2–50 znaków)") }
                         } else {
                             null
                         }

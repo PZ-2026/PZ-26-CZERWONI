@@ -404,6 +404,24 @@ class LessonServiceTest {
         }
 
         @Test
+        @DisplayName("PENDING → CONFIRMED: kolizja z inną potwierdzoną lekcją rzuca wyjątek")
+        void pendingToConfirmed_slotTaken_throws() {
+            Lesson lesson = buildLesson(LessonStatus.PENDING);
+            LessonStatusRequest req = new LessonStatusRequest(LessonStatus.CONFIRMED, null);
+
+            when(lessonRepository.findById(1)).thenReturn(Optional.of(lesson));
+            when(lessonRepository.existsConflictingLesson(
+                            eq(10), any(), any(), any(), eq(LessonStatus.CONFIRMED)))
+                    .thenReturn(true);
+
+            mockSecurityContext(tutorUserRole());
+            assertThatThrownBy(() -> lessonService.changeLessonStatus(1, req))
+                    .isInstanceOf(SlotNotAvailableException.class);
+
+            assertThat(lesson.getLessonStatus()).isEqualTo(LessonStatus.PENDING);
+        }
+
+        @Test
         @DisplayName("PENDING → CANCELLED: każdy może anulować")
         void pendingToCancelled_byStudent_success() {
             Lesson lesson = buildLesson(LessonStatus.PENDING);

@@ -291,6 +291,8 @@ public class LessonService {
      * @throws ResourceNotFoundException gdy lekcja nie istnieje
      * @throws AccessDeniedException gdy wywołujący nie jest uczestnikiem lekcji
      * @throws IllegalStateException gdy przejście między stanami jest niedozwolone
+     * @throws SlotNotAvailableException gdy zatwierdzany termin koliduje z inną potwierdzoną lekcją
+     *     korepetytora
      */
     @Transactional
     public LessonResponse changeLessonStatus(Integer lessonId, LessonStatusRequest request) {
@@ -322,6 +324,20 @@ public class LessonService {
 
             if (!isValidTransition(currentStatus, newStatus, currentUserRole, lessonStart)) {
                 throw new IllegalStateException("Nie można zmienić statusu lekcji na wybrany");
+            }
+        }
+
+        if (currentStatus == LessonStatus.PENDING && newStatus == LessonStatus.CONFIRMED) {
+            boolean slotTaken =
+                    lessonRepository.existsConflictingLesson(
+                            lesson.getTutor().getUserId(),
+                            lesson.getLessonDate(),
+                            lesson.getTimeFrom(),
+                            lesson.getTimeTo(),
+                            LessonStatus.CONFIRMED);
+            if (slotTaken) {
+                throw new SlotNotAvailableException(
+                        "Korepetytor ma już potwierdzoną lekcję w tym czasie");
             }
         }
 

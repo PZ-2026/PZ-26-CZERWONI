@@ -21,6 +21,7 @@ import org.springframework.security.web.method.annotation.AuthenticationPrincipa
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import pl.edu.ur.teachly.common.enums.UserRole;
+import pl.edu.ur.teachly.common.exception.GlobalExceptionHandler;
 import pl.edu.ur.teachly.user.entity.User;
 
 @ExtendWith(MockitoExtension.class)
@@ -53,6 +54,7 @@ class ReportControllerTest {
         mockMvc =
                 MockMvcBuilders.standaloneSetup(reportController)
                         .setCustomArgumentResolvers(new AuthenticationPrincipalArgumentResolver())
+                        .setControllerAdvice(new GlobalExceptionHandler())
                         .build();
     }
 

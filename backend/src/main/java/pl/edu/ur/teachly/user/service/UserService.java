@@ -221,6 +221,12 @@ public class UserService {
                                                 "Nie znaleziono szukanego użytkownika"));
 
         try {
+            byte[] fileBytes = file.getBytes();
+            if (!hasValidImageSignature(fileBytes)) {
+                throw new IllegalArgumentException(
+                        "Zawartość pliku nie jest prawidłowym obrazem JPG ani PNG.");
+            }
+
             String originalFilename = file.getOriginalFilename();
             String extension = "";
             if (originalFilename != null && originalFilename.contains(".")) {
@@ -237,7 +243,7 @@ public class UserService {
             deleteAvatarFileIfPresent(user.getAvatarUrl());
 
             Path filePath = uploadPath.resolve(newFilename);
-            Files.copy(file.getInputStream(), filePath);
+            Files.write(filePath, fileBytes);
 
             String avatarUrl = "/uploads/avatars/" + newFilename;
             user.setAvatarUrl(avatarUrl);
@@ -245,6 +251,27 @@ public class UserService {
         } catch (IOException e) {
             throw new RuntimeException("Błąd podczas zapisywania awatara", e);
         }
+    }
+
+    /**
+     * Weryfikuje, czy zawartość pliku zaczyna się od sygnatury (magic bytes) obrazu JPG lub PNG.
+     * Chroni przed podszyciem się pod obraz przez sfałszowany nagłówek {@code Content-Type}.
+     *
+     * @param bytes zawartość przesłanego pliku
+     * @return {@code true} jeśli plik jest obrazem JPG lub PNG
+     */
+    private boolean hasValidImageSignature(byte[] bytes) {
+        if (bytes.length < 4) {
+            return false;
+        }
+        boolean jpeg =
+                (bytes[0] & 0xFF) == 0xFF && (bytes[1] & 0xFF) == 0xD8 && (bytes[2] & 0xFF) == 0xFF;
+        boolean png =
+                (bytes[0] & 0xFF) == 0x89
+                        && (bytes[1] & 0xFF) == 0x50
+                        && (bytes[2] & 0xFF) == 0x4E
+                        && (bytes[3] & 0xFF) == 0x47;
+        return jpeg || png;
     }
 
     /**

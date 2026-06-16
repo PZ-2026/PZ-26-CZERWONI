@@ -19,4 +19,5 @@ public record TutorRequest(
         @NotNull(message = "Informacja o lekcjach online jest wymagana") Boolean offersOnline,
         @NotNull(message = "Informacja o lekcjach stacjonarnych jest wymagana")
                 Boolean offersInPerson,
-        @Size(max = 100, message = "Nazwa miasta nie może przekraczać 100 znaków") String city) {}
+        @Size(min = 2, max = 50, message = "Nazwa miasta musi mieć od 2 do 50 znaków")
+                String city) {}
