@@ -6,12 +6,19 @@ import pl.edu.ur.teachly.lesson.dto.request.LessonRequest;
 import pl.edu.ur.teachly.lesson.dto.response.LessonResponse;
 import pl.edu.ur.teachly.lesson.entity.Lesson;
 
+/**
+ * Mapper MapStruct konwertujący między encją {@link Lesson} a jej DTO.
+ *
+ * <p>Mapuje zagnieżdżone pola korepetytora, ucznia i przedmiotu na płaskie pola odpowiedzi {@link
+ * LessonResponse}.
+ */
 @Mapper(componentModel = "spring")
 public interface LessonMapper {
     @Mapping(source = "tutor.userId", target = "tutorId")
     @Mapping(source = "tutor.user.firstName", target = "tutorFirstName")
     @Mapping(source = "tutor.user.lastName", target = "tutorLastName")
     @Mapping(source = "tutor.user.avatarUrl", target = "tutorAvatarUrl")
+    @Mapping(source = "tutor.city", target = "tutorCity")
     @Mapping(source = "student.id", target = "studentId")
     @Mapping(source = "student.firstName", target = "studentFirstName")
     @Mapping(source = "student.lastName", target = "studentLastName")

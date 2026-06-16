@@ -11,6 +11,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.CreditCard
+import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material.icons.filled.School
@@ -31,6 +32,7 @@ import pl.edu.ur.teachly.data.model.PaymentStatus
 import pl.edu.ur.teachly.data.model.UserRole
 import pl.edu.ur.teachly.ui.components.other.badges.LessonStatusBadge
 import pl.edu.ur.teachly.ui.components.other.formatDate
+import pl.edu.ur.teachly.ui.components.other.formatMoney
 import pl.edu.ur.teachly.ui.models.LessonDetail
 
 @Composable
@@ -95,6 +97,9 @@ fun InfoCard(lesson: LessonDetail, userRole: UserRole) {
                 LessonFormat.IN_PERSON -> "Stacjonarnie"
             }
             DetailRow(Icons.Default.School, formatLabel)
+            if (lesson.format == LessonFormat.IN_PERSON && !lesson.tutorCity.isNullOrBlank()) {
+                DetailRow(Icons.Default.LocationOn, lesson.tutorCity)
+            }
 
             // Amount + payment status
             val payLabel = when (lesson.paymentStatus) {
@@ -102,7 +107,7 @@ fun InfoCard(lesson: LessonDetail, userRole: UserRole) {
                 PaymentStatus.PENDING -> "Nieopłacone"
                 PaymentStatus.CANCELLED -> "Anulowane"
             }
-            DetailRow(Icons.Default.CreditCard, "${lesson.amount} zł | $payLabel")
+            DetailRow(Icons.Default.CreditCard, "${formatMoney(lesson.amount, alwaysShowDecimals = true)} | $payLabel")
         }
     }
 }

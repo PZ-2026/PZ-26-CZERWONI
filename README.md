@@ -7,23 +7,25 @@
 
 - [PZ-26-CZERWONI](#pz-26-czerwoni)
   - [Spis treści](#spis-treści)
-- [Skład:](#skład)
+- [Skład](#skład)
 - [Aplikacja *Teachly*](#aplikacja-teachly)
   - [1. Stack technologiczny](#1-stack-technologiczny)
   - [2. Architektura backendu](#2-architektura-backendu)
-  - [Przegląd API](#przegląd-api)
-  - [Struktura projektu](#struktura-projektu)
-  - [3. Backend](#3-backend)
+  - [3. Przegląd API](#3-przegląd-api)
+  - [4. Struktura projektu](#4-struktura-projektu)
+  - [5. Testy](#5-testy)
+  - [6. Javadoc](#6-javadoc)
+  - [7. Backend — uruchomienie](#7-backend--uruchomienie)
     - [Uruchomienie z Dockerem](#uruchomienie-z-dockerem)
     - [Uruchomienie lokalne (bez Dockera)](#uruchomienie-lokalne-bez-dockera)
-  - [4. Połączenie frontendu z backendem](#4-połączenie-frontendu-z-backendem)
+  - [8. Połączenie frontendu z backendem](#8-połączenie-frontendu-z-backendem)
 
 </details>
 
 ---
 
-# Skład:
-- **Adrian Raczek** - Lider
+# Skład
+- **Adrian Raczek** — Lider
 - Maciej Pintal
 - Krystian Zygmunt
 - Szymon Barwa
@@ -31,8 +33,8 @@
 
 # Aplikacja *Teachly*
 
-Mobilna platforma do korepetycji. Łączy uczniów szukających korepetytorów z nauczycielami oferującymi prywatne lekcje. 
-Umożliwia przeglądanie profili, rezerwację lekcji w dostępnych terminach, zarządzanie harmonogramem oraz wystawianie opinii po zakończonych zajęciach.
+Mobilna platforma do korepetycji. Łączy uczniów szukających korepetytorów z nauczycielami oferującymi prywatne lekcje.
+Umożliwia przeglądanie profili, rezerwację lekcji w dostępnych terminach, zarządzanie harmonogramem oraz wystawianie opinii po zakończonych zajęciach. Platforma posiada panel administracyjny do zarządzania użytkownikami, lekcjami i przedmiotami oraz moduł generowania raportów PDF.
 
 ## 1. Stack technologiczny
 
@@ -45,8 +47,9 @@ Umożliwia przeglądanie profili, rezerwację lekcji w dostępnych terminach, za
 **Backend**
 - Java 21, Spring Boot 4.0.4, Gradle
 - PostgreSQL 18, Flyway (migracje schematu i dane seed)
-- Spring Security + JWT
-- MapStruct (mapowanie Entity <-> DTO), Lombok
+- Spring Security + JWT (HMAC-SHA512)
+- MapStruct (mapowanie Entity ↔ DTO), Lombok
+- JUnit 5, Mockito (testy jednostkowe)
 
 **Frontend**
 - Android (min. API 31 — Android 12)
@@ -71,28 +74,123 @@ Umożliwia przeglądanie profili, rezerwację lekcji w dostępnych terminach, za
 | Service    | Logika biznesowa, walidacja                |
 | Repository | Zapytania do bazy danych (Spring Data JPA) |
 | Entity     | Reprezentacja tabel w bazie danych         |
-| Mapper     | Konwersja Entity <-> DTO (MapStruct)       |
+| Mapper     | Konwersja Entity ↔ DTO (MapStruct)         |
 
-## Przegląd API
+Bezpieczeństwo opiera się na bezstanowej sesji JWT. Każde żądanie (poza `/api/auth/**` i `/uploads/**`) musi zawierać nagłówek `Authorization: Bearer <token>`. Uprawnienia są weryfikowane przez adnotacje `@PreAuthorize` na poziomie metod kontrolera.
 
-| Metoda | Endpoint                                 | Opis                        |
-|-------|-------------------------------------------|-----------------------------|
-| POST  | `/api/auth/register`                      | Rejestracja                 |
-| POST  | `/api/auth/login`                         | Logowanie, zwraca token JWT |
-| GET   | `/api/tutors`                             | Lista korepetytorów         |
-| GET   | `/api/tutors/{id}`                        | Profil korepetytora         |
-| GET   | `/api/tutors/{id}/subjects`               | Przedmioty korepetytora     |
-| GET   | `/api/tutors/{id}/availability/timetable` | Dostępne terminy            |
-| POST  | `/api/lessons/student/{id}`               | Rezerwacja lekcji           |
-| GET   | `/api/lessons/student/{id}`               | Lekcje ucznia               |
-| GET   | `/api/lessons/tutor/{id}`                 | Lekcje korepetytora         |
-| PATCH | `/api/lessons/{id}/status`                | Zmiana statusu lekcji       |
-| GET   | `/api/reviews/tutor/{id}`                 | Opinie o korepetytorze      |
-| POST  | `/api/reviews/student/{id}`               | Dodanie opinii              |
-| GET   | `/api/users/{id}`                         | Dane użytkownika            |
-| PUT   | `/api/users/{id}`                         | Edycja profilu              |
+</details>
 
-## Struktura projektu
+## 3. Przegląd API
+
+<details>
+<summary><strong>Rozwiń</strong></summary>
+
+### Uwierzytelnianie (`/api/auth`)
+| Metoda | Endpoint              | Opis                        | Dostęp   |
+|--------|-----------------------|-----------------------------|----------|
+| POST   | `/api/auth/register`  | Rejestracja nowego konta    | Publiczny |
+| POST   | `/api/auth/login`     | Logowanie, zwraca token JWT | Publiczny |
+
+### Użytkownicy (`/api/users`)
+| Metoda | Endpoint                  | Opis                              | Dostęp          |
+|--------|---------------------------|-----------------------------------|-----------------|
+| GET    | `/api/users`              | Lista użytkowników (z filtrowaniem) | ADMIN          |
+| GET    | `/api/users/{id}`         | Dane użytkownika                  | ADMIN / właściciel |
+| PUT    | `/api/users/{id}`         | Edycja profilu                    | ADMIN / właściciel |
+| PUT    | `/api/users/{id}/admin`   | Edycja konta przez admina         | ADMIN           |
+| PATCH  | `/api/users/{id}/activate`| Aktywacja konta                   | ADMIN           |
+| DELETE | `/api/users/{id}`         | Blokada konta                     | ADMIN           |
+| POST   | `/api/users/{id}/avatar`  | Przesłanie awatara                | ADMIN / właściciel |
+| DELETE | `/api/users/{id}/avatar`  | Usunięcie awatara                 | ADMIN / właściciel |
+
+### Korepetytorzy (`/api/tutors`)
+| Metoda | Endpoint                                        | Opis                                  | Dostęp          |
+|--------|-------------------------------------------------|---------------------------------------|-----------------|
+| GET    | `/api/tutors`                                   | Lista aktywnych korepetytorów         | Publiczny       |
+| GET    | `/api/tutors/search`                            | Wyszukiwanie z ocenami i przedmiotami (query params: `q`, `subject`, `city`) | Publiczny       |
+| GET    | `/api/tutors/{id}`                              | Profil korepetytora                   | Publiczny       |
+| GET    | `/api/tutors/{id}/subjects`                     | Przedmioty korepetytora               | Publiczny       |
+| PUT    | `/api/tutors/me`                                | Edycja własnego profilu               | TUTOR           |
+| POST   | `/api/tutors/me/subjects`                       | Dodanie przedmiotu                    | TUTOR           |
+| DELETE | `/api/tutors/me/subjects/{id}`                  | Usunięcie przedmiotu                  | TUTOR           |
+| PUT    | `/api/tutors/{id}/admin`                        | Edycja profilu przez admina           | ADMIN           |
+| POST   | `/api/tutors/{tutorId}/admin/subjects`          | Dodanie przedmiotu przez admina       | ADMIN           |
+| DELETE | `/api/tutors/{tutorId}/admin/subjects/{subjectId}` | Usunięcie przedmiotu przez admina  | ADMIN           |
+
+### Dostępność korepetytora (`/api/tutors/{tutorId}/availability`)
+| Metoda | Endpoint            | Opis                              | Dostęp          |
+|--------|---------------------|-----------------------------------|-----------------|
+| GET    | `/timetable`        | Wolne terminy w zakresie dat      | Publiczny       |
+| GET    | `/recurring`        | Cykliczne sloty dostępności       | Publiczny       |
+| POST   | `/recurring`        | Dodanie slotu cyklicznego         | ADMIN / właściciel |
+| DELETE | `/recurring/{id}`   | Usunięcie slotu cyklicznego       | ADMIN / właściciel |
+| GET    | `/override`         | Jednorazowe nadpisania dostępności | Publiczny      |
+| POST   | `/override`         | Dodanie nadpisania                | ADMIN / właściciel |
+| DELETE | `/override/{id}`    | Usunięcie nadpisania              | ADMIN / właściciel |
+
+### Lekcje (`/api/lessons`)
+| Metoda | Endpoint                          | Opis                          | Dostęp          |
+|--------|-----------------------------------|-------------------------------|-----------------|
+| GET    | `/api/lessons`                    | Wszystkie lekcje (filtrowanie)| ADMIN           |
+| POST   | `/api/lessons/student/{id}`       | Rezerwacja lekcji             | STUDENT / ADMIN |
+| GET    | `/api/lessons/student/{id}`       | Lekcje ucznia                 | właściciel / ADMIN |
+| GET    | `/api/lessons/tutor/{id}`         | Lekcje korepetytora           | właściciel / ADMIN |
+| GET    | `/api/lessons/{id}`               | Szczegóły lekcji              | uczestnik / ADMIN |
+| PUT    | `/api/lessons/{id}/admin`         | Edycja lekcji przez admina    | ADMIN           |
+| PATCH  | `/api/lessons/{id}/status`        | Zmiana statusu lekcji         | uczestnik / ADMIN |
+| PATCH  | `/api/lessons/{id}/student-notes` | Notatki ucznia                | STUDENT / ADMIN |
+| PATCH  | `/api/lessons/{id}/tutor-notes`   | Notatki korepetytora          | TUTOR / ADMIN   |
+| PATCH  | `/api/lessons/{id}/payment`       | Zmiana statusu płatności      | ADMIN           |
+
+### Opinie (`/api/reviews`)
+| Metoda | Endpoint                       | Opis                          | Dostęp          |
+|--------|--------------------------------|-------------------------------|-----------------|
+| GET    | `/api/reviews/tutor/{id}`      | Opinie o korepetytorze        | Publiczny       |
+| GET    | `/api/reviews/student/{id}`    | Opinie ucznia                 | właściciel / ADMIN |
+| POST   | `/api/reviews/student/{id}`    | Dodanie opinii                | STUDENT         |
+| PUT    | `/api/reviews/{id}`            | Edycja opinii                 | autor           |
+| DELETE | `/api/reviews/{id}`            | Usunięcie opinii              | autor           |
+
+### Przedmioty (`/api/subjects`)
+| Metoda | Endpoint                        | Opis                          | Dostęp   |
+|--------|---------------------------------|-------------------------------|----------|
+| GET    | `/api/subjects`                 | Lista przedmiotów             | Publiczny |
+| POST   | `/api/subjects`                 | Dodanie przedmiotu            | ADMIN    |
+| PUT    | `/api/subjects/{id}`            | Edycja przedmiotu             | ADMIN    |
+| DELETE | `/api/subjects/{id}`            | Usunięcie przedmiotu          | ADMIN    |
+| GET    | `/api/subjects/categories`      | Lista kategorii               | Publiczny |
+| POST   | `/api/subjects/categories`      | Dodanie kategorii             | ADMIN    |
+| PUT    | `/api/subjects/categories/{id}` | Edycja kategorii              | ADMIN    |
+| DELETE | `/api/subjects/categories/{id}` | Usunięcie kategorii           | ADMIN    |
+
+### Dni wolne (`/api/holidays`)
+| Metoda | Endpoint               | Opis                  | Dostęp   |
+|--------|------------------------|-----------------------|----------|
+| GET    | `/api/holidays`        | Lista dni wolnych     | Publiczny |
+| POST   | `/api/holidays`        | Dodanie dnia wolnego  | ADMIN    |
+| PUT    | `/api/holidays/{id}`   | Edycja dnia wolnego   | ADMIN    |
+| DELETE | `/api/holidays/{id}`   | Usunięcie dnia wolnego| ADMIN    |
+
+### Panel admina (`/api/admin`)
+| Metoda | Endpoint               | Opis                          | Dostęp |
+|--------|------------------------|-------------------------------|--------|
+| GET    | `/api/admin/stats`     | Statystyki systemu            | ADMIN  |
+| GET    | `/api/admin/reviews`   | Wszystkie opinie (filtrowanie)| ADMIN  |
+| DELETE | `/api/admin/reviews/{id}` | Usunięcie opinii           | ADMIN  |
+
+### Raporty (`/api/reports`)
+| Metoda | Endpoint          | Opis                              | Dostęp        |
+|--------|-------------------|-----------------------------------|---------------|
+| GET    | `/api/reports/my` | Generowanie raportu PDF           | Zalogowany    |
+
+Parametry raportu: `startDate`, `endDate`, `type` (LESSONS / REVENUE / EXPENSES / ANALYTICS / STUDENTS / USERS), `includeFields`.
+
+</details>
+
+## 4. Struktura projektu
+
+<details>
+<summary><strong>Rozwiń</strong></summary>
 
 ```
 .
@@ -100,17 +198,20 @@ Umożliwia przeglądanie profili, rezerwację lekcji w dostępnych terminach, za
 │   ├── src/main/java/pl/edu/ur/teachly/
 │   │   ├── auth/          # Rejestracja, logowanie, JWT
 │   │   ├── user/          # Użytkownicy
-│   │   ├── tutor/         # Profile korepetytorów, dostępność
+│   │   ├── tutor/         # Profile korepetytorów, dostępność, plan zajęć
 │   │   ├── lesson/        # Lekcje, rezerwacje
 │   │   ├── review/        # Opinie
-│   │   ├── subject/       # Przedmioty
+│   │   ├── subject/       # Przedmioty i kategorie
 │   │   ├── holiday/       # Dni wolne
-│   │   └── common/        # Wyjątki, security, enumy
-│   └── src/main/resources/
-│       ├── db/
-│       │   ├── migration/ # Migracje Flyway (schemat)
-│       │   ├── seed/      # Dane testowe
-│       └── application.properties
+│   │   ├── admin/         # Panel administracyjny, statystyki
+│   │   ├── report/        # Generowanie raportów PDF
+│   │   └── common/        # Security, wyjątki, enumy, konfiguracja
+│   ├── src/main/resources/
+│   │   ├── db/
+│   │   │   ├── migration/ # Migracje Flyway (schemat)
+│   │   │   └── seed/      # Dane testowe
+│   │   └── application.properties
+│   └── src/test/          # Testy jednostkowe
 │
 ├── frontend/
 │   ├── app/src/main/java/pl/edu/ur/teachly/
@@ -124,14 +225,56 @@ Umożliwia przeglądanie profili, rezerwację lekcji w dostępnych terminach, za
 
 </details>
 
-## 3. Backend
+## 5. Testy
+
+<details>
+<summary><strong>Rozwiń</strong></summary>
+
+Projekt zawiera testy jednostkowe dla warstwy serwisów i kontrolerów.
+
+**Uruchomienie testów:**
+```bash
+cd backend
+./gradlew test
+```
+
+**Uruchomienie testów z raportem Checkstyle:**
+```bash
+./gradlew check
+```
+
+Raporty z testów generowane są w `backend/build/reports/tests/test/index.html`.
+
+</details>
+
+## 6. Javadoc
+
+<details>
+<summary><strong>Rozwiń</strong></summary>
+
+Cały kod backendu jest udokumentowany komentarzami Javadoc.
+
+**Generowanie dokumentacji HTML z IntelliJ IDEA:**
+
+`Tools → Generate JavaDoc` → wybierz zakres *Whole project*, ustaw katalog wyjściowy i kliknij *Generate*.
+
+**Generowanie z linii poleceń:**
+```bash
+cd backend
+./gradlew javadoc
+```
+
+Dokumentacja generowana jest w `backend/build/docs/javadoc/index.html`.
+
+</details>
+
+## 7. Backend — uruchomienie
 
 ### Uruchomienie z Dockerem
 
->[!TIP] Zalecane rozwiązanie.
+> Zalecane rozwiązanie.
 
 <details>
-
 <summary><strong>Rozwiń</strong></summary>
 
 ---
@@ -140,24 +283,24 @@ Umożliwia przeglądanie profili, rezerwację lekcji w dostępnych terminach, za
 
 Skopiuj plik `.env.example` i zmień nazwę na `.env`
 
-Lub
+Lub:
 
 ```bash
 cp .env.example .env
 ```
 
->[!CAUTION] Poniższych instrukcji nie należy wykonywać na `.env.example`. Ten plik jest wysyłany na repozytorium.
+> [!CAUTION] Poniższych instrukcji nie należy wykonywać na `.env.example`. Ten plik jest wysyłany na repozytorium.
 
 Otwórz `.env` i ustaw klucz JWT (wygeneruj np. w Powershellu lub za pomocą OpenSSL w terminalu):
 
-Powershell:
+PowerShell:
 ```powershell
-[Convert]::ToBase64String((1..32 | ForEach-Object { [byte](Get-Random -Max 256) }))
+[Convert]::ToBase64String((1..64 | ForEach-Object { [byte](Get-Random -Max 256) }))
 ```
 
 OpenSSL:
-```powershell
-openssl rand -base64 32
+```bash
+openssl rand -base64 64
 ```
 
 Skopiuj wynik jako wartość `JWT_SECRET_KEY` w pliku `.env`.
@@ -181,20 +324,19 @@ docker-compose up
 ### Uruchomienie lokalne (bez Dockera)
 
 <details>
-
 <summary><strong>Rozwiń</strong></summary>
 
 ---
 
 **Wymagania:** Java 21, PostgreSQL 18
 
-**1. Przygotuj plik application-dev.properties:**
+**1. Przygotuj plik `application-dev.properties`:**
 
 W folderze `backend/src/main/resources/` skopiuj plik `application.properties` i zmień nazwę na `application-dev.properties`.
 
 Otwórz `application-dev.properties` i kontynuuj za instrukcjami.
 
->[!CAUTION] Poniższych instrukcji nie należy wykonywać na `application.properties`. Ten plik jest wysyłany na repozytorium.
+> [!CAUTION] Poniższych instrukcji nie należy wykonywać na `application.properties`. Ten plik jest wysyłany na repozytorium.
 
 1. Usuń poniższe wiersze:
 ```
@@ -202,19 +344,20 @@ Otwórz `application-dev.properties` i kontynuuj za instrukcjami.
 # Delete spring.profiles.active in application-dev.properties
 spring.profiles.active=dev
 ```
-1. W poniższych wierszach uzupełnij hasło użytkownika bazy danych i ewentualnie zmień adres lub login:
+
+2. W poniższych wierszach uzupełnij hasło użytkownika bazy danych i ewentualnie zmień adres lub login:
 ```
 spring.datasource.url=jdbc:postgresql://localhost:5432/teachly
 spring.datasource.username=postgres
 spring.datasource.password=
 ```
 
-1. Uzupełnij JWT secret key (Dla generacji, patrz w punkcie pierwszym rozdziału [Uruchomienie z Dockerem](#uruchomienie-z-dockerem)):
+3. Uzupełnij JWT secret key (do generacji — patrz rozdział [Uruchomienie z Dockerem](#uruchomienie-z-dockerem)):
 ```
 application.security.jwt.secret-key=
 ```
 
-1. Uruchom przez IntelliJ lub Gradle:
+4. Uruchom przez IntelliJ lub Gradle:
 ```bash
 cd backend
 ./gradlew bootRun
@@ -222,17 +365,16 @@ cd backend
 
 </details>
 
-## 4. Połączenie frontendu z backendem
+## 8. Połączenie frontendu z backendem
 
 <details>
-
 <summary><strong>Rozwiń</strong></summary>
 
 ---
 
-1. Domyślnie frontend łączy się z adresem `http://10.0.2.2:8080/` (emulator Android). Jest jednak możliwość zmiany adresu połączenia.
+Domyślnie frontend łączy się z adresem `http://10.0.2.2:8080/` (emulator Android). Istnieje możliwość zmiany adresu połączenia.
 
->[!TIP] Działanie opcjonalne: W pliku `frontend/local.properties` ustaw adres backendu (jedna z opcji):
+> W pliku `frontend/local.properties` ustaw adres backendu (jedna z opcji):
 
 ```properties
 # Emulator Android (backend lokalny)
@@ -245,6 +387,6 @@ BASE_URL="http://192.168.X.X:8080/"
 BASE_URL="http://adres-serwera:8080/"
 ```
 
-2. Uruchom przez Android Studio.
+Uruchom przez Android Studio.
 
 </details>

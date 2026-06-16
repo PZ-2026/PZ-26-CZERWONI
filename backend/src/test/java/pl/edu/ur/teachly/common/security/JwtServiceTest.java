@@ -14,13 +14,15 @@ import org.springframework.test.util.ReflectionTestUtils;
 class JwtServiceTest {
 
     private JwtService jwtService;
-    private final String SECRET_KEY =
-            "404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970"; // 512 bit key
 
     @BeforeEach
     void setUp() {
         jwtService = new JwtService();
-        ReflectionTestUtils.setField(jwtService, "secretKey", SECRET_KEY);
+        // 512-bit key
+        String secretKey =
+                "404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970"
+                        + "404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970";
+        ReflectionTestUtils.setField(jwtService, "secretKey", secretKey);
         ReflectionTestUtils.setField(jwtService, "jwtExpiration", 3600000L); // 1h
     }
 

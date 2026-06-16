@@ -2,7 +2,6 @@ package pl.edu.ur.teachly.ui.profile.views
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -17,13 +16,8 @@ import androidx.compose.material.icons.filled.AlternateEmail
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Phone
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.MaterialTheme.typography
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
@@ -36,7 +30,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -48,8 +41,10 @@ import pl.edu.ur.teachly.R
 import pl.edu.ur.teachly.data.model.ReviewResponse
 import pl.edu.ur.teachly.ui.components.other.EmptyListState
 import pl.edu.ur.teachly.ui.components.other.FullScreenError
-import pl.edu.ur.teachly.ui.components.other.PrimaryButton
+import pl.edu.ur.teachly.ui.components.other.LoadingBox
+import pl.edu.ur.teachly.ui.components.other.LogoutButton
 import pl.edu.ur.teachly.ui.components.other.cards.StatCard
+import pl.edu.ur.teachly.ui.components.other.dialog.AppConfirmDialog
 import pl.edu.ur.teachly.ui.components.other.formatDate
 import pl.edu.ur.teachly.ui.components.other.formatPhoneNumber
 import pl.edu.ur.teachly.ui.components.profile.ProfileDataCard
@@ -115,34 +110,26 @@ fun StudentProfileScreen(
     }
 
     deletingReview?.let { review ->
-        AlertDialog(
-            onDismissRequest = { deletingReview = null },
-            title = { Text("Usuń recenzję") },
-            text = {
-                Text("Czy na pewno chcesz usunąć opinię o ${review.tutorFirstName} ${review.tutorLastName}?")
+        AppConfirmDialog(
+            title = "Usuń recenzję",
+            message = "Czy na pewno chcesz usunąć opinię o ${review.tutorFirstName} ${review.tutorLastName}?",
+            confirmText = "Usuń",
+            onDismiss = { deletingReview = null },
+            onConfirm = {
+                myReviewsViewModel.deleteReview(review.id)
+                deletingReview = null
             },
-            confirmButton = {
-                Button(
-                    onClick = {
-                        myReviewsViewModel.deleteReview(review.id)
-                        deletingReview = null
-                    },
-                    colors = ButtonDefaults.buttonColors(containerColor = colorScheme.error)
-                ) { Text("Usuń") }
-            },
-            dismissButton = {
-                OutlinedButton(onClick = { deletingReview = null }) { Text("Anuluj") }
-            }
+            destructive = true
         )
     }
 
     when {
-        profile.isLoading -> Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) { CircularProgressIndicator() }
+        profile.isLoading -> LoadingBox()
 
-        profile.error != null -> FullScreenError(message = profile.error!!)
+        profile.error != null -> FullScreenError(
+            message = profile.error!!,
+            onLogout = onLogout
+        )
 
         else -> Column(
             modifier = Modifier
@@ -234,7 +221,7 @@ private fun ProfileTab(
                     value = profile.email
                 )
             }
-            val phone = formatPhoneNumber(profile.phoneNumber.toString())
+            val phone = profile.phoneNumber?.takeIf { it.isNotBlank() }?.let { formatPhoneNumber(it) }.orEmpty()
             if (phone.isNotBlank()) {
                 ProfileDataDivider()
                 ProfileInfoRow(
@@ -273,7 +260,7 @@ private fun ProfileTab(
 
         ReportDownloadSection(viewModel = viewModel)
 
-        PrimaryButton(
+        LogoutButton(
             text = stringResource(R.string.logout),
             onClick = onLogout,
             modifier = Modifier.padding(bottom = 32.dp, top = 8.dp)
@@ -289,10 +276,7 @@ private fun MyReviewsTab(
     onDeleteReview: (ReviewResponse) -> Unit
 ) {
     when {
-        isLoading -> Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) { CircularProgressIndicator() }
+        isLoading -> LoadingBox()
 
         reviews.isEmpty() -> EmptyListState(message = stringResource(R.string.my_reviews_empty))
 

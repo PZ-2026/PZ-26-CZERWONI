@@ -7,172 +7,74 @@ import pl.edu.ur.teachly.data.model.TutorAvailabilityRecurringRequest
 import pl.edu.ur.teachly.data.model.TutorAvailabilityRecurringResponse
 import pl.edu.ur.teachly.data.model.TutorRequest
 import pl.edu.ur.teachly.data.model.TutorResponse
+import pl.edu.ur.teachly.data.model.TutorSearchResultResponse
 import pl.edu.ur.teachly.data.model.TutorSelfProfileRequest
 import pl.edu.ur.teachly.data.model.TutorSubjectRequest
 import pl.edu.ur.teachly.data.model.TutorSubjectResponse
 import pl.edu.ur.teachly.data.remote.TutorApiService
+import pl.edu.ur.teachly.data.remote.apiCall
+import pl.edu.ur.teachly.data.remote.apiCallUnit
 
 class TutorRepository(private val api: TutorApiService) {
 
-    suspend fun getAllTutors(): Result<List<TutorResponse>> = try {
-        val response = api.getAllTutors()
-        if (response.isSuccessful) {
-            Result.success(response.body()!!)
-        } else {
-            Result.failure(Exception("Błąd pobierania korepetytorów"))
-        }
-    } catch (e: Exception) {
-        Result.failure(Exception("Brak połączenia z serwerem"))
-    }
+    suspend fun searchTutors(
+        query: String? = null,
+        subject: String? = null,
+        city: String? = null
+    ): Result<List<TutorSearchResultResponse>> =
+        apiCall("Błąd wyszukiwania korepetytorów") { api.searchTutors(query, subject, city) }
 
-    suspend fun getTutorById(id: Int): Result<TutorResponse> = try {
-        val response = api.getTutorById(id)
-        if (response.isSuccessful) {
-            Result.success(response.body()!!)
-        } else {
-            Result.failure(Exception("Nie znaleziono korepetytora"))
-        }
-    } catch (e: Exception) {
-        Result.failure(Exception("Brak połączenia z serwerem"))
-    }
+    suspend fun getAllTutors(query: String? = null): Result<List<TutorResponse>> =
+        apiCall("Błąd pobierania korepetytorów") { api.getAllTutors(query) }
 
-    suspend fun getTutorSubjects(id: Int): Result<List<TutorSubjectResponse>> = try {
-        val response = api.getTutorSubjects(id)
-        if (response.isSuccessful) {
-            Result.success(response.body()!!)
-        } else {
-            Result.failure(Exception("Błąd pobierania przedmiotów"))
-        }
-    } catch (e: Exception) {
-        Result.failure(Exception("Brak połączenia z serwerem"))
-    }
+    suspend fun getTutorById(id: Int): Result<TutorResponse> =
+        apiCall("Nie znaleziono korepetytora") { api.getTutorById(id) }
 
-    suspend fun getTimetable(tutorId: Int, from: String, to: String): Result<List<TimetableDayResponse>> = try {
-        val response = api.getTimetable(tutorId, from, to)
-        if (response.isSuccessful) {
-            Result.success(response.body()!!)
-        } else {
-            Result.failure(Exception("Błąd pobierania harmonogramu"))
-        }
-    } catch (e: Exception) {
-        Result.failure(Exception("Brak połączenia z serwerem"))
-    }
+    suspend fun getTutorSubjects(id: Int): Result<List<TutorSubjectResponse>> =
+        apiCall("Błąd pobierania przedmiotów") { api.getTutorSubjects(id) }
 
-    suspend fun updateMyProfile(request: TutorSelfProfileRequest): Result<TutorResponse> = try {
-        val r = api.updateMyProfile(request)
-        if (r.isSuccessful) {
-            Result.success(r.body()!!)
-        } else {
-            Result.failure(Exception("Błąd zapisywania profilu"))
-        }
-    } catch (e: Exception) {
-        Result.failure(Exception("Brak połączenia z serwerem"))
-    }
+    suspend fun getTimetable(tutorId: Int, from: String, to: String): Result<List<TimetableDayResponse>> =
+        apiCall("Błąd pobierania harmonogramu") { api.getTimetable(tutorId, from, to) }
 
-    suspend fun addMySubject(request: TutorSubjectRequest): Result<TutorSubjectResponse> = try {
-        val r = api.addMySubject(request)
-        if (r.isSuccessful) {
-            Result.success(r.body()!!)
-        } else {
-            Result.failure(Exception("Błąd dodawania przedmiotu"))
-        }
-    } catch (e: Exception) {
-        Result.failure(Exception("Brak połączenia z serwerem"))
-    }
+    suspend fun updateMyProfile(request: TutorSelfProfileRequest): Result<TutorResponse> =
+        apiCall("Błąd zapisywania profilu") { api.updateMyProfile(request) }
 
-    suspend fun removeMySubject(id: Int): Result<Unit> = try {
-        val r = api.removeMySubject(id)
-        if (r.isSuccessful) {
-            Result.success(Unit)
-        } else {
-            Result.failure(Exception("Błąd usuwania przedmiotu"))
-        }
-    } catch (e: Exception) {
-        Result.failure(Exception("Brak połączenia z serwerem"))
-    }
+    suspend fun addMySubject(request: TutorSubjectRequest): Result<TutorSubjectResponse> =
+        apiCall("Błąd dodawania przedmiotu") { api.addMySubject(request) }
 
-    suspend fun adminUpdateTutor(id: Int, request: TutorRequest): Result<TutorResponse> = try {
-        val response = api.adminUpdateTutor(id, request)
-        if (response.isSuccessful) {
-            Result.success(response.body()!!)
-        } else {
-            Result.failure(Exception("Błąd aktualizacji korepetytora"))
-        }
-    } catch (e: Exception) {
-        Result.failure(Exception("Brak połączenia z serwerem"))
-    }
+    suspend fun removeMySubject(id: Int): Result<Unit> =
+        apiCallUnit("Błąd usuwania przedmiotu") { api.removeMySubject(id) }
 
-    // Recurring availability
-    suspend fun getRecurringAvailability(tutorId: Int): Result<List<TutorAvailabilityRecurringResponse>> = try {
-        val r = api.getRecurringAvailability(tutorId)
-        if (r.isSuccessful) {
-            Result.success(r.body()!!)
-        } else {
-            Result.failure(Exception("Błąd pobierania harmonogramu"))
-        }
-    } catch (e: Exception) {
-        Result.failure(Exception("Brak połączenia z serwerem"))
-    }
+    suspend fun adminUpdateTutor(id: Int, request: TutorRequest): Result<TutorResponse> =
+        apiCall("Błąd aktualizacji korepetytora") { api.adminUpdateTutor(id, request) }
+
+    suspend fun adminAddTutorSubject(tutorId: Int, request: TutorSubjectRequest): Result<TutorSubjectResponse> =
+        apiCall("Błąd dodawania przedmiotu") { api.adminAddTutorSubject(tutorId, request) }
+
+    suspend fun adminRemoveTutorSubject(tutorId: Int, tutorSubjectId: Int): Result<Unit> =
+        apiCallUnit("Błąd usuwania przedmiotu") { api.adminRemoveTutorSubject(tutorId, tutorSubjectId) }
+
+    suspend fun getRecurringAvailability(tutorId: Int): Result<List<TutorAvailabilityRecurringResponse>> =
+        apiCall("Błąd pobierania harmonogramu") { api.getRecurringAvailability(tutorId) }
 
     suspend fun addRecurringAvailability(
         tutorId: Int,
         request: TutorAvailabilityRecurringRequest
-    ): Result<TutorAvailabilityRecurringResponse> = try {
-        val r = api.addRecurringAvailability(tutorId, request)
-        if (r.isSuccessful) {
-            Result.success(r.body()!!)
-        } else {
-            Result.failure(Exception("Błąd dodawania slotu"))
-        }
-    } catch (e: Exception) {
-        Result.failure(Exception("Brak połączenia z serwerem"))
-    }
+    ): Result<TutorAvailabilityRecurringResponse> =
+        apiCall("Błąd dodawania slotu") { api.addRecurringAvailability(tutorId, request) }
 
-    suspend fun deleteRecurringAvailability(tutorId: Int, id: Int): Result<Unit> = try {
-        val r = api.deleteRecurringAvailability(tutorId, id)
-        if (r.isSuccessful) {
-            Result.success(Unit)
-        } else {
-            Result.failure(Exception("Błąd usuwania slotu"))
-        }
-    } catch (e: Exception) {
-        Result.failure(Exception("Brak połączenia z serwerem"))
-    }
+    suspend fun deleteRecurringAvailability(tutorId: Int, id: Int): Result<Unit> =
+        apiCallUnit("Błąd usuwania slotu") { api.deleteRecurringAvailability(tutorId, id) }
 
-    // Overrides (specific-date unavailability)
-    suspend fun getOverrides(tutorId: Int): Result<List<TutorAvailabilityOverrideResponse>> = try {
-        val r = api.getOverrides(tutorId)
-        if (r.isSuccessful) {
-            Result.success(r.body()!!)
-        } else {
-            Result.failure(Exception("Błąd pobierania niedostępności"))
-        }
-    } catch (e: Exception) {
-        Result.failure(Exception("Brak połączenia z serwerem"))
-    }
+    suspend fun getOverrides(tutorId: Int): Result<List<TutorAvailabilityOverrideResponse>> =
+        apiCall("Błąd pobierania niedostępności") { api.getOverrides(tutorId) }
 
     suspend fun addOverride(
         tutorId: Int,
         request: TutorAvailabilityOverrideRequest
-    ): Result<TutorAvailabilityOverrideResponse> = try {
-        val r = api.addOverride(tutorId, request)
-        if (r.isSuccessful) {
-            Result.success(r.body()!!)
-        } else {
-            Result.failure(Exception("Błąd dodawania niedostępności"))
-        }
-    } catch (e: Exception) {
-        Result.failure(Exception("Brak połączenia z serwerem"))
-    }
+    ): Result<TutorAvailabilityOverrideResponse> =
+        apiCall("Błąd dodawania niedostępności") { api.addOverride(tutorId, request) }
 
-    suspend fun deleteOverride(tutorId: Int, id: Int): Result<Unit> = try {
-        val r = api.deleteOverride(tutorId, id)
-        if (r.isSuccessful) {
-            Result.success(Unit)
-        } else {
-            Result.failure(Exception("Błąd usuwania niedostępności"))
-        }
-    } catch (e: Exception) {
-        Result.failure(Exception("Brak połączenia z serwerem"))
-    }
+    suspend fun deleteOverride(tutorId: Int, id: Int): Result<Unit> =
+        apiCallUnit("Błąd usuwania niedostępności") { api.deleteOverride(tutorId, id) }
 }

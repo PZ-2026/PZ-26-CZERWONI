@@ -1,0 +1,1 @@
+ALTER TABLE tutors ADD COLUMN city VARCHAR(100);

@@ -4,7 +4,8 @@ data class TutorRequest(
     val bio: String?,
     val hourlyRate: Double,
     val offersOnline: Boolean,
-    val offersInPerson: Boolean
+    val offersInPerson: Boolean,
+    val city: String?
 )
 
 data class TutorResponse(
@@ -17,14 +18,23 @@ data class TutorResponse(
     val bio: String?,
     val hourlyRate: Double,
     val offersOnline: Boolean,
-    val offersInPerson: Boolean
+    val offersInPerson: Boolean,
+    val city: String?
+)
+
+data class TutorSearchResultResponse(
+    val tutor: TutorResponse,
+    val subjects: List<TutorSubjectResponse>,
+    val averageRating: Double,
+    val reviewCount: Int
 )
 
 data class TutorSelfProfileRequest(
     val bio: String?,
     val hourlyRate: Double,
     val offersOnline: Boolean,
-    val offersInPerson: Boolean
+    val offersInPerson: Boolean,
+    val city: String?
 )
 
 data class TutorSubjectRequest(

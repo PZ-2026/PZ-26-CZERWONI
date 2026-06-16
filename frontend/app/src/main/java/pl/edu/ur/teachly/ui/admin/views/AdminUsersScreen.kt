@@ -8,11 +8,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme.colorScheme
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -32,9 +28,11 @@ import pl.edu.ur.teachly.ui.components.admin.AdminSearchBar
 import pl.edu.ur.teachly.ui.components.other.EmptyListState
 import pl.edu.ur.teachly.ui.components.other.ExpandableFilterSection
 import pl.edu.ur.teachly.ui.components.other.FilterChips
+import pl.edu.ur.teachly.ui.components.other.LoadingBox
 import pl.edu.ur.teachly.ui.components.other.MessageSnackbars
 import pl.edu.ur.teachly.ui.components.other.cards.UserAdminCard
 import pl.edu.ur.teachly.ui.components.other.dialog.AdminUserEditDialog
+import pl.edu.ur.teachly.ui.components.other.dialog.AppConfirmDialog
 
 @Composable
 fun AdminUsersScreen(viewModel: AdminUsersViewModel = koinViewModel(), initialRoleFilter: String? = null) {
@@ -106,25 +104,23 @@ fun AdminUsersScreen(viewModel: AdminUsersViewModel = koinViewModel(), initialRo
             }
 
             when {
-                state.isLoading -> Box(
-                    Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator()
-                }
+                state.isLoading -> LoadingBox()
 
-                state.filteredUsers.isEmpty() -> EmptyListState(message = "Brak użytkowników")
+                state.users.isEmpty() -> EmptyListState(message = "Brak użytkowników")
 
                 else -> LazyColumn(
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(16.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    items(state.filteredUsers) { user ->
+                    items(state.users) { user ->
+                        val isCurrentUser = user.id == state.currentUserId
                         UserAdminCard(
                             user = user,
                             onEdit = { showEditDialog = user },
-                            onBanToggle = { showBanDialog = user }
+                            onBanToggle = { showBanDialog = user },
+                            canEdit = !isCurrentUser,
+                            canToggleBan = !isCurrentUser
                         )
                     }
                 }
@@ -151,32 +147,20 @@ fun AdminUsersScreen(viewModel: AdminUsersViewModel = koinViewModel(), initialRo
 
     // Ban/Unban confirmation dialog
     showBanDialog?.let { user ->
-        AlertDialog(
-            onDismissRequest = { showBanDialog = null },
-            title = { Text(if (user.isActive) "Zablokuj konto" else "Odblokuj konto") },
-            text = {
-                Text(
-                    if (user.isActive) {
-                        "Czy na pewno chcesz zablokować konto użytkownika ${user.firstName} ${user.lastName}?"
-                    } else {
-                        "Czy na pewno chcesz odblokować konto użytkownika ${user.firstName} ${user.lastName}?"
-                    }
-                )
+        AppConfirmDialog(
+            title = if (user.isActive) "Zablokuj konto" else "Odblokuj konto",
+            message = if (user.isActive) {
+                "Czy na pewno chcesz zablokować konto użytkownika ${user.firstName} ${user.lastName}?"
+            } else {
+                "Czy na pewno chcesz odblokować konto użytkownika ${user.firstName} ${user.lastName}?"
             },
-            confirmButton = {
-                TextButton(onClick = {
-                    if (user.isActive) viewModel.banUser(user.id) else viewModel.unbanUser(user.id)
-                    showBanDialog = null
-                }) {
-                    Text(
-                        if (user.isActive) "Zablokuj" else "Odblokuj",
-                        color = if (user.isActive) colorScheme.error else colorScheme.primary
-                    )
-                }
+            confirmText = if (user.isActive) "Zablokuj" else "Odblokuj",
+            onDismiss = { showBanDialog = null },
+            onConfirm = {
+                if (user.isActive) viewModel.banUser(user.id) else viewModel.unbanUser(user.id)
+                showBanDialog = null
             },
-            dismissButton = {
-                TextButton(onClick = { showBanDialog = null }) { Text("Anuluj") }
-            }
+            destructive = user.isActive
         )
     }
 }

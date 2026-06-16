@@ -14,14 +14,11 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -37,8 +34,10 @@ import pl.edu.ur.teachly.ui.admin.viewmodels.AdminReviewsViewModel
 import pl.edu.ur.teachly.ui.components.admin.AdminScreenHeader
 import pl.edu.ur.teachly.ui.components.admin.AdminSearchBar
 import pl.edu.ur.teachly.ui.components.other.EmptyListState
+import pl.edu.ur.teachly.ui.components.other.LoadingBox
 import pl.edu.ur.teachly.ui.components.other.MessageSnackbars
 import pl.edu.ur.teachly.ui.components.other.cards.ReviewAdminCard
+import pl.edu.ur.teachly.ui.components.other.dialog.AppConfirmDialog
 
 @Composable
 fun AdminReviewsScreen(viewModel: AdminReviewsViewModel = koinViewModel(), showHeader: Boolean = true) {
@@ -111,19 +110,16 @@ fun AdminReviewsScreen(viewModel: AdminReviewsViewModel = koinViewModel(), showH
             }
 
             when {
-                state.isLoading -> Box(
-                    Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) { CircularProgressIndicator() }
+                state.isLoading -> LoadingBox()
 
-                state.filteredReviews.isEmpty() -> EmptyListState(message = "Brak opinii")
+                state.reviews.isEmpty() -> EmptyListState(message = "Brak opinii")
 
                 else -> LazyColumn(
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(16.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    items(state.filteredReviews) { review ->
+                    items(state.reviews) { review ->
                         ReviewAdminCard(
                             review = review,
                             onDelete = { confirmDeleteId = review.id }
@@ -141,21 +137,16 @@ fun AdminReviewsScreen(viewModel: AdminReviewsViewModel = koinViewModel(), showH
     }
 
     confirmDeleteId?.let { reviewId ->
-        AlertDialog(
-            onDismissRequest = { confirmDeleteId = null },
-            title = { Text("Usuń opinię") },
-            text = { Text("Czy na pewno chcesz usunąć tę opinię? Tej operacji nie można cofnąć.") },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        viewModel.deleteReview(reviewId)
-                        confirmDeleteId = null
-                    }
-                ) { Text("Usuń", color = colorScheme.error) }
+        AppConfirmDialog(
+            title = "Usuń opinię",
+            message = "Czy na pewno chcesz usunąć tę opinię? Tej operacji nie można cofnąć.",
+            confirmText = "Usuń",
+            onDismiss = { confirmDeleteId = null },
+            onConfirm = {
+                viewModel.deleteReview(reviewId)
+                confirmDeleteId = null
             },
-            dismissButton = {
-                TextButton(onClick = { confirmDeleteId = null }) { Text("Anuluj") }
-            }
+            destructive = true
         )
     }
 }

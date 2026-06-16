@@ -6,6 +6,11 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Reprezentuje wolny slot czasowy w planie korepetytora (godzina od–do).
+ *
+ * <p>Używany przez {@link TimetableDayResponse} jako element listy dostępnych terminów.
+ */
 @Data
 @Builder
 @NoArgsConstructor

@@ -8,6 +8,8 @@ import static org.mockito.Mockito.when;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -27,6 +29,7 @@ import pl.edu.ur.teachly.tutor.entity.TutorAvailabilityOverride;
 import pl.edu.ur.teachly.tutor.entity.TutorAvailabilityRecurring;
 import pl.edu.ur.teachly.tutor.repository.TutorAvailabilityOverrideRepository;
 import pl.edu.ur.teachly.tutor.repository.TutorAvailabilityRecurringRepository;
+import pl.edu.ur.teachly.tutor.repository.TutorRepository;
 import pl.edu.ur.teachly.user.entity.User;
 
 @ExtendWith(MockitoExtension.class)
@@ -37,8 +40,19 @@ class TimetableServiceTest {
     @Mock private TutorAvailabilityOverrideRepository overrideRepository;
     @Mock private HolidayRepository holidayRepository;
     @Mock private LessonRepository lessonRepository;
+    @Mock private TutorRepository tutorRepository;
 
     @InjectMocks private TimetableService timetableService;
+
+    @BeforeEach
+    void stubActiveTutor() {
+        Tutor tutor =
+                Tutor.builder()
+                        .userId(TUTOR_ID)
+                        .user(User.builder().isActive(true).build())
+                        .build();
+        when(tutorRepository.findById(TUTOR_ID)).thenReturn(Optional.of(tutor));
+    }
 
     // ─── helpers ─────────────────────────────────────────────────────────────
 

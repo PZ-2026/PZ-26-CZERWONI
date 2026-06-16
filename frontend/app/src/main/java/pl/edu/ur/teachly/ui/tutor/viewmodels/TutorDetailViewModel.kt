@@ -50,12 +50,10 @@ class TutorDetailViewModel(
                 return@launch
             }
 
-            val subjects = tutorRepository.getTutorSubjects(id)
-                .getOrDefault(emptyList())
-                .map { it.subjectName }
+            val tutorSubjects = tutorRepository.getTutorSubjects(id).getOrDefault(emptyList())
 
             try {
-                _state.update { it.copy(tutor = tutorResponse.toUiTutor(subjects)) }
+                _state.update { it.copy(tutor = tutorResponse.toUiTutor(tutorSubjects = tutorSubjects)) }
             } catch (e: Exception) {
                 _state.update { it.copy(isLoading = false, error = e.message) }
                 return@launch
@@ -116,6 +114,26 @@ class TutorDetailViewModel(
         viewModelScope.launch {
             _state.update { it.copy(isSubmittingReview = true, reviewError = null) }
             reviewRepository.updateReview(reviewId, ReviewRequest(tutorId, rating, comment)).fold(
+                onSuccess = {
+                    _state.update {
+                        it.copy(
+                            isSubmittingReview = false,
+                            reviewSubmitSuccess = true
+                        )
+                    }
+                    loadTutor(tutorId.toString())
+                },
+                onFailure = { e ->
+                    _state.update { it.copy(isSubmittingReview = false, reviewError = e.message) }
+                }
+            )
+        }
+    }
+
+    fun deleteReview(reviewId: Int, tutorId: Int) {
+        viewModelScope.launch {
+            _state.update { it.copy(isSubmittingReview = true, reviewError = null) }
+            reviewRepository.deleteReview(reviewId).fold(
                 onSuccess = {
                     _state.update {
                         it.copy(

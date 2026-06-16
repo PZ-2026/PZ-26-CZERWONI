@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme.colorScheme
@@ -34,11 +33,13 @@ import pl.edu.ur.teachly.ui.components.availability.WeeklyTab
 import pl.edu.ur.teachly.ui.components.other.AppHeader
 import pl.edu.ur.teachly.ui.components.other.FullScreenError
 import pl.edu.ur.teachly.ui.components.other.HeaderBackground
+import pl.edu.ur.teachly.ui.components.other.LoadingBox
 import pl.edu.ur.teachly.ui.components.other.MessageSnackbars
 import pl.edu.ur.teachly.ui.components.other.dialog.AvailabilityTimeRangeDialog
 import pl.edu.ur.teachly.ui.components.other.dialog.ConfirmDeleteDialog
 import pl.edu.ur.teachly.ui.components.other.dialog.OverrideDateDialog
 import pl.edu.ur.teachly.ui.models.DAY_NAMES
+import pl.edu.ur.teachly.ui.theme.headerGradientColors
 
 @Composable
 fun AvailabilityScreen(tutorId: Int, onBack: () -> Unit, viewModel: AvailabilityViewModel = koinViewModel()) {
@@ -67,9 +68,7 @@ fun AvailabilityScreen(tutorId: Int, onBack: () -> Unit, viewModel: Availability
             AppHeader(
                 title = "Harmonogram dostępności",
                 subtitle = state.tutorName ?: "Dostosuj swoje godziny pracy",
-                background = HeaderBackground.Diagonal(
-                    listOf(colorScheme.onPrimaryContainer, colorScheme.primary)
-                ),
+                background = HeaderBackground.Diagonal(headerGradientColors()),
                 onBack = onBack
             )
 
@@ -87,10 +86,7 @@ fun AvailabilityScreen(tutorId: Int, onBack: () -> Unit, viewModel: Availability
             }
 
             when {
-                state.isLoading -> Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) { CircularProgressIndicator() }
+                state.isLoading -> LoadingBox()
 
                 state.error != null && state.recurring.isEmpty() && state.overrides.isEmpty() ->
                     FullScreenError(message = state.error!!)

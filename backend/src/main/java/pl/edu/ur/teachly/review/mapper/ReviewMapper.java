@@ -6,6 +6,7 @@ import pl.edu.ur.teachly.review.dto.request.ReviewRequest;
 import pl.edu.ur.teachly.review.dto.response.ReviewResponse;
 import pl.edu.ur.teachly.review.entity.Review;
 
+/** Mapper MapStruct konwertujący między encją {@link Review} a jej DTO. */
 @Mapper(componentModel = "spring")
 public interface ReviewMapper {
     @Mapping(source = "tutor.userId", target = "tutorId")

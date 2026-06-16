@@ -7,21 +7,26 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import pl.edu.ur.teachly.common.enums.LessonFormat;
 import pl.edu.ur.teachly.common.enums.LessonStatus;
+import pl.edu.ur.teachly.common.enums.PaymentStatus;
 import pl.edu.ur.teachly.lesson.entity.Lesson;
 
+/**
+ * Repozytorium JPA dla encji {@link Lesson}.
+ *
+ * <p>Zawiera zapytania do pobierania lekcji ucznia i korepetytora, wykrywania konfliktów terminów
+ * oraz wyszukiwania z wielokryterialnym filtrowaniem dla panelu administratora.
+ */
 @Repository
 public interface LessonRepository extends JpaRepository<Lesson, Integer> {
 
-    // Lesson JOIN Tutor
     @Query("SELECT l FROM Lesson l JOIN l.tutor t WHERE t.userId = :tutorId")
     List<Lesson> findByTutor_UserId(@Param("tutorId") Integer tutorId);
 
-    // Lesson JOIN User (student)
     @Query("SELECT l FROM Lesson l JOIN l.student s WHERE s.id = :studentId")
     List<Lesson> findByStudent_Id(@Param("studentId") Integer studentId);
 
-    // Lesson JOIN Tutor
     @Query(
             """
                     SELECT l FROM Lesson l
@@ -32,7 +37,6 @@ public interface LessonRepository extends JpaRepository<Lesson, Integer> {
     List<Lesson> findByTutor_UserIdAndLessonDate(
             @Param("tutorId") Integer tutorId, @Param("lessonDate") LocalDate lessonDate);
 
-    // Lesson JOIN User (student) JOIN Tutor
     @Query(
             """
                     SELECT COUNT(l) > 0 FROM Lesson l
@@ -47,7 +51,6 @@ public interface LessonRepository extends JpaRepository<Lesson, Integer> {
             @Param("tutorId") Integer tutorId,
             @Param("status") LessonStatus status);
 
-    // Lesson JOIN Tutor
     @Query(
             """
                     SELECT l FROM Lesson l
@@ -62,7 +65,6 @@ public interface LessonRepository extends JpaRepository<Lesson, Integer> {
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate);
 
-    // Lesson JOIN User (student)
     @Query(
             """
                     SELECT l FROM Lesson l
@@ -77,7 +79,6 @@ public interface LessonRepository extends JpaRepository<Lesson, Integer> {
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate);
 
-    // Lesson for Admin
     @Query(
             """
                     SELECT l FROM Lesson l
@@ -125,6 +126,66 @@ public interface LessonRepository extends JpaRepository<Lesson, Integer> {
             @Param("timeTo") LocalTime timeTo,
             @Param("cancelledStatus") LessonStatus cancelledStatus);
 
+    /**
+     * Zwraca lekcje o danym statusie, których czas rozpoczęcia już minął.
+     *
+     * <p>Lekcja jest uznana za przeterminowaną, gdy data jest wcześniejsza niż dzisiaj lub data
+     * jest dzisiejsza i czas rozpoczęcia jest nie późniejszy niż podana chwila bieżąca.
+     *
+     * @param status status lekcji do przeszukania
+     * @param today aktualna data (strefa Warsaw)
+     * @param nowTime aktualna godzina (strefa Warsaw)
+     * @return lista przeterminowanych lekcji o podanym statusie
+     */
+    @Query(
+            """
+                    SELECT l FROM Lesson l
+                    WHERE l.lessonStatus = :status
+                      AND (l.lessonDate < :today
+                           OR (l.lessonDate = :today AND l.timeFrom <= :nowTime))
+                    """)
+    List<Lesson> findExpiredByStatus(
+            @Param("status") LessonStatus status,
+            @Param("today") LocalDate today,
+            @Param("nowTime") LocalTime nowTime);
+
+    /**
+     * Sprawdza, czy istnieje co najmniej jedna lekcja powiązana z danym przedmiotem.
+     *
+     * @param subjectId identyfikator przedmiotu
+     * @return {@code true} jeśli przedmiot jest używany w co najmniej jednej lekcji
+     */
+    boolean existsBySubjectId(Integer subjectId);
+
     @Query("SELECT l.lessonStatus, COUNT(l) FROM Lesson l GROUP BY l.lessonStatus")
     List<Object[]> countGroupedByStatus();
+
+    @Query(
+            """
+                    SELECT DISTINCT l FROM Lesson l
+                    JOIN FETCH l.tutor t
+                    JOIN FETCH t.user tu
+                    JOIN FETCH l.student s
+                    JOIN FETCH l.subject sub
+                    WHERE (:pattern IS NULL OR
+                           LOWER(tu.firstName) LIKE :pattern ESCAPE '\\' OR
+                           LOWER(tu.lastName) LIKE :pattern ESCAPE '\\' OR
+                           LOWER(s.firstName) LIKE :pattern ESCAPE '\\' OR
+                           LOWER(s.lastName) LIKE :pattern ESCAPE '\\' OR
+                           LOWER(sub.subjectName) LIKE :pattern ESCAPE '\\')
+                      AND (:status IS NULL OR l.lessonStatus = :status)
+                      AND (:paymentStatus IS NULL OR l.paymentStatus = :paymentStatus)
+                      AND (:format IS NULL OR l.format = :format)
+                      AND (:upcoming IS NULL OR
+                           (:upcoming = TRUE AND l.lessonDate >= :today) OR
+                           (:upcoming = FALSE AND l.lessonDate < :today))
+                    ORDER BY l.lessonDate DESC, l.timeFrom
+                    """)
+    List<Lesson> searchLessons(
+            @Param("pattern") String pattern,
+            @Param("status") LessonStatus status,
+            @Param("paymentStatus") PaymentStatus paymentStatus,
+            @Param("format") LessonFormat format,
+            @Param("upcoming") Boolean upcoming,
+            @Param("today") LocalDate today);
 }

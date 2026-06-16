@@ -1,17 +1,13 @@
 package pl.edu.ur.teachly.ui.components.other.dialog
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -22,8 +18,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.stringResource
 import java.time.LocalDate
+import pl.edu.ur.teachly.R
+import pl.edu.ur.teachly.ui.components.other.authTextFieldColors
 import pl.edu.ur.teachly.ui.components.other.formatDate
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -35,7 +33,7 @@ fun HolidayDialog(
     onDismiss: () -> Unit,
     onSave: (String, String?) -> Unit
 ) {
-    var date by remember { mutableStateOf(initialDate) }
+    var date by remember { mutableStateOf(initialDate.ifBlank { LocalDate.now().toString() }) }
     var description by remember { mutableStateOf(initialDescription) }
     var showDatePicker by remember { mutableStateOf(false) }
 
@@ -47,6 +45,12 @@ fun HolidayDialog(
         }.getOrNull()
     }
     val datePickerState = rememberDatePickerState(initialSelectedDateMillis = initialDateMillis)
+    val descriptionError = if (description.length > DialogValidation.MAX_LABEL_LENGTH) {
+        stringResource(R.string.error_description_too_long, DialogValidation.MAX_LABEL_LENGTH)
+    } else {
+        null
+    }
+    val isValid = date.isNotBlank() && descriptionError == null
 
     if (showDatePicker) {
         DatePickerDialog(
@@ -60,49 +64,42 @@ fun HolidayDialog(
                             .toString()
                     }
                     showDatePicker = false
-                }) { Text("OK") }
+                }) { Text(stringResource(R.string.btn_ok)) }
             },
             dismissButton = {
-                TextButton(onClick = { showDatePicker = false }) { Text("Anuluj") }
+                TextButton(onClick = { showDatePicker = false }) { Text(stringResource(R.string.cancel)) }
             }
         ) {
             DatePicker(state = datePickerState)
         }
     }
 
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(title) },
-        text = {
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                OutlinedTextField(
-                    value = formatDate(LocalDate.parse(date)),
-                    onValueChange = {},
-                    readOnly = true,
-                    label = { Text("Data") },
-                    trailingIcon = {
-                        IconButton(onClick = { showDatePicker = true }) {
-                            Icon(Icons.Default.CalendarMonth, contentDescription = "Wybierz datę")
-                        }
-                    },
-                    modifier = Modifier.fillMaxWidth()
-                )
-                OutlinedTextField(
-                    value = description,
-                    onValueChange = { if (it.length <= 100) description = it },
-                    label = { Text("Opis (opcjonalnie)") },
-                    leadingIcon = { Icon(Icons.Default.Info, null) },
-                    modifier = Modifier.fillMaxWidth(),
-                    singleLine = true
-                )
-            }
-        },
-        confirmButton = {
-            TextButton(
-                onClick = { onSave(date.trim(), description.trim().ifBlank { null }) },
-                enabled = date.isNotBlank()
-            ) { Text("Zapisz") }
-        },
-        dismissButton = { TextButton(onClick = onDismiss) { Text("Anuluj") } }
-    )
+    AppFormDialog(
+        title = title,
+        onDismiss = onDismiss,
+        onConfirm = { onSave(date.trim(), description.trim().ifBlank { null }) },
+        confirmEnabled = isValid
+    ) {
+        DialogSectionCard {
+            DialogPickerField(
+                value = formatDate(LocalDate.parse(date)),
+                label = stringResource(R.string.field_date),
+                onClick = { showDatePicker = true },
+                trailingIcon = Icons.Default.CalendarMonth,
+                trailingIconDescription = stringResource(R.string.cd_pick_date)
+            )
+            OutlinedTextField(
+                value = description,
+                onValueChange = { if (it.length <= DialogValidation.MAX_LABEL_LENGTH) description = it },
+                label = { Text(stringResource(R.string.field_description_optional)) },
+                leadingIcon = { Icon(Icons.Default.Info, null) },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                shape = DialogFieldShape,
+                colors = authTextFieldColors(),
+                isError = descriptionError != null,
+                supportingText = descriptionError?.let { error -> { Text(error) } }
+            )
+        }
+    }
 }

@@ -10,12 +10,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.School
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme.colorScheme
@@ -31,8 +33,10 @@ import androidx.compose.ui.unit.dp
 import pl.edu.ur.teachly.R
 import pl.edu.ur.teachly.data.model.UserRole
 import pl.edu.ur.teachly.ui.components.other.InitialsAvatar
+import pl.edu.ur.teachly.ui.components.other.rememberDebouncedCallback
 import pl.edu.ur.teachly.ui.profile.viewmodels.StudentProfile
 import pl.edu.ur.teachly.ui.theme.AvatarColor
+import pl.edu.ur.teachly.ui.theme.headerGradientColors
 
 @Composable
 fun ProfileHeader(
@@ -41,7 +45,8 @@ fun ProfileHeader(
     role: UserRole = UserRole.STUDENT,
     onBack: () -> Unit,
     onEditClick: (() -> Unit)? = null,
-    onCalendarClick: (() -> Unit)? = null
+    onCalendarClick: (() -> Unit)? = null,
+    onTutorSetupClick: (() -> Unit)? = null
 ) {
     val roleLabel = when (role) {
         UserRole.STUDENT -> stringResource(R.string.profile_student_role)
@@ -53,22 +58,26 @@ fun ProfileHeader(
             .fillMaxWidth()
             .background(
                 Brush.linearGradient(
-                    colors = listOf(colorScheme.onPrimaryContainer, colorScheme.primary),
+                    colors = headerGradientColors(),
                     start = Offset.Zero,
                     end = Offset(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY)
                 )
             )
-            .padding(horizontal = 24.dp)
-            .padding(top = 28.dp, bottom = 28.dp)
     ) {
-        Column {
+        Column(
+            modifier = Modifier
+                .statusBarsPadding()
+                .padding(horizontal = 24.dp)
+                .padding(top = 28.dp, bottom = 28.dp)
+        ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                val debouncedBack = rememberDebouncedCallback(onClick = onBack)
                 IconButton(
-                    onClick = onBack,
+                    onClick = debouncedBack,
                     modifier = Modifier
                         .size(36.dp)
                         .background(
@@ -86,8 +95,9 @@ fun ProfileHeader(
 
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     if (onCalendarClick != null) {
+                        val debouncedCalendar = rememberDebouncedCallback(onClick = onCalendarClick)
                         IconButton(
-                            onClick = onCalendarClick,
+                            onClick = debouncedCalendar,
                             modifier = Modifier
                                 .size(36.dp)
                                 .background(
@@ -97,16 +107,37 @@ fun ProfileHeader(
                         ) {
                             Icon(
                                 Icons.Default.CalendarMonth,
-                                contentDescription = "Harmonogram",
+                                contentDescription = stringResource(R.string.cd_tutor_schedule),
                                 tint = colorScheme.onPrimary,
                                 modifier = Modifier.size(18.dp)
                             )
                         }
-                        Spacer(modifier = Modifier.width(8.dp))
                     }
-                    if (onEditClick != null) {
+                    Spacer(modifier = Modifier.width(8.dp))
+                    if (onTutorSetupClick != null) {
+                        val debouncedTutorSetup = rememberDebouncedCallback(onClick = onTutorSetupClick)
                         IconButton(
-                            onClick = onEditClick,
+                            onClick = debouncedTutorSetup,
+                            modifier = Modifier
+                                .size(36.dp)
+                                .background(
+                                    colorScheme.onPrimary.copy(alpha = 0.15f),
+                                    RoundedCornerShape(10.dp)
+                                )
+                        ) {
+                            Icon(
+                                Icons.Default.School,
+                                contentDescription = stringResource(R.string.cd_edit_tutor_profile),
+                                tint = colorScheme.onPrimary,
+                                modifier = Modifier.size(18.dp)
+                            )
+                        }
+                    }
+                    Spacer(modifier = Modifier.width(8.dp))
+                    if (onEditClick != null) {
+                        val debouncedEdit = rememberDebouncedCallback(onClick = onEditClick)
+                        IconButton(
+                            onClick = debouncedEdit,
                             modifier = Modifier
                                 .size(36.dp)
                                 .background(

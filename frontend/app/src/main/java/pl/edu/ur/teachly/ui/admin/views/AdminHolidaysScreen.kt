@@ -14,14 +14,10 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -39,8 +35,10 @@ import pl.edu.ur.teachly.ui.components.admin.AdminScreenHeader
 import pl.edu.ur.teachly.ui.components.other.EmptyListState
 import pl.edu.ur.teachly.ui.components.other.ExpandableFilterSection
 import pl.edu.ur.teachly.ui.components.other.FilterChips
+import pl.edu.ur.teachly.ui.components.other.LoadingBox
 import pl.edu.ur.teachly.ui.components.other.MessageSnackbars
 import pl.edu.ur.teachly.ui.components.other.cards.HolidayCard
+import pl.edu.ur.teachly.ui.components.other.dialog.AppConfirmDialog
 import pl.edu.ur.teachly.ui.components.other.dialog.HolidayDialog
 
 @Composable
@@ -92,10 +90,7 @@ fun AdminHolidaysScreen(viewModel: AdminHolidaysViewModel = koinViewModel(), sho
             }
 
             when {
-                state.isLoading -> Box(
-                    Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) { CircularProgressIndicator() }
+                state.isLoading -> LoadingBox()
 
                 state.holidays.isEmpty() -> EmptyListState(message = "Brak zdefiniowanych świąt")
 
@@ -161,17 +156,16 @@ fun AdminHolidaysScreen(viewModel: AdminHolidaysViewModel = koinViewModel(), sho
     }
 
     showDeleteDialog?.let { holiday ->
-        AlertDialog(
-            onDismissRequest = { showDeleteDialog = null },
-            title = { Text("Usuń święto") },
-            text = { Text("Czy na pewno chcesz usunąć: ${holiday.holidayDate}?") },
-            confirmButton = {
-                TextButton(onClick = {
-                    viewModel.deleteHoliday(holiday.id)
-                    showDeleteDialog = null
-                }) { Text("Usuń", color = colorScheme.error) }
+        AppConfirmDialog(
+            title = "Usuń święto",
+            message = "Czy na pewno chcesz usunąć: ${holiday.holidayDate}?",
+            confirmText = "Usuń",
+            onDismiss = { showDeleteDialog = null },
+            onConfirm = {
+                viewModel.deleteHoliday(holiday.id)
+                showDeleteDialog = null
             },
-            dismissButton = { TextButton(onClick = { showDeleteDialog = null }) { Text("Anuluj") } }
+            destructive = true
         )
     }
 }

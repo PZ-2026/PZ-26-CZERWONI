@@ -1,9 +1,12 @@
 package pl.edu.ur.teachly.data.remote
 
 import pl.edu.ur.teachly.data.model.AdminLessonUpdateRequest
+import pl.edu.ur.teachly.data.model.LessonFormat
 import pl.edu.ur.teachly.data.model.LessonRequest
 import pl.edu.ur.teachly.data.model.LessonResponse
+import pl.edu.ur.teachly.data.model.LessonStatus
 import pl.edu.ur.teachly.data.model.LessonStatusRequest
+import pl.edu.ur.teachly.data.model.PaymentStatus
 import pl.edu.ur.teachly.data.model.PaymentStatusRequest
 import pl.edu.ur.teachly.data.model.StudentNotesRequest
 import pl.edu.ur.teachly.data.model.TutorNotesRequest
@@ -14,11 +17,18 @@ import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface LessonApiService {
 
     @GET("api/lessons")
-    suspend fun getAllLessons(): Response<List<LessonResponse>>
+    suspend fun getAllLessons(
+        @Query("q") query: String? = null,
+        @Query("status") status: LessonStatus? = null,
+        @Query("paymentStatus") paymentStatus: PaymentStatus? = null,
+        @Query("format") format: LessonFormat? = null,
+        @Query("upcoming") upcoming: Boolean? = null
+    ): Response<List<LessonResponse>>
 
     @POST("api/lessons/student/{studentId}")
     suspend fun createLesson(@Path("studentId") studentId: Int, @Body request: LessonRequest): Response<LessonResponse>

@@ -4,6 +4,12 @@ import jakarta.persistence.*;
 import java.time.LocalDate;
 import lombok.*;
 
+/**
+ * Encja reprezentująca dzień wolny od zajęć (święto) w kalendarzu systemu.
+ *
+ * <p>Data święta jest unikalna — w danym dniu może istnieć tylko jeden wpis. Dni wolne blokują
+ * wszystkie terminy w planie zajęć korepetytorów.
+ */
 @Entity
 @Table(name = "holidays")
 @Getter
@@ -12,6 +18,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Holiday {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;

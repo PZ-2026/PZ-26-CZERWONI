@@ -22,6 +22,17 @@ import pl.edu.ur.teachly.report.library.model.ReportData;
 import pl.edu.ur.teachly.user.entity.User;
 import pl.edu.ur.teachly.user.repository.UserRepository;
 
+/**
+ * Serwis generujący raporty PDF dla użytkowników platformy.
+ *
+ * <p>Dostępne typy raportów zależą od roli użytkownika:
+ *
+ * <ul>
+ *   <li><b>STUDENT</b>: LESSONS (domyślny), EXPENSES, ANALYTICS
+ *   <li><b>TUTOR</b>: LESSONS (domyślny), REVENUE, STUDENTS
+ *   <li><b>ADMIN</b>: LESSONS (domyślny), REVENUE, USERS
+ * </ul>
+ */
 @Service
 @RequiredArgsConstructor
 public class ReportService {
@@ -29,6 +40,18 @@ public class ReportService {
     private final LessonRepository lessonRepository;
     private final UserRepository userRepository;
 
+    /**
+     * Generuje raport PDF na podstawie roli użytkownika, zakresu dat i wybranego typu.
+     *
+     * @param user zalogowany użytkownik — jego rola decyduje o typach dostępnych raportów
+     * @param startDate data początkowa zakresu lekcji
+     * @param endDate data końcowa zakresu lekcji
+     * @param type typ raportu (np. LESSONS, REVENUE, EXPENSES — zależny od roli)
+     * @param includeFields lista pól do uwzględnienia w raporcie; {@code null} oznacza wszystkie
+     *     pola
+     * @return bajty wygenerowanego pliku PDF
+     * @throws RuntimeException gdy podczas kompilowania raportu wystąpi błąd
+     */
     @Transactional(readOnly = true)
     public byte[] generateReport(
             User user,

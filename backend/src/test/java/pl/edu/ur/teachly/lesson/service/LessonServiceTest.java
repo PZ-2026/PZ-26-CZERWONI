@@ -19,6 +19,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -81,7 +82,13 @@ class LessonServiceTest {
     }
 
     private Tutor tutor(int id, User user) {
-        return Tutor.builder().userId(id).user(user).hourlyRate(BigDecimal.valueOf(50)).build();
+        return Tutor.builder()
+                .userId(id)
+                .user(user)
+                .hourlyRate(BigDecimal.valueOf(50))
+                .offersOnline(true)
+                .offersInPerson(true)
+                .build();
     }
 
     private LessonRequest validRequest() {
@@ -120,6 +127,7 @@ class LessonServiceTest {
                             2,
                             "Adam",
                             "Nowak",
+                            null,
                             null,
                             1,
                             "Jan",
@@ -402,6 +410,24 @@ class LessonServiceTest {
         }
 
         @Test
+        @DisplayName("PENDING → CONFIRMED: kolizja z inną potwierdzoną lekcją rzuca wyjątek")
+        void pendingToConfirmed_slotTaken_throws() {
+            Lesson lesson = buildLesson(LessonStatus.PENDING);
+            LessonStatusRequest req = new LessonStatusRequest(LessonStatus.CONFIRMED, null);
+
+            when(lessonRepository.findById(1)).thenReturn(Optional.of(lesson));
+            when(lessonRepository.existsConflictingLesson(
+                            eq(10), any(), any(), any(), eq(LessonStatus.CONFIRMED)))
+                    .thenReturn(true);
+
+            mockSecurityContext(tutorUserRole());
+            assertThatThrownBy(() -> lessonService.changeLessonStatus(1, req))
+                    .isInstanceOf(SlotNotAvailableException.class);
+
+            assertThat(lesson.getLessonStatus()).isEqualTo(LessonStatus.PENDING);
+        }
+
+        @Test
         @DisplayName("PENDING → CANCELLED: każdy może anulować")
         void pendingToCancelled_byStudent_success() {
             Lesson lesson = buildLesson(LessonStatus.PENDING);
@@ -520,14 +546,75 @@ class LessonServiceTest {
     }
 
     @Test
+    @DisplayName("getLesson – błąd: lekcja nie istnieje")
+    void getLesson_notFound_throwsResourceNotFoundException() {
+        when(lessonRepository.findById(99)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> lessonService.getLesson(99))
+                .isInstanceOf(ResourceNotFoundException.class);
+    }
+
+    @Test
+    @DisplayName("getLesson – sukces: uczeń będący uczestnikiem")
+    void getLesson_studentParticipant_success() {
+        User student = User.builder().id(1).userRole(UserRole.STUDENT).build();
+        Lesson lesson = new Lesson();
+        lesson.setStudent(student);
+        LessonResponse response = mock(LessonResponse.class);
+
+        when(lessonRepository.findById(1)).thenReturn(Optional.of(lesson));
+        when(lessonMapper.toResponse(lesson)).thenReturn(response);
+        mockSecurityContext(student);
+
+        assertThat(lessonService.getLesson(1)).isEqualTo(response);
+    }
+
+    @Test
+    @DisplayName("getLesson – sukces: korepetytor będący uczestnikiem")
+    void getLesson_tutorParticipant_success() {
+        User tutorUser = User.builder().id(2).userRole(UserRole.TUTOR).build();
+        Tutor tutor = Tutor.builder().userId(2).build();
+        Lesson lesson = new Lesson();
+        lesson.setTutor(tutor);
+        lesson.setStudent(User.builder().id(1).build());
+        LessonResponse response = mock(LessonResponse.class);
+
+        when(lessonRepository.findById(1)).thenReturn(Optional.of(lesson));
+        when(lessonMapper.toResponse(lesson)).thenReturn(response);
+        mockSecurityContext(tutorUser);
+
+        assertThat(lessonService.getLesson(1)).isEqualTo(response);
+    }
+
+    @Test
+    @DisplayName("getLesson – błąd: brak dostępu dla nieuczestnika")
+    void getLesson_notParticipant_throwsAccessDeniedException() {
+        User student = User.builder().id(1).build();
+        User other = User.builder().id(5).userRole(UserRole.STUDENT).build();
+        Lesson lesson = new Lesson();
+        lesson.setStudent(student);
+        Tutor tutor = Tutor.builder().userId(2).build();
+        lesson.setTutor(tutor);
+
+        when(lessonRepository.findById(1)).thenReturn(Optional.of(lesson));
+        mockSecurityContext(other);
+
+        assertThatThrownBy(() -> lessonService.getLesson(1))
+                .isInstanceOf(AccessDeniedException.class)
+                .hasMessageContaining("Brak dostępu");
+    }
+
+    @Test
     @DisplayName("getAllLessons – zwraca wszystkie lekcje")
     void getAllLessons_success() {
         Lesson lesson = new Lesson();
         LessonResponse response = mock(LessonResponse.class);
-        when(lessonRepository.findAll()).thenReturn(List.of(lesson));
+        when(lessonRepository.searchLessons(
+                        null, null, null, null, null, java.time.LocalDate.now()))
+                .thenReturn(List.of(lesson));
         when(lessonMapper.toResponse(lesson)).thenReturn(response);
 
-        List<LessonResponse> result = lessonService.getAllLessons();
+        List<LessonResponse> result = lessonService.searchLessons(null, null, null, null, null);
 
         assertThat(result).containsExactly(response);
     }
@@ -588,5 +675,108 @@ class LessonServiceTest {
 
         assertThat(lesson.getPaymentStatus()).isEqualTo(PaymentStatus.PAID);
         verify(lessonRepository).save(lesson);
+    }
+
+    @Test
+    @DisplayName("updateStudentNotes – błąd: brak uprawnień")
+    void updateStudentNotes_accessDenied() {
+        User student = User.builder().id(1).build();
+        Lesson lesson = new Lesson();
+        lesson.setStudent(student);
+
+        when(lessonRepository.findById(1)).thenReturn(Optional.of(lesson));
+
+        assertThatThrownBy(
+                        () ->
+                                lessonService.updateStudentNotes(
+                                        1,
+                                        new pl.edu.ur.teachly.lesson.dto.request
+                                                .StudentNotesRequest("x"),
+                                        99))
+                .isInstanceOf(AccessDeniedException.class);
+    }
+
+    @Test
+    @DisplayName("updateTutorNotes – błąd: brak uprawnień")
+    void updateTutorNotes_accessDenied() {
+        Tutor tutor = Tutor.builder().userId(2).build();
+        Lesson lesson = new Lesson();
+        lesson.setTutor(tutor);
+
+        when(lessonRepository.findById(1)).thenReturn(Optional.of(lesson));
+
+        assertThatThrownBy(
+                        () ->
+                                lessonService.updateTutorNotes(
+                                        1,
+                                        new pl.edu.ur.teachly.lesson.dto.request.TutorNotesRequest(
+                                                "x"),
+                                        99))
+                .isInstanceOf(AccessDeniedException.class);
+    }
+
+    @Test
+    @DisplayName("updatePaymentStatus – błąd: lekcja nie istnieje")
+    void updatePaymentStatus_notFound() {
+        when(lessonRepository.findById(99)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(
+                        () ->
+                                lessonService.updatePaymentStatus(
+                                        99,
+                                        new pl.edu.ur.teachly.lesson.dto.request
+                                                .PaymentStatusRequest(PaymentStatus.PAID)))
+                .isInstanceOf(ResourceNotFoundException.class);
+    }
+
+    @Test
+    @DisplayName("adminUpdateLesson – sukces: aktualizuje wszystkie pola lekcji")
+    void adminUpdateLesson_success() {
+        Lesson lesson = new Lesson();
+        LessonResponse response = mock(LessonResponse.class);
+        pl.edu.ur.teachly.lesson.dto.request.AdminLessonUpdateRequest req =
+                new pl.edu.ur.teachly.lesson.dto.request.AdminLessonUpdateRequest(
+                        LocalDate.of(2025, 8, 1),
+                        LocalTime.of(12, 0),
+                        LocalTime.of(13, 0),
+                        LessonFormat.IN_PERSON,
+                        LessonStatus.CONFIRMED,
+                        PaymentStatus.PAID,
+                        java.math.BigDecimal.valueOf(100),
+                        "Notatka ucznia",
+                        "Notatka tutora");
+
+        when(lessonRepository.findById(1)).thenReturn(Optional.of(lesson));
+        when(lessonRepository.save(lesson)).thenReturn(lesson);
+        when(lessonMapper.toResponse(lesson)).thenReturn(response);
+
+        LessonResponse result = lessonService.adminUpdateLesson(1, req);
+
+        assertThat(result).isEqualTo(response);
+        assertThat(lesson.getLessonDate()).isEqualTo(LocalDate.of(2025, 8, 1));
+        assertThat(lesson.getLessonStatus()).isEqualTo(LessonStatus.CONFIRMED);
+        assertThat(lesson.getPaymentStatus()).isEqualTo(PaymentStatus.PAID);
+        verify(lessonRepository).save(lesson);
+    }
+
+    @Test
+    @DisplayName("adminUpdateLesson – błąd: lekcja nie istnieje")
+    void adminUpdateLesson_notFound_throwsResourceNotFoundException() {
+        pl.edu.ur.teachly.lesson.dto.request.AdminLessonUpdateRequest req =
+                new pl.edu.ur.teachly.lesson.dto.request.AdminLessonUpdateRequest(
+                        LocalDate.of(2025, 8, 1),
+                        LocalTime.of(12, 0),
+                        LocalTime.of(13, 0),
+                        LessonFormat.ONLINE,
+                        LessonStatus.PENDING,
+                        PaymentStatus.PENDING,
+                        java.math.BigDecimal.valueOf(50),
+                        null,
+                        null);
+
+        when(lessonRepository.findById(99)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> lessonService.adminUpdateLesson(99, req))
+                .isInstanceOf(ResourceNotFoundException.class);
     }
 }

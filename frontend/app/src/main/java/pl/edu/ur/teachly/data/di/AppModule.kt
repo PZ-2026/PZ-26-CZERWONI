@@ -4,6 +4,7 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 import pl.edu.ur.teachly.data.local.ReviewPreferencesManager
+import pl.edu.ur.teachly.data.local.SessionManager
 import pl.edu.ur.teachly.data.local.TokenManager
 import pl.edu.ur.teachly.data.repository.AdminRepository
 import pl.edu.ur.teachly.data.repository.AuthRepository
@@ -38,6 +39,7 @@ import pl.edu.ur.teachly.ui.tutor.viewmodels.TutorDetailViewModel
 val appModule = module {
     // Core
     single { TokenManager(androidContext()) }
+    single { SessionManager() }
     single { ReviewPreferencesManager(androidContext()) }
 
     // Repositories
@@ -55,7 +57,7 @@ val appModule = module {
     viewModel { AvailabilityViewModel(get()) }
     viewModel { LoginViewModel(get()) }
     viewModel { RegisterViewModel(get()) }
-    viewModel { SearchViewModel(get(), get(), get()) }
+    viewModel { SearchViewModel(get(), get()) }
     viewModel { HomeViewModel(get(), get(), get(), get(), get()) }
     viewModel { BookingViewModel(get(), get(), get()) }
     viewModel { ScheduleViewModel(get(), get()) }
@@ -69,10 +71,10 @@ val appModule = module {
 
     // Admin ViewModels
     viewModel { AdminDashboardViewModel(get()) }
-    viewModel { AdminUsersViewModel(get()) }
+    viewModel { AdminUsersViewModel(get(), get()) }
     viewModel { AdminLessonsViewModel(get()) }
     viewModel { AdminHolidaysViewModel(get()) }
     viewModel { AdminSubjectsViewModel(get()) }
-    viewModel { AdminTutorsViewModel(get()) }
+    viewModel { AdminTutorsViewModel(get(), get()) }
     viewModel { AdminReviewsViewModel(get()) }
 }

@@ -20,13 +20,31 @@ import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import androidx.navigation.findNavController
+import kotlinx.coroutines.launch
+import org.koin.compose.koinInject
+import pl.edu.ur.teachly.R
+import pl.edu.ur.teachly.data.repository.AuthRepository
+import pl.edu.ur.teachly.navigation.navigateToSplash
 
 @Composable
-fun FullScreenError(message: String, modifier: Modifier = Modifier) {
+fun FullScreenError(message: String, modifier: Modifier = Modifier, onLogout: (() -> Unit)? = null) {
+    val authRepository = koinInject<AuthRepository>()
+    val scope = rememberCoroutineScope()
+    val view = LocalView.current
+    val navController = remember(view) {
+        runCatching { view.findNavController() }.getOrNull()
+    }
+
     Box(
         modifier = modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
@@ -47,6 +65,21 @@ fun FullScreenError(message: String, modifier: Modifier = Modifier) {
                 style = typography.bodyMedium,
                 color = colorScheme.error,
                 textAlign = TextAlign.Center
+            )
+            Spacer(Modifier.height(8.dp))
+            LogoutButton(
+                text = stringResource(R.string.logout),
+                onClick = {
+                    if (onLogout != null) {
+                        onLogout()
+                    } else {
+                        (navController as? NavHostController)?.navigateToSplash()
+                    }
+                    scope.launch {
+                        authRepository.logout()
+                    }
+                },
+                modifier = Modifier.fillMaxWidth()
             )
         }
     }

@@ -7,6 +7,11 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import pl.edu.ur.teachly.common.enums.LessonFormat;
 
+/**
+ * Żądanie utworzenia nowej lekcji przez ucznia.
+ *
+ * <p>Czas zakończenia musi być późniejszy niż czas rozpoczęcia (walidacja {@code @AssertTrue}).
+ */
 public record LessonRequest(
         @NotNull(message = "Tutor jest wymagany") Integer tutorId,
         @NotNull(message = "Przedmiot jest wymagany") Integer subjectId,

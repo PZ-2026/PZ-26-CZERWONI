@@ -5,13 +5,17 @@ data class Tutor(
     val name: String,
     val initials: String,
     val subjects: List<String>,
+    val subjectsByLevel: List<SubjectsByLevelGroup> = emptyList(),
+    val subjectsWithoutLevel: List<String> = emptyList(),
     val rating: Double,
     val reviewCount: Int,
-    val pricePerHour: Int,
+    val pricePerHour: Double,
     val tags: List<String>,
-    val isOnline: Boolean,
+    val offersOnline: Boolean,
+    val offersInPerson: Boolean,
     val nearestSlots: List<String>,
     val bio: String = "",
     val lessonCount: Int = 0,
-    val avatarUrl: String? = null
+    val avatarUrl: String? = null,
+    val city: String? = null
 )

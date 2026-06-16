@@ -3,6 +3,8 @@ package pl.edu.ur.teachly.tutor.service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -22,7 +24,22 @@ import pl.edu.ur.teachly.tutor.entity.TutorAvailabilityOverride;
 import pl.edu.ur.teachly.tutor.entity.TutorAvailabilityRecurring;
 import pl.edu.ur.teachly.tutor.repository.TutorAvailabilityOverrideRepository;
 import pl.edu.ur.teachly.tutor.repository.TutorAvailabilityRecurringRepository;
+import pl.edu.ur.teachly.tutor.repository.TutorRepository;
 
+/**
+ * Serwis generujący plan dostępnych terminów korepetytora w zadanym przedziale dat.
+ *
+ * <p>Algorytm dla każdego dnia z zakresu:
+ *
+ * <ol>
+ *   <li>Jeśli dzień jest świętem — brak terminów.
+ *   <li>Jeśli istnieje jednorazowe nadpisanie ({@code override}) — użyj jego godzin (lub brak
+ *       terminów, gdy brak godzin).
+ *   <li>W przeciwnym razie użyj wpisów cyklicznych ({@code recurring}) pasujących do dnia tygodnia.
+ *   <li>Odejmij terminy zajęte przez potwierdzone lekcje oraz lekcje oczekujące bieżącego ucznia.
+ *   <li>Odfiltruj sloty z przeszłości oraz krótsze niż 30 minut.
+ * </ol>
+ */
 @Service
 @RequiredArgsConstructor
 public class TimetableService {
@@ -31,9 +48,36 @@ public class TimetableService {
     private final TutorAvailabilityOverrideRepository overrideRepository;
     private final HolidayRepository holidayRepository;
     private final LessonRepository lessonRepository;
+    private final TutorRepository tutorRepository;
 
+    /**
+     * Generuje plan wolnych terminów korepetytora dla podanego zakresu dat.
+     *
+     * <p>Jeśli korepetytor jest nieaktywny, zwracana jest pusta lista. Lekcje oczekujące bieżącego
+     * ucznia są traktowane jako zajęte — dzięki temu uczeń widzi swoje własne rezerwacje jako
+     * blokujące termin.
+     *
+     * @param tutorId identyfikator korepetytora
+     * @param fromDate początek zakresu dat (włącznie)
+     * @param toDate koniec zakresu dat (włącznie)
+     * @param currentStudentId identyfikator zalogowanego ucznia ({@code null} jeśli nie dotyczy)
+     * @return lista obiektów dziennych z dostępnymi slotami godzinowymi
+     */
     public List<TimetableDayResponse> getTimetable(
             Integer tutorId, LocalDate fromDate, LocalDate toDate, Integer currentStudentId) {
+
+        boolean tutorActive =
+                tutorRepository
+                        .findById(tutorId)
+                        .map(
+                                tutor ->
+                                        tutor.getUser() != null
+                                                && Boolean.TRUE.equals(
+                                                        tutor.getUser().getIsActive()))
+                        .orElse(false);
+        if (!tutorActive) {
+            return Collections.emptyList();
+        }
 
         List<TutorAvailabilityRecurring> recurrings =
                 recurringRepository.findByTutor_UserId(tutorId);
@@ -108,14 +152,25 @@ public class TimetableService {
                 freeBlocks = subtractLesson(freeBlocks, lesson.getTimeFrom(), lesson.getTimeTo());
             }
 
-            final LocalTime minTime =
-                    currentDate.equals(LocalDate.now())
-                            ? LocalDateTime.now().toLocalTime()
-                            : LocalTime.MIDNIGHT;
+            final LocalTime minTime;
+            ZoneId zone = ZoneId.of("Europe/Warsaw");
+            if (currentDate.equals(LocalDate.now(zone))) {
+                LocalTime now =
+                        LocalDateTime.now(zone).toLocalTime().truncatedTo(ChronoUnit.MINUTES);
+                int remainder = now.getMinute() % 30;
+                minTime = remainder == 0 ? now : now.plusMinutes(30 - remainder);
+            } else {
+                minTime = LocalTime.MIDNIGHT;
+            }
 
             freeBlocks =
                     freeBlocks.stream()
-                            .filter(b -> b.getTimeFrom().isAfter(minTime))
+                            .map(
+                                    b ->
+                                            b.getTimeFrom().isBefore(minTime)
+                                                    ? new TimeSlot(minTime, b.getTimeTo())
+                                                    : b)
+                            .filter(b -> b.getTimeFrom().isBefore(b.getTimeTo()))
                             .filter(
                                     b ->
                                             java.time.Duration.between(
@@ -131,6 +186,17 @@ public class TimetableService {
         return timetable;
     }
 
+    /**
+     * Odejmuje zajęty przedział lekcji od listy wolnych bloków czasowych.
+     *
+     * <p>Blok, który nie pokrywa się z lekcją, jest przepuszczany bez zmian. Blok częściowo pokryty
+     * jest dzielony — pozostają fragmenty przed i po lekcji.
+     *
+     * @param blocks lista wolnych slotów do przycięcia
+     * @param lessonStart godzina rozpoczęcia lekcji
+     * @param lessonEnd godzina zakończenia lekcji
+     * @return zaktualizowana lista wolnych slotów po odjęciu lekcji
+     */
     private List<TimeSlot> subtractLesson(
             List<TimeSlot> blocks, LocalTime lessonStart, LocalTime lessonEnd) {
         List<TimeSlot> updatedBlocks = new ArrayList<>();

@@ -12,17 +12,34 @@ import pl.edu.ur.teachly.subject.dto.response.SubjectCategoryResponse;
 import pl.edu.ur.teachly.subject.dto.response.SubjectResponse;
 import pl.edu.ur.teachly.subject.service.SubjectService;
 
+/**
+ * Kontroler REST obsługujący endpointy przedmiotów i ich kategorii.
+ *
+ * <p>Ścieżka bazowa: {@code /api/subjects}. Odczyt danych jest publiczny, natomiast operacje zapisu
+ * (dodawanie, edycja, usuwanie) wymagają roli ADMIN.
+ */
 @RestController
 @RequestMapping("/api/subjects")
 @RequiredArgsConstructor
 public class SubjectController {
     private final SubjectService subjectService;
 
+    /**
+     * Zwraca listę wszystkich przedmiotów. Publiczny endpoint.
+     *
+     * @return lista przedmiotów
+     */
     @GetMapping
     public List<SubjectResponse> getAllSubjects() {
         return subjectService.getAllSubjects();
     }
 
+    /**
+     * Dodaje nowy przedmiot. Dostępne tylko dla ADMIN.
+     *
+     * @param request dane nowego przedmiotu
+     * @return zapisany przedmiot
+     */
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(HttpStatus.CREATED)
@@ -30,6 +47,13 @@ public class SubjectController {
         return subjectService.addSubject(request);
     }
 
+    /**
+     * Aktualizuje dane przedmiotu. Dostępne tylko dla ADMIN.
+     *
+     * @param id identyfikator przedmiotu
+     * @param request nowe dane przedmiotu
+     * @return zaktualizowany przedmiot
+     */
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public SubjectResponse updateSubject(
@@ -37,6 +61,11 @@ public class SubjectController {
         return subjectService.updateSubject(id, request);
     }
 
+    /**
+     * Usuwa przedmiot. Dostępne tylko dla ADMIN.
+     *
+     * @param id identyfikator przedmiotu
+     */
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -44,11 +73,22 @@ public class SubjectController {
         subjectService.deleteSubject(id);
     }
 
+    /**
+     * Zwraca listę wszystkich kategorii przedmiotów. Publiczny endpoint.
+     *
+     * @return lista kategorii
+     */
     @GetMapping("/categories")
     public List<SubjectCategoryResponse> getAllCategories() {
         return subjectService.getAllCategories();
     }
 
+    /**
+     * Dodaje nową kategorię przedmiotów. Dostępne tylko dla ADMIN.
+     *
+     * @param request dane nowej kategorii
+     * @return zapisana kategoria
+     */
     @PostMapping("/categories")
     @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(HttpStatus.CREATED)
@@ -57,6 +97,13 @@ public class SubjectController {
         return subjectService.addSubjectCategory(request);
     }
 
+    /**
+     * Aktualizuje kategorię przedmiotów. Dostępne tylko dla ADMIN.
+     *
+     * @param id identyfikator kategorii
+     * @param request nowa nazwa kategorii
+     * @return zaktualizowana kategoria
+     */
     @PutMapping("/categories/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public SubjectCategoryResponse updateSubjectCategory(
@@ -64,6 +111,11 @@ public class SubjectController {
         return subjectService.updateSubjectCategory(id, request);
     }
 
+    /**
+     * Usuwa kategorię przedmiotów. Dostępne tylko dla ADMIN.
+     *
+     * @param id identyfikator kategorii
+     */
     @DeleteMapping("/categories/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(HttpStatus.NO_CONTENT)

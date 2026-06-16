@@ -1,26 +1,20 @@
 package pl.edu.ur.teachly.ui.components.other.dialog
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Payments
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material.icons.filled.School
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -35,6 +29,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import java.time.LocalDate
 import pl.edu.ur.teachly.data.model.AdminLessonUpdateRequest
@@ -42,6 +37,7 @@ import pl.edu.ur.teachly.data.model.LessonFormat
 import pl.edu.ur.teachly.data.model.LessonResponse
 import pl.edu.ur.teachly.data.model.LessonStatus
 import pl.edu.ur.teachly.data.model.PaymentStatus
+import pl.edu.ur.teachly.ui.components.other.authTextFieldColors
 import pl.edu.ur.teachly.ui.components.other.formatDate
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -52,7 +48,7 @@ fun LessonEditDialog(lesson: LessonResponse, onDismiss: () -> Unit, onSave: (Adm
     var timeTo by remember { mutableStateOf(lesson.timeTo) }
     var lessonStatus by remember { mutableStateOf(lesson.lessonStatus) }
     var paymentStatus by remember { mutableStateOf(lesson.paymentStatus) }
-    var amount by remember { mutableStateOf("%.2f".format(lesson.amount)) }
+    var amount by remember { mutableStateOf(DialogValidation.formatEditableDecimal(lesson.amount)) }
     var studentNotes by remember { mutableStateOf(lesson.studentNotes ?: "") }
     var tutorNotes by remember { mutableStateOf(lesson.tutorNotes ?: "") }
     var format by remember { mutableStateOf(lesson.format) }
@@ -87,6 +83,11 @@ fun LessonEditDialog(lesson: LessonResponse, onDismiss: () -> Unit, onSave: (Adm
         initialMinute = initialTimeTo?.minute ?: 0,
         is24Hour = true
     )
+
+    val amountError = DialogValidation.lessonAmountError(amount)
+    val timeRangeError = DialogValidation.timeRangeError(timeFrom, timeTo)
+    val isValid = DialogValidation.isLessonAmountValid(amount) &&
+        DialogValidation.isTimeRangeValid(timeFrom, timeTo)
 
     if (showDatePicker) {
         DatePickerDialog(
@@ -147,125 +148,130 @@ fun LessonEditDialog(lesson: LessonResponse, onDismiss: () -> Unit, onSave: (Adm
         }
     }
 
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text("Edytuj lekcję #${lesson.id}") },
-        text = {
-            Column(
-                modifier = Modifier.verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                OutlinedTextField(
-                    value = formatDate(LocalDate.parse(lessonDate)),
-                    onValueChange = {},
-                    readOnly = true,
-                    label = { Text("Data") },
-                    trailingIcon = {
-                        IconButton(onClick = { showDatePicker = true }) {
-                            Icon(Icons.Default.CalendarMonth, contentDescription = "Wybierz datę")
-                        }
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { showDatePicker = true }
+    AppFormDialog(
+        title = "Edytuj lekcję #${lesson.id}",
+        subtitle = "${lesson.subjectName} · ${lesson.tutorFirstName} ${lesson.tutorLastName}",
+        onDismiss = onDismiss,
+        onConfirm = {
+            onSave(
+                AdminLessonUpdateRequest(
+                    lessonDate = lessonDate,
+                    timeFrom = timeFrom,
+                    timeTo = timeTo,
+                    format = format,
+                    lessonStatus = lessonStatus,
+                    paymentStatus = paymentStatus,
+                    amount = DialogValidation.parseDecimal(amount)!!,
+                    studentNotes = studentNotes.trim().ifBlank { null },
+                    tutorNotes = tutorNotes.trim().ifBlank { null }
                 )
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Box(modifier = Modifier.weight(1f)) {
-                        OutlinedTextField(
-                            value = timeFrom,
-                            onValueChange = {},
-                            readOnly = true,
-                            label = { Text("Od") },
-                            leadingIcon = { Icon(Icons.Default.Schedule, null) },
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                        Box(
-                            modifier = Modifier
-                                .matchParentSize()
-                                .clickable { showTimeFromPicker = true }
-                        )
-                    }
-                    Box(modifier = Modifier.weight(1f)) {
-                        OutlinedTextField(
-                            value = timeTo,
-                            onValueChange = {},
-                            readOnly = true,
-                            label = { Text("Do") },
-                            leadingIcon = { Icon(Icons.Default.Schedule, null) },
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                        Box(
-                            modifier = Modifier
-                                .matchParentSize()
-                                .clickable { showTimeToPicker = true }
-                        )
-                    }
-                }
-                OutlinedTextField(
-                    value = amount,
-                    onValueChange = { amount = it },
-                    label = { Text("Kwota (PLN)") },
-                    leadingIcon = { Icon(Icons.Default.Payments, null) },
-                    modifier = Modifier.fillMaxWidth(),
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
+            )
+        },
+        confirmEnabled = isValid
+    ) {
+        DialogSectionCard(title = "Termin") {
+            DialogPickerField(
+                value = formatDate(LocalDate.parse(lessonDate)),
+                label = "Data",
+                onClick = { showDatePicker = true },
+                trailingIcon = Icons.Default.CalendarMonth,
+                trailingIconDescription = "Wybierz datę"
+            )
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                DialogPickerField(
+                    value = timeFrom,
+                    label = "Od",
+                    onClick = { showTimeFromPicker = true },
+                    modifier = Modifier.weight(1f),
+                    leadingIcon = { Icon(Icons.Default.Schedule, null) }
                 )
-                DialogSectionLabel("Format")
-                DialogChipRow(
-                    entries = LessonFormat.entries,
-                    selected = format,
-                    onSelect = { format = it },
-                    label = { it.label }
-                )
-                DialogSectionLabel("Status lekcji")
-                DialogChipRow(
-                    entries = LessonStatus.entries,
-                    selected = lessonStatus,
-                    onSelect = { lessonStatus = it },
-                    label = { it.label }
-                )
-                DialogSectionLabel("Status płatności")
-                DialogChipRow(
-                    entries = PaymentStatus.entries,
-                    selected = paymentStatus,
-                    onSelect = { paymentStatus = it },
-                    label = { it.label }
-                )
-                OutlinedTextField(
-                    value = studentNotes,
-                    onValueChange = { studentNotes = it },
-                    label = { Text("Notatki ucznia") },
-                    leadingIcon = { Icon(Icons.Default.Person, null) },
-                    modifier = Modifier.fillMaxWidth(),
-                    minLines = 2
-                )
-                OutlinedTextField(
-                    value = tutorNotes,
-                    onValueChange = { tutorNotes = it },
-                    label = { Text("Notatki korepetytora") },
-                    leadingIcon = { Icon(Icons.Default.School, null) },
-                    modifier = Modifier.fillMaxWidth(),
-                    minLines = 2
+                DialogPickerField(
+                    value = timeTo,
+                    label = "Do",
+                    onClick = { showTimeToPicker = true },
+                    modifier = Modifier.weight(1f),
+                    leadingIcon = { Icon(Icons.Default.Schedule, null) }
                 )
             }
-        },
-        confirmButton = {
-            TextButton(onClick = {
-                onSave(
-                    AdminLessonUpdateRequest(
-                        lessonDate = lessonDate,
-                        timeFrom = timeFrom,
-                        timeTo = timeTo,
-                        format = format,
-                        lessonStatus = lessonStatus,
-                        paymentStatus = paymentStatus,
-                        amount = amount.toDoubleOrNull() ?: lesson.amount,
-                        studentNotes = studentNotes.ifBlank { null },
-                        tutorNotes = tutorNotes.ifBlank { null }
+            timeRangeError?.let { DialogErrorText(it) }
+        }
+
+        DialogSectionCard(title = "Szczegóły") {
+            OutlinedTextField(
+                value = amount,
+                onValueChange = { value ->
+                    DialogValidation.filterDecimalInput(value)?.let { amount = it }
+                },
+                label = { Text("Kwota (PLN)") },
+                leadingIcon = { Icon(Icons.Default.Payments, null) },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                shape = DialogFieldShape,
+                colors = authTextFieldColors(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                isError = amountError != null,
+                supportingText = amountError?.let { error -> { Text(error) } }
+            )
+            DialogSectionLabel("Format")
+            DialogChipRow(
+                entries = LessonFormat.entries,
+                selected = format,
+                onSelect = { format = it },
+                label = { it.label }
+            )
+            DialogSectionLabel("Status lekcji")
+            DialogChipRow(
+                entries = LessonStatus.entries,
+                selected = lessonStatus,
+                onSelect = { lessonStatus = it },
+                label = { it.label }
+            )
+            DialogSectionLabel("Status płatności")
+            DialogChipRow(
+                entries = PaymentStatus.entries,
+                selected = paymentStatus,
+                onSelect = { paymentStatus = it },
+                label = { it.label }
+            )
+        }
+
+        DialogSectionCard(title = "Notatki") {
+            OutlinedTextField(
+                value = studentNotes,
+                onValueChange = { if (it.length <= DialogValidation.MAX_NOTES_LENGTH) studentNotes = it },
+                label = { Text("Notatki ucznia") },
+                leadingIcon = { Icon(Icons.Default.Person, null) },
+                modifier = Modifier.fillMaxWidth(),
+                minLines = 2,
+                shape = DialogFieldShape,
+                colors = authTextFieldColors(),
+                supportingText = {
+                    Text(
+                        text = "${studentNotes.length}/${DialogValidation.MAX_NOTES_LENGTH}",
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.End,
+                        color = colorScheme.onSurfaceVariant
                     )
-                )
-            }) { Text("Zapisz") }
-        },
-        dismissButton = { TextButton(onClick = onDismiss) { Text("Anuluj") } }
-    )
+                }
+            )
+            OutlinedTextField(
+                value = tutorNotes,
+                onValueChange = { if (it.length <= DialogValidation.MAX_NOTES_LENGTH) tutorNotes = it },
+                label = { Text("Notatki korepetytora") },
+                leadingIcon = { Icon(Icons.Default.School, null) },
+                modifier = Modifier.fillMaxWidth(),
+                minLines = 2,
+                shape = DialogFieldShape,
+                colors = authTextFieldColors(),
+                supportingText = {
+                    Text(
+                        text = "${tutorNotes.length}/${DialogValidation.MAX_NOTES_LENGTH}",
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.End,
+                        color = colorScheme.onSurfaceVariant
+                    )
+                }
+            )
+        }
+    }
 }

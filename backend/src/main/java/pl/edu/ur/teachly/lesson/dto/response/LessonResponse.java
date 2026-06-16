@@ -8,6 +8,7 @@ import pl.edu.ur.teachly.common.enums.LessonFormat;
 import pl.edu.ur.teachly.common.enums.LessonStatus;
 import pl.edu.ur.teachly.common.enums.PaymentStatus;
 
+/** Odpowiedź zawierająca pełne dane lekcji, w tym dane korepetytora, ucznia i przedmiotu. */
 public record LessonResponse(
         Integer id,
 
@@ -16,6 +17,7 @@ public record LessonResponse(
         String tutorFirstName,
         String tutorLastName,
         String tutorAvatarUrl,
+        String tutorCity,
 
         // Student
         Integer studentId,

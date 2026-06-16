@@ -14,6 +14,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import pl.edu.ur.teachly.common.exception.BusinessValidationException;
 import pl.edu.ur.teachly.common.exception.ResourceNotFoundException;
+import pl.edu.ur.teachly.lesson.repository.LessonRepository;
 import pl.edu.ur.teachly.subject.dto.request.SubjectCategoryRequest;
 import pl.edu.ur.teachly.subject.dto.request.SubjectRequest;
 import pl.edu.ur.teachly.subject.dto.response.SubjectCategoryResponse;
@@ -24,6 +25,7 @@ import pl.edu.ur.teachly.subject.mapper.SubjectCategoryMapper;
 import pl.edu.ur.teachly.subject.mapper.SubjectMapper;
 import pl.edu.ur.teachly.subject.repository.SubjectCategoryRepository;
 import pl.edu.ur.teachly.subject.repository.SubjectRepository;
+import pl.edu.ur.teachly.tutor.repository.TutorSubjectRepository;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("SubjectService - testy jednostkowe")
@@ -31,6 +33,8 @@ class SubjectServiceTest {
 
     @Mock private SubjectRepository subjectRepository;
     @Mock private SubjectCategoryRepository categoryRepository;
+    @Mock private TutorSubjectRepository tutorSubjectRepository;
+    @Mock private LessonRepository lessonRepository;
     @Mock private SubjectMapper subjectMapper;
     @Mock private SubjectCategoryMapper categoryMapper;
 
@@ -187,5 +191,34 @@ class SubjectServiceTest {
         assertThat(result).isEqualTo(response);
         assertThat(category.getCategoryName()).isEqualTo("Języki obce");
         verify(categoryRepository).save(category);
+    }
+
+    @Test
+    @DisplayName("updateSubject - błąd: przedmiot nie istnieje")
+    void updateSubject_notFound_throwsException() {
+        SubjectRequest req = new SubjectRequest("Fizyka", 1);
+        when(subjectRepository.findById(99)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> subjectService.updateSubject(99, req))
+                .isInstanceOf(ResourceNotFoundException.class);
+    }
+
+    @Test
+    @DisplayName("updateSubjectCategory - błąd: kategoria nie istnieje")
+    void updateSubjectCategory_notFound_throwsException() {
+        SubjectCategoryRequest req = new SubjectCategoryRequest("Języki obce");
+        when(categoryRepository.findById(99)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> subjectService.updateSubjectCategory(99, req))
+                .isInstanceOf(ResourceNotFoundException.class);
+    }
+
+    @Test
+    @DisplayName("deleteSubjectCategory - błąd: kategoria nie istnieje")
+    void deleteSubjectCategory_notFound_throwsException() {
+        when(categoryRepository.existsById(99)).thenReturn(false);
+
+        assertThatThrownBy(() -> subjectService.deleteSubjectCategory(99))
+                .isInstanceOf(ResourceNotFoundException.class);
     }
 }

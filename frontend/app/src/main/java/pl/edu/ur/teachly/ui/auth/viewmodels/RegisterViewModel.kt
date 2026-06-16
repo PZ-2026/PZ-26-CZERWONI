@@ -76,31 +76,42 @@ class RegisterViewModel(private val repository: AuthRepository) : ViewModel() {
         }
     }
 
+    private fun isValidName(name: String) = name.all { it.isLetter() || it == ' ' || it == '-' || it == '\'' }
+
     fun register() {
         val state = _uiState.value
         when {
-            state.firstName.isBlank() -> _uiState.value = state.copy(errorMessage = "Podaj imię")
-            state.lastName.isBlank() ->
+            state.firstName.isBlank() ->
+                _uiState.value = state.copy(errorMessage = "Podaj imię")
+
+            !isValidName(state.firstName.trim()) ->
                 _uiState.value =
-                    state.copy(errorMessage = "Podaj nazwisko")
+                    state.copy(errorMessage = "Imię może zawierać tylko litery, spacje i myślniki")
+
+            state.lastName.isBlank() ->
+                _uiState.value = state.copy(errorMessage = "Podaj nazwisko")
+
+            !isValidName(state.lastName.trim()) ->
+                _uiState.value =
+                    state.copy(errorMessage = "Nazwisko może zawierać tylko litery, spacje i myślniki")
 
             state.email.isBlank() ->
-                _uiState.value =
-                    state.copy(errorMessage = "Podaj adres e-mail")
+                _uiState.value = state.copy(errorMessage = "Podaj adres e-mail")
 
-            !Patterns.EMAIL_ADDRESS.matcher(state.email).matches()
-            -> _uiState.value = state.copy(errorMessage = "Podaj poprawny adres e-mail")
+            !Patterns.EMAIL_ADDRESS.matcher(state.email).matches() ->
+                _uiState.value = state.copy(errorMessage = "Podaj poprawny adres e-mail")
 
             state.phoneNumber.isBlank() ->
-                _uiState.value =
-                    state.copy(errorMessage = "Podaj numer telefonu")
+                _uiState.value = state.copy(errorMessage = "Podaj numer telefonu")
 
-            !Patterns.PHONE.matcher(state.phoneNumber).matches()
-            -> _uiState.value = state.copy(errorMessage = "Podaj poprawny numer telefonu")
+            !Patterns.PHONE.matcher(state.phoneNumber).matches() ->
+                _uiState.value = state.copy(errorMessage = "Podaj poprawny numer telefonu")
 
             state.password.length < 8 ->
-                _uiState.value =
-                    state.copy(errorMessage = "Hasło musi mieć min. 8 znaków")
+                _uiState.value = state.copy(errorMessage = "Hasło musi mieć min. 8 znaków")
+
+            state.password.any { it.isWhitespace() } ->
+                _uiState.value = state.copy(errorMessage = "Hasło nie może zawierać spacji")
 
             else -> viewModelScope.launch {
                 _uiState.value = state.copy(isLoading = true, errorMessage = null)

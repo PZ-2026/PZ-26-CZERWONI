@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Text
@@ -29,9 +28,11 @@ import pl.edu.ur.teachly.R
 import pl.edu.ur.teachly.ui.components.other.AppHeader
 import pl.edu.ur.teachly.ui.components.other.FullScreenError
 import pl.edu.ur.teachly.ui.components.other.HeaderBackground
+import pl.edu.ur.teachly.ui.components.other.LoadingBox
 import pl.edu.ur.teachly.ui.components.other.section.SectionHeader
 import pl.edu.ur.teachly.ui.components.other.section.SectionItems
 import pl.edu.ur.teachly.ui.schedule.viewmodels.ScheduleViewModel
+import pl.edu.ur.teachly.ui.theme.headerGradientColors
 
 @Composable
 fun ScheduleScreen(
@@ -50,25 +51,13 @@ fun ScheduleScreen(
     Column(modifier = Modifier.fillMaxSize()) {
         AppHeader(
             title = stringResource(R.string.schedule),
-            subtitle =
-            if (state.userRole == pl.edu.ur.teachly.data.model.UserRole.STUDENT ||
-                state.userRole == pl.edu.ur.teachly.data.model.UserRole.ADMIN
-            ) {
-                stringResource(R.string.check_your_lessons)
-            } else {
-                stringResource(R.string.check_your_sessions)
-            },
-            background = HeaderBackground.Diagonal(
-                listOf(colorScheme.onPrimaryContainer, colorScheme.primary)
-            ),
+            subtitle = stringResource(R.string.check_your_lessons),
+            background = HeaderBackground.Diagonal(headerGradientColors()),
             onBack = onBack
         )
 
         when {
-            state.isLoading -> Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) { CircularProgressIndicator() }
+            state.isLoading -> LoadingBox()
 
             state.error != null -> FullScreenError(message = state.error!!)
 

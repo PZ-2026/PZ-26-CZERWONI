@@ -7,8 +7,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -25,8 +23,10 @@ import pl.edu.ur.teachly.ui.components.lesson.NotesSection
 import pl.edu.ur.teachly.ui.components.other.AppHeader
 import pl.edu.ur.teachly.ui.components.other.FullScreenError
 import pl.edu.ur.teachly.ui.components.other.HeaderBackground
+import pl.edu.ur.teachly.ui.components.other.LoadingBox
 import pl.edu.ur.teachly.ui.components.other.MessageSnackbars
 import pl.edu.ur.teachly.ui.lesson.viewmodels.LessonDetailViewModel
+import pl.edu.ur.teachly.ui.theme.headerGradientColors
 
 @Composable
 fun LessonDetailScreen(
@@ -52,17 +52,12 @@ fun LessonDetailScreen(
             AppHeader(
                 title = state.lesson?.subjectName ?: "Lekcja",
                 subtitle = "Szczegóły lekcji",
-                background = HeaderBackground.Diagonal(
-                    listOf(colorScheme.onPrimaryContainer, colorScheme.primary)
-                ),
+                background = HeaderBackground.Diagonal(headerGradientColors()),
                 onBack = onBack
             )
 
             when {
-                state.isLoading -> Box(
-                    Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) { CircularProgressIndicator() }
+                state.isLoading -> LoadingBox()
 
                 state.error != null -> FullScreenError(message = state.error!!)
 

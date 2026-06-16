@@ -147,12 +147,19 @@ class BookingViewModel(
             val duration = _state.value.selectedDuration
             val slotsNeeded = duration / 30
 
-            return slotsForDay.mapIndexed { index, slot ->
+            val baseSlots = if (date == LocalDate.now()) {
+                val nowTime = LocalTime.now()
+                slotsForDay.filter { !LocalTime.parse(it.time).isBefore(nowTime) }
+            } else {
+                slotsForDay
+            }
+
+            return baseSlots.mapIndexed { index, slot ->
                 if (!slot.isAvailable) return@mapIndexed slot
 
                 val allFit = (0 until slotsNeeded).all { i ->
                     val futureIndex = index + i
-                    futureIndex < slotsForDay.size && slotsForDay[futureIndex].isAvailable
+                    futureIndex < baseSlots.size && baseSlots[futureIndex].isAvailable
                 }
 
                 slot.copy(isAvailable = allFit)
@@ -167,10 +174,12 @@ class BookingViewModel(
 
         val startTime = LocalTime.parse(slot)
         val slotsNeeded = duration / 30
+        val nowTime = if (dayDate == LocalDate.now()) LocalTime.now() else null
 
         return (0 until slotsNeeded).all { i ->
-            val slotTime = startTime.plusMinutes(30L * i).toString().take(5)
-            slotsForDay.find { it.time == slotTime }?.isAvailable == true
+            val slotTime = startTime.plusMinutes(30L * i)
+            if (nowTime != null && slotTime.isBefore(nowTime)) return false
+            slotsForDay.find { it.time == slotTime.toString().take(5) }?.isAvailable == true
         }
     }
 

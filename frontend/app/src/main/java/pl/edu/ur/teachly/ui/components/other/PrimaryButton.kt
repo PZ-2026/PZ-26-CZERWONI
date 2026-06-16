@@ -48,3 +48,23 @@ fun PrimaryButton(
         }
     }
 }
+
+@Composable
+fun LogoutButton(text: String, onClick: () -> Unit, modifier: Modifier = Modifier) {
+    Button(
+        onClick = onClick,
+        modifier = modifier
+            .fillMaxWidth()
+            .height(56.dp),
+        shape = RoundedCornerShape(18.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = colorScheme.error,
+            contentColor = colorScheme.onError
+        )
+    ) {
+        Text(
+            text = text,
+            style = typography.labelLarge
+        )
+    }
+}

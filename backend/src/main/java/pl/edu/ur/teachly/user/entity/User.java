@@ -13,6 +13,13 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import pl.edu.ur.teachly.common.enums.UserRole;
 
+/**
+ * Encja reprezentująca konto użytkownika w systemie Teachly.
+ *
+ * <p>Implementuje {@link UserDetails}, dzięki czemu jest bezpośrednio obsługiwana przez Spring
+ * Security. Hasło przechowywane jest jako hash BCrypt. Zablokowane konto ({@code isActive = false})
+ * jest nieuwierzytelniane przez Spring Security.
+ */
 @Entity
 @Table(name = "users")
 @EntityListeners(AuditingEntityListener.class)
@@ -22,6 +29,7 @@ import pl.edu.ur.teachly.common.enums.UserRole;
 @NoArgsConstructor
 @AllArgsConstructor
 public class User implements UserDetails {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -38,6 +46,7 @@ public class User implements UserDetails {
     @Column(name = "phone_number", nullable = false, unique = true, length = 10)
     private String phoneNumber;
 
+    /** Hash hasła użytkownika (BCrypt). */
     @Column(name = "password_hash", nullable = false)
     private String passwordHash;
 
@@ -48,6 +57,7 @@ public class User implements UserDetails {
     @Column(name = "user_role", nullable = false)
     private UserRole userRole;
 
+    /** Flaga aktywności konta — zablokowane konto nie może się zalogować. */
     @Column(name = "is_active", nullable = false)
     @Builder.Default
     private Boolean isActive = true;
@@ -60,26 +70,35 @@ public class User implements UserDetails {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    /**
+     * Zwraca uprawnienia użytkownika na podstawie jego roli (np. {@code ROLE_STUDENT}).
+     *
+     * @return lista uprawnień Spring Security
+     */
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority("ROLE_" + userRole.name()));
     }
 
+    /** Zwraca hash hasła — używane przez Spring Security do uwierzytelnienia. */
     @Override
     public String getPassword() {
         return passwordHash;
     }
 
+    /** Zwraca adres e-mail jako nazwę użytkownika w Spring Security. */
     @Override
     public String getUsername() {
         return email;
     }
 
+    /** Konto jest odblokowane, gdy {@code isActive == true}. */
     @Override
     public boolean isAccountNonLocked() {
         return isActive;
     }
 
+    /** Konto jest włączone, gdy {@code isActive == true}. */
     @Override
     public boolean isEnabled() {
         return isActive;

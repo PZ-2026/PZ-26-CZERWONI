@@ -2,7 +2,6 @@ package pl.edu.ur.teachly.ui.profile.views
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,13 +14,11 @@ import androidx.compose.material.icons.filled.AdminPanelSettings
 import androidx.compose.material.icons.filled.AlternateEmail
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.Phone
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -30,7 +27,8 @@ import org.koin.androidx.compose.koinViewModel
 import pl.edu.ur.teachly.R
 import pl.edu.ur.teachly.data.model.UserRole
 import pl.edu.ur.teachly.ui.components.other.FullScreenError
-import pl.edu.ur.teachly.ui.components.other.PrimaryButton
+import pl.edu.ur.teachly.ui.components.other.LoadingBox
+import pl.edu.ur.teachly.ui.components.other.LogoutButton
 import pl.edu.ur.teachly.ui.components.other.formatDate
 import pl.edu.ur.teachly.ui.components.other.formatPhoneNumber
 import pl.edu.ur.teachly.ui.components.profile.AdminBadge
@@ -63,12 +61,12 @@ fun AdminProfileScreen(
     val profile by viewModel.profile.collectAsState()
 
     when {
-        profile.isLoading -> Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) { CircularProgressIndicator() }
+        profile.isLoading -> LoadingBox()
 
-        profile.error != null -> FullScreenError(message = profile.error!!)
+        profile.error != null -> FullScreenError(
+            message = profile.error!!,
+            onLogout = onLogout
+        )
 
         else -> Column(
             modifier = Modifier
@@ -141,7 +139,7 @@ fun AdminProfileScreen(
 
                 ReportDownloadSection(viewModel = viewModel)
 
-                PrimaryButton(
+                LogoutButton(
                     text = stringResource(R.string.logout),
                     onClick = onLogout,
                     modifier = Modifier.padding(bottom = 32.dp, top = 8.dp)

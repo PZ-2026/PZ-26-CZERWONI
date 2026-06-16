@@ -26,8 +26,7 @@ fun BottomNavBar(navController: NavController, role: String?, modifier: Modifier
     val currentDestination = navBackStackEntry?.destination
     val routeStr = currentDestination?.route ?: ""
 
-    // Hide on Auth screens
-    if (routeStr.contains("Splash") || routeStr.contains("Login") || routeStr.contains("Register")) {
+    if (!shouldShowBottomNav(routeStr)) {
         return
     }
 

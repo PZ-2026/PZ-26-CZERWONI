@@ -1,20 +1,10 @@
 package pl.edu.ur.teachly.ui.components.other.dialog
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Schedule
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme.colorScheme
-import androidx.compose.material3.MaterialTheme.typography
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -22,7 +12,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import pl.edu.ur.teachly.R
 import pl.edu.ur.teachly.data.model.TutorAvailabilityRecurringResponse
 
 private fun hasOverlap(timeFrom: String, timeTo: String, slots: List<TutorAvailabilityRecurringResponse>): Boolean =
@@ -52,7 +44,7 @@ fun AvailabilityTimeRangeDialog(
 
     if (showFromPicker) {
         SlottedTimePickerDialog(
-            title = "Godzina rozpoczęcia",
+            title = stringResource(R.string.time_picker_start),
             initialHour = fromHour,
             initialMinute = fromMinute,
             onDismiss = { showFromPicker = false },
@@ -66,7 +58,7 @@ fun AvailabilityTimeRangeDialog(
 
     if (showToPicker) {
         SlottedTimePickerDialog(
-            title = "Godzina zakończenia",
+            title = stringResource(R.string.time_picker_end),
             initialHour = toHour,
             initialMinute = toMinute,
             onDismiss = { showToPicker = false },
@@ -78,77 +70,38 @@ fun AvailabilityTimeRangeDialog(
         )
     }
 
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text("Dodaj dostępność — $dayName") },
-        text = {
-            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Box(modifier = Modifier.weight(1f)) {
-                        OutlinedTextField(
-                            value = timeFrom,
-                            onValueChange = {},
-                            readOnly = true,
-                            label = { Text("Od") },
-                            leadingIcon = {
-                                Icon(
-                                    Icons.Default.Schedule,
-                                    contentDescription = null
-                                )
-                            },
-                            isError = !rangeValid,
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                        Box(
-                            modifier = Modifier
-                                .matchParentSize()
-                                .clickable { showFromPicker = true }
-                        )
-                    }
-                    Box(modifier = Modifier.weight(1f)) {
-                        OutlinedTextField(
-                            value = timeTo,
-                            onValueChange = {},
-                            readOnly = true,
-                            label = { Text("Do") },
-                            leadingIcon = {
-                                Icon(
-                                    Icons.Default.Schedule,
-                                    contentDescription = null
-                                )
-                            },
-                            isError = !rangeValid || overlaps,
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                        Box(
-                            modifier = Modifier
-                                .matchParentSize()
-                                .clickable { showToPicker = true }
-                        )
-                    }
-                }
-                if (!rangeValid) {
-                    Text(
-                        text = "Godzina zakończenia musi być późniejsza od rozpoczęcia",
-                        style = typography.bodySmall,
-                        color = colorScheme.error
-                    )
-                } else if (overlaps) {
-                    Text(
-                        text = "Ten przedział pokrywa się z istniejącym",
-                        style = typography.bodySmall,
-                        color = colorScheme.error
-                    )
-                }
+    AppFormDialog(
+        title = stringResource(R.string.dialog_add_availability),
+        subtitle = dayName,
+        onDismiss = onDismiss,
+        onConfirm = { onSave(timeFrom, timeTo) },
+        confirmText = stringResource(R.string.btn_add),
+        confirmEnabled = canSave
+    ) {
+        DialogSectionCard {
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                DialogPickerField(
+                    value = timeFrom,
+                    label = stringResource(R.string.field_from),
+                    onClick = { showFromPicker = true },
+                    modifier = Modifier.weight(1f),
+                    leadingIcon = { Icon(Icons.Default.Schedule, null) },
+                    isError = !rangeValid
+                )
+                DialogPickerField(
+                    value = timeTo,
+                    label = stringResource(R.string.field_to),
+                    onClick = { showToPicker = true },
+                    modifier = Modifier.weight(1f),
+                    leadingIcon = { Icon(Icons.Default.Schedule, null) },
+                    isError = !rangeValid || overlaps
+                )
             }
-        },
-        confirmButton = {
-            TextButton(onClick = { onSave(timeFrom, timeTo) }, enabled = canSave) {
-                Text("Dodaj")
+            if (!rangeValid) {
+                DialogErrorText(stringResource(R.string.error_time_range_invalid))
+            } else if (overlaps) {
+                DialogErrorText(stringResource(R.string.error_time_range_overlap))
             }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) { Text("Anuluj") }
         }
-    )
+    }
 }

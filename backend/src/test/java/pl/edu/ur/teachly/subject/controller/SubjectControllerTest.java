@@ -1,6 +1,7 @@
 package pl.edu.ur.teachly.subject.controller;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -88,5 +89,31 @@ class SubjectControllerTest {
     void deleteSubjectCategory() throws Exception {
         mockMvc.perform(delete("/api/subjects/categories/1")).andExpect(status().isNoContent());
         verify(subjectService).deleteSubjectCategory(1);
+    }
+
+    @Test
+    void updateSubject() throws Exception {
+        SubjectRequest req = new SubjectRequest("Fizyka zaktualizowana", 1);
+        when(subjectService.updateSubject(any(), any()))
+                .thenReturn(new SubjectResponse(1, "Fizyka zaktualizowana", 1, "Nauki ścisłe"));
+        mockMvc.perform(
+                        put("/api/subjects/1")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(req)))
+                .andExpect(status().isOk());
+        verify(subjectService).updateSubject(eq(1), any());
+    }
+
+    @Test
+    void updateSubjectCategory() throws Exception {
+        SubjectCategoryRequest req = new SubjectCategoryRequest("Zaktualizowana");
+        when(subjectService.updateSubjectCategory(any(), any()))
+                .thenReturn(new SubjectCategoryResponse(1, "Zaktualizowana"));
+        mockMvc.perform(
+                        put("/api/subjects/categories/1")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(req)))
+                .andExpect(status().isOk());
+        verify(subjectService).updateSubjectCategory(eq(1), any());
     }
 }

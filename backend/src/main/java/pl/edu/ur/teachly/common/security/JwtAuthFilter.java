@@ -17,6 +17,13 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+/**
+ * Filtr Spring Security wykonywany raz na żądanie HTTP.
+ *
+ * <p>Odczytuje nagłówek {@code Authorization: Bearer <token>}, weryfikuje token JWT i ustawia
+ * uwierzytelnienie w {@link SecurityContextHolder}. Żądania do {@code /api/auth} są pomijane,
+ * ponieważ nie wymagają tokenu.
+ */
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -25,11 +32,27 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
 
+    /**
+     * Pomija filtr dla ścieżek uwierzytelniania, które nie wymagają tokenu JWT.
+     *
+     * @param request bieżące żądanie HTTP
+     * @return {@code true} dla ścieżek zaczynających się od {@code /api/auth}
+     */
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         return request.getServletPath().startsWith("/api/auth");
     }
 
+    /**
+     * Przetwarza żądanie HTTP: wyodrębnia i weryfikuje token JWT, a następnie ustawia kontekst
+     * bezpieczeństwa dla uwierzytelnionego użytkownika.
+     *
+     * @param request żądanie HTTP
+     * @param response odpowiedź HTTP
+     * @param filterChain łańcuch filtrów
+     * @throws ServletException w przypadku błędu serwletu
+     * @throws IOException w przypadku błędu wejścia/wyjścia
+     */
     @Override
     protected void doFilterInternal(
             HttpServletRequest request,

@@ -9,10 +9,10 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import pl.edu.ur.teachly.data.model.ReviewResponse
 import pl.edu.ur.teachly.data.repository.AdminRepository
+import pl.edu.ur.teachly.ui.util.Debouncer
 
 data class AdminReviewsState(
     val reviews: List<ReviewResponse> = emptyList(),
-    val filteredReviews: List<ReviewResponse> = emptyList(),
     val searchQuery: String = "",
     val ratingFilter: Int? = null,
     val isLoading: Boolean = true,
@@ -24,6 +24,7 @@ class AdminReviewsViewModel(private val adminRepository: AdminRepository) : View
 
     private val _state = MutableStateFlow(AdminReviewsState())
     val state: StateFlow<AdminReviewsState> = _state.asStateFlow()
+    private val searchDebouncer = Debouncer(viewModelScope)
 
     init {
         loadReviews()
@@ -31,11 +32,12 @@ class AdminReviewsViewModel(private val adminRepository: AdminRepository) : View
 
     fun loadReviews() {
         viewModelScope.launch {
+            val current = _state.value
             _state.update { it.copy(isLoading = true, error = null) }
-            adminRepository.getAllReviews().fold(
+            val query = current.searchQuery.trim().takeIf { it.isNotBlank() }
+            adminRepository.getAllReviews(query, current.ratingFilter).fold(
                 onSuccess = { reviews ->
                     _state.update { it.copy(reviews = reviews, isLoading = false) }
-                    applyFilters()
                 },
                 onFailure = { e -> _state.update { it.copy(isLoading = false, error = e.message) } }
             )
@@ -44,41 +46,21 @@ class AdminReviewsViewModel(private val adminRepository: AdminRepository) : View
 
     fun onSearchChange(query: String) {
         _state.update { it.copy(searchQuery = query) }
-        applyFilters()
+        searchDebouncer.submit { loadReviews() }
     }
 
     fun onRatingFilterChange(rating: Int?) {
         _state.update { it.copy(ratingFilter = rating) }
-        applyFilters()
-    }
-
-    private fun applyFilters() {
-        val q = _state.value.searchQuery.lowercase()
-        val ratingFilter = _state.value.ratingFilter
-        val filtered = _state.value.reviews.filter { review ->
-            val matchesSearch = q.isEmpty() ||
-                review.tutorFirstName.lowercase().contains(q) ||
-                review.tutorLastName.lowercase().contains(q) ||
-                review.studentFirstName.lowercase().contains(q) ||
-                review.studentLastName.lowercase().contains(q) ||
-                review.comment?.lowercase()?.contains(q) == true
-            val matchesRating = ratingFilter == null || review.rating.toInt() == ratingFilter
-            matchesSearch && matchesRating
-        }
-        _state.update { it.copy(filteredReviews = filtered) }
+        searchDebouncer.cancel()
+        loadReviews()
     }
 
     fun deleteReview(reviewId: Int) {
         viewModelScope.launch {
             adminRepository.deleteReview(reviewId).fold(
                 onSuccess = {
-                    _state.update { s ->
-                        s.copy(
-                            reviews = s.reviews.filter { it.id != reviewId },
-                            successMessage = "Opinia została usunięta"
-                        )
-                    }
-                    applyFilters()
+                    _state.update { it.copy(successMessage = "Opinia została usunięta") }
+                    loadReviews()
                 },
                 onFailure = { e -> _state.update { it.copy(error = e.message) } }
             )

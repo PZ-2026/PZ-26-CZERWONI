@@ -6,9 +6,18 @@ import java.time.LocalTime
 import pl.edu.ur.teachly.data.model.LessonResponse
 import pl.edu.ur.teachly.data.model.ReviewResponse
 import pl.edu.ur.teachly.data.model.TutorResponse
+import pl.edu.ur.teachly.data.model.TutorSearchResultResponse
+import pl.edu.ur.teachly.data.model.TutorSubjectResponse
+
+fun TutorSearchResultResponse.toUiTutor(): Tutor = tutor.toUiTutor(
+    tutorSubjects = subjects,
+    rating = averageRating,
+    reviewCount = reviewCount
+)
 
 fun TutorResponse.toUiTutor(
-    subjects: List<String> = emptyList(),
+    tutorSubjects: List<TutorSubjectResponse> = emptyList(),
+    subjects: List<String> = tutorSubjects.map { it.subjectName }.distinct(),
     rating: Double = 0.0,
     reviewCount: Int = 0,
     lessonCount: Int = 0
@@ -17,18 +26,31 @@ fun TutorResponse.toUiTutor(
     name = "$firstName $lastName".trim(),
     initials = "${firstName.firstOrNull() ?: ""}${lastName.firstOrNull() ?: ""}",
     subjects = subjects,
+    subjectsByLevel = tutorSubjects.groupByTeachingLevel(),
+    subjectsWithoutLevel =
+    tutorSubjects
+        .filter { it.activeTeachingLevels().isEmpty() }
+        .map { it.subjectName }
+        .distinct()
+        .sorted(),
     rating = rating,
     reviewCount = reviewCount,
-    pricePerHour = hourlyRate.toInt(),
+    pricePerHour = hourlyRate,
     tags = buildList {
         if (offersOnline) add("Online")
-        if (offersInPerson) add("Stacjonarnie")
+        if (offersInPerson) {
+            add(
+                city?.takeIf { it.isNotBlank() }?.let { "Stacjonarnie · $it" } ?: "Stacjonarnie"
+            )
+        }
     },
-    isOnline = offersOnline,
+    offersOnline = offersOnline,
+    offersInPerson = offersInPerson,
     nearestSlots = emptyList(),
     bio = bio ?: "",
     lessonCount = lessonCount,
-    avatarUrl = avatarUrl?.takeIf { it != "null" }
+    avatarUrl = avatarUrl?.takeIf { it != "null" },
+    city = city
 )
 
 fun LessonResponse.toScheduledClass(): ScheduledClass = ScheduledClass(
@@ -66,6 +88,7 @@ fun LessonResponse.toUiLessonDetail(): LessonDetail = LessonDetail(
     tutorFirstName = tutorFirstName,
     tutorLastName = tutorLastName,
     tutorAvatarUrl = tutorAvatarUrl?.takeIf { it != "null" },
+    tutorCity = tutorCity,
     studentId = studentId,
     studentFirstName = studentFirstName,
     studentLastName = studentLastName,

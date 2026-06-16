@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -31,6 +30,7 @@ import pl.edu.ur.teachly.ui.components.admin.AdminSearchBar
 import pl.edu.ur.teachly.ui.components.other.EmptyListState
 import pl.edu.ur.teachly.ui.components.other.ExpandableFilterSection
 import pl.edu.ur.teachly.ui.components.other.FilterChips
+import pl.edu.ur.teachly.ui.components.other.LoadingBox
 import pl.edu.ur.teachly.ui.components.other.MessageSnackbars
 import pl.edu.ur.teachly.ui.components.other.cards.LessonAdminCard
 import pl.edu.ur.teachly.ui.components.other.dialog.LessonEditDialog
@@ -126,21 +126,16 @@ fun AdminLessonsScreen(viewModel: AdminLessonsViewModel = koinViewModel(), initi
             }
 
             when {
-                state.isLoading -> Box(
-                    Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator()
-                }
+                state.isLoading -> LoadingBox()
 
-                state.filteredLessons.isEmpty() -> EmptyListState(message = "Brak lekcji")
+                state.lessons.isEmpty() -> EmptyListState(message = "Brak lekcji")
 
                 else -> LazyColumn(
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(16.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    items(state.filteredLessons) { lesson ->
+                    items(state.lessons) { lesson ->
                         LessonAdminCard(lesson = lesson, onEdit = { showEditDialog = lesson })
                     }
                 }

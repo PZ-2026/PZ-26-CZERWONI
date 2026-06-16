@@ -15,18 +15,44 @@ import pl.edu.ur.teachly.data.model.TutorSubjectResponse
 import pl.edu.ur.teachly.data.repository.SubjectRepository
 import pl.edu.ur.teachly.data.repository.TutorRepository
 
+const val TUTOR_MIN_HOURLY_RATE = 1.0
+
 data class TutorSetupState(
     val bio: String = "",
     val hourlyRate: String = "",
     val offersOnline: Boolean = false,
     val offersInPerson: Boolean = false,
+    val city: String = "",
     val currentSubjects: List<TutorSubjectResponse> = emptyList(),
     val availableSubjects: List<SubjectResponse> = emptyList(),
     val isLoading: Boolean = true,
     val isSaving: Boolean = false,
     val error: String? = null,
     val isSaved: Boolean = false
-)
+) {
+    val parsedHourlyRate: Double? = hourlyRate.replace(',', '.').toDoubleOrNull()
+
+    val isHourlyRateValid: Boolean =
+        parsedHourlyRate != null && parsedHourlyRate >= TUTOR_MIN_HOURLY_RATE
+
+    val hasLessonFormat: Boolean = offersOnline || offersInPerson
+
+    val hasSubjects: Boolean = currentSubjects.isNotEmpty()
+
+    /**
+     * Miasto jest wymagane tylko gdy korepetytor oferuje zajęcia stacjonarne; nazwa musi mieć od 2
+     * do 50 znaków i zawierać tylko litery, spacje i myślniki.
+     */
+    val hasCityIfInPerson: Boolean =
+        !offersInPerson ||
+            (
+                city.trim().length in 2..50 &&
+                    city.trim().all { it.isLetter() || it == ' ' || it == '-' || it == '\'' }
+                )
+
+    val isFormValid: Boolean =
+        isHourlyRateValid && hasLessonFormat && hasSubjects && hasCityIfInPerson
+}
 
 class TutorSetupViewModel(
     private val tutorRepository: TutorRepository,
@@ -58,6 +84,7 @@ class TutorSetupViewModel(
                     hourlyRate = tutor?.hourlyRate?.let { r -> if (r > 0) r.toString() else "" } ?: "",
                     offersOnline = tutor?.offersOnline ?: false,
                     offersInPerson = tutor?.offersInPerson ?: false,
+                    city = tutor?.city ?: "",
                     currentSubjects = currentSubjects,
                     availableSubjects = availableSubjects,
                     isLoading = false,
@@ -68,19 +95,35 @@ class TutorSetupViewModel(
     }
 
     fun onBioChange(value: String) = _state.update { it.copy(bio = value) }
-    fun onHourlyRateChange(value: String) = _state.update { it.copy(hourlyRate = value) }
+
+    fun onHourlyRateChange(value: String) {
+        val normalized = value.replace(',', '.')
+        if (normalized.isEmpty() || normalized.matches(Regex("^\\d{0,4}(\\.\\d{0,2})?$"))) {
+            _state.update { it.copy(hourlyRate = normalized) }
+        }
+    }
+
     fun onOffersOnlineChange(value: Boolean) = _state.update { it.copy(offersOnline = value) }
     fun onOffersInPersonChange(value: Boolean) = _state.update { it.copy(offersInPerson = value) }
+    fun onCityChange(value: String) = _state.update { it.copy(city = value) }
 
     fun saveProfile() {
         viewModelScope.launch {
+            val current = _state.value
+            if (!current.isFormValid) {
+                _state.update { it.copy(error = validationErrorMessage(current)) }
+                return@launch
+            }
+
             _state.update { it.copy(isSaving = true, error = null) }
-            val request = TutorSelfProfileRequest(
-                bio = _state.value.bio.ifBlank { null },
-                hourlyRate = _state.value.hourlyRate.toDoubleOrNull() ?: 0.0,
-                offersOnline = _state.value.offersOnline,
-                offersInPerson = _state.value.offersInPerson
-            )
+            val request =
+                TutorSelfProfileRequest(
+                    bio = current.bio.ifBlank { null },
+                    hourlyRate = current.parsedHourlyRate!!,
+                    offersOnline = current.offersOnline,
+                    offersInPerson = current.offersInPerson,
+                    city = if (current.offersInPerson) current.city.trim().ifBlank { null } else null
+                )
             tutorRepository.updateMyProfile(request).fold(
                 onSuccess = { _state.update { it.copy(isSaving = false, isSaved = true) } },
                 onFailure = { e -> _state.update { it.copy(isSaving = false, error = e.message) } }
@@ -98,14 +141,15 @@ class TutorSetupViewModel(
     ) {
         viewModelScope.launch {
             _state.update { it.copy(error = null) }
-            val request = TutorSubjectRequest(
-                subjectId = subjectId,
-                levelPrimary = levelPrimary,
-                levelHighSchool = levelHighSchool,
-                levelUniversity = levelUniversity,
-                levelExamPrep = levelExamPrep,
-                levelProfessional = levelProfessional
-            )
+            val request =
+                TutorSubjectRequest(
+                    subjectId = subjectId,
+                    levelPrimary = levelPrimary,
+                    levelHighSchool = levelHighSchool,
+                    levelUniversity = levelUniversity,
+                    levelExamPrep = levelExamPrep,
+                    levelProfessional = levelProfessional
+                )
             tutorRepository.addMySubject(request).fold(
                 onSuccess = { added ->
                     _state.update { it.copy(currentSubjects = it.currentSubjects + added) }
@@ -117,6 +161,12 @@ class TutorSetupViewModel(
 
     fun removeSubject(tutorSubjectId: Int) {
         viewModelScope.launch {
+            if (_state.value.currentSubjects.size <= 1) {
+                _state.update {
+                    it.copy(error = "Musi pozostać co najmniej jeden prowadzony przedmiot")
+                }
+                return@launch
+            }
             tutorRepository.removeMySubject(tutorSubjectId).fold(
                 onSuccess = {
                     _state.update {
@@ -130,4 +180,24 @@ class TutorSetupViewModel(
 
     fun clearError() = _state.update { it.copy(error = null) }
     fun clearSaved() = _state.update { it.copy(isSaved = false) }
+
+    private fun validationErrorMessage(state: TutorSetupState): String = when {
+        !state.isHourlyRateValid -> {
+            if (state.hourlyRate.isBlank() || state.parsedHourlyRate == null) {
+                "Podaj prawidłową stawkę godzinową"
+            } else {
+                "Stawka musi wynosić co najmniej 1 PLN"
+            }
+        }
+        !state.hasLessonFormat ->
+            "Wybierz co najmniej jedną formę zajęć (online lub stacjonarnie)"
+        !state.hasCityIfInPerson ->
+            if (state.city.trim().length !in 2..50) {
+                "Podaj miasto zajęć stacjonarnych (2–50 znaków)"
+            } else {
+                "Nazwa miasta może zawierać tylko litery, spacje i myślniki"
+            }
+        !state.hasSubjects -> "Dodaj co najmniej jeden prowadzony przedmiot"
+        else -> "Uzupełnij wymagane pola profilu"
+    }
 }

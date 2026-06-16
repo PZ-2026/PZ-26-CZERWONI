@@ -3,6 +3,11 @@ package pl.edu.ur.teachly.tutor.dto.request;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotNull;
 
+/**
+ * Żądanie przypisania przedmiotu do korepetytora z określeniem obsługiwanych poziomów nauczania.
+ *
+ * <p>Co najmniej jeden poziom musi być zaznaczony (walidacja {@code @AssertTrue}).
+ */
 public record TutorSubjectRequest(
         @NotNull(message = "Przedmiot jest wymagany") Integer subjectId,
         @NotNull(message = "Poziom podstawowy musi być określony") Boolean levelPrimary,

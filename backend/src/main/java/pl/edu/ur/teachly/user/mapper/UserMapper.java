@@ -8,6 +8,12 @@ import pl.edu.ur.teachly.user.dto.request.UserUpdateRequest;
 import pl.edu.ur.teachly.user.dto.response.UserResponse;
 import pl.edu.ur.teachly.user.entity.User;
 
+/**
+ * Mapper MapStruct konwertujący między encją {@link User} a jej DTO.
+ *
+ * <p>Obsługuje konwersję z żądania rejestracji na encję oraz częściową aktualizację encji na
+ * podstawie żądania edycji profilu.
+ */
 @Mapper(componentModel = "spring")
 public interface UserMapper {
     @Mapping(target = "role", source = "userRole")

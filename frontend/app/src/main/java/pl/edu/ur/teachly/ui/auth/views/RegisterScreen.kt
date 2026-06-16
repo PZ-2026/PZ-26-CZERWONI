@@ -8,7 +8,6 @@ import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -23,6 +22,7 @@ import pl.edu.ur.teachly.ui.components.auth.StepOneContent
 import pl.edu.ur.teachly.ui.components.auth.StepTwoContent
 import pl.edu.ur.teachly.ui.components.other.AppHeader
 import pl.edu.ur.teachly.ui.components.other.HeaderBackground
+import pl.edu.ur.teachly.ui.theme.headerGradientColors
 
 @Composable
 fun RegisterScreen(onBack: () -> Unit, onSuccess: () -> Unit, viewModel: RegisterViewModel = koinViewModel()) {
@@ -44,12 +44,7 @@ fun RegisterScreen(onBack: () -> Unit, onSuccess: () -> Unit, viewModel: Registe
             } else {
                 stringResource(R.string.register_step2_subtitle)
             },
-            background = HeaderBackground.Diagonal(
-                colors = listOf(
-                    colorScheme.onPrimaryContainer,
-                    colorScheme.primary
-                )
-            ),
+            background = HeaderBackground.Diagonal(colors = headerGradientColors()),
             topPadding = 28.dp,
             bottomPadding = 0.dp,
             decorativeCircle = true,

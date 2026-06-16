@@ -15,6 +15,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.access.AccessDeniedException;
 import pl.edu.ur.teachly.common.exception.ResourceNotFoundException;
 import pl.edu.ur.teachly.tutor.dto.request.TutorAvailabilityOverrideRequest;
 import pl.edu.ur.teachly.tutor.dto.request.TutorAvailabilityRecurringRequest;
@@ -91,6 +92,30 @@ class TutorAvailabilityServiceTest {
     }
 
     @Test
+    @DisplayName("deleteRecurring - błąd: brak dostępu")
+    void deleteRecurring_accessDenied_throwsException() {
+        Tutor tutor = new Tutor();
+        tutor.setUserId(1);
+        TutorAvailabilityRecurring entity = new TutorAvailabilityRecurring();
+        entity.setTutor(tutor);
+        when(recurringRepository.findById(1)).thenReturn(Optional.of(entity));
+
+        assertThatThrownBy(() -> availabilityService.deleteRecurring(1, 2))
+                .isInstanceOf(AccessDeniedException.class);
+    }
+
+    @Test
+    @DisplayName("addRecurring - błąd: korepetytor nie istnieje")
+    void addRecurring_tutorNotFound_throwsException() {
+        TutorAvailabilityRecurringRequest req =
+                new TutorAvailabilityRecurringRequest(1, LocalTime.MIN, LocalTime.MAX, null);
+        when(tutorRepository.findById(99)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> availabilityService.addRecurring(99, req))
+                .isInstanceOf(ResourceNotFoundException.class);
+    }
+
+    @Test
     @DisplayName("deleteRecurring - błąd: nie istnieje")
     void deleteRecurring_notFound_throwsException() {
         when(recurringRepository.findById(99)).thenReturn(Optional.empty());
@@ -149,6 +174,30 @@ class TutorAvailabilityServiceTest {
         availabilityService.deleteOverride(1, 1);
 
         verify(overrideRepository).deleteById(1);
+    }
+
+    @Test
+    @DisplayName("deleteOverride - błąd: brak dostępu")
+    void deleteOverride_accessDenied_throwsException() {
+        Tutor tutor = new Tutor();
+        tutor.setUserId(1);
+        TutorAvailabilityOverride entity = new TutorAvailabilityOverride();
+        entity.setTutor(tutor);
+        when(overrideRepository.findById(1)).thenReturn(Optional.of(entity));
+
+        assertThatThrownBy(() -> availabilityService.deleteOverride(1, 2))
+                .isInstanceOf(AccessDeniedException.class);
+    }
+
+    @Test
+    @DisplayName("addOverride - błąd: korepetytor nie istnieje")
+    void addOverride_tutorNotFound_throwsException() {
+        TutorAvailabilityOverrideRequest req =
+                new TutorAvailabilityOverrideRequest(LocalDate.now(), LocalTime.MIN, LocalTime.MAX);
+        when(tutorRepository.findById(99)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> availabilityService.addOverride(99, req))
+                .isInstanceOf(ResourceNotFoundException.class);
     }
 
     @Test

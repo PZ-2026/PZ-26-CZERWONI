@@ -4,6 +4,12 @@ import jakarta.persistence.*;
 import lombok.*;
 import pl.edu.ur.teachly.subject.entity.Subject;
 
+/**
+ * Encja powiązania korepetytora z przedmiotem, zawierająca informacje o obsługiwanych poziomach.
+ *
+ * <p>Każde powiązanie definiuje, na jakich poziomach nauczania korepetytor prowadzi dany przedmiot
+ * (szkoła podstawowa, liceum, studia, przygotowanie do egzaminów, profesjonalne).
+ */
 @Entity
 @Table(name = "tutor_subjects")
 @Getter
@@ -12,6 +18,7 @@ import pl.edu.ur.teachly.subject.entity.Subject;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TutorSubject {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;

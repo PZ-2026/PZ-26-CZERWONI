@@ -13,9 +13,11 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -40,6 +42,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import pl.edu.ur.teachly.R
+import pl.edu.ur.teachly.ui.theme.headerGradientColors
 
 @Composable
 fun SplashScreen(onLoginClick: () -> Unit, onRegisterClick: () -> Unit) {
@@ -47,10 +50,7 @@ fun SplashScreen(onLoginClick: () -> Unit, onRegisterClick: () -> Unit) {
     LaunchedEffect(Unit) { visible = true }
 
     val authGradient = Brush.linearGradient(
-        colors = listOf(
-            colorScheme.onPrimaryContainer,
-            colorScheme.primary
-        ),
+        colors = headerGradientColors(),
         start = Offset.Zero,
         end = Offset(1000f, 1000f)
     )
@@ -65,8 +65,10 @@ fun SplashScreen(onLoginClick: () -> Unit, onRegisterClick: () -> Unit) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .statusBarsPadding()
+                .navigationBarsPadding()
                 .padding(horizontal = 32.dp)
-                .padding(top = 60.dp, bottom = 48.dp),
+                .padding(top = 24.dp, bottom = 24.dp),
             verticalArrangement = Arrangement.SpaceBetween
         ) {
             AnimatedVisibility(

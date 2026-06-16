@@ -13,6 +13,7 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import pl.edu.ur.teachly.data.local.TokenManager
+import pl.edu.ur.teachly.data.model.LessonStatus
 import pl.edu.ur.teachly.data.model.UserRole
 import pl.edu.ur.teachly.data.model.UserUpdateRequest
 import pl.edu.ur.teachly.data.repository.LessonRepository
@@ -62,13 +63,13 @@ class ProfileViewModel(
     private val _editState = MutableStateFlow(ProfileEditState())
     val editState: StateFlow<ProfileEditState> = _editState.asStateFlow()
 
-    init {
-        loadProfile()
-    }
+    private var hasLoaded = false
 
     fun loadProfile() {
         viewModelScope.launch {
-            _profile.update { it.copy(isLoading = true) }
+            if (!hasLoaded) {
+                _profile.update { it.copy(isLoading = true, error = null) }
+            }
 
             val userId = tokenManager.userIdFlow.first() ?: run {
                 _profile.update { it.copy(isLoading = false) }
@@ -98,16 +99,24 @@ class ProfileViewModel(
             )
 
             lessonRepository.getStudentLessons(userId).fold(
-                onSuccess = { lessons -> _profile.update { it.copy(lessonsCount = lessons.size) } },
+                onSuccess = { lessons ->
+                    val completedCount =
+                        lessons.count { it.lessonStatus == LessonStatus.COMPLETED }
+                    _profile.update { it.copy(lessonsCount = completedCount) }
+                },
                 onFailure = {}
             )
 
+            hasLoaded = true
             _profile.update { it.copy(isLoading = false) }
         }
     }
 
     fun startEditing() {
         viewModelScope.launch {
+            if (!hasLoaded) {
+                loadProfile()
+            }
             val p = _profile.first { !it.isLoading }
             _editState.value = ProfileEditState(
                 firstName = p.firstName,
@@ -174,8 +183,20 @@ class ProfileViewModel(
                 _editState.update { it.copy(isLoading = false, error = "Imię nie może być puste") }
                 return@launch
             }
+            if (!isValidName(state.firstName.trim())) {
+                _editState.update {
+                    it.copy(isLoading = false, error = "Imię może zawierać tylko litery, spacje i myślniki")
+                }
+                return@launch
+            }
             if (state.lastName.trim().isBlank()) {
                 _editState.update { it.copy(isLoading = false, error = "Nazwisko nie może być puste") }
+                return@launch
+            }
+            if (!isValidName(state.lastName.trim())) {
+                _editState.update {
+                    it.copy(isLoading = false, error = "Nazwisko może zawierać tylko litery, spacje i myślniki")
+                }
                 return@launch
             }
             if (state.email.trim().isBlank() ||
@@ -185,8 +206,20 @@ class ProfileViewModel(
                 return@launch
             }
             val digitsPhone = state.phoneNumber.filter { it.isDigit() }
-            if (digitsPhone.length != 9) {
+            if (digitsPhone.isNotEmpty() && digitsPhone.length != 9) {
                 _editState.update { it.copy(isLoading = false, error = "Numer telefonu musi składać się z 9 cyfr") }
+                return@launch
+            }
+            if (state.password.isNotBlank() && state.password.length < 8) {
+                _editState.update {
+                    it.copy(isLoading = false, error = "Hasło musi mieć co najmniej 8 znaków")
+                }
+                return@launch
+            }
+            if (state.password.isNotBlank() && state.password.any { it.isWhitespace() }) {
+                _editState.update {
+                    it.copy(isLoading = false, error = "Hasło nie może zawierać spacji")
+                }
                 return@launch
             }
 
@@ -224,7 +257,7 @@ class ProfileViewModel(
                 firstName = state.firstName.trim(),
                 lastName = state.lastName.trim(),
                 email = state.email.trim(),
-                phoneNumber = digitsPhone,
+                phoneNumber = digitsPhone.ifEmpty { null },
                 password = state.password.takeIf { it.isNotBlank() },
                 avatarUrl = updatedAvatarUrl
             )
@@ -337,4 +370,6 @@ class ProfileViewModel(
             )
         }
     }
+
+    private fun isValidName(name: String) = name.all { it.isLetter() || it == ' ' || it == '-' || it == '\'' }
 }

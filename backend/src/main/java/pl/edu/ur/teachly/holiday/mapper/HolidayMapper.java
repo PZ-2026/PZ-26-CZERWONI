@@ -7,6 +7,7 @@ import pl.edu.ur.teachly.holiday.dto.request.HolidayRequest;
 import pl.edu.ur.teachly.holiday.dto.response.HolidayResponse;
 import pl.edu.ur.teachly.holiday.entity.Holiday;
 
+/** Mapper MapStruct konwertujący między encją {@link Holiday} a jej DTO. */
 @Mapper(componentModel = "spring")
 public interface HolidayMapper {
     HolidayResponse toResponse(Holiday holiday);

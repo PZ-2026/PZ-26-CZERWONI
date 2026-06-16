@@ -35,13 +35,13 @@ class ScheduleViewModel(private val lessonRepository: LessonRepository, private 
     private val _state = MutableStateFlow(ScheduleUiState())
     val state: StateFlow<ScheduleUiState> = _state.asStateFlow()
 
-    init {
-        load()
-    }
+    private var hasLoaded = false
 
     fun load() {
         viewModelScope.launch {
-            _state.update { it.copy(isLoading = true, error = null) }
+            if (!hasLoaded) {
+                _state.update { it.copy(isLoading = true, error = null) }
+            }
 
             val userId = tokenManager.userIdFlow.first() ?: run {
                 _state.update { it.copy(isLoading = false) }
@@ -64,6 +64,7 @@ class ScheduleViewModel(private val lessonRepository: LessonRepository, private 
                 onSuccess = { lessons ->
                     try {
                         val scheduled = lessons.map { it.toScheduledClass() }
+                        hasLoaded = true
                         _state.update {
                             it.copy(
                                 confirmedClasses = scheduled.filter { c -> c.status == LessonStatus.CONFIRMED },
@@ -71,7 +72,8 @@ class ScheduleViewModel(private val lessonRepository: LessonRepository, private 
                                 completedClasses = scheduled.filter { c -> c.status == LessonStatus.COMPLETED },
                                 cancelledClasses = scheduled.filter { c -> c.status == LessonStatus.CANCELLED },
                                 userRole = role,
-                                isLoading = false
+                                isLoading = false,
+                                error = null
                             )
                         }
                     } catch (e: Exception) {
