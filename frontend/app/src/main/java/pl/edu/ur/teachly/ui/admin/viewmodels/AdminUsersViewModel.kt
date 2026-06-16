@@ -9,9 +9,9 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import pl.edu.ur.teachly.data.local.TokenManager
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
+import pl.edu.ur.teachly.data.local.TokenManager
 import pl.edu.ur.teachly.data.model.AdminUserUpdateRequest
 import pl.edu.ur.teachly.data.model.UserResponse
 import pl.edu.ur.teachly.data.model.UserRole
@@ -29,10 +29,8 @@ data class AdminUsersState(
     val successMessage: String? = null
 )
 
-class AdminUsersViewModel(
-    private val userRepository: UserRepository,
-    private val tokenManager: TokenManager
-) : ViewModel() {
+class AdminUsersViewModel(private val userRepository: UserRepository, private val tokenManager: TokenManager) :
+    ViewModel() {
 
     private val _state = MutableStateFlow(AdminUsersState())
     val state: StateFlow<AdminUsersState> = _state.asStateFlow()

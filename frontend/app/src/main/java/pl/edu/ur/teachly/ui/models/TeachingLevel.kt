@@ -18,42 +18,36 @@ enum class TeachingLevel {
     }
 }
 
-data class SubjectsByLevelGroup(
-    val level: TeachingLevel,
-    val subjectNames: List<String>
-)
+data class SubjectsByLevelGroup(val level: TeachingLevel, val subjectNames: List<String>)
 
 @Composable
-fun TeachingLevel.displayLabel(): String =
-    when (this) {
-        TeachingLevel.PRIMARY -> stringResource(R.string.teaching_level_primary)
-        TeachingLevel.HIGH_SCHOOL -> stringResource(R.string.teaching_level_high_school)
-        TeachingLevel.UNIVERSITY -> stringResource(R.string.teaching_level_university)
-        TeachingLevel.EXAM -> stringResource(R.string.teaching_level_exam)
-        TeachingLevel.PROFESSIONAL -> stringResource(R.string.teaching_level_professional)
-    }
+fun TeachingLevel.displayLabel(): String = when (this) {
+    TeachingLevel.PRIMARY -> stringResource(R.string.teaching_level_primary)
+    TeachingLevel.HIGH_SCHOOL -> stringResource(R.string.teaching_level_high_school)
+    TeachingLevel.UNIVERSITY -> stringResource(R.string.teaching_level_university)
+    TeachingLevel.EXAM -> stringResource(R.string.teaching_level_exam)
+    TeachingLevel.PROFESSIONAL -> stringResource(R.string.teaching_level_professional)
+}
 
 @Composable
-fun TeachingLevel.shortLabel(): String =
-    when (this) {
-        TeachingLevel.PRIMARY -> stringResource(R.string.teaching_level_primary_short)
-        TeachingLevel.HIGH_SCHOOL -> stringResource(R.string.teaching_level_high_school_short)
-        TeachingLevel.UNIVERSITY -> stringResource(R.string.teaching_level_university_short)
-        TeachingLevel.EXAM -> stringResource(R.string.teaching_level_exam_short)
-        TeachingLevel.PROFESSIONAL -> stringResource(R.string.teaching_level_professional_short)
-    }
+fun TeachingLevel.shortLabel(): String = when (this) {
+    TeachingLevel.PRIMARY -> stringResource(R.string.teaching_level_primary_short)
+    TeachingLevel.HIGH_SCHOOL -> stringResource(R.string.teaching_level_high_school_short)
+    TeachingLevel.UNIVERSITY -> stringResource(R.string.teaching_level_university_short)
+    TeachingLevel.EXAM -> stringResource(R.string.teaching_level_exam_short)
+    TeachingLevel.PROFESSIONAL -> stringResource(R.string.teaching_level_professional_short)
+}
 
 fun TutorSubjectResponse.activeTeachingLevels(): List<TeachingLevel> =
     TeachingLevel.displayOrder.filter { hasLevel(it) }
 
-fun TutorSubjectResponse.hasLevel(level: TeachingLevel): Boolean =
-    when (level) {
-        TeachingLevel.PRIMARY -> levelPrimary == true
-        TeachingLevel.HIGH_SCHOOL -> levelHighSchool == true
-        TeachingLevel.UNIVERSITY -> levelUniversity == true
-        TeachingLevel.EXAM -> levelExamPrep == true
-        TeachingLevel.PROFESSIONAL -> levelProfessional == true
-    }
+fun TutorSubjectResponse.hasLevel(level: TeachingLevel): Boolean = when (level) {
+    TeachingLevel.PRIMARY -> levelPrimary == true
+    TeachingLevel.HIGH_SCHOOL -> levelHighSchool == true
+    TeachingLevel.UNIVERSITY -> levelUniversity == true
+    TeachingLevel.EXAM -> levelExamPrep == true
+    TeachingLevel.PROFESSIONAL -> levelProfessional == true
+}
 
 fun List<TutorSubjectResponse>.groupByTeachingLevel(): List<SubjectsByLevelGroup> =
     TeachingLevel.displayOrder.mapNotNull { level ->

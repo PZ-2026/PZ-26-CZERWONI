@@ -23,13 +23,11 @@ data class SearchUiState(
     val error: String? = null
 )
 
-class SearchViewModel(
-    private val tutorRepository: TutorRepository,
-    private val subjectRepository: SubjectRepository
-) : ViewModel() {
+class SearchViewModel(private val tutorRepository: TutorRepository, private val subjectRepository: SubjectRepository) :
+    ViewModel() {
 
-    private val _state = MutableStateFlow(SearchUiState())
-    val uiState: StateFlow<SearchUiState> = _state.asStateFlow()
+    private val _uiState = MutableStateFlow(SearchUiState())
+    val uiState: StateFlow<SearchUiState> = _uiState.asStateFlow()
     private val searchDebouncer = Debouncer(viewModelScope)
 
     init {
@@ -41,7 +39,7 @@ class SearchViewModel(
         viewModelScope.launch {
             subjectRepository.getAllSubjects().fold(
                 onSuccess = { subjects ->
-                    _state.update {
+                    _uiState.update {
                         it.copy(subjects = listOf("Wszystkie") + subjects.map { subject -> subject.subjectName })
                     }
                 },
@@ -52,8 +50,8 @@ class SearchViewModel(
 
     private fun searchTutors() {
         viewModelScope.launch {
-            val current = _state.value
-            _state.update { it.copy(isLoading = true, error = null) }
+            val current = _uiState.value
+            _uiState.update { it.copy(isLoading = true, error = null) }
 
             val subjectFilter =
                 current.activeSubject.takeIf { it.isNotBlank() && it != "Wszystkie" }
@@ -62,7 +60,7 @@ class SearchViewModel(
 
             tutorRepository.searchTutors(queryFilter, subjectFilter, cityFilter).fold(
                 onSuccess = { results ->
-                    _state.update {
+                    _uiState.update {
                         it.copy(
                             tutors = results.map { result -> result.toUiTutor() },
                             isLoading = false
@@ -70,30 +68,30 @@ class SearchViewModel(
                     }
                 },
                 onFailure = { e ->
-                    _state.update { it.copy(isLoading = false, error = e.message) }
+                    _uiState.update { it.copy(isLoading = false, error = e.message) }
                 }
             )
         }
     }
 
     fun onQueryChange(newQuery: String) {
-        _state.update { it.copy(query = newQuery) }
+        _uiState.update { it.copy(query = newQuery) }
         searchDebouncer.submit { searchTutors() }
     }
 
     fun onSubjectSelect(newSubject: String) {
-        _state.update { it.copy(activeSubject = newSubject) }
+        _uiState.update { it.copy(activeSubject = newSubject) }
         searchDebouncer.cancel()
         searchTutors()
     }
 
     fun onCityChange(newCity: String) {
-        _state.update { it.copy(city = newCity) }
+        _uiState.update { it.copy(city = newCity) }
         searchDebouncer.submit { searchTutors() }
     }
 
     fun clearQuery() {
-        _state.update { it.copy(query = "") }
+        _uiState.update { it.copy(query = "") }
         searchDebouncer.cancel()
         searchTutors()
     }

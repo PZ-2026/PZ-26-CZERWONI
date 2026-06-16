@@ -5,10 +5,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class Debouncer(
-    private val scope: CoroutineScope,
-    private val delayMs: Long = 300L
-) {
+class Debouncer(private val scope: CoroutineScope, private val delayMs: Long = 300L) {
     private var job: Job? = null
 
     fun submit(block: suspend () -> Unit) {

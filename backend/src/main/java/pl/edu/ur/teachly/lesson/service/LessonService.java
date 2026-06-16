@@ -472,7 +472,8 @@ public class LessonService {
         }
 
         if (next == LessonStatus.COMPLETED
-                && LocalDateTime.now(ZoneId.of("Europe/Warsaw")).isBefore(lessonStart.plusMinutes(30))) {
+                && LocalDateTime.now(ZoneId.of("Europe/Warsaw"))
+                        .isBefore(lessonStart.plusMinutes(30))) {
             throw new IllegalStateException(
                     "Lekcja może zostać oznaczona jako zakończona dopiero po upływie 30 minut od rozpoczęcia");
         }

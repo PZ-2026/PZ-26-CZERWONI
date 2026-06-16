@@ -82,7 +82,13 @@ class LessonServiceTest {
     }
 
     private Tutor tutor(int id, User user) {
-        return Tutor.builder().userId(id).user(user).hourlyRate(BigDecimal.valueOf(50)).build();
+        return Tutor.builder()
+                .userId(id)
+                .user(user)
+                .hourlyRate(BigDecimal.valueOf(50))
+                .offersOnline(true)
+                .offersInPerson(true)
+                .build();
     }
 
     private LessonRequest validRequest() {

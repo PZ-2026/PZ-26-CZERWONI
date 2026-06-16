@@ -30,6 +30,7 @@ import pl.edu.ur.teachly.ui.auth.views.SplashScreen
 import pl.edu.ur.teachly.ui.availability.views.AvailabilityScreen
 import pl.edu.ur.teachly.ui.booking.views.BookingConfirmScreen
 import pl.edu.ur.teachly.ui.booking.views.BookingScreen
+import pl.edu.ur.teachly.ui.components.other.rememberDebouncedPopBackStack
 import pl.edu.ur.teachly.ui.home.views.HomeScreen
 import pl.edu.ur.teachly.ui.lesson.views.LessonDetailScreen
 import pl.edu.ur.teachly.ui.profile.viewmodels.ProfileViewModel
@@ -42,7 +43,6 @@ import pl.edu.ur.teachly.ui.profile.views.TutorSetupScreen
 import pl.edu.ur.teachly.ui.review.views.AllReviewsScreen
 import pl.edu.ur.teachly.ui.schedule.views.ScheduleScreen
 import pl.edu.ur.teachly.ui.search.views.SearchScreen
-import pl.edu.ur.teachly.ui.components.other.rememberDebouncedPopBackStack
 import pl.edu.ur.teachly.ui.tutor.views.TutorDetailScreen
 
 @Composable

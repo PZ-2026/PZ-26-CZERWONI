@@ -245,11 +245,7 @@ fun AdminDashboardScreen(viewModel: AdminDashboardViewModel = koinViewModel(), o
  * @param content zawartość siatki (elementy `item { ... }`)
  */
 @Composable
-private fun DashboardStatsSection(
-    title: String,
-    maxHeight: Dp = 300.dp,
-    content: LazyGridScope.() -> Unit
-) {
+private fun DashboardStatsSection(title: String, maxHeight: Dp = 300.dp, content: LazyGridScope.() -> Unit) {
     Text(title, style = typography.titleMedium, fontWeight = FontWeight.Bold)
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),

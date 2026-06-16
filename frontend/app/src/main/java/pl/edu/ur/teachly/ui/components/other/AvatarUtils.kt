@@ -33,9 +33,8 @@ internal fun uriToFile(context: Context, uri: Uri): File? {
  * Sprawdza, czy podany URL wskazuje na rzeczywiste, własne zdjęcie profilowe użytkownika
  * (a nie pusty/placeholderowy adres). Decyduje m.in. o pokazaniu opcji usunięcia zdjęcia.
  */
-internal fun hasCustomAvatar(avatarUrl: String?): Boolean =
-    !avatarUrl.isNullOrBlank() &&
-        !avatarUrl.equals("null", ignoreCase = true) &&
-        !avatarUrl.contains("/null", ignoreCase = true) &&
-        !avatarUrl.endsWith("/uploads/avatars/", ignoreCase = true) &&
-        avatarUrl.contains("/")
+internal fun hasCustomAvatar(avatarUrl: String?): Boolean = !avatarUrl.isNullOrBlank() &&
+    !avatarUrl.equals("null", ignoreCase = true) &&
+    !avatarUrl.contains("/null", ignoreCase = true) &&
+    !avatarUrl.endsWith("/uploads/avatars/", ignoreCase = true) &&
+    avatarUrl.contains("/")

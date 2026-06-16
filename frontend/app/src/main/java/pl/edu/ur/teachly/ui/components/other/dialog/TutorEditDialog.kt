@@ -128,7 +128,9 @@ fun TutorEditDialog(
                     isError = !hasCityIfInPerson,
                     supportingText = if (!hasCityIfInPerson) {
                         { Text("Podaj miasto (2–50 znaków)") }
-                    } else null
+                    } else {
+                        null
+                    }
                 )
             }
         }

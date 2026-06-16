@@ -14,7 +14,6 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
-import pl.edu.ur.teachly.ui.components.other.dialog.AppConfirmDialog
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme.colorScheme
@@ -38,6 +37,7 @@ import pl.edu.ur.teachly.ui.components.other.EmptyListState
 import pl.edu.ur.teachly.ui.components.other.LoadingBox
 import pl.edu.ur.teachly.ui.components.other.MessageSnackbars
 import pl.edu.ur.teachly.ui.components.other.cards.ReviewAdminCard
+import pl.edu.ur.teachly.ui.components.other.dialog.AppConfirmDialog
 
 @Composable
 fun AdminReviewsScreen(viewModel: AdminReviewsViewModel = koinViewModel(), showHeader: Boolean = true) {

@@ -22,8 +22,7 @@ class SubjectRepository(private val api: SubjectApiService) {
     suspend fun updateSubject(id: Int, request: SubjectRequest): Result<SubjectResponse> =
         apiCall("Błąd aktualizacji przedmiotu") { api.updateSubject(id, request) }
 
-    suspend fun deleteSubject(id: Int): Result<Unit> =
-        apiCallUnit("Błąd usuwania przedmiotu") { api.deleteSubject(id) }
+    suspend fun deleteSubject(id: Int): Result<Unit> = apiCallUnit("Błąd usuwania przedmiotu") { api.deleteSubject(id) }
 
     suspend fun addCategory(request: SubjectCategoryRequest): Result<SubjectCategoryResponse> =
         apiCall("Błąd dodawania kategorii") { api.addCategory(request) }

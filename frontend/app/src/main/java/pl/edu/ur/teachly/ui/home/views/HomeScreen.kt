@@ -52,9 +52,9 @@ import pl.edu.ur.teachly.ui.components.other.section.SectionHeader
 import pl.edu.ur.teachly.ui.components.other.section.SectionItems
 import pl.edu.ur.teachly.ui.home.viewmodels.HomeViewModel
 import pl.edu.ur.teachly.ui.models.ScheduledClass
-import pl.edu.ur.teachly.ui.theme.headerGradientColors
 import pl.edu.ur.teachly.ui.review.views.PendingReviewFormDialog
 import pl.edu.ur.teachly.ui.review.views.PendingReviewsSummaryDialog
+import pl.edu.ur.teachly.ui.theme.headerGradientColors
 
 @Composable
 fun HomeScreen(

@@ -177,11 +177,11 @@ fun TutorSetupScreen(
                     singleLine = true,
                     isError = !state.hasCityIfInPerson,
                     supportingText =
-                        if (!state.hasCityIfInPerson) {
-                            { Text("Podaj miasto (2–50 znaków)") }
-                        } else {
-                            null
-                        }
+                    if (!state.hasCityIfInPerson) {
+                        { Text("Podaj miasto (2–50 znaków)") }
+                    } else {
+                        null
+                    }
                 )
             }
 

@@ -99,12 +99,13 @@ public class SubjectService {
     /**
      * Usuwa przedmiot o podanym identyfikatorze.
      *
-     * <p>Usunięcie jest blokowane, gdy przedmiot jest przypisany do korepetytora lub figuruje w
-     * co najmniej jednej lekcji.
+     * <p>Usunięcie jest blokowane, gdy przedmiot jest przypisany do korepetytora lub figuruje w co
+     * najmniej jednej lekcji.
      *
      * @param id identyfikator przedmiotu
      * @throws ResourceNotFoundException gdy przedmiot nie istnieje
-     * @throws BusinessValidationException gdy przedmiot jest w użyciu przez korepetytorów lub lekcje
+     * @throws BusinessValidationException gdy przedmiot jest w użyciu przez korepetytorów lub
+     *     lekcje
      */
     @Transactional
     public void deleteSubject(Integer id) {

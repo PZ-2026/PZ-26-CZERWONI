@@ -22,11 +22,11 @@ import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -54,7 +54,6 @@ import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
 import java.util.Locale
-import pl.edu.ur.teachly.data.model.UserRole
 import pl.edu.ur.teachly.ui.components.other.PrimaryButton
 import pl.edu.ur.teachly.ui.profile.viewmodels.ProfileViewModel
 
@@ -249,198 +248,205 @@ fun ReportDownloadSection(viewModel: ProfileViewModel, modifier: Modifier = Modi
                             modifier = Modifier.padding(16.dp),
                             verticalArrangement = Arrangement.spacedBy(16.dp)
                         ) {
-                ExposedDropdownMenuBox(
-                    expanded = reportTypeExpanded,
-                    onExpandedChange = { reportTypeExpanded = !reportTypeExpanded }
-                ) {
-                    OutlinedTextField(
-                        value = currentReportTypeName,
-                        onValueChange = {},
-                        readOnly = true,
-                        label = { Text("Typ raportu") },
-                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = reportTypeExpanded) },
-                        modifier = Modifier
-                            .menuAnchor()
-                            .fillMaxWidth(),
-                        shape = RoundedCornerShape(14.dp),
-                        colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors()
-                    )
-                    ExposedDropdownMenu(
-                        expanded = reportTypeExpanded,
-                        onDismissRequest = { reportTypeExpanded = false }
-                    ) {
-                        reportTypes.forEach { (key, name) ->
-                            DropdownMenuItem(
-                                text = { Text(name) },
-                                onClick = {
-                                    selectedReportKey = key
-                                    reportTypeExpanded = false
-                                }
-                            )
-                        }
-                    }
-                }
-
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text(
-                        text = "Zawartość raportu",
-                        style = typography.labelLarge,
-                        fontWeight = FontWeight.SemiBold,
-                        color = colorScheme.onSurface
-                    )
-                    Surface(
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(12.dp),
-                        color = colorScheme.background,
-                        border = BorderStroke(1.dp, colorScheme.outline.copy(alpha = 0.4f))
-                    ) {
-                        Column(
-                            modifier = Modifier.padding(horizontal = 4.dp, vertical = 4.dp),
-                            verticalArrangement = Arrangement.spacedBy(0.dp)
-                        ) {
-                            availableFields.forEach { (label, key) ->
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .clip(RoundedCornerShape(8.dp))
-                                        .clickable {
-                                            selectedFields = if (selectedFields.contains(key)) {
-                                                selectedFields - key
-                                            } else {
-                                                selectedFields + key
-                                            }
-                                        }
-                                        .padding(vertical = 2.dp),
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Checkbox(
-                                        checked = selectedFields.contains(key),
-                                        onCheckedChange = { checked ->
-                                            selectedFields = if (checked) {
-                                                selectedFields + key
-                                            } else {
-                                                selectedFields - key
-                                            }
-                                        }
-                                    )
-                                    Text(
-                                        text = label,
-                                        style = typography.bodyMedium,
-                                        color = colorScheme.onSurface
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
-
-                HorizontalDivider(color = colorScheme.outline.copy(alpha = 0.35f))
-
-                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                    Text(
-                        text = "Okres raportu",
-                        style = typography.labelLarge,
-                        fontWeight = FontWeight.SemiBold,
-                        color = colorScheme.onSurface
-                    )
-
-                    ExposedDropdownMenuBox(
-                        expanded = modeExpanded,
-                        onExpandedChange = { modeExpanded = !modeExpanded }
-                    ) {
-                        OutlinedTextField(
-                            value = selectedMode,
-                            onValueChange = {},
-                            readOnly = true,
-                            label = { Text("Typ zakresu dat") },
-                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = modeExpanded) },
-                            modifier = Modifier
-                                .menuAnchor()
-                                .fillMaxWidth(),
-                            shape = RoundedCornerShape(14.dp),
-                            colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors()
-                        )
-                        ExposedDropdownMenu(expanded = modeExpanded, onDismissRequest = { modeExpanded = false }) {
-                            modes.forEach { mode ->
-                                DropdownMenuItem(
-                                    text = { Text(mode) },
-                                    onClick = {
-                                        selectedMode = mode
-                                        modeExpanded = false
-                                    }
-                                )
-                            }
-                        }
-                    }
-
-                    Surface(
-                        onClick = { showPicker = true },
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(14.dp),
-                        color = colorScheme.surface,
-                        border = BorderStroke(1.dp, colorScheme.primary.copy(alpha = 0.45f))
-                    ) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 14.dp, vertical = 12.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(12.dp)
-                        ) {
-                            Surface(
-                                shape = RoundedCornerShape(10.dp),
-                                color = colorScheme.primary.copy(alpha = 0.12f)
+                            ExposedDropdownMenuBox(
+                                expanded = reportTypeExpanded,
+                                onExpandedChange = { reportTypeExpanded = !reportTypeExpanded }
                             ) {
-                                Icon(
-                                    imageVector = Icons.Default.CalendarToday,
-                                    contentDescription = null,
-                                    tint = colorScheme.primary,
+                                OutlinedTextField(
+                                    value = currentReportTypeName,
+                                    onValueChange = {},
+                                    readOnly = true,
+                                    label = { Text("Typ raportu") },
+                                    trailingIcon = {
+                                        ExposedDropdownMenuDefaults.TrailingIcon(expanded = reportTypeExpanded)
+                                    },
                                     modifier = Modifier
-                                        .padding(10.dp)
-                                        .size(20.dp)
+                                        .menuAnchor()
+                                        .fillMaxWidth(),
+                                    shape = RoundedCornerShape(14.dp),
+                                    colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors()
                                 )
+                                ExposedDropdownMenu(
+                                    expanded = reportTypeExpanded,
+                                    onDismissRequest = { reportTypeExpanded = false }
+                                ) {
+                                    reportTypes.forEach { (key, name) ->
+                                        DropdownMenuItem(
+                                            text = { Text(name) },
+                                            onClick = {
+                                                selectedReportKey = key
+                                                reportTypeExpanded = false
+                                            }
+                                        )
+                                    }
+                                }
                             }
-                            Column(modifier = Modifier.weight(1f)) {
+
+                            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                                 Text(
-                                    text = "Wybrany okres",
-                                    style = typography.labelSmall,
-                                    color = colorScheme.onSurfaceVariant
-                                )
-                                Text(
-                                    text = rangeLabel.removePrefix("Zakres: ").removePrefix("Dzień: "),
-                                    style = typography.bodyLarge,
+                                    text = "Zawartość raportu",
+                                    style = typography.labelLarge,
                                     fontWeight = FontWeight.SemiBold,
                                     color = colorScheme.onSurface
                                 )
+                                Surface(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    shape = RoundedCornerShape(12.dp),
+                                    color = colorScheme.background,
+                                    border = BorderStroke(1.dp, colorScheme.outline.copy(alpha = 0.4f))
+                                ) {
+                                    Column(
+                                        modifier = Modifier.padding(horizontal = 4.dp, vertical = 4.dp),
+                                        verticalArrangement = Arrangement.spacedBy(0.dp)
+                                    ) {
+                                        availableFields.forEach { (label, key) ->
+                                            Row(
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .clip(RoundedCornerShape(8.dp))
+                                                    .clickable {
+                                                        selectedFields = if (selectedFields.contains(key)) {
+                                                            selectedFields - key
+                                                        } else {
+                                                            selectedFields + key
+                                                        }
+                                                    }
+                                                    .padding(vertical = 2.dp),
+                                                verticalAlignment = Alignment.CenterVertically
+                                            ) {
+                                                Checkbox(
+                                                    checked = selectedFields.contains(key),
+                                                    onCheckedChange = { checked ->
+                                                        selectedFields = if (checked) {
+                                                            selectedFields + key
+                                                        } else {
+                                                            selectedFields - key
+                                                        }
+                                                    }
+                                                )
+                                                Text(
+                                                    text = label,
+                                                    style = typography.bodyMedium,
+                                                    color = colorScheme.onSurface
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
                             }
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                                contentDescription = null,
-                                tint = colorScheme.onSurfaceVariant
-                            )
-                        }
-                    }
-                }
 
-                PrimaryButton(
-                    text = "Pobierz PDF",
-                    onClick = {
-                        viewModel.downloadReport(
-                            startDate = ISO.format(startDate),
-                            endDate = ISO.format(endDate),
-                            type = selectedReportKey,
-                            includeFields = selectedFields.toList()
-                        ) { result ->
-                            result.onSuccess { file ->
-                                Toast.makeText(context, "Zapisano: ${file.name}", Toast.LENGTH_LONG).show()
-                                openPdfFile(context, file)
+                            HorizontalDivider(color = colorScheme.outline.copy(alpha = 0.35f))
+
+                            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                                Text(
+                                    text = "Okres raportu",
+                                    style = typography.labelLarge,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = colorScheme.onSurface
+                                )
+
+                                ExposedDropdownMenuBox(
+                                    expanded = modeExpanded,
+                                    onExpandedChange = { modeExpanded = !modeExpanded }
+                                ) {
+                                    OutlinedTextField(
+                                        value = selectedMode,
+                                        onValueChange = {},
+                                        readOnly = true,
+                                        label = { Text("Typ zakresu dat") },
+                                        trailingIcon = {
+                                            ExposedDropdownMenuDefaults.TrailingIcon(expanded = modeExpanded)
+                                        },
+                                        modifier = Modifier
+                                            .menuAnchor()
+                                            .fillMaxWidth(),
+                                        shape = RoundedCornerShape(14.dp),
+                                        colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors()
+                                    )
+                                    ExposedDropdownMenu(expanded = modeExpanded, onDismissRequest = {
+                                        modeExpanded =
+                                            false
+                                    }) {
+                                        modes.forEach { mode ->
+                                            DropdownMenuItem(
+                                                text = { Text(mode) },
+                                                onClick = {
+                                                    selectedMode = mode
+                                                    modeExpanded = false
+                                                }
+                                            )
+                                        }
+                                    }
+                                }
+
+                                Surface(
+                                    onClick = { showPicker = true },
+                                    modifier = Modifier.fillMaxWidth(),
+                                    shape = RoundedCornerShape(14.dp),
+                                    color = colorScheme.surface,
+                                    border = BorderStroke(1.dp, colorScheme.primary.copy(alpha = 0.45f))
+                                ) {
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(horizontal = 14.dp, vertical = 12.dp),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                                    ) {
+                                        Surface(
+                                            shape = RoundedCornerShape(10.dp),
+                                            color = colorScheme.primary.copy(alpha = 0.12f)
+                                        ) {
+                                            Icon(
+                                                imageVector = Icons.Default.CalendarToday,
+                                                contentDescription = null,
+                                                tint = colorScheme.primary,
+                                                modifier = Modifier
+                                                    .padding(10.dp)
+                                                    .size(20.dp)
+                                            )
+                                        }
+                                        Column(modifier = Modifier.weight(1f)) {
+                                            Text(
+                                                text = "Wybrany okres",
+                                                style = typography.labelSmall,
+                                                color = colorScheme.onSurfaceVariant
+                                            )
+                                            Text(
+                                                text = rangeLabel.removePrefix("Zakres: ").removePrefix("Dzień: "),
+                                                style = typography.bodyLarge,
+                                                fontWeight = FontWeight.SemiBold,
+                                                color = colorScheme.onSurface
+                                            )
+                                        }
+                                        Icon(
+                                            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                                            contentDescription = null,
+                                            tint = colorScheme.onSurfaceVariant
+                                        )
+                                    }
+                                }
                             }
-                            result.onFailure {
-                                Toast.makeText(context, "Błąd: ${it.message}", Toast.LENGTH_LONG).show()
-                            }
-                        }
-                    }
-                )
+
+                            PrimaryButton(
+                                text = "Pobierz PDF",
+                                onClick = {
+                                    viewModel.downloadReport(
+                                        startDate = ISO.format(startDate),
+                                        endDate = ISO.format(endDate),
+                                        type = selectedReportKey,
+                                        includeFields = selectedFields.toList()
+                                    ) { result ->
+                                        result.onSuccess { file ->
+                                            Toast.makeText(context, "Zapisano: ${file.name}", Toast.LENGTH_LONG).show()
+                                            openPdfFile(context, file)
+                                        }
+                                        result.onFailure {
+                                            Toast.makeText(context, "Błąd: ${it.message}", Toast.LENGTH_LONG).show()
+                                        }
+                                    }
+                                }
+                            )
                         }
                     }
                 }
@@ -448,4 +454,3 @@ fun ReportDownloadSection(viewModel: ProfileViewModel, modifier: Modifier = Modi
         }
     }
 }
-

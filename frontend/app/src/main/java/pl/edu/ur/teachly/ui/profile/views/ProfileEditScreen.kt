@@ -43,10 +43,10 @@ import pl.edu.ur.teachly.ui.components.other.AppHeader
 import pl.edu.ur.teachly.ui.components.other.ErrorBanner
 import pl.edu.ur.teachly.ui.components.other.HeaderBackground
 import pl.edu.ur.teachly.ui.components.other.InitialsAvatar
-import pl.edu.ur.teachly.ui.components.other.hasCustomAvatar
-import pl.edu.ur.teachly.ui.components.other.uriToFile
 import pl.edu.ur.teachly.ui.components.other.PrimaryButton
 import pl.edu.ur.teachly.ui.components.other.dialog.AppConfirmDialog
+import pl.edu.ur.teachly.ui.components.other.hasCustomAvatar
+import pl.edu.ur.teachly.ui.components.other.uriToFile
 import pl.edu.ur.teachly.ui.profile.viewmodels.ProfileViewModel
 import pl.edu.ur.teachly.ui.theme.AvatarColors
 import pl.edu.ur.teachly.ui.theme.headerGradientColors

@@ -48,10 +48,7 @@ class TutorRepository(private val api: TutorApiService) {
     suspend fun adminUpdateTutor(id: Int, request: TutorRequest): Result<TutorResponse> =
         apiCall("Błąd aktualizacji korepetytora") { api.adminUpdateTutor(id, request) }
 
-    suspend fun adminAddTutorSubject(
-        tutorId: Int,
-        request: TutorSubjectRequest
-    ): Result<TutorSubjectResponse> =
+    suspend fun adminAddTutorSubject(tutorId: Int, request: TutorSubjectRequest): Result<TutorSubjectResponse> =
         apiCall("Błąd dodawania przedmiotu") { api.adminAddTutorSubject(tutorId, request) }
 
     suspend fun adminRemoveTutorSubject(tutorId: Int, tutorSubjectId: Int): Result<Unit> =

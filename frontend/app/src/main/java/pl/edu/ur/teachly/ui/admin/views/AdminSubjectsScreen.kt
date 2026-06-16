@@ -239,7 +239,8 @@ fun AdminSubjectsScreen(
     showDeleteCategoryDialog?.let { category ->
         AppConfirmDialog(
             title = "Usuń kategorię",
-            message = "Czy na pewno chcesz usunąć: ${category.categoryName}? Najpierw usuń wszystkie przypisane przedmioty.",
+            message = "Czy na pewno chcesz usunąć: ${category.categoryName}?" +
+                " Najpierw usuń wszystkie przypisane przedmioty.",
             confirmText = "Usuń",
             onDismiss = { showDeleteCategoryDialog = null },
             onConfirm = {

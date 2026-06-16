@@ -122,10 +122,7 @@ fun AppFormDialog(
 }
 
 @Composable
-fun DialogSectionCard(
-    title: String? = null,
-    content: @Composable ColumnScope.() -> Unit
-) {
+fun DialogSectionCard(title: String? = null, content: @Composable ColumnScope.() -> Unit) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         if (title != null) {
             DialogSectionLabel(title)

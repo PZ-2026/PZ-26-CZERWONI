@@ -47,19 +47,13 @@ object DialogValidation {
         else -> null
     }
 
-    fun phoneError(digits: String): String? =
-        if (digits.isNotEmpty() && digits.length != 9) {
-            "Numer telefonu musi składać się z 9 cyfr"
-        } else {
-            null
-        }
+    fun phoneError(digits: String): String? = if (digits.isNotEmpty() && digits.length != 9) {
+        "Numer telefonu musi składać się z 9 cyfr"
+    } else {
+        null
+    }
 
-    fun isAdminUserFormValid(
-        firstName: String,
-        lastName: String,
-        email: String,
-        phone: String
-    ): Boolean =
+    fun isAdminUserFormValid(firstName: String, lastName: String, email: String, phone: String): Boolean =
         firstName.trim().isNotBlank() &&
             lastName.trim().isNotBlank() &&
             email.trim().isNotBlank() &&

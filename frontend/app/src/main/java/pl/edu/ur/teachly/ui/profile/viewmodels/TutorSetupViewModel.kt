@@ -176,19 +176,18 @@ class TutorSetupViewModel(
     fun clearError() = _state.update { it.copy(error = null) }
     fun clearSaved() = _state.update { it.copy(isSaved = false) }
 
-    private fun validationErrorMessage(state: TutorSetupState): String =
-        when {
-            !state.isHourlyRateValid -> {
-                if (state.hourlyRate.isBlank() || state.parsedHourlyRate == null) {
-                    "Podaj prawidłową stawkę godzinową"
-                } else {
-                    "Stawka musi wynosić co najmniej 1 PLN"
-                }
+    private fun validationErrorMessage(state: TutorSetupState): String = when {
+        !state.isHourlyRateValid -> {
+            if (state.hourlyRate.isBlank() || state.parsedHourlyRate == null) {
+                "Podaj prawidłową stawkę godzinową"
+            } else {
+                "Stawka musi wynosić co najmniej 1 PLN"
             }
-            !state.hasLessonFormat ->
-                "Wybierz co najmniej jedną formę zajęć (online lub stacjonarnie)"
-            !state.hasCityIfInPerson -> "Podaj miasto zajęć stacjonarnych (2–50 znaków)"
-            !state.hasSubjects -> "Dodaj co najmniej jeden prowadzony przedmiot"
-            else -> "Uzupełnij wymagane pola profilu"
         }
+        !state.hasLessonFormat ->
+            "Wybierz co najmniej jedną formę zajęć (online lub stacjonarnie)"
+        !state.hasCityIfInPerson -> "Podaj miasto zajęć stacjonarnych (2–50 znaków)"
+        !state.hasSubjects -> "Dodaj co najmniej jeden prowadzony przedmiot"
+        else -> "Uzupełnij wymagane pola profilu"
+    }
 }

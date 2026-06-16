@@ -155,7 +155,8 @@ public class TimetableService {
             final LocalTime minTime;
             ZoneId zone = ZoneId.of("Europe/Warsaw");
             if (currentDate.equals(LocalDate.now(zone))) {
-                LocalTime now = LocalDateTime.now(zone).toLocalTime().truncatedTo(ChronoUnit.MINUTES);
+                LocalTime now =
+                        LocalDateTime.now(zone).toLocalTime().truncatedTo(ChronoUnit.MINUTES);
                 int remainder = now.getMinute() % 30;
                 minTime = remainder == 0 ? now : now.plusMinutes(30 - remainder);
             } else {

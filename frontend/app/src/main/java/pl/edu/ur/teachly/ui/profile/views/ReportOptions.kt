@@ -9,26 +9,25 @@ import pl.edu.ur.teachly.data.model.UserRole
  */
 
 /** Zwraca listę par (klucz, etykieta) typów raportów dostępnych dla danej roli. */
-internal fun reportTypesFor(role: UserRole): List<Pair<String, String>> =
-    when (role) {
-        UserRole.STUDENT -> listOf(
-            "LESSONS" to "Historia lekcji",
-            "EXPENSES" to "Podsumowanie wydatków",
-            "ANALYTICS" to "Czas nauki i analiza"
-        )
+internal fun reportTypesFor(role: UserRole): List<Pair<String, String>> = when (role) {
+    UserRole.STUDENT -> listOf(
+        "LESSONS" to "Historia lekcji",
+        "EXPENSES" to "Podsumowanie wydatków",
+        "ANALYTICS" to "Czas nauki i analiza"
+    )
 
-        UserRole.TUTOR -> listOf(
-            "LESSONS" to "Historia zajęć",
-            "REVENUE" to "Podsumowanie przychodów",
-            "STUDENTS" to "Analiza uczniów"
-        )
+    UserRole.TUTOR -> listOf(
+        "LESSONS" to "Historia zajęć",
+        "REVENUE" to "Podsumowanie przychodów",
+        "STUDENTS" to "Analiza uczniów"
+    )
 
-        UserRole.ADMIN -> listOf(
-            "LESSONS" to "Wszystkie lekcje platformy",
-            "REVENUE" to "Obrót finansowy platformy",
-            "USERS" to "Analiza zarejestrowanych kont"
-        )
-    }
+    UserRole.ADMIN -> listOf(
+        "LESSONS" to "Wszystkie lekcje platformy",
+        "REVENUE" to "Obrót finansowy platformy",
+        "USERS" to "Analiza zarejestrowanych kont"
+    )
+}
 
 /** Zwraca listę par (etykieta, klucz) pól możliwych do uwzględnienia w danym typie raportu. */
 internal fun availableFieldsFor(role: UserRole, reportKey: String): List<Pair<String, String>> {

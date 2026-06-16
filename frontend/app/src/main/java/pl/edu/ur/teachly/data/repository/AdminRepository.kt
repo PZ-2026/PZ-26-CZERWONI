@@ -8,13 +8,9 @@ import pl.edu.ur.teachly.data.remote.apiCallUnit
 
 class AdminRepository(private val api: AdminApiService) {
 
-    suspend fun getStats(): Result<AdminStatsResponse> =
-        apiCall("Błąd pobierania statystyk") { api.getStats() }
+    suspend fun getStats(): Result<AdminStatsResponse> = apiCall("Błąd pobierania statystyk") { api.getStats() }
 
-    suspend fun getAllReviews(
-        query: String? = null,
-        rating: Int? = null
-    ): Result<List<ReviewResponse>> =
+    suspend fun getAllReviews(query: String? = null, rating: Int? = null): Result<List<ReviewResponse>> =
         apiCall("Błąd pobierania opinii") { api.getAllReviews(query, rating) }
 
     suspend fun deleteReview(reviewId: Int): Result<Unit> =

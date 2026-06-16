@@ -18,8 +18,7 @@ class UserRepository(private val api: UserApiService) {
         query: String? = null,
         role: UserRole? = null,
         active: Boolean? = null
-    ): Result<List<UserResponse>> =
-        apiCall("Błąd pobierania użytkowników") { api.getAllUsers(query, role, active) }
+    ): Result<List<UserResponse>> = apiCall("Błąd pobierania użytkowników") { api.getAllUsers(query, role, active) }
 
     suspend fun updateUser(id: Int, request: UserUpdateRequest): Result<UserResponse> =
         apiCall("Błąd aktualizacji profilu") { api.updateUser(id, request) }
@@ -27,8 +26,7 @@ class UserRepository(private val api: UserApiService) {
     suspend fun adminUpdateUser(id: Int, request: AdminUserUpdateRequest): Result<UserResponse> =
         apiCall("Błąd aktualizacji użytkownika") { api.adminUpdateUser(id, request) }
 
-    suspend fun activateUser(id: Int): Result<Unit> =
-        apiCallUnit("Błąd aktywacji użytkownika") { api.activateUser(id) }
+    suspend fun activateUser(id: Int): Result<Unit> = apiCallUnit("Błąd aktywacji użytkownika") { api.activateUser(id) }
 
     suspend fun deactivateUser(id: Int): Result<Unit> =
         apiCallUnit("Błąd deaktywacji użytkownika") { api.deactivateUser(id) }
@@ -36,6 +34,5 @@ class UserRepository(private val api: UserApiService) {
     suspend fun uploadAvatar(id: Int, file: MultipartBody.Part): Result<UserResponse> =
         apiCall("Błąd wysyłania zdjęcia") { api.uploadAvatar(id, file) }
 
-    suspend fun deleteAvatar(id: Int): Result<UserResponse> =
-        apiCall("Błąd usuwania zdjęcia") { api.deleteAvatar(id) }
+    suspend fun deleteAvatar(id: Int): Result<UserResponse> = apiCall("Błąd usuwania zdjęcia") { api.deleteAvatar(id) }
 }

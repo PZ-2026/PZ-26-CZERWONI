@@ -17,6 +17,5 @@ class HolidayRepository(private val api: HolidayApiService) {
     suspend fun updateHoliday(id: Int, request: HolidayRequest): Result<HolidayResponse> =
         apiCall("Błąd aktualizacji święta") { api.updateHoliday(id, request) }
 
-    suspend fun deleteHoliday(id: Int): Result<Unit> =
-        apiCallUnit("Błąd usuwania święta") { api.deleteHoliday(id) }
+    suspend fun deleteHoliday(id: Int): Result<Unit> = apiCallUnit("Błąd usuwania święta") { api.deleteHoliday(id) }
 }
